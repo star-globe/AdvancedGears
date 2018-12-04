@@ -77,7 +77,7 @@ namespace Playground.Editor.SnapshotGenerator
                         return;
                     }
 
-                    var entityTemplate = CubeTemplate.CreateCubeEntityTemplate(new Coordinates(x, 1, z));
+                    var entityTemplate = BaseUnitTemplate.CreateBaseUnitEntityTemplate(new Coordinates(x, 1, z));//CubeTemplate.CreateCubeEntityTemplate(new Coordinates(x, 1, z));
                     snapshot.AddEntity(entityTemplate);
                 }
             }
