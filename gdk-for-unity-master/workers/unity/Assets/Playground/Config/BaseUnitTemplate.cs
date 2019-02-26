@@ -8,10 +8,10 @@ namespace Playground
 {
     public class BaseUnitTemplate
     {
-        public static EntityTemplate CreateBaseUnitEntityTemplate(Coordinates coords)
+        public static EntityTemplate CreateBaseUnitEntityTemplate(uint side, Coordinates coords)
         {
             //var cubeColor = CubeColor.Component.CreateSchemaComponentData();
-            var moveVelocity = BaseUnitMoveVelocity.Component.CreateSchemaComponentData(new Vector3f { X = -2.0f });
+            var baseUnit = BaseUnit.Component.CreateSchemaComponentData(side, new Vector3f { X = -2.0f });
             var launchable = Launchable.Component.CreateSchemaComponentData(new EntityId(0));
 
             var entityBuilder = EntityBuilder.Begin()
@@ -20,7 +20,7 @@ namespace Playground
                 .SetPersistence(true)
                 .SetReadAcl(WorkerUtils.AllWorkerAttributes)
                 //.AddComponent(cubeColor, WorkerUtils.UnityGameLogic)
-                .AddComponent(moveVelocity, WorkerUtils.UnityGameLogic)
+                .AddComponent(baseUnit, WorkerUtils.UnityGameLogic)
                 .AddComponent(launchable, WorkerUtils.UnityGameLogic)
                 .AddTransformSynchronizationComponents(WorkerUtils.UnityGameLogic,
                     location: coords.NarrowToUnityVector());

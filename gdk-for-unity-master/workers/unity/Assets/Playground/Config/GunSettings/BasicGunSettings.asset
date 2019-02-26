@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7396859aec6fc045bf636535efee60a, type: 3}
+  m_Name: BasicGunSettings
+  m_EditorClassIdentifier: 
+  gunModel: {fileID: 0}
+  impactEffect: {fileID: 0}
+  muzzleFlashEffect: {fileID: 0}
+  bulletLineRenderer: {fileID: 0}
+  shotColour: {r: 0, g: 0, b: 0, a: 0}
+  shotDamage: 0
+  shotRange: 0
+  bulletRenderLength: 0
+  shotRenderTime: 0
+  isAutomatic: 0
+  rateOfFire: 0
+  shotCooldown: 0
+  hipRecoil:
+    FirstPersonRecoil:
+      MinXVariance: 0
+      MaxXVariance: 0
+      MinYVariance: 0
+      MaxYVariance: 0
+      MinZVariance: 0
+      MaxZVariance: 0
+      VelocityDamper: 0
+      OffsetDamper: 0
+    ThirdPersonRecoil:
+      RecoilStrength: 0
+      RecoilTime: 0.1
+      ResetTime: 0.2
+  aimRecoil:
+    FirstPersonRecoil:
+      MinXVariance: 0
+      MaxXVariance: 0
+      MinYVariance: 0
+      MaxYVariance: 0
+      MinZVariance: 0
+      MaxZVariance: 0
+      VelocityDamper: 0
+      OffsetDamper: 0
+    ThirdPersonRecoil:
+      RecoilStrength: 0
+      RecoilTime: 0.1
+      ResetTime: 0.2
+  aimFov: 60
+  fovChangeTime: 0.1
+  inaccuracyFromHip: 0
+  inaccuracyWhileAiming: 0
+  aimPitchSpeed: 1
+  aimYawSpeed: 1

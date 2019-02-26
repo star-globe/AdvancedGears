@@ -50,6 +50,8 @@ namespace Playground.Editor.SnapshotGenerator
             snapshot.AddEntity(spawner);
         }
 
+        static readonly double scale = 2.0;
+
         private static void AddCubeGrid(Snapshot snapshot, int cubeCount)
         {
             // Calculate grid size
@@ -77,7 +79,10 @@ namespace Playground.Editor.SnapshotGenerator
                         return;
                     }
 
-                    var entityTemplate = BaseUnitTemplate.CreateBaseUnitEntityTemplate(new Coordinates(x, 1, z));//CubeTemplate.CreateCubeEntityTemplate(new Coordinates(x, 1, z));
+                    uint side = x < 0 ? (uint)1 : (uint)2;
+                    double pos_x = x * scale;
+                    double pos_z = z * scale;
+                    var entityTemplate = BaseUnitTemplate.CreateBaseUnitEntityTemplate(side, new Coordinates(pos_x, 1, pos_z));//CubeTemplate.CreateCubeEntityTemplate(new Coordinates(x, 1, z));
                     snapshot.AddEntity(entityTemplate);
                 }
             }
