@@ -1,0 +1,16 @@
+package playground;
+import "from_gdk_packages/com.improbable.gdk.core/common.schema";
+import "improbable/vector3.schema";
+
+component BulletComponent {
+    id = 21000;
+
+    int32 power = 1;
+    uint32 type = 2;
+    uint32 alignment = 3;
+    improbable.Vector3f move_velocity = 4;
+    float current_time = 5;
+    float life_time = 6;
+    uint32 gun_id = 7;
+    int64 shooter_entity_id = 8;
+}
