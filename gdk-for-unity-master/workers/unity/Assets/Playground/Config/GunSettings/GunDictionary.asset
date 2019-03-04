@@ -9,6 +9,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5b9470e089d50f944b699ab5ec8e8b06, type: 3}
-  m_Name: Gun Dictionary
+  m_Name: GunDictionary
   m_EditorClassIdentifier: 
-  gunsList: []
+  gunsList:
+  - {fileID: 11400000, guid: 6e2722cad687ab0429411786eb684057, type: 2}
