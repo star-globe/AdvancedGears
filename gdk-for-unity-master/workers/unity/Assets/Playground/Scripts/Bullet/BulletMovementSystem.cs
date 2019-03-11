@@ -33,21 +33,65 @@ namespace Playground
 
         protected override void OnUpdate()
         {
+            for (var i = 0; i < data.Length; i++)
+            {
+                var collider = data.Collider[i];
+                var info = data.BulletInfo[i];
+
+                if (!info.IsActive)
+                    continue;
+
+                var diff = Time.realtimeSinceStartup - info.LaunchTime;
+                if (diff >= info.LifeTime)
+                {
+                    info.IsActive = false;
+                    data.BulletInfo[i] = info;
+                    continue;
+                }
+
+                var trans = collider.transform;
+
+                var vec = info.CurrentVelocity;
+                var uVec = new Vector3(vec.X, vec.Y, vec.Z);
+
+                trans.Translate(uVec * Time.deltaTime);
+
+                // time check
+
+
+                //var enemy = getNearestEnemeyPosition(unitComponent.Side, pos, 10);
+                //if (enemy != null)
+                //{
+                //    var diff = enemy.Value - pos;
+                //    rotate(rigidbody.transform, diff, rotSpeed);
+                //    uVec = get_move_velocity(diff, moveSpeed * 3, moveSpeed) * rigidbody.transform.forward;
+                //}
+                //else
+                //{
+                //    uVec = Vector3.zero;
+                //}
+                //
+                //unitComponent.MoveVelocity = new Vector3f(uVec.x, uVec.y, uVec.z);
+                //data.BaseUnit[i] = unitComponent;
+                //
+                //rigidbody.MovePosition(pos + uVec * Time.fixedDeltaTime);
+            }
         }
     }
 
     public struct BulletInfo : IComponentData
     {
-        int Power;
-        uint Type;
-        uint Alignment;
-        Improbable.Vector3f LaunchPosition;
-        Improbable.Vector3f InitialVelocity;
-        Improbable.Vector3f CurrentVelocity;
-        float LaunchTime;
-        float LifeTime;
-        uint GunId;
-        long ShooterEntityId;
+        public int Power;
+        public uint Type;
+        public uint Alignment;
+        public Improbable.Vector3f LaunchPosition;
+        public Improbable.Vector3f InitialVelocity;
+        public Improbable.Vector3f CurrentVelocity;
+        public float LaunchTime;
+        public float LifeTime;
+        public uint GunId;
+        public long ShooterEntityId;
+        public bool IsActive;
 
         public BulletInfo(BulletFireInfo fire)
         {
@@ -61,6 +105,7 @@ namespace Playground
             LifeTime = fire.LifeTime;
             GunId = fire.GunId;
             ShooterEntityId = fire.ShooterEntityId;
+            IsActive = true;
         }
     }
 }
