@@ -13,6 +13,7 @@ namespace Playground
         {
             var fire = new BulletFireInfo()
             {
+                LaunchTime = Time.realtimeSinceStartup,
             };
 
             writer.SendFires(fire);

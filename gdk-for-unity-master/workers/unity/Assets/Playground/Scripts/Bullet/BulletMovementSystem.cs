@@ -41,6 +41,7 @@ namespace Playground
                 if (!info.IsActive)
                     continue;
 
+                // time check
                 var diff = Time.realtimeSinceStartup - info.LaunchTime;
                 if (diff >= info.LifeTime)
                 {
@@ -56,9 +57,11 @@ namespace Playground
 
                 trans.Translate(uVec * Time.deltaTime);
 
-                // time check
+                // gravity
+                uVec += Physics.gravity * Time.deltaTime;
+                info.CurrentVelocity = new Vector3f(uVec.x, uVec.y, uVecz);
 
-
+                data.BulletInfo[i] = info;
                 //var enemy = getNearestEnemeyPosition(unitComponent.Side, pos, 10);
                 //if (enemy != null)
                 //{
