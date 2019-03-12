@@ -59,7 +59,7 @@ namespace Playground
 
                 // gravity
                 uVec += Physics.gravity * Time.deltaTime;
-                info.CurrentVelocity = new Vector3f(uVec.x, uVec.y, uVecz);
+                info.CurrentVelocity = new Vector3f(uVec.x, uVec.y, uVec.z);
 
                 data.BulletInfo[i] = info;
                 //var enemy = getNearestEnemeyPosition(unitComponent.Side, pos, 10);

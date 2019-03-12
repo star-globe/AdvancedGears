@@ -16,9 +16,35 @@ namespace Playground
         [SerializeField]
         GameObject bulletObject;
 
+        readonly List<GameObject> activeBullets = new List<GameObject>();
+        readonly Queue<GameObject> deactiveQueue = new Queue<GameObject>();
+
+        float checkTime = 0.0f;
+        const float interval = 15.0f;
+
         private void Start()
         {
             Assert.IsNotNull(bulletObject);
+        }
+
+        private void Update()
+        {
+            if (Time.realtimeSinceStartup - checkTime < interval)
+                return;
+
+            activeBullets.RemoveAll(b =>
+            {
+                if (b == null || b.Equals(null))
+                    return true;
+
+                if (!b.activeSelf)
+                {
+                    deactiveQueue.Enqueue(b);
+                    return true;
+                }
+
+                return false;
+            });
         }
 
         public void Setup(EntityManager entity)
@@ -29,11 +55,20 @@ namespace Playground
 
         void OnFire(BulletFireInfo info)
         {
-            // use Linq
+            // check
+            GameObject bullet;
+            if (deactiveQueue.Count > 1)
+            {
+                bullet = deactiveQueue.Dequeue();
+            }
+            else
+            {
+                bullet = Instantiate(bulletObject);
+                activeBullets.Add(bullet);
+            }
 
-            var obj = Instantiate(bulletObject);
-
-            var entity = obj.GetComponent<GameObjectEntity>();
+            bullet.SetActive(true);
+            var entity = bullet.GetComponent<GameObjectEntity>();
 
             entityManager.AddComponentData(entity.Entity, new BulletInfo(info));
         }
