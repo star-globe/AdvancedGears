@@ -25,9 +25,12 @@ namespace Playground
             // Damage
 
             // Destroy Bullet
-            manager.DestroyEntity(entity);
+            //manager.DestroyEntity(entity);
 
             // Destroy or Deactive pooled bullet object.
+            info.IsActive = false;
+            other.gameObject.SetActive(false);
+            manager.AddComponentData(entity, info);
         }
     }
 }

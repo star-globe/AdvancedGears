@@ -29,6 +29,8 @@ namespace Playground
 
         void OnFire(BulletFireInfo info)
         {
+            // use Linq
+
             var obj = Instantiate(bulletObject);
 
             var entity = obj.GetComponent<GameObjectEntity>();
