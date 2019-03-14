@@ -4,18 +4,18 @@ using UnityEngine;
 
 namespace Playground
 {
-    [CreateAssetMenu(menuName = "Improbable/Bullet Config/Bullet Dictionary", order = 0)]
+    [CreateAssetMenu(menuName = "AdvancedGears/Bullet Config/Bullet Dictionary", order = 0)]
     public class BulletDictionary : ScriptableObject
     {
         public static BulletDictionary Instance { private get; set; }
 
-        [SerializeField] private GunSettings[] gunsList;
+        [SerializeField] private BulletSettings[] gunsList;
 
-        public static GunSettings Get(int index)
+        public static BulletSettings Get(int index)
         {
             if (Instance == null)
             {
-                Debug.LogError("The Gun Dictionary has not been set.");
+                Debug.LogError("The Bullet Dictionary has not been set.");
                 return null;
             }
 
@@ -27,5 +27,7 @@ namespace Playground
 
             return Instance.gunsList[index];
         }
+
+        public static int Count => Instance.gunsList.Length;
     }
 }

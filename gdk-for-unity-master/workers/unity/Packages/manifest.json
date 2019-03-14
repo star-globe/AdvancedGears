@@ -9,6 +9,7 @@
     "com.improbable.gdk.transformsynchronization": "file:com.improbable.gdk.transformsynchronization",
     "com.improbable.gdk.guns": "file:com.improbable.gdk.guns",
     "com.improbable.gdk.health": "file:com.improbable.gdk.health",
+    "com.improbable.gdk.objectpooling": "file:com.improbable.gdk.objectpooling",
     "com.improbable.gdk.standardtypes": "file:com.improbable.gdk.standardtypes",
     "com.unity.package-manager-ui": "1.9.11",
     "com.unity.postprocessing": "2.0.12-preview",

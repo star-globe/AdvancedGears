@@ -13,8 +13,21 @@ namespace Playground
 
         [Require] BulletComponent.Requirable.Reader reader;
 
-        [SerializeField]
-        GameObject bulletObject;
+        GameObject bulletObject = null;
+        GameObject BulletObject
+        {
+            get
+            {
+                if (bulletObject == null)
+                {
+                    var settings = BulletDictionary.Get(0);
+                    if (settings != null)
+                        bulletObject = settings.BulletModel;
+                }
+
+                return bulletObject;
+            }
+        }
 
         readonly List<GameObject> activeBullets = new List<GameObject>();
         readonly Queue<GameObject> deactiveQueue = new Queue<GameObject>();
@@ -24,7 +37,7 @@ namespace Playground
 
         private void Start()
         {
-            Assert.IsNotNull(bulletObject);
+            //Assert.IsNotNull(bulletObject);
         }
 
         private void Update()
@@ -55,6 +68,9 @@ namespace Playground
 
         void OnFire(BulletFireInfo info)
         {
+            if (BulletObject == null)
+                return;
+
             // check
             GameObject bullet;
             if (deactiveQueue.Count > 1)
@@ -63,7 +79,7 @@ namespace Playground
             }
             else
             {
-                bullet = Instantiate(bulletObject);
+                bullet = Instantiate(BulletObject);
                 activeBullets.Add(bullet);
             }
 
