@@ -1,16 +1,26 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
 
-public class LocalPlayerController : MonoBehaviour {
+namespace Playground
+{
+	public class LocalPlayerController : MonoBehaviour
+	{
+		[SerializeField]
+		ClientShootings shootings;
 
-	// Use this for initialization
-	void Start () {
-		
-	}
+		void Start ()
+		{
+			Assert.IsNotNull(shootings);
+		}
 	
-	// Update is called once per frame
-	void Update () {
-		
+		void Update ()
+		{
+			if (Input.GetKey(KeyCode.Space))
+			{
+				shootings.OnFire();
+			}
+		}
 	}
 }
