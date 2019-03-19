@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Improbable.Gdk.GameObjectRepresentation;
+using Improbable;
 
 namespace Playground
 {
@@ -54,7 +55,7 @@ namespace Playground
 
             var pos = muzzleTransform.position;
             var vec = muzzleTransform.forward;
-            vec *= bullerSpeed;
+            vec *= bulletSpeed;
 
             var fire = new BulletFireInfo()
             {
@@ -66,7 +67,7 @@ namespace Playground
                 LaunchTime = Time.realtimeSinceStartup,
                 LifeTime = lifeTime,
                 GunId = 0,
-                ShooterEntityId = SpatialComp.EntityId,
+                ShooterEntityId = SpatialComp.SpatialEntityId.Id,
             };
 
             writer.SendFires(fire);
