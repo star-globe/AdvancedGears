@@ -1,0 +1,8 @@
+package playground;
+import "improbable/vector3.schema";
+
+component BaseUnit {
+    id = 20000;
+    uint32 side = 1;
+    improbable.Vector3f move_velocity = 2;
+}
