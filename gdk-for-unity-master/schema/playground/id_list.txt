@@ -1,3 +1,0 @@
-20000 = baseUnit
-20001 = baseUnitSpawner
-21000 = bullet
