@@ -1,6 +1,8 @@
+using System;
 using Improbable;
 using Improbable.Gdk.Core;
-using Improbable.Gdk.GameObjectRepresentation;
+using Improbable.Gdk.ReactiveComponents;
+using Improbable.Gdk.Subscriptions;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
@@ -114,16 +116,24 @@ namespace Playground
             Vector3? e_pos = null;
 
             var colls = Physics.OverlapSphere(pos,length, LayerMask.GetMask("Unit"));
+            var worker = World.GetExistingManager<WorkerSystem>();
             for (var i = 0; i < colls.Length; i++)
             {
                 var col = colls[i];
-                var comp = col.GetComponent<SpatialOSComponent>();
+                var comp = col.GetComponent<LinkedEntityComponent>();
                 if (comp == null)
                     continue;
 
-                if (EntityManager.HasComponent<BaseUnit.Component>(comp.Entity))
+                Entity entity;
+                if (!worker.TryGetEntity(comp.EntityId, out entity))
                 {
-                    var unit = EntityManager.GetComponentData<BaseUnit.Component>(comp.Entity);
+                    throw new InvalidOperationException(
+                        $"Entity with SpatialOS Entity ID {comp.EntityId.Id} is not in this worker's view");
+                }
+
+                if (EntityManager.HasComponent<BaseUnit.Component>(entity))
+                {
+                    var unit = EntityManager.GetComponentData<BaseUnit.Component>(entity);
                     if (unit.Side == self_side)
                         continue;
 
