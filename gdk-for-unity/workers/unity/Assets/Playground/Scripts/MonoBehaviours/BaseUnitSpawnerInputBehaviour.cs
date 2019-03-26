@@ -1,9 +1,10 @@
+using System;
 using Improbable.Common;
 using Improbable.Gdk.Core;
 using Improbable.Worker.CInterop;
 using Improbable.Gdk.Subscriptions;
 using Improbable.Worker;
-using Improbable.Worker.Core;
+using Unity.Entities;
 using UnityEngine;
 
 namespace Playground.MonoBehaviours
@@ -58,8 +59,8 @@ namespace Playground.MonoBehaviours
 
         private void SendSpawnCommand()
         {
-            var request = new BaseUnitSpawner.SpawnBaseUnit.Request(entityId, new Empty());
-            baseUnitSpawnerCommandSender.SendSpawnUnitCommanf(request);
+            var request = new BaseUnitSpawner.SpawnUnit.Request(entityId, new Empty());
+            baseUnitSpawnerCommandSender.SendSpawnUnitCommand(request);
         }
 
         private void SendDeleteCommand()
@@ -71,9 +72,9 @@ namespace Playground.MonoBehaviours
                 return;
             }
 
-            var request = new BaseUnitSpawner.DeleteSpawnedBaseUnit.Request(entityId, new DeleteBaseUnitRequest()
+            var request = new BaseUnitSpawner.DeleteSpawnedCube.Request(entityId, new DeleteBaseUnitRequest()
             {
-                BaseUnitEntityId = spawnedUnits[0]
+                BaseunitEntityId = spawnedUnits[0]
             });
             baseUnitSpawnerCommandSender.SendDeleteSpawnedCubeCommand(request, OnDeleteSpawnedCubeResponse);
         }

@@ -67,7 +67,7 @@ namespace Playground
                 LaunchTime = Time.realtimeSinceStartup,
                 LifeTime = lifeTime,
                 GunId = 0,
-                ShooterEntityId = SpatialComp.SpatialEntityId.Id,
+                ShooterEntityId = SpatialComp.EntityId.Id,
             };
 
             writer.SendFiresEvent(fire);
