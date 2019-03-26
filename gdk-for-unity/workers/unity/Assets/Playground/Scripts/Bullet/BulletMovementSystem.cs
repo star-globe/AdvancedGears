@@ -1,6 +1,5 @@
 using Improbable;
-using Improbable.Gdk.GameObjectRepresentation;
-
+using Improbable.Gdk.Subscriptions;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

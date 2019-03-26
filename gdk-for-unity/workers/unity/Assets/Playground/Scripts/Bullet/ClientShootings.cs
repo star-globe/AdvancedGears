@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
-using Improbable.Gdk.GameObjectRepresentation;
+using Improbable.Gdk.Subscriptions;
 using Improbable;
 
 namespace Playground
@@ -23,19 +23,19 @@ namespace Playground
 
         float fireTime = 0.0f;
 
-        SpatialOSComponent spatialComp = null;
-        SpatialOSComponent SpatialComp
+        LinkedEntityComponent spatialComp = null;
+        LinkedEntityComponent SpatialComp
         {
             get
             {
                 if (spatialComp == null)
-                    spatialComp = GetComponent<SpatialOSComponent>();
+                    spatialComp = GetComponent<LinkedEntityComponent>();
 
                 return spatialComp;                
             }
         }
 
-        [Require] ClientBulletComponent.Requirable.Writer writer;
+        [Require] ClientBulletComponentWriter writer;
 
         private void Start()
         {
@@ -70,7 +70,7 @@ namespace Playground
                 ShooterEntityId = SpatialComp.SpatialEntityId.Id,
             };
 
-            writer.SendFires(fire);
+            writer.SendFiresEvent(fire);
         }
     }
 }

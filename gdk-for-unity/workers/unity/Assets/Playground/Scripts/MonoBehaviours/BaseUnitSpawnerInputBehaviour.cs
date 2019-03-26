@@ -1,6 +1,7 @@
 using Improbable.Common;
 using Improbable.Gdk.Core;
-using Improbable.Gdk.GameObjectRepresentation;
+using Improbable.Worker.CInterop;
+using Improbable.Gdk.Subscriptions;
 using Improbable.Worker;
 using Improbable.Worker.Core;
 using UnityEngine;
@@ -9,29 +10,21 @@ namespace Playground.MonoBehaviours
 {
     public class BaseUnitSpawnerInputBehaviour : MonoBehaviour
     {
-        [Require] private PlayerInput.Requirable.Writer playerInputWriter;
-        [Require] private BaseUnitSpawner.Requirable.Reader baseUnitSpawnerReader;
-        [Require] private BaseUnitSpawner.Requirable.CommandRequestSender baseUnitSpawnerCommandSender;
-        [Require] private BaseUnitSpawner.Requirable.CommandResponseHandler baseUnitSpawnerResponseHandler;
+        [Require] private PlayerInputWriter playerInputWriter;
+        [Require] private BaseUnitSpawnerReader baseUnitSpawnerReader;
+        [Require] private BaseUnitSpawnerCommandSender baseUnitSpawnerCommandSender;
+    
+        [Require] private EntityId entityId;
+        [Require] private World world;
 
-        private ILogDispatcher logDispatcher;
-        private EntityId ownEntityId;
-
-        private void OnEnable()
-        {
-            var spatialOSComponent = GetComponent<SpatialOSComponent>();
-            logDispatcher = spatialOSComponent.Worker.LogDispatcher;
-            ownEntityId = spatialOSComponent.SpatialEntityId;
-
-            baseUnitSpawnerResponseHandler.OnSpawnUnitResponse += OnSpawnUnitResponse;
-            baseUnitSpawnerResponseHandler.OnDeleteSpawnedCubeResponse += OnDeleteSpawnedCubeResponse;
-        }
-
+        [Require] private ILogDispatcher logDispatcher;
+    
         private void OnSpawnUnitResponse(BaseUnitSpawner.SpawnUnit.ReceivedResponse response)
         {
             if (response.StatusCode != StatusCode.Success)
             {
                 logDispatcher.HandleLog(LogType.Error, new LogEvent($"Spawn error: {response.Message}"));
+                throw new Exception("Test Exception");
             }
         }
 
@@ -40,6 +33,7 @@ namespace Playground.MonoBehaviours
             if (response.StatusCode != StatusCode.Success)
             {
                 logDispatcher.HandleLog(LogType.Error, new LogEvent($"Delete error: {response.Message}"));
+                throw new Exception("Test Exception");
             }
         }
 
@@ -64,7 +58,8 @@ namespace Playground.MonoBehaviours
 
         private void SendSpawnCommand()
         {
-            baseUnitSpawnerCommandSender.SendSpawnUnitRequest(ownEntityId, new Empty());
+            var request = new BaseUnitSpawner.SpawnBaseUnit.Request(entityId, new Empty());
+            baseUnitSpawnerCommandSender.SendSpawnUnitCommanf(request);
         }
 
         private void SendDeleteCommand()
@@ -76,10 +71,11 @@ namespace Playground.MonoBehaviours
                 return;
             }
 
-            baseUnitSpawnerCommandSender.SendDeleteSpawnedCubeRequest(ownEntityId, new DeleteBaseUnitRequest
+            var request = new BaseUnitSpawner.DeleteSpawnedBaseUnit.Request(entityId, new DeleteBaseUnitRequest()
             {
-                BaseunitEntityId = spawnedUnits[0]
+                BaseUnitEntityId = spawnedUnits[0]
             });
+            baseUnitSpawnerCommandSender.SendDeleteSpawnedCubeCommand(request, OnDeleteSpawnedCubeResponse);
         }
     }
 }
