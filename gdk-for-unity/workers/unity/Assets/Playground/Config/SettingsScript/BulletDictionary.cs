@@ -9,7 +9,7 @@ namespace Playground
     {
         public static BulletDictionary Instance { private get; set; }
 
-        [SerializeField] private BulletSettings[] gunsList;
+        [SerializeField] private BulletSettings[] bulletsList;
 
         public static BulletSettings Get(int index)
         {
@@ -25,9 +25,9 @@ namespace Playground
                 return null;
             }
 
-            return Instance.gunsList[index];
+            return Instance.bulletsList[index];
         }
 
-        public static int Count => Instance.gunsList.Length;
+        public static int Count => Instance.bulletsList.Length;
     }
 }

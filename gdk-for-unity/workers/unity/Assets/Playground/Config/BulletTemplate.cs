@@ -16,12 +16,12 @@ namespace Playground
             template.AddComponent(new Position.Snapshot(coords), WorkerUtils.UnityGameLogic);
             template.AddComponent(new Metadata.Snapshot("BulletCore"), WorkerUtils.UnityGameLogic);
             template.AddComponent(new Persistence.Snapshot(), WorkerUtils.UnityGameLogic);
-            template.AddComponent(new ClientBullet.Snapshot(), WorkerUtils.UnityClient);
-            template.AddComponent(new WorkerBullet.Snapshot(), WorkerUtils.UnityGameLogic);
-            template.AddComponent(new Launchable.SnapShot(), WorkerUtils.UnityGameLogic);
+            template.AddComponent(new ClientBulletComponent.Snapshot(), WorkerUtils.UnityClient);
+            template.AddComponent(new WorkerBulletComponent.Snapshot(), WorkerUtils.UnityGameLogic);
+            template.AddComponent(new Launchable.Snapshot(), WorkerUtils.UnityGameLogic);
             
             template.SetReadAccess(WorkerUtils.AllWorkerAttributes.ToArray());
-            template.SetComponentWriterAccess(EntityAcl.ComponentId, WorkerUtils.UnityGameLogic);
+            template.SetComponentWriteAccess(EntityAcl.ComponentId, WorkerUtils.UnityGameLogic);//SetComponentWriterAccess(EntityAcl.ComponentId, WorkerUtils.UnityGameLogic);
 
             return template;
             //var clientBullet = ClientBulletComponent.Component.CreateSchemaComponentData();
