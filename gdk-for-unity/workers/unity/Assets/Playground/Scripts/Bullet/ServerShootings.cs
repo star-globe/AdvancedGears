@@ -1,16 +1,19 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
+using Improbable.Gdk.Subscriptions;
+using Improbable;
 
-public class ServerShootings : MonoBehaviour {
+namespace Playground
+{
+	public class ServerShootings : BaseShootings
+	{
+		[Require] WorkerBulletComponentWriter writer;
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
+        protected override void SetFireEvent(BulletFireInfo fire)
+        {
+            writer.SendFiresEvent(fire);
+        }
 	}
 }

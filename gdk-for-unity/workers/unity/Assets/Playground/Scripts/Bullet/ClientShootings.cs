@@ -7,7 +7,17 @@ using Improbable;
 
 namespace Playground
 {
-    public class ClientShootings : MonoBehaviour
+    public class ClientShootings : BaseShootings
+    {
+        [Require] ClientBulletComponentWriter writer;
+
+        protected override void SetFireEvent(BulletFireInfo fire)
+        {
+            writer.SendFiresEvent(fire);
+        }
+    }
+
+    public abstract class BaseShootings : MonoBehaviour
     {
         [SerializeField]
         Transform muzzleTransform;
@@ -70,7 +80,9 @@ namespace Playground
                 ShooterEntityId = SpatialComp.EntityId.Id,
             };
 
-            writer.SendFiresEvent(fire);
+            SetFireEvent(fire);
         }
+
+        protected abstract void SetFireEvent(BulletFireInfo fire);
     }
 }
