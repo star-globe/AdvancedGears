@@ -21,6 +21,8 @@ namespace Playground
             template.AddComponent(new Score.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new CubeSpawner.Snapshot { SpawnedCubes = new List<EntityId>() },
                 WorkerUtils.UnityGameLogic);
+            template.AddComponent(new BulletComponent.Snapshot(), clientAttribute);
+
             TransformSynchronizationHelper.AddTransformSynchronizationComponents(template, clientAttribute);
             PlayerLifecycleHelper.AddPlayerLifecycleComponents(template, workerId, clientAttribute,
                 WorkerUtils.UnityGameLogic);

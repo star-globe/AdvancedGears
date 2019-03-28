@@ -37,7 +37,7 @@ namespace Playground
             world.GetOrCreateManager<UpdateUISystem>();
             world.GetOrCreateManager<PlayerCommandsSystem>();
             world.GetOrCreateManager<MetricSendSystem>();
-            //world.GetOrCreateManager<BulletMovementSystem>();
+            world.GetOrCreateManager<BulletMovementSystem>();
         }
 
         public static void AddGameLogicSystems(World world)
@@ -53,7 +53,8 @@ namespace Playground
             world.GetOrCreateManager<MetricSendSystem>();
             world.GetOrCreateManager<ProcessScoresSystem>();
             world.GetOrCreateManager<CollisionProcessSystem>();
-            //world.GetOrCreateManager<BulletMovementSystem>();
+            world.GetOrCreateManager<BulletMovementSystem>();
+            world.GetOrCreateManager<BaseUnitMovementSystem>();
         }
 
         private static void AddLifecycleSystems(World world)

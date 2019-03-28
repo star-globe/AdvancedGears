@@ -7,11 +7,8 @@ using Improbable.Gdk.Subscriptions;
 
 namespace Playground
 {
-    internal class BulletCreator : MonoBehaviour
+    public class BulletCreator : MonoBehaviour
     {
-        [Require] ClientBulletComponentReader clientReader;
-        [Require] WorkerBulletComponentReader workerReader;
-
         GameObject bulletObject = null;
         GameObject BulletObject
         {
@@ -29,25 +26,12 @@ namespace Playground
         }
 
         EntityManager entityManager;
-        LinkedEntityComponent spatialOSComponent;
 
-        readonly List<GameObject> activeBullets = new List<GameObject>();
-        readonly Queue<GameObject> deactiveQueue = new Queue<GameObject>();
+        readonly List<Collider> activeBullets = new List<Collider>();
+        readonly Queue<Collider> deactiveQueue = new Queue<Collider>();
 
         float checkTime = 0.0f;
         const float interval = 15.0f;
-
-        private void OnEnable()
-        {
-            clientReader.OnFiresEvent += OnFire;
-            workerReader.OnFiresEvent += OnFire;
-        }
-
-        private void Start()
-        {
-            spatialOSComponent = GetComponent<LinkedEntityComponent>();
-            entityManager = spatialOSComponent.World.GetOrCreateManager<EntityManager>();
-        }
 
         private void Update()
         {
@@ -59,7 +43,7 @@ namespace Playground
                 if (b == null || b.Equals(null))
                     return true;
 
-                if (!b.activeSelf)
+                if (!b.enabled)
                 {
                     deactiveQueue.Enqueue(b);
                     return true;
@@ -74,27 +58,31 @@ namespace Playground
             entityManager = entity;
         }
 
-        void OnFire(BulletFireInfo info)
+        public void OnFire(BulletFireInfo info)
         {
-            if (BulletObject == null)
+            if (BulletObject == null || entityManager == null)
                 return;
 
             // check
-            GameObject bullet;
+            Collider bullet;
             if (deactiveQueue.Count > 1)
             {
                 bullet = deactiveQueue.Dequeue();
             }
             else
             {
-                bullet = Instantiate(BulletObject);
+                var go = Instantiate(BulletObject);
+                bullet = go.GetComponent<Collider>();
                 activeBullets.Add(bullet);
             }
 
-            bullet.SetActive(true);
-            var entity = bullet.GetComponent<GameObjectEntity>();
+            bullet.enabled = true;
+            bullet.gameObject.SetActive(true);
+            var objectEntity = bullet.GetComponent<GameObjectEntity>();
 
-            entityManager.AddComponentData(entity.Entity, new BulletInfo(info));
+            var entity = entityManager.CreateEntity();
+            objectEntity.CopyAllComponentsToEntity(entityManager, entity);
+            entityManager.AddComponentData(entity, new BulletInfo(info));
         }
     }
 

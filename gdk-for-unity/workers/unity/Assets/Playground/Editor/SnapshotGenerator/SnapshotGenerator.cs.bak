@@ -31,8 +31,9 @@ namespace Playground.Editor.SnapshotGenerator
 
             AddPlayerSpawner(snapshot);
             AddCubeGrid(snapshot, cubeCount);
-            CreateSpinner(snapshot, new Coordinates { X = 5.5, Y = 0.5f, Z = 0.0 });
-            CreateSpinner(snapshot, new Coordinates { X = -5.5, Y = 0.5f, Z = 0.0 });
+            AddBulletCore(snapshot);
+            //CreateSpinner(snapshot, new Coordinates { X = 5.5, Y = 0.5f, Z = 0.0 });
+            //CreateSpinner(snapshot, new Coordinates { X = -5.5, Y = 0.5f, Z = 0.0 });
 
             return snapshot;
         }
@@ -123,6 +124,12 @@ namespace Playground.Editor.SnapshotGenerator
 
 
             snapshot.AddEntity(template);
+        }
+        
+        private static void AddBulletCore(Snapshot snapshot)
+        {
+            var entityTemplate = BulletTemplate.CreateBulletEntityTemplate(new Coordinates(0, 0, 0));
+            snapshot.AddEntity(entityTemplate);
         }
     }
 }

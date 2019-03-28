@@ -21,8 +21,13 @@ namespace Playground
 
         [Inject] private Data data;
 
+        public BulletCreator BulletCreator { get; private set; }
+
         protected override void OnCreateManager()
         {
+            var go = new GameObject("BulletCreator");
+            BulletCreator = go.AddComponent<BulletCreator>();
+            BulletCreator.Setup(this.EntityManager);
         }
 
         protected override void OnUpdate()

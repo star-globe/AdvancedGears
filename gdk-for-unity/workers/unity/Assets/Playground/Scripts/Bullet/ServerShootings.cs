@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -7,13 +7,13 @@ using Improbable;
 
 namespace Playground
 {
-	public class ServerShootings : BaseShootings
-	{
-		[Require] WorkerBulletComponentWriter writer;
-
-        protected override void SetFireEvent(BulletFireInfo fire)
-        {
-            writer.SendFiresEvent(fire);
-        }
-	}
+	//public class ServerShootings : BaseShootings
+	//{
+	//	[Require] WorkerBulletComponentWriter writer;
+    //
+    //    protected override void SetFireEvent(BulletFireInfo fire)
+    //    {
+    //        writer.SendFiresEvent(fire);
+    //    }
+	//}
 }

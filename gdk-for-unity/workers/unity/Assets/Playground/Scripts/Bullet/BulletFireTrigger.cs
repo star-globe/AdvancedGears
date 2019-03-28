@@ -7,18 +7,10 @@ using Improbable;
 
 namespace Playground
 {
-    public class ClientShootings : BaseShootings
+    public class BulletFireTrigger : MonoBehaviour
     {
-        [Require] ClientBulletComponentWriter writer;
+        [Require] BulletComponentWriter writer;
 
-        protected override void SetFireEvent(BulletFireInfo fire)
-        {
-            writer.SendFiresEvent(fire);
-        }
-    }
-
-    public abstract class BaseShootings : MonoBehaviour
-    {
         [SerializeField]
         Transform muzzleTransform;
 
@@ -45,7 +37,10 @@ namespace Playground
             }
         }
 
-        [Require] ClientBulletComponentWriter writer;
+        public bool IsAvailable
+        {
+            get { return writer != null; }
+        }
 
         private void Start()
         {
@@ -54,7 +49,7 @@ namespace Playground
 
         public void OnFire()
         {
-            if (this.SpatialComp == null)
+            if (this.SpatialComp == null || writer == null)
                 return;
 
             var time = Time.realtimeSinceStartup;
@@ -80,9 +75,7 @@ namespace Playground
                 ShooterEntityId = SpatialComp.EntityId.Id,
             };
 
-            SetFireEvent(fire);
+            writer.SendFiresEvent(fire);
         }
-
-        protected abstract void SetFireEvent(BulletFireInfo fire);
     }
 }

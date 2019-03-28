@@ -31,7 +31,7 @@ namespace Playground.Editor.SnapshotGenerator
 
             AddPlayerSpawner(snapshot);
             AddCubeGrid(snapshot, cubeCount);
-            AddBulletCore(snapshot);
+            //AddBulletCore(snapshot);
             //CreateSpinner(snapshot, new Coordinates { X = 5.5, Y = 0.5f, Z = 0.0 });
             //CreateSpinner(snapshot, new Coordinates { X = -5.5, Y = 0.5f, Z = 0.0 });
 
@@ -52,9 +52,11 @@ namespace Playground.Editor.SnapshotGenerator
             snapshot.AddEntity(template);
         }
 
+        static readonly double scale = 2.0;
+        
         private static void AddCubeGrid(Snapshot snapshot, int cubeCount)
         {
-            var cubeTemplate = CubeTemplate.CreateCubeEntityTemplate();
+            //var cubeTemplate = CubeTemplate.CreateCubeEntityTemplate();
 
             // Calculate grid size
             var gridLength = (int) Math.Ceiling(Math.Sqrt(cubeCount));
@@ -81,20 +83,27 @@ namespace Playground.Editor.SnapshotGenerator
                         return;
                     }
 
-                    var positionSnapshot = new Position.Snapshot
-                    {
-                        Coords = new Coordinates(x, 1, z)
-                    };
-                    var transformSnapshot = new TransformInternal.Snapshot
-                    {
-                        Location = new Location(x, 1, z),
-                        Rotation = new Quaternion(1, 0, 0, 0),
-                        TicksPerSecond = 1f / Time.fixedDeltaTime
-                    };
+                    //var positionSnapshot = new Position.Snapshot
+                    //{
+                    //    Coords = new Coordinates(x, 1, z)
+                    //};
+                    //var transformSnapshot = new TransformInternal.Snapshot
+                    //{
+                    //    Location = new Location(x, 1, z),
+                    //    Rotation = new Quaternion(1, 0, 0, 0),
+                    //    TicksPerSecond = 1f / Time.fixedDeltaTime
+                    //};
 
-                    cubeTemplate.SetComponent(positionSnapshot);
-                    cubeTemplate.SetComponent(transformSnapshot);
-                    snapshot.AddEntity(cubeTemplate);
+                    //cubeTemplate.SetComponent(positionSnapshot);
+                    //cubeTemplate.SetComponent(transformSnapshot);
+                    //snapshot.AddEntity(cubeTemplate);
+                    
+                    uint side = x < 0 ? (uint)1 : (uint)2;
+                    double pos_x = x * scale;
+                    double pos_z = z * scale;
+                    var entityTemplate = BaseUnitTemplate.CreateBaseUnitEntityTemplate(side, new Coordinates(pos_x, 1, pos_z));//CubeTemplate.CreateCubeEntityTemplate(new Coordinates(x, 1, z));
+                    snapshot.AddEntity(entityTemplate);
+
                 }
             }
         }
@@ -126,10 +135,10 @@ namespace Playground.Editor.SnapshotGenerator
             snapshot.AddEntity(template);
         }
         
-        private static void AddBulletCore(Snapshot snapshot)
-        {
-            var entityTemplate = BulletTemplate.CreateBulletEntityTemplate(new Coordinates(0, 0, 0));
-            snapshot.AddEntity(entityTemplate);
-        }
+        //private static void AddBulletCore(Snapshot snapshot)
+        //{
+        //    var entityTemplate = BulletTemplate.CreateBulletEntityTemplate(new Coordinates(0, 0, 0));
+        //    snapshot.AddEntity(entityTemplate);
+        //}
     }
 }
