@@ -30,7 +30,7 @@ namespace Playground
             // Destroy or Deactive pooled bullet object.
             info.IsActive = false;
             other.gameObject.SetActive(false);
-            manager.AddComponentData(entity, info);
+            manager.SetComponentData(entity, info);
         }
     }
 }

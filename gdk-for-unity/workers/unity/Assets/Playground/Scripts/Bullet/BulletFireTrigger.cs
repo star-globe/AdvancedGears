@@ -62,6 +62,7 @@ namespace Playground
             var vec = muzzleTransform.forward;
             vec *= bulletSpeed;
 
+            var id = writer.Data.CurrentId;
             var fire = new BulletFireInfo()
             {
                 Power = 1,
@@ -73,8 +74,13 @@ namespace Playground
                 LifeTime = lifeTime,
                 GunId = 0,
                 ShooterEntityId = SpatialComp.EntityId.Id,
+                BulletId = id,
             };
 
+            writer.SendUpdate(new BulletComponent.Update
+            {
+                CurrentId = id + 1
+            });
             writer.SendFiresEvent(fire);
         }
     }

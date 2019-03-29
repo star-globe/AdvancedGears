@@ -12,10 +12,18 @@ type BulletFireInfo {
     float life_time = 7;
     uint32 gun_id = 8;
     int64 shooter_entity_id = 9;
+    int64 bullet_id = 10;
+}
+
+type BulletVanishInfo {
+    int64 shooter_entity_id = 1;
+    int64 bullet_id = 10;
 }
 
 component BulletComponent {
     id = 21000;
+    uint64 current_id = 1;
 
     event BulletFireInfo fires;
+    event BulletVanishInfo vanishes;
 }

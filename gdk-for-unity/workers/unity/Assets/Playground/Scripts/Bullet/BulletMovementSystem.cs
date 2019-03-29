@@ -93,6 +93,7 @@ namespace Playground
         public float LifeTime;
         public uint GunId;
         public long ShooterEntityId;
+        public long BulletId;
         public byte active;
 
         public bool IsActive
@@ -119,6 +120,7 @@ namespace Playground
             LifeTime = fire.LifeTime;
             GunId = fire.GunId;
             ShooterEntityId = fire.ShooterEntityId;
+            BulletId = fire.BulletId;
             active = 1;
         }
     }

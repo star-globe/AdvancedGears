@@ -77,7 +77,6 @@ namespace Playground
                 activeBullets.Add(bullet);
             }
 
-            bullet.enabled = true;
             bullet.gameObject.SetActive(true);
             bullet.gameObject.transform.position = new Vector3(info.LaunchPosition.x, info.LaunchPosition.y, info.LaunchPosition.z);
             var vec = new Vector3(info.InitialVelocity.x, info.InitialVelocity.y, info.InitialVelocity.z);
