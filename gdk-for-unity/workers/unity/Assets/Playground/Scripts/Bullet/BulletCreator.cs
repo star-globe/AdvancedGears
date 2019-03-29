@@ -26,7 +26,7 @@ namespace Playground
         }
 
         EntityManager entityManager;
-
+        EntityArchetype archetype;
         readonly List<Collider> activeBullets = new List<Collider>();
         readonly Queue<Collider> deactiveQueue = new Queue<Collider>();
 
@@ -56,6 +56,7 @@ namespace Playground
         public void Setup(EntityManager entity)
         {
             entityManager = entity;
+            archetype = entityManager.CreateArchetype(typeof(Collider), typeof(BulletInfo));
         }
 
         public void OnFire(BulletFireInfo info)
@@ -80,7 +81,7 @@ namespace Playground
             bullet.gameObject.SetActive(true);
             var objectEntity = bullet.GetComponent<GameObjectEntity>();
 
-            var entity = entityManager.CreateEntity();
+            var entity = entityManager.CreateEntity(archetype);
             objectEntity.CopyAllComponentsToEntity(entityManager, entity);
             entityManager.AddComponentData(entity, new BulletInfo(info));
         }
