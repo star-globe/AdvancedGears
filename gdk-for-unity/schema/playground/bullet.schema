@@ -12,7 +12,7 @@ type BulletFireInfo {
     float life_time = 7;
     uint32 gun_id = 8;
     int64 shooter_entity_id = 9;
-    int64 bullet_id = 10;
+    uint64 bullet_id = 10;
 }
 
 type BulletVanishInfo {

@@ -1,5 +1,6 @@
 using Improbable;
 using Improbable.Gdk.Subscriptions;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,7 +16,7 @@ namespace Playground
         private struct Data
         {
             public readonly int Length;
-            public ComponentArray<Collider> Collider;
+            public ComponentArray<SphereCollider> Collider;
             public ComponentDataArray<BulletInfo> BulletInfo;
         }
 
@@ -37,7 +38,7 @@ namespace Playground
                 var collider = data.Collider[i];
                 var info = data.BulletInfo[i];
 
-                if (info.IsActive)
+                if (!info.IsActive)
                     continue;
 
                 // time check
@@ -81,6 +82,7 @@ namespace Playground
         }
     }
 
+    [Serializable]
     public struct BulletInfo : IComponentData
     {
         public int Power;
@@ -93,7 +95,7 @@ namespace Playground
         public float LifeTime;
         public uint GunId;
         public long ShooterEntityId;
-        public long BulletId;
+        public ulong BulletId;
         public byte active;
 
         public bool IsActive

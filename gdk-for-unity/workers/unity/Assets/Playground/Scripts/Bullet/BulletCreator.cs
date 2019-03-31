@@ -56,7 +56,7 @@ namespace Playground
         public void Setup(EntityManager entity)
         {
             entityManager = entity;
-            archetype = entityManager.CreateArchetype(typeof(Collider), typeof(BulletInfo));
+            //archetype = entityManager.CreateArchetype(typeof(SphereCollider), typeof(BulletInfo));
         }
 
         public void OnFire(BulletFireInfo info)
@@ -78,14 +78,16 @@ namespace Playground
             }
 
             bullet.gameObject.SetActive(true);
-            bullet.gameObject.transform.position = new Vector3(info.LaunchPosition.x, info.LaunchPosition.y, info.LaunchPosition.z);
-            var vec = new Vector3(info.InitialVelocity.x, info.InitialVelocity.y, info.InitialVelocity.z);
+            bullet.gameObject.transform.position = new Vector3(info.LaunchPosition.X, info.LaunchPosition.Y, info.LaunchPosition.Z);
+            var vec = new Vector3(info.InitialVelocity.X, info.InitialVelocity.Y, info.InitialVelocity.Z);
             bullet.gameObject.transform.forward = vec.normalized;
-            var objectEntity = bullet.GetComponent<GameObjectEntity>();
+            var fireComponent = bullet.GetComponent<BulletFireComponent>();
+            fireComponent.Value = new BulletInfo(info);
+            //var entity = entityManager.CreateEntity();// archetype);
+            //objectEntity.CopyAllComponentsToEntity(entityManager, entity);
 
-            var entity = entityManager.CreateEntity(archetype);
-            objectEntity.CopyAllComponentsToEntity(entityManager, entity);
-            entityManager.AddComponentData(entity, new BulletInfo(info));
+            //objectEntity.CopyAllComponentsToEntity(entityManager, entity);
+            //entityManager.SetComponentData(entity, new BulletInfo(info));
         }
     }
 
