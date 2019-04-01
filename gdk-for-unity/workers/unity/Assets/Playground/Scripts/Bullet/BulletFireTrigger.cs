@@ -37,7 +37,7 @@ namespace Playground
                 if (spatialComp == null)
                     spatialComp = GetComponent<LinkedEntityComponent>();
 
-                return spatialComp;                
+                return spatialComp;
             }
         }
 
@@ -46,12 +46,12 @@ namespace Playground
         private void Start()
         {
             Assert.IsNotNull(muzzleTransform);
-            base.Creator.RegisterTriggerEntityId(this.SpatialComp.EntityId, VanishBullet);              
+            base.Creator.RegisterTriggerEntityId(this.SpatialComp.EntityId, VanishBullet);
         }
 
         private void OnDestroy()
         {
-            base.Creator.RemoveTriggerEntity(this.SpatialComp.EntityId);              
+            base.Creator.RemoveTriggerEntity(this.SpatialComp.EntityId);
         }
 
         public void OnFire()

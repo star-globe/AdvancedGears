@@ -18,11 +18,17 @@ namespace Playground
         {
             base.OnEnable();
             reader.OnFiresEvent += Fire;
+            reader.OnVanishesEvent += Vanish;
         }
 
         private void Fire(BulletFireInfo info)
         {
             base.Creator.OnFire(info);
+        }
+
+        private void Vanish(BulletVanishInfo info)
+        {
+            base.Creator.OnVanish(info);
         }
     }
 

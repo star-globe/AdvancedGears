@@ -32,6 +32,8 @@ namespace Playground
         readonly List<Rigidbody> activeBullets = new List<Rigidbody>();
         readonly Queue<Rigidbody> deactiveQueue = new Queue<Rigidbody>();
 
+        readonly Dictionary<long, Dictionary<ulong, Rigidbody>> bulletsDic = new Dictionary<long, Dictionary<ulong, Rigidbody>>();
+
         readonly Dictionary<long,Action<ulong>> entityDic = new Dictionary<long,Action<ulong>>();
 
         float checkTime = 0.0f;
@@ -114,11 +116,21 @@ namespace Playground
 
             var fireComponent = bullet.GetComponent<BulletFireComponent>();
             fireComponent.Value = new BulletInfo(info);
-            //var entity = entityManager.CreateEntity();// archetype);
-            //objectEntity.CopyAllComponentsToEntity(entityManager, entity);
+        }
 
-            //objectEntity.CopyAllComponentsToEntity(entityManager, entity);
-            //entityManager.SetComponentData(entity, new BulletInfo(info));
+        public void OnVanish(BulletVanishInfo info)
+        {
+            Dictionary<ulong, Rigidbody> dic;
+            if (bulletsDic.TryGetValue(info.ShooterEntityId, out dic) == false)
+                return;
+
+            Rigidbody bullet;
+            if (dic.TryGetValue(info.BulletId, out bullet) == false)
+                return;
+
+            var fireComponent = bullet.GetComponent<BulletFireComponent>();
+            var b = fireComponent.Value;
+            fireComponent.Value = new BulletInfo(b,0);
         }
     }
 

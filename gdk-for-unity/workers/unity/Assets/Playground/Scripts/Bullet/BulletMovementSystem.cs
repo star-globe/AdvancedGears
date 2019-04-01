@@ -125,5 +125,21 @@ namespace Playground
             BulletId = fire.BulletId;
             active = 1;
         }
+
+        public BulletInfo(BulletInfo info, byte act)
+        {
+            Power = info.Power;
+            Type = info.Type;
+            Alignment = info.Alignment;
+            LaunchPosition = info.LaunchPosition;
+            InitialVelocity = info.InitialVelocity;
+            CurrentVelocity = info.CurrentVelocity;
+            LaunchTime = info.LaunchTime;
+            LifeTime = info.LifeTime;
+            GunId = info.GunId;
+            ShooterEntityId = info.ShooterEntityId;
+            BulletId = info.BulletId;
+            active = act;
+        }
     }
 }
