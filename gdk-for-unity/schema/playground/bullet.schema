@@ -17,7 +17,7 @@ type BulletFireInfo {
 
 type BulletVanishInfo {
     int64 shooter_entity_id = 1;
-    int64 bullet_id = 10;
+    uint64 bullet_id = 10;
 }
 
 component BulletComponent {

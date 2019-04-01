@@ -46,7 +46,7 @@ namespace Playground
                 if (diff >= info.LifeTime)
                 {
                     info.IsActive = false;
-                    rigid.enabled = false;
+                    rigid.gameObject.SetActive(false);
                     data.BulletInfo[i] = info;
                     continue;
                 }

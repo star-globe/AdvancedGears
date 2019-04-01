@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
+using Unity.Entities;
 using Improbable.Gdk.Subscriptions;
 using Improbable;
 
@@ -10,6 +11,9 @@ namespace Playground
     public class BulletFireTrigger : BulletFireBase
     {
         [Require] BulletComponentWriter writer;
+        [Require] World world;
+
+        protected override World World => world;
 
         [SerializeField]
         Transform muzzleTransform;

@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Unity.Entities;
-using Improbable.Gdk.Subscriptions;
+using Improbable.Gdk;
+using Improbable.Gdk.Core;
 
 namespace Playground
 {
@@ -46,7 +47,7 @@ namespace Playground
                 if (b == null || b.Equals(null))
                     return true;
 
-                if (!b.enabled)
+                if (!b.gameObject.activeSelf)
                 {
                     deactiveQueue.Enqueue(b);
                     return true;
@@ -101,7 +102,6 @@ namespace Playground
             }
 
             bullet.gameObject.SetActive(true);
-            bullet.enabled = true;
             bullet.useGravity = true;
             bullet.isKinematic = false;
             bullet.detectCollisions = entityDic.ContainsKey(info.ShooterEntityId); 
