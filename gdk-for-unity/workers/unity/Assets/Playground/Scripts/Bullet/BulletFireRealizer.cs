@@ -8,18 +8,14 @@ using Improbable.Gdk;
 
 namespace Playground
 {
-    public class BulletFireRealizer : MonoBehaviour
+    public class BulletFireRealizer : BulletFireBase
     {
         [Require] BulletComponentReader reader;
-        [Require] private World world;
 
-        BulletMovementSystem bulletSystem;
-        BulletCreator Creator { get { return bulletSystem.BulletCreator; } }
-
-        private void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             reader.OnFiresEvent += Fire;
-            bulletSystem = world.GetExistingManager<BulletMovementSystem>();
         }
 
         private void Start()
@@ -29,7 +25,21 @@ namespace Playground
 
         private void Fire(BulletFireInfo info)
         {
-            Creator.OnFire(info);
+            base.Creator.OnFire(info);
         }
+    }
+
+    public abstract class BulletFireBase : MonoBehaviour
+    {
+        [Require] private World world; 
+
+        BulletMovementSystem bulletSystem;
+        protected BulletCreator Creator { get { return bulletSystem.BulletCreator; } }
+        
+        protected virtual void OnEnable()
+        {
+            bulletSystem = world.GetExistingManager<BulletMovementSystem>();
+        }
+
     }
 }

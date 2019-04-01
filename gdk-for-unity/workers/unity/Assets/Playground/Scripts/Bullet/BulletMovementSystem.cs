@@ -16,7 +16,7 @@ namespace Playground
         private struct Data
         {
             public readonly int Length;
-            public ComponentArray<SphereCollider> Collider;
+            public ComponentArray<Rigidbody> Rigidbody;
             public ComponentDataArray<BulletInfo> BulletInfo;
         }
 
@@ -35,7 +35,7 @@ namespace Playground
         {
             for (var i = 0; i < data.Length; i++)
             {
-                var collider = data.Collider[i];
+                var rigid = data.Rigidbody[i];
                 var info = data.BulletInfo[i];
 
                 if (!info.IsActive)
@@ -46,22 +46,22 @@ namespace Playground
                 if (diff >= info.LifeTime)
                 {
                     info.IsActive = false;
+                    rigid.enabled = false;
                     data.BulletInfo[i] = info;
                     continue;
                 }
 
-                var trans = collider.transform;
+                //var vec = info.CurrentVelocity;
+                //var uVec = new Vector3(vec.X, vec.Y, vec.Z);
 
-                var vec = info.CurrentVelocity;
-                var uVec = new Vector3(vec.X, vec.Y, vec.Z);
+                //var pos = rigid.position;
+                //rigid.MovePosition(pos + uVec * Time.fixedDeltaTime);
 
-                trans.Translate(uVec * Time.deltaTime);
+                //// gravity
+                //uVec += Physics.gravity * Time.deltaTime;
+                //info.CurrentVelocity = new Vector3f(uVec.x, uVec.y, uVec.z);
 
-                // gravity
-                uVec += Physics.gravity * Time.deltaTime;
-                info.CurrentVelocity = new Vector3f(uVec.x, uVec.y, uVec.z);
-
-                data.BulletInfo[i] = info;
+                //data.BulletInfo[i] = info;
                 //var enemy = getNearestEnemeyPosition(unitComponent.Side, pos, 10);
                 //if (enemy != null)
                 //{

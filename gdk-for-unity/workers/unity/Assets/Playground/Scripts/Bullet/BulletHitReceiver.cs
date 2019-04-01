@@ -5,22 +5,23 @@ using Unity.Entities;
 
 namespace Playground
 {
-    public class BulletHitReceiver : MonoBehaviour
+    public class BulletHitReceiver : BulletFireBase
     {
         const string bulletTag = "Bullet";
 
-        private void OnTriggerEnter(Collider other)
+        private void OnCollisionEnter(Collision other)
         {
-            if (other.gameObject.tag != bulletTag)
+            if (other.gameObject.tag != bulletTag).
                 return;
 
-            var objEntity = other.GetComponent<GameObjectEntity>();
-            if (objEntity == null)
+            var fire = other.GetComponent<BulletFireComponent>();
+            if (fire == null)
                 return;
 
-            var entity = objEntity.Entity;
-            var manager = objEntity.EntityManager;
-            var info = manager.GetComponentData<BulletInfo>(entity);
+            base.Creator.InvokeVanishAction(fire.ShooterEntityId, fire.BulletId);
+            //var entity = objEntity.Entity;
+            //var manager = objEntity.EntityManager;
+            //var info = manager.GetComponentData<BulletInfo>(entity);
 
             // Damage
 
@@ -28,9 +29,9 @@ namespace Playground
             //manager.DestroyEntity(entity);
 
             // Destroy or Deactive pooled bullet object.
-            info.IsActive = false;
-            other.gameObject.SetActive(false);
-            manager.SetComponentData(entity, info);
+            // info.IsActive = false;
+            // other.gameObject.SetActive(false);
+            // manager.SetComponentData(entity, info);
         }
     }
 }

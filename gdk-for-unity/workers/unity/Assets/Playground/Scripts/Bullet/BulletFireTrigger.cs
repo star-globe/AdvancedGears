@@ -7,7 +7,7 @@ using Improbable;
 
 namespace Playground
 {
-    public class BulletFireTrigger : MonoBehaviour
+    public class BulletFireTrigger : BulletFireBase
     {
         [Require] BulletComponentWriter writer;
 
@@ -37,14 +37,17 @@ namespace Playground
             }
         }
 
-        public bool IsAvailable
-        {
-            get { return writer != null; }
-        }
+        public bool IsAvailable { get { return writer != null; } }
 
         private void Start()
         {
             Assert.IsNotNull(muzzleTransform);
+            base.Creator.RegisterTriggerEntityId(this.SpatialComp.EntityId, VanishBullet);              
+        }
+
+        private void OnDestroy()
+        {
+            base.Creator.RemoveTriggerEntity(this.SpatialComp.EntityId);              
         }
 
         public void OnFire()
@@ -82,6 +85,17 @@ namespace Playground
                 CurrentId = id + 1
             });
             writer.SendFiresEvent(fire);
+        }
+
+        private void VanishBullet(ulong id)
+        {
+            var vanish = new BulletVanishInfo()
+            {
+                ShooterEntityId = SpatialComp.EntityId.Id,
+                BulletId = id,
+            };
+
+            writer.SendVanishesEvent(vanish);
         }
     }
 }
