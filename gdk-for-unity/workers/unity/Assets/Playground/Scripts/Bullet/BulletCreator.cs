@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Unity.Entities;
@@ -18,14 +19,14 @@ namespace Playground
 
             public bool IsActive
             {
-                get { return Rigid.activeSelf; }
+                get { return Rigid.gameObject.activeSelf; }
                 set
                 {
                     Rigid.gameObject.SetActive(value);                    
                 }
             }
 
-            public Rigpair(Rigidbody rig)
+            public Rigidpair(Rigidbody rig)
             {
                 if (rig == null)
                     return;
@@ -56,7 +57,7 @@ namespace Playground
         //readonly List<Rigidpair> activeBullets = new List<Rigidpair>();
         readonly Queue<Rigidpair> deactiveQueue = new Queue<Rigidpair>();
 
-        readonly Dictionary<long, Dictionary<ulong, Rigidpair>> bulletsDic = new Dictionary<long, Dictionary<ulong, Rigidbody>>();
+        readonly Dictionary<long, Dictionary<ulong, Rigidpair>> bulletsDic = new Dictionary<long, Dictionary<ulong, Rigidpair>>();
 
         readonly Dictionary<long,Action<ulong>> entityDic = new Dictionary<long,Action<ulong>>();
 
@@ -73,8 +74,8 @@ namespace Playground
                 var removeKeys = dic.Value.Where(kvp => !kvp.Value.IsActive).Select(kvp => kvp.Key).ToArray();
                 foreach(var r in removeKeys)
                 {
-                    deactiveQueue.Enqueue(dic[r]);
-                    dic.Remove(r);   
+                    deactiveQueue.Enqueue(dic.Value[r]);
+                    dic.Value.Remove(r);
                 }
             }
             //activeBullets.RemoveAll(b =>
@@ -147,7 +148,7 @@ namespace Playground
                 {
                     var dic = new Dictionary<ulong,Rigidpair>();
                     dic.Add(id,bullet);
-                    bulletDic.Add(key, dic);
+                    bulletsDic.Add(key, dic);
                 }
             }
 
