@@ -6,7 +6,7 @@ namespace Playground
     public class GameLogicWorkerConnector : DefaultWorkerConnector
     {
 #pragma warning disable 649
-        [SerializeField] private GameObject level;
+        [SerializeField] private StaticBulletReceiver level;
 #pragma warning restore 649
 
         private GameObject levelInstance;
@@ -24,7 +24,9 @@ namespace Playground
                 return;
             }
 
-            levelInstance = Instantiate(level, transform.position, transform.rotation);
+            levelInstance = Instantiate(level.gameObject, transform.position, transform.rotation);
+            var receive = levelInstance.GetComponent<StaticBulletReceiver>();
+            receive.SetWorld(this.Worker.World);
         }
 
         public override void Dispose()

@@ -14,9 +14,8 @@ namespace Playground
         [Require] private World world;
         protected override World World => world;
 
-        protected override void OnEnable()
+        void OnEnable()
         {
-            base.OnEnable();
             reader.OnFiresEvent += Fire;
             reader.OnVanishesEvent += Vanish;
         }
@@ -36,18 +35,28 @@ namespace Playground
     {
         protected abstract World World { get; }
 
-        BulletMovementSystem bulletSystem;
-        protected BulletCreator Creator { get { return bulletSystem.BulletCreator; } }
-
-        private void Start()
+        BulletMovementSystem bulletSystem = null;
+        BulletMovementSystem BulletSystem
         {
-            Assert.IsNotNull(bulletSystem);
+            get
+            {
+                if (World == null)
+                    return null;
+
+                bulletSystem = bulletSystem ?? World.GetExistingManager<BulletMovementSystem>();
+                return bulletSystem;
+            }
         }
 
-        protected virtual void OnEnable()
+        protected BulletCreator Creator
         {
-            bulletSystem = World.GetExistingManager<BulletMovementSystem>();
-        }
+            get
+            {
+                if (this.BulletSystem == null)
+                    return null;
 
+                return this.BulletSystem.BulletCreator;
+            }
+        }
     }
 }

@@ -51,7 +51,8 @@ namespace Playground
 
         private void OnDestroy()
         {
-            base.Creator.RemoveTriggerEntity(this.SpatialComp.EntityId);
+            if (this.Creator != null)
+                base.Creator.RemoveTriggerEntity(this.SpatialComp.EntityId);
         }
 
         public void OnFire()

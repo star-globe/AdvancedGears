@@ -134,22 +134,6 @@ namespace Playground
             {
                 var go = Instantiate(BulletObject);
                 bullet = new Rigidpair(go.GetComponent<Rigidbody>());
-                var key = info.ShooterEntityId;
-                var id = info.BulletId;
-                if (bulletsDic.ContainsKey(key))
-                {
-                    var dic = bulletsDic[key];
-                    if (dic.ContainsKey(id))
-                        dic[id] = bullet;
-                    else
-                        dic.Add(id,bullet);
-                }
-                else
-                {
-                    var dic = new Dictionary<ulong,Rigidpair>();
-                    dic.Add(id,bullet);
-                    bulletsDic.Add(key, dic);
-                }
             }
 
             bullet.IsActive = true;
@@ -163,8 +147,25 @@ namespace Playground
             bullet.Rigid.gameObject.transform.forward = vec.normalized;
             bullet.Rigid.velocity = vec;
 
-            //var fireComponent = bullet.GetComponent<BulletFireComponent>();
             bullet.Fire.Value = new BulletInfo(info);
+
+            // add
+            var key = info.ShooterEntityId;
+            var id = info.BulletId;
+            if (bulletsDic.ContainsKey(key))
+            {
+                var dic = bulletsDic[key];
+                if (dic.ContainsKey(id))
+                    dic[id] = bullet;
+                else
+                    dic.Add(id, bullet);
+            }
+            else
+            {
+                var dic = new Dictionary<ulong, Rigidpair>();
+                dic.Add(id, bullet);
+                bulletsDic.Add(key, dic);
+            }
         }
 
         public void OnVanish(BulletVanishInfo info)

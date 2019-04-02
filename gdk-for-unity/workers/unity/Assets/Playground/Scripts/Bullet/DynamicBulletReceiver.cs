@@ -6,11 +6,17 @@ using Improbable.Gdk.Subscriptions;
 
 namespace Playground
 {
-    public class BulletHitReceiver : BulletFireBase
+    /// <summary>
+    /// Reciever for dynamic object
+    /// </summary>
+    public class DynamicBulletReceiver : BulletHitReceiver
     {
         [Require] World world;
         protected override World World => world;
+    }
 
+    public abstract class BulletHitReceiver : BulletFireBase
+    {
         const string bulletTag = "Bullet";
 
         private void OnCollisionEnter(Collision other)
