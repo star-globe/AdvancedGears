@@ -11,6 +11,30 @@ namespace Playground
 {
     public class BulletCreator : MonoBehaviour
     {
+        class Rigidpair
+        {
+            public Rigidbody Rigid { get; private set;}
+            public BulletFireComponent Fire { get; private set;} 
+
+            public bool IsActive
+            {
+                get { return Rigid.activeSelf; }
+                set
+                {
+                    Rigid.gameObject.SetActive(value);                    
+                }
+            }
+
+            public Rigpair(Rigidbody rig)
+            {
+                if (rig == null)
+                    return;
+
+                this.Rigid = rig;
+                this.Fire = rig.gameObject.GetComponent<BulletFireComponent>();
+            }
+        }
+
         GameObject bulletObject = null;
         GameObject BulletObject
         {
@@ -29,10 +53,10 @@ namespace Playground
 
         EntityManager entityManager;
         EntityArchetype archetype;
-        readonly List<Rigidbody> activeBullets = new List<Rigidbody>();
-        readonly Queue<Rigidbody> deactiveQueue = new Queue<Rigidbody>();
+        //readonly List<Rigidpair> activeBullets = new List<Rigidpair>();
+        readonly Queue<Rigidpair> deactiveQueue = new Queue<Rigidpair>();
 
-        readonly Dictionary<long, Dictionary<ulong, Rigidbody>> bulletsDic = new Dictionary<long, Dictionary<ulong, Rigidbody>>();
+        readonly Dictionary<long, Dictionary<ulong, Rigidpair>> bulletsDic = new Dictionary<long, Dictionary<ulong, Rigidbody>>();
 
         readonly Dictionary<long,Action<ulong>> entityDic = new Dictionary<long,Action<ulong>>();
 
@@ -44,19 +68,28 @@ namespace Playground
             if (Time.realtimeSinceStartup - checkTime < interval)
                 return;
 
-            activeBullets.RemoveAll(b =>
+            foreach (var dic in bulletsDic)
             {
-                if (b == null || b.Equals(null))
-                    return true;
-
-                if (!b.gameObject.activeSelf)
+                var removeKeys = dic.Value.Where(kvp => !kvp.Value.IsActive).Select(kvp => kvp.Key).ToArray();
+                foreach(var r in removeKeys)
                 {
-                    deactiveQueue.Enqueue(b);
-                    return true;
+                    deactiveQueue.Enqueue(dic[r]);
+                    dic.Remove(r);   
                 }
-
-                return false;
-            });
+            }
+            //activeBullets.RemoveAll(b =>
+            //{
+            //    if (b == null || b.Equals(null))
+            //        return true;
+            //
+            //    if (!b.gameObject.activeSelf)
+            //    {
+            //        deactiveQueue.Enqueue(b);
+            //        return true;
+            //    }
+            //
+            //    return false;
+            //});
         }
 
         public void Setup(EntityManager entity)
@@ -91,7 +124,7 @@ namespace Playground
                 return;
 
             // check
-            Rigidbody bullet;
+            Rigidpair bullet;
             if (deactiveQueue.Count > 1)
             {
                 bullet = deactiveQueue.Dequeue();
@@ -99,36 +132,51 @@ namespace Playground
             else
             {
                 var go = Instantiate(BulletObject);
-                bullet = go.GetComponent<Rigidbody>();
-                activeBullets.Add(bullet);
+                bullet = new Rigidpair(go.GetComponent<Rigidbody>());
+                var key = info.ShooterEntityId;
+                var id = info.BulletId;
+                if (bulletsDic.ContainsKey(key))
+                {
+                    var dic = bulletsDic[key];
+                    if (dic.ContainsKey(id))
+                        dic[id] = bullet;
+                    else
+                        dic.Add(id,bullet);
+                }
+                else
+                {
+                    var dic = new Dictionary<ulong,Rigidpair>();
+                    dic.Add(id,bullet);
+                    bulletDic.Add(key, dic);
+                }
             }
 
-            bullet.gameObject.SetActive(true);
-            bullet.useGravity = true;
-            bullet.isKinematic = false;
-            bullet.detectCollisions = entityDic.ContainsKey(info.ShooterEntityId); 
+            bullet.IsActive = true;
+            bullet.Rigid.useGravity = true;
+            bullet.Rigid.isKinematic = false;
+            bullet.Rigid.detectCollisions = entityDic.ContainsKey(info.ShooterEntityId); 
 
-            bullet.position = new Vector3(info.LaunchPosition.X, info.LaunchPosition.Y, info.LaunchPosition.Z);
+            bullet.Rigid.position = new Vector3(info.LaunchPosition.X, info.LaunchPosition.Y, info.LaunchPosition.Z);
 
             var vec = new Vector3(info.InitialVelocity.X, info.InitialVelocity.Y, info.InitialVelocity.Z);
-            bullet.gameObject.transform.forward = vec.normalized;
-            bullet.velocity = vec;
+            bullet.Rigid.gameObject.transform.forward = vec.normalized;
+            bullet.Rigid.velocity = vec;
 
-            var fireComponent = bullet.GetComponent<BulletFireComponent>();
-            fireComponent.Value = new BulletInfo(info);
+            //var fireComponent = bullet.GetComponent<BulletFireComponent>();
+            bullet.Fire.Value = new BulletInfo(info);
         }
 
         public void OnVanish(BulletVanishInfo info)
         {
-            Dictionary<ulong, Rigidbody> dic;
+            Dictionary<ulong, Rigidpair> dic;
             if (bulletsDic.TryGetValue(info.ShooterEntityId, out dic) == false)
                 return;
 
-            Rigidbody bullet;
+            Rigidpair bullet;
             if (dic.TryGetValue(info.BulletId, out bullet) == false)
                 return;
 
-            var fireComponent = bullet.GetComponent<BulletFireComponent>();
+            var fireComponent = bullet.Fire;
             var b = fireComponent.Value;
             fireComponent.Value = new BulletInfo(b,0);
         }
