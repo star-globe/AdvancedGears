@@ -1,5 +1,5 @@
 using Improbable;
-using Improbable.Gdk.Subscriptions;
+using Improbable.Gdk.Core;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -22,13 +22,17 @@ namespace Playground
 
         [Inject] private Data data;
 
+        private WorkerSystem worker;
+
         public BulletCreator BulletCreator { get; private set; }
 
         protected override void OnCreateManager()
         {
+            worker = World.GetExistingManager<WorkerSystem>();
+
             var go = new GameObject("BulletCreator");
             BulletCreator = go.AddComponent<BulletCreator>();
-            BulletCreator.Setup(this.EntityManager);
+            BulletCreator.Setup(this.EntityManager, worker.Origin);
         }
 
         protected override void OnUpdate()

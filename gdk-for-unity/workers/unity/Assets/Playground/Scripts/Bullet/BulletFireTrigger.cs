@@ -5,11 +5,13 @@ using UnityEngine.Assertions;
 using Unity.Entities;
 using Improbable.Gdk.Subscriptions;
 using Improbable;
+using Improbable.Transform;
 
 namespace Playground
 {
     public class BulletFireTrigger : BulletFireBase
     {
+        [Require] TransformInternalReader transformReader;
         [Require] BulletComponentWriter writer;
         [Require] World world;
 
@@ -66,7 +68,9 @@ namespace Playground
 
             fireTime = time;
 
-            var pos = muzzleTransform.position;
+            var location = transformReader.Data.Location;
+            var localPos = new Vector3(location.X, location.Y, location.Z);
+            var pos = (muzzleTransform.position - this.transform.position) + localPos;
             var vec = muzzleTransform.forward;
             vec *= bulletSpeed;
 

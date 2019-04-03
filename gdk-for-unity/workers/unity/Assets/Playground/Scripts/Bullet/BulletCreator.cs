@@ -53,8 +53,8 @@ namespace Playground
         }
 
         EntityManager entityManager;
-        EntityArchetype archetype;
-        //readonly List<Rigidpair> activeBullets = new List<Rigidpair>();
+        Vector3 Origin;
+
         readonly Queue<Rigidpair> deactiveQueue = new Queue<Rigidpair>();
 
         readonly Dictionary<long, Dictionary<ulong, Rigidpair>> bulletsDic = new Dictionary<long, Dictionary<ulong, Rigidpair>>();
@@ -62,7 +62,7 @@ namespace Playground
         readonly Dictionary<long,Action<ulong>> entityDic = new Dictionary<long,Action<ulong>>();
 
         float checkTime = 0.0f;
-        const float interval = 15.0f;
+        const float interval = 3.0f;
 
         private void Update()
         {
@@ -93,9 +93,10 @@ namespace Playground
             //});
         }
 
-        public void Setup(EntityManager entity)
+        public void Setup(EntityManager entity, Vector3 origin)
         {
             entityManager = entity;
+            this.Origin = origin;
             //archetype = entityManager.CreateArchetype(typeof(SphereCollider), typeof(BulletInfo));
         }
 
@@ -141,11 +142,14 @@ namespace Playground
             bullet.Rigid.isKinematic = false;
             bullet.Rigid.detectCollisions = entityDic.ContainsKey(info.ShooterEntityId); 
 
-            bullet.Rigid.position = new Vector3(info.LaunchPosition.X, info.LaunchPosition.Y, info.LaunchPosition.Z);
+            var pos = new Vector3(info.LaunchPosition.X, info.LaunchPosition.Y, info.LaunchPosition.Z);
+            bullet.Rigid.position = pos + Origin;
 
             var vec = new Vector3(info.InitialVelocity.X, info.InitialVelocity.Y, info.InitialVelocity.Z);
-            bullet.Rigid.gameObject.transform.forward = vec.normalized;
+            bullet.Rigid.transform.forward = vec.normalized;
             bullet.Rigid.velocity = vec;
+            bullet.Rigid.angularVelocity = Vector3.zero;
+            //bullet.Rigid.ResetInertiaTensor();
 
             bullet.Fire.Value = new BulletInfo(info);
 
@@ -181,6 +185,7 @@ namespace Playground
             var fireComponent = bullet.Fire;
             var b = fireComponent.Value;
             fireComponent.Value = new BulletInfo(b,0);
+            bullet.IsActive = false;
         }
     }
 

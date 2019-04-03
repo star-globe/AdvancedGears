@@ -2,9 +2,9 @@ package playground;
 import "improbable/vector3.schema";
 
 enum UnitState {
-    None = 0,
-    Alive,
-    Dead,
+    None = 0;
+    Alive = 1;
+    Dead = 2;
 }
 
 component BaseUnit {
