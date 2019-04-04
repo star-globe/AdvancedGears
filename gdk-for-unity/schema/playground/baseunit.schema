@@ -7,10 +7,29 @@ enum UnitState {
     Dead = 2;
 }
 
-component BaseUnit {
+enum ActState {
+    Idle = 0;
+    Attack = 1;
+    Keep = 2;
+    Escape = 3;
+}
+
+component BaseUnitStatus {
     id = 20000;
     uint32 side = 1;
     UnitState state = 2;
-    int32 health = 3;
-    improbable.Vector3f move_velocity = 4;
+    ActState act = 3;
 }
+
+component BaseUnitMovement {
+    id = 20001;
+    improbable.Vector3f move_velocity = 1;
+}
+
+component BaseUnitHealth {
+    id = 20002;
+    int32 health = 1;
+    int32 max_health = 2;
+}
+
+
