@@ -20,9 +20,9 @@ namespace Playground
             // 剛体配列
             public ComponentArray<Rigidbody> RigidBody;
             // BaseUnit情報
-            public ComponentDataArray<BaseUnit.Component> BaseUnit;
+            public ComponentDataArray<BaseUnitMovement.Component> BaseUnit;
             // 権限情報
-            [ReadOnly] public ComponentDataArray<Authoritative<BaseUnit.Component>> DenoteAuthority;
+            [ReadOnly] public ComponentDataArray<Authoritative<BaseUnitMovement.Component>> DenoteAuthority;
         }
 
         [Inject] private Data data;
@@ -52,7 +52,7 @@ namespace Playground
                 var vec = unitComponent.MoveVelocity;
                 var uVec = new Vector3(vec.X, vec.Y, vec.Z);
 
-                var enemy = getNearestEnemeyPosition(unitComponent.Side, pos, 10);
+                Vector3? enemy = null;// = getNearestEnemeyPosition(unitComponent.Side, pos, 10);
                 if (enemy != null)
                 {
                     var diff =  enemy.Value - pos;
@@ -131,11 +131,11 @@ namespace Playground
                         $"Entity with SpatialOS Entity ID {comp.EntityId.Id} is not in this worker's view");
                 }
 
-                if (EntityManager.HasComponent<BaseUnit.Component>(entity))
+                if (EntityManager.HasComponent<BaseUnitMovement.Component>(entity))
                 {
-                    var unit = EntityManager.GetComponentData<BaseUnit.Component>(entity);
-                    if (unit.Side == self_side)
-                        continue;
+                    var unit = EntityManager.GetComponentData<BaseUnitMovement.Component>(entity);
+                    //if (unit.Side == self_side)
+                    //    continue;
 
                     var t_pos = col.transform.position;
                     var l = (t_pos - pos).sqrMagnitude;

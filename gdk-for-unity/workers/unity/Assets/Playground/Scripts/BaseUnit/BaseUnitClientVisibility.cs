@@ -6,7 +6,7 @@ namespace Playground
     [WorkerType(WorkerUtils.UnityClient)]
     public class BaseUnitClientVisibility : MonoBehaviour
     {
-        [Require] private BaseUnitReader baseUnitReader;//HealthPickup.Requirable.Reader healthPickupReader;
+        //[Require] private BaseUnitReader baseUnitReader;//HealthPickup.Requirable.Reader healthPickupReader;
 
         //private MeshRenderer cubeMeshRenderer;
 
@@ -23,11 +23,11 @@ namespace Playground
 
         }
 
-         private void OnHealthPickupComponentUpdated(BaseUnit.Update update)
-         {
-            UpdateVisibility();
-
-            
-         }
+         //private void OnHealthPickupComponentUpdated(BaseUnit.Update update)
+         //{
+         //   UpdateVisibility();
+         //
+         //   
+         //}
     }
 }

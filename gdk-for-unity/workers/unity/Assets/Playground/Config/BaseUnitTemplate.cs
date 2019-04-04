@@ -13,7 +13,7 @@ namespace Playground
             template.AddComponent(new Position.Snapshot(coords), WorkerUtils.UnityGameLogic);
             template.AddComponent(new Metadata.Snapshot("BaseUnit"), WorkerUtils.UnityGameLogic);
             template.AddComponent(new Persistence.Snapshot(), WorkerUtils.UnityGameLogic);
-            template.AddComponent(new BaseUnit.Snapshot(side, UnitState.Alive, 100, new Vector3f { X = -2.0f }), WorkerUtils.UnityGameLogic);
+            template.AddComponent(new BaseUnitMovement.Snapshot(new Vector3f { X = -2.0f }), WorkerUtils.UnityGameLogic);
             template.AddComponent(new Launchable.Snapshot(), WorkerUtils.UnityGameLogic);
             TransformSynchronizationHelper.AddTransformSynchronizationComponents(template, WorkerUtils.UnityGameLogic);
 

@@ -8,7 +8,7 @@ type DeleteBaseUnitRequest
 
 component BaseUnitSpawner
 {
-    id = 20001;
+    id = 20099;
     list<EntityId> spawned_units = 1;
 
     command improbable.common.Empty spawn_unit(improbable.common.Empty);

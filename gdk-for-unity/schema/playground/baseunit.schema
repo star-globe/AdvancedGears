@@ -1,5 +1,6 @@
 package playground;
 import "improbable/vector3.schema";
+import "from_gdk_packages/com.improbable.gdk.core/common.schema";
 
 enum UnitState {
     None = 0;
@@ -26,10 +27,24 @@ component BaseUnitMovement {
     improbable.Vector3f move_velocity = 1;
 }
 
+type HealthModifier {
+    uint32 type = 1;
+    int32 amount = 2;
+}
+
+type HealthModifiedInfo {
+    HealthModifier modifier = 1;
+    int32 health_before = 2;
+    int32 health_after = 3;
+}
+
 component BaseUnitHealth {
     id = 20002;
     int32 health = 1;
     int32 max_health = 2;
+
+    command improbable.common.Empty modify_health(HealthModifier);
+    event HealthModifiedInfo health_modified;
 }
 
 
