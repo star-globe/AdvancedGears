@@ -11,8 +11,15 @@ namespace Playground
     /// </summary>
     public class DynamicBulletReceiver : BulletHitReceiver
     {
+        [Require] BaseUnitHealthComponentCommandSender healthCommandSender;
+        [Require] private EntityId entityId;
         [Require] World world;
         protected override World World => world;
+
+        protected override void OnHit(BulletInfo info)
+        {
+            healthCommandSender.SendModifyHealthCommand(entityId, new HealthModifier());
+        }
     }
 
     public abstract class BulletHitReceiver : BulletFireBase
@@ -28,6 +35,7 @@ namespace Playground
             if (fire == null)
                 return;
 
+            OnHit(fire.Value);
             base.Creator.InvokeVanishAction(fire.Value.ShooterEntityId, fire.Value.BulletId);
             //var entity = objEntity.Entity;
             //var manager = objEntity.EntityManager;
@@ -42,6 +50,10 @@ namespace Playground
             // info.IsActive = false;
             // other.gameObject.SetActive(false);
             // manager.SetComponentData(entity, info);
+        }
+
+        protected virtual void OnHit(BulletInfo info)
+        {
         }
     }
 }
