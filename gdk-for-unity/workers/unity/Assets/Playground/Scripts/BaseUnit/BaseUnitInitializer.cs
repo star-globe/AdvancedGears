@@ -7,7 +7,7 @@ namespace Playground
 {
     public class BaseUnitInitializer : MonoBehaviour
     {
-        [Require] BaseUnitMovementWriter writer;
+        [Require] BaseUnitMovementWriter movement;
         [Require] BaseUnitSightWriter sight;
 
         float speed = 1.0f;
@@ -17,7 +17,7 @@ namespace Playground
 
         void Start()
         {
-            writer.SendUpdate(new BaseUnitMovement.Update
+            movement.SendUpdate(new BaseUnitMovement.Update
             {
                 MoveSpeed = speed,
                 RotSpeed = rot

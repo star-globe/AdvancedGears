@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Entities;
 using Improbable.Gdk.Subscriptions;
+using Improbable.Gdk.Core;
 
 namespace Playground
 {
@@ -11,14 +12,20 @@ namespace Playground
     /// </summary>
     public class DynamicBulletReceiver : BulletHitReceiver
     {
-        [Require] BaseUnitHealthComponentCommandSender healthCommandSender;
+        [Require] BaseUnitHealthCommandSender healthCommandSender;
+        [Require] BaseUnitHealthReader healthReader;
         [Require] private EntityId entityId;
         [Require] World world;
         protected override World World => world;
 
         protected override void OnHit(BulletInfo info)
         {
-            healthCommandSender.SendModifyHealthCommand(entityId, new HealthModifier());
+            var current = healthReader.Data.Health;
+            current -= info.Power;
+            if (current < 0)
+                current = 0;
+
+            healthCommandSender.SendModifyHealthCommand(entityId, new HealthModifier(0, current));
         }
     }
 
