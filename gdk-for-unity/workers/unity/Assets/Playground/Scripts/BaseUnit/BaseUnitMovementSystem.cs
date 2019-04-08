@@ -19,8 +19,8 @@ namespace Playground
             public readonly int Length;
             // 剛体配列
             public ComponentArray<Rigidbody> RigidBody;
-            // BaseUnit情報
-            public ComponentDataArray<BaseUnitMovement.Component> BaseUnit;
+            [ReadOnly] public ComponentDataArray<BaseUnitMovement.Component> Movement;
+            [ReadOnly] public ComponentDataArray<BaseUnitStatus.Component> Status;
             // 権限情報
             [ReadOnly] public ComponentDataArray<Authoritative<BaseUnitMovement.Component>> DenoteAuthority;
         }
@@ -37,35 +37,33 @@ namespace Playground
             origin = World.GetExistingManager<WorkerSystem>().Origin;
         }
 
-        readonly float rotSpeed = 2.0f;
-        readonly float moveSpeed = 1.0f;
-
         protected override void OnUpdate()
         {
             for (var i = 0; i < data.Length; i++)
             {
                 var rigidbody = data.RigidBody[i];
-                var unitComponent = data.BaseUnit[i];
+                var movement = data.Movement[i];
+                var status = data.Status[i];
+
+                if (status.State != UnitState.Alive)
+                    continue;
+
+                if (!movement.IsTarget)
+                {
+                    rigidbody.velocity = Vector3.zero;
+                    rigidbody.angularVelocity = Vector3.zero;
+                    continue;
+                }
 
                 var pos = rigidbody.position;
 
-                var vec = unitComponent.MoveVelocity;
-                var uVec = new Vector3(vec.X, vec.Y, vec.Z);
+                var tgt = new Vector3( movement.TargetPosition.X,
+                                       movement.TargetPosition.Y,
+                                       movement.TargetPosition.Z);
 
-                Vector3? enemy = null;// = getNearestEnemeyPosition(unitComponent.Side, pos, 10);
-                if (enemy != null)
-                {
-                    var diff =  enemy.Value - pos;
-                    rotate(rigidbody.transform, diff, rotSpeed);
-                    uVec = get_move_velocity(diff, moveSpeed * 3, moveSpeed) * rigidbody.transform.forward;
-                }
-                else
-                {
-                    uVec = Vector3.zero;
-                }
+                rotate(rigidbody.transform, tgt - pos, movement.RotSpeed);
 
-                unitComponent.MoveVelocity = new Vector3f(uVec.x, uVec.y, uVec.z);
-                data.BaseUnit[i] = unitComponent;
+                var uVec = rigidbody.transform.forward * movement.MoveSpeed;
 
                 rigidbody.MovePosition(pos + uVec * Time.fixedDeltaTime);
             }
@@ -108,46 +106,6 @@ namespace Playground
             }
 
             return v * speed;
-        }
-
-        Vector3? getNearestEnemeyPosition(uint self_side, Vector3 pos, float length)
-        {
-            float len = float.MaxValue;
-            Vector3? e_pos = null;
-
-            var colls = Physics.OverlapSphere(pos,length, LayerMask.GetMask("Unit"));
-            var worker = World.GetExistingManager<WorkerSystem>();
-            for (var i = 0; i < colls.Length; i++)
-            {
-                var col = colls[i];
-                var comp = col.GetComponent<LinkedEntityComponent>();
-                if (comp == null)
-                    continue;
-
-                Entity entity;
-                if (!worker.TryGetEntity(comp.EntityId, out entity))
-                {
-                    throw new InvalidOperationException(
-                        $"Entity with SpatialOS Entity ID {comp.EntityId.Id} is not in this worker's view");
-                }
-
-                if (EntityManager.HasComponent<BaseUnitMovement.Component>(entity))
-                {
-                    var unit = EntityManager.GetComponentData<BaseUnitMovement.Component>(entity);
-                    //if (unit.Side == self_side)
-                    //    continue;
-
-                    var t_pos = col.transform.position;
-                    var l = (t_pos - pos).sqrMagnitude;
-                    if (l < len)
-                    {
-                        len = l;
-                        e_pos = t_pos;
-                    }
-                }
-            }
-
-            return e_pos;
         }
     }
 }

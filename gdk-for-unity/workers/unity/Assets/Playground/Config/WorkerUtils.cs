@@ -55,6 +55,7 @@ namespace Playground
             world.GetOrCreateManager<CollisionProcessSystem>();
             world.GetOrCreateManager<BulletMovementSystem>();
             world.GetOrCreateManager<BaseUnitMovementSystem>();
+            world.GetOrCreateManager<BaseUnitSearchSystem>();
         }
 
         private static void AddLifecycleSystems(World world)
