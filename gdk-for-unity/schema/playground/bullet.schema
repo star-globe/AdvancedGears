@@ -27,3 +27,17 @@ component BulletComponent {
     event BulletFireInfo fires;
     event BulletVanishInfo vanishes;
 }
+
+type BulletConsumeInfo {
+    uint32 type = 1;
+    int32 amount = 2;
+}
+
+component GunComponent {
+    id = 21001;
+
+    uint32 gun_id = 1;
+    int32 stock_bullets = 2;
+
+    event BulletConsumeInfo consumes;
+}

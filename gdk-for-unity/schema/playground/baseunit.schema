@@ -68,3 +68,10 @@ component BaseUnitSight {
     float last_searched = 3;
     // ability:night vision
 }
+
+component BaseUnitAction {
+    id = 20012;
+
+    bool is_target = 3;
+    list<improbable.Vector3f> enemy_positions = 4;
+}
