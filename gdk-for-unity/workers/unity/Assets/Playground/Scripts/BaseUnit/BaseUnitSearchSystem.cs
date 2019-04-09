@@ -18,6 +18,7 @@ namespace Playground
         {
             public readonly int Length;
             public ComponentDataArray<BaseUnitMovement.Component> Movement;
+            public ComponentDataArray<BaseUnitAction.Component> Action;
             public ComponentDataArray<BaseUnitSight.Component> Sight;
             [ReadOnly] public ComponentDataArray<BaseUnitStatus.Component> Status;
             [ReadOnly] public ComponentArray<Transform> Transform;
@@ -30,6 +31,7 @@ namespace Playground
             for (var i = 0; i < data.Length; i++)
             {
                 var movement = data.Movement[i];
+                var action = data.Action[i];
                 var sight = data.Sight[i];
                 var status = data.Status[i];
                 var pos = data.Transform[i].position;
@@ -41,19 +43,27 @@ namespace Playground
                 sight.LastSearched = time;
                 data.Sight[i] = sight;
 
+                action.EnemyPositions.Clear();
+
                 var enemy = getNearestEnemeyPosition(status.Side, pos, sight.Range);
                 var length = sight.Range * 0.2f;
-                if (enemy == null || (pos - enemy.Value).sqrMagnitude < length * length)
+                if (enemy == null || (pos - enemy.Value).sqrMagnitude > length * length)
                 {
                     movement.IsTarget = false;
+                    action.IsTarget = false;
                     data.Movement[i] = movement;
+                    data.Action[i] = action;
                     continue;
                 }
 
 
                 movement.IsTarget = true;
-                movement.TargetPosition = new Improbable.Vector3f( enemy.Value.x, enemy.Value.y, enemy.Value.z);
+                var epos = new Improbable.Vector3f(enemy.Value.x, enemy.Value.y, enemy.Value.z);
+                movement.TargetPosition = epos;
+                action.IsTarget = true;
+                action.EnemyPositions.Add(epos);
                 data.Movement[i] = movement;
+                data.Action[i] = action;
             }
         }
 
