@@ -12,7 +12,7 @@ namespace Playground
     public class BulletFireTrigger : BulletFireBase
     {
         [Require] TransformInternalReader transformReader;
-        [Require] BaseUnitActionComponentReader actionReader;
+        [Require] BaseUnitActionReader actionReader;
         [Require] BulletComponentWriter bulletWriter;
         [Require] World world;
 
@@ -44,7 +44,7 @@ namespace Playground
             }
         }
 
-        public bool IsAvailable { get { return writer != null; } }
+        public bool IsAvailable { get { return bulletWriter != null; } }
 
         private void Start()
         {
@@ -72,7 +72,7 @@ namespace Playground
 
         public void OnFire()
         {
-            if (this.SpatialComp == null || bulletsWriter == null)
+            if (this.SpatialComp == null || bulletWriter == null)
                 return;
 
             var time = Time.realtimeSinceStartup;
@@ -87,7 +87,7 @@ namespace Playground
             var vec = muzzleTransform.forward;
             vec *= bulletSpeed;
 
-            var id = bulletsWriter.Data.CurrentId;
+            var id = bulletWriter.Data.CurrentId;
             var fire = new BulletFireInfo()
             {
                 Power = 1,
