@@ -69,9 +69,18 @@ component BaseUnitSight {
     // ability:night vision
 }
 
+type AttackTargetInfo {
+    uint32 type = 1;
+    improbable.Vector3f target_positioin = 2;
+}
+
 component BaseUnitAction {
     id = 20012;
 
+    float interval = 2;
+    
     bool is_target = 3;
     list<improbable.Vector3f> enemy_positions = 4;
+
+    event AttackTargetInfo targets;
 }

@@ -12,7 +12,8 @@ namespace Playground
     public class BulletFireTrigger : BulletFireBase
     {
         [Require] TransformInternalReader transformReader;
-        [Require] BulletComponentWriter writer;
+        [Require] BaseUnitActionComponentReader actionReader;
+        [Require] BulletComponentWriter bulletWriter;
         [Require] World world;
 
         protected override World World => world;
@@ -51,15 +52,27 @@ namespace Playground
             base.Creator.RegisterTriggerEntityId(this.SpatialComp.EntityId, VanishBullet);
         }
 
+        private void OnEnable()
+        {
+            if (actionReader != null)
+                actionReader.OnTargetsEvent += OnTarget;
+        }
+        
         private void OnDestroy()
         {
             if (this.Creator != null)
                 base.Creator.RemoveTriggerEntity(this.SpatialComp.EntityId);
         }
 
+        private void OnTarget(AttackTargetInfo info)
+        {
+            // rotate to target
+            OnFire();
+        }
+
         public void OnFire()
         {
-            if (this.SpatialComp == null || writer == null)
+            if (this.SpatialComp == null || bulletsWriter == null)
                 return;
 
             var time = Time.realtimeSinceStartup;
@@ -74,7 +87,7 @@ namespace Playground
             var vec = muzzleTransform.forward;
             vec *= bulletSpeed;
 
-            var id = writer.Data.CurrentId;
+            var id = bulletsWriter.Data.CurrentId;
             var fire = new BulletFireInfo()
             {
                 Power = 1,
@@ -89,11 +102,11 @@ namespace Playground
                 BulletId = id,
             };
 
-            writer.SendUpdate(new BulletComponent.Update
+            bulletWriter.SendUpdate(new BulletComponent.Update
             {
                 CurrentId = id + 1
             });
-            writer.SendFiresEvent(fire);
+            bulletWriter.SendFiresEvent(fire);
         }
 
         private void VanishBullet(ulong id)
@@ -104,7 +117,7 @@ namespace Playground
                 BulletId = id,
             };
 
-            writer.SendVanishesEvent(vanish);
+            bulletWriter.SendVanishesEvent(vanish);
         }
     }
 }
