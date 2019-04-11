@@ -5,7 +5,7 @@ using UnityEngine.Assertions;
 using Unity.Entities;
 using Improbable.Gdk.Subscriptions;
 using Improbable;
-using Improbable.Transform;
+using Improbable.Gdk.Core;
 
 namespace Playground
 {
@@ -57,7 +57,7 @@ namespace Playground
         private void OnEnable()
         {
             if (actionReader != null)
-                actionReader.OnTargetsEvent += OnTarget;
+                actionReader.OnFireTriggeredEvent += OnTarget;
 
             origin = World.GetExistingManager<WorkerSystem>().Origin;
         }
@@ -81,7 +81,7 @@ namespace Playground
             }
             
             var diff = target + origin - muzzleTransform.position;
-            muzzleTransform.forward = diff.Normalized;
+            muzzleTransform.forward = diff.normalized;
             OnFire();
         }
 

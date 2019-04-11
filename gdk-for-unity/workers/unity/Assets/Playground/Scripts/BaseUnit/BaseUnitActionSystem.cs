@@ -18,7 +18,7 @@ namespace Playground
         {
             public readonly int Length;
             public ComponentDataArray<BaseUnitAction.Component> Action;
-            public ComponentDataArray<BaseUnitAction.EventSenders.FireTriggerd> FireTriggeredEventsSenders;
+            public ComponentDataArray<BaseUnitAction.EventSender.FireTriggered> FireTriggeredEventsSenders;
             [ReadOnly] public ComponentDataArray<BaseUnitStatus.Component> Status;
             [ReadOnly] public ComponentArray<Transform> Transform;
         }
@@ -58,7 +58,7 @@ namespace Playground
 
                 if (action.EnemyPositions.Count > 0)
                 {
-                    var epos = action.EnemyPositions[0] + origin;
+                    var epos = action.EnemyPositions[0].ToUnityVector() + origin;
                     if (CheckRange(trans, epos, action.AttackRange, action.AttackAngle))
                     {
                         var info = new AttackTargetInfo

@@ -9,7 +9,7 @@ namespace Playground
     {
         [Require] BaseUnitMovementWriter movement;
         [Require] BaseUnitSightWriter sight;
-        [Require] BaseUnitActionWrite action;
+        [Require] BaseUnitActionWriter action;
 
         float speed = 1.0f;
         float rot = 1.8f;
