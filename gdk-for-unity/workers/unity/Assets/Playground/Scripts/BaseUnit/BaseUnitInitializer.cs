@@ -9,11 +9,14 @@ namespace Playground
     {
         [Require] BaseUnitMovementWriter movement;
         [Require] BaseUnitSightWriter sight;
+        [Require] BaseUnitActionWrite action;
 
         float speed = 1.0f;
         float rot = 1.8f;
         float inter = 3.0f;
-        float ran = 10.0f;
+        float sightRange = 10.0f;
+        float atkRange = 9.0f;
+        float atkAngle = Mathf.PI * (30/360);
 
         void Start()
         {
@@ -27,7 +30,15 @@ namespace Playground
             {
                 Interval = inter,
                 LastSearched = 0,
-                Range = ran
+                Range = sightRange
+            });
+
+            action.SendUpdate(new BaseUnitAction.Update
+            {
+                Interval = inter,
+                LastActed = 0,
+                AttackRange = atkRange,
+                AttackAngle = atkAngle
             });
         }
     }

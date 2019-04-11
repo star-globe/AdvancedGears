@@ -59,7 +59,7 @@ namespace Playground
                 if (action.EnemyPositions.Count > 0)
                 {
                     var epos = action.EnemyPositions[0] + origin;
-                    if (CheckRange(trans, epos, 10.0f, 20.0f))
+                    if (CheckRange(trans, epos, action.AttackRange, action.AttackAngle))
                     {
                         var info = new AttackTargetInfo
                         {
@@ -75,7 +75,7 @@ namespace Playground
             }
         }
 
-        bool CheckRange(Transform trans, Vector3 epos, float angle, float range)
+        bool CheckRange(Transform trans, Vector3 epos, float range, float angle)
         {
             var diff = epos - trans.position;
             if (diff.sqrMagnitude > range * range)
