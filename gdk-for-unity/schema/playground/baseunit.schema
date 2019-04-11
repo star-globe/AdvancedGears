@@ -71,16 +71,17 @@ component BaseUnitSight {
 
 type AttackTargetInfo {
     uint32 type = 1;
-    improbable.Vector3f target_positioin = 2;
+    improbable.Vector3f target_position = 2;
 }
 
 component BaseUnitAction {
     id = 20012;
 
-    float interval = 2;
-    
+    float interval = 1;
+    float last_acted = 2;
+
     bool is_target = 3;
     list<improbable.Vector3f> enemy_positions = 4;
 
-    event AttackTargetInfo targets;
+    event AttackTargetInfo fire_triggered;
 }

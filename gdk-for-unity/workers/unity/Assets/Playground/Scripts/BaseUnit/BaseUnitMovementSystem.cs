@@ -56,10 +56,9 @@ namespace Playground
                 }
 
                 var pos = rigidbody.position;
-
-                var tgt = new Vector3( movement.TargetPosition.X,
-                                       movement.TargetPosition.Y,
-                                       movement.TargetPosition.Z);
+                var tgt = new Vector3( movement.TargetPosition.X - origin.x,
+                                       movement.TargetPosition.Y - origin.y,
+                                       movement.TargetPosition.Z - origin.z);
 
                 rotate(rigidbody.transform, tgt - pos, movement.RotSpeed);
 

@@ -11,7 +11,6 @@ namespace Playground
 {
     public class BulletFireTrigger : BulletFireBase
     {
-        [Require] TransformInternalReader transformReader;
         [Require] BaseUnitActionReader actionReader;
         [Require] BulletComponentWriter bulletWriter;
         [Require] World world;
@@ -44,6 +43,9 @@ namespace Playground
             }
         }
 
+        private Vector3 origin;
+        private Vector3 target = Vector3.zero;
+
         public bool IsAvailable { get { return bulletWriter != null; } }
 
         private void Start()
@@ -56,6 +58,8 @@ namespace Playground
         {
             if (actionReader != null)
                 actionReader.OnTargetsEvent += OnTarget;
+
+            origin = World.GetExistingManager<WorkerSystem>().Origin;
         }
         
         private void OnDestroy()
@@ -67,6 +71,17 @@ namespace Playground
         private void OnTarget(AttackTargetInfo info)
         {
             // rotate to target
+            if (target.x != info.TargetPosition.X ||
+                target.y != info.TargetPosition.Y ||
+                target.z != info.TargetPosition.Z)
+            {
+                target.Set( info.TargetPosition.X,
+                            info.TargetPosition.Y,
+                            info.TargetPosition.Z);
+            }
+            
+            var diff = target + origin - muzzleTransform.position;
+            muzzleTransform.forward = diff.Normalized;
             OnFire();
         }
 
@@ -81,9 +96,7 @@ namespace Playground
 
             fireTime = time;
 
-            var location = transformReader.Data.Location;
-            var localPos = new Vector3(location.X, location.Y, location.Z);
-            var pos = (muzzleTransform.position - this.transform.position) + localPos;
+            var pos = muzzleTransform.position - origin;
             var vec = muzzleTransform.forward;
             vec *= bulletSpeed;
 

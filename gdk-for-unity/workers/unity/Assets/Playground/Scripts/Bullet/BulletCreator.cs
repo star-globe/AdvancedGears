@@ -78,26 +78,12 @@ namespace Playground
                     dic.Value.Remove(r);
                 }
             }
-            //activeBullets.RemoveAll(b =>
-            //{
-            //    if (b == null || b.Equals(null))
-            //        return true;
-            //
-            //    if (!b.gameObject.activeSelf)
-            //    {
-            //        deactiveQueue.Enqueue(b);
-            //        return true;
-            //    }
-            //
-            //    return false;
-            //});
         }
 
         public void Setup(EntityManager entity, Vector3 origin)
         {
             entityManager = entity;
             this.Origin = origin;
-            //archetype = entityManager.CreateArchetype(typeof(SphereCollider), typeof(BulletInfo));
         }
 
         public void RegisterTriggerEntityId(EntityId entityId, Action<ulong> action)
@@ -149,8 +135,6 @@ namespace Playground
             bullet.Rigid.transform.forward = vec.normalized;
             bullet.Rigid.velocity = vec;
             bullet.Rigid.angularVelocity = Vector3.zero;
-            //bullet.Rigid.ResetInertiaTensor();
-
             bullet.Fire.Value = new BulletInfo(info);
 
             // add

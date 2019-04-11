@@ -26,6 +26,16 @@ namespace Playground
 
         [Inject] private Data data;
 
+        private Vector3 origin;
+
+        protected override void OnCreateManager()
+        {
+            base.OnCreateManager();
+
+            // ここで基準位置を取る
+            origin = World.GetExistingManager<WorkerSystem>().Origin;
+        }
+
         protected override void OnUpdate()
         {
             for (var i = 0; i < data.Length; i++)
@@ -36,9 +46,12 @@ namespace Playground
                 var status = data.Status[i];
                 var pos = data.Transform[i].position;
 
+                if (status.State != UnitState.Alive)
+                    continue;
+
                 var time = Time.realtimeSinceStartup;
                 if (time - sight.LastSearched < sight.Interval)
-                    return;
+                    continue;
 
                 sight.LastSearched = time;
                 data.Sight[i] = sight;
@@ -56,9 +69,10 @@ namespace Playground
                     continue;
                 }
 
-
                 movement.IsTarget = true;
-                var epos = new Improbable.Vector3f(enemy.Value.x, enemy.Value.y, enemy.Value.z);
+                var epos = new Improbable.Vector3f( enemy.Value.x - origin.x,
+                                                    enemy.Value.y - origin.y,
+                                                    enemy.Value.z - origin.z);
                 movement.TargetPosition = epos;
                 action.IsTarget = true;
                 action.EnemyPositions.Add(epos);
