@@ -80,8 +80,11 @@ component BaseUnitAction {
     float interval = 1;
     float last_acted = 2;
 
-    bool is_target = 3;
-    list<improbable.Vector3f> enemy_positions = 4;
+    float attack_range = 3;
+    float attack_angle = 4;
+
+    bool is_target = 5;
+    list<improbable.Vector3f> enemy_positions = 6;
 
     event AttackTargetInfo fire_triggered;
 }
