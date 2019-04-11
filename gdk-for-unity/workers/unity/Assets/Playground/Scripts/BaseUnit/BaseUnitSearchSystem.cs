@@ -59,7 +59,7 @@ namespace Playground
                 action.EnemyPositions.Clear();
 
                 var enemy = getNearestEnemeyPosition(status.Side, pos, sight.Range);
-                var length = sight.Range * 0.2f;
+                var length = sight.Range;// * 0.2f;
                 if (enemy == null || (pos - enemy.Value).sqrMagnitude > length * length)
                 {
                     movement.IsTarget = false;

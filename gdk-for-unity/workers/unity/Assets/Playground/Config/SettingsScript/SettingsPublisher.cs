@@ -15,6 +15,8 @@ namespace Playground
                     publisher.Publish();
                 }
             }
+
+            Physics.gravity *= 1.0f / 5.0f;
         }
     }
 

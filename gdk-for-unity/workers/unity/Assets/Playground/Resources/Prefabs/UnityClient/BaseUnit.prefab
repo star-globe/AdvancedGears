@@ -105,6 +105,8 @@ GameObject:
   - component: {fileID: 65178197549355378}
   - component: {fileID: 54135597970387664}
   - component: {fileID: 114458694653093168}
+  - component: {fileID: 287723694607265335}
+  - component: {fileID: 9134339279806014696}
   m_Layer: 11
   m_Name: BaseUnit
   m_TagString: Untagged
@@ -217,3 +219,27 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 7e00873dd53438245919187ebd00e937, type: 2}
   SendStrategies: []
   SetKinematicWhenNotAuthoritative: 0
+--- !u!114 &287723694607265335
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1402624928938684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7dbc376f39de9c84fb754221e66f9c9f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &9134339279806014696
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1402624928938684}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b4409b4dac5ebc4386bf227d0cab2e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

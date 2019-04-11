@@ -16,7 +16,7 @@ namespace Playground
         float inter = 3.0f;
         float sightRange = 10.0f;
         float atkRange = 9.0f;
-        float atkAngle = Mathf.PI * (30/360);
+        float atkAngle = Mathf.PI * (30.0f / 360);
 
         void Start()
         {

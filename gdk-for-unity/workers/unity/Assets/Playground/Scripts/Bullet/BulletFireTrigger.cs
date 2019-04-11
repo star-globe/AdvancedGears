@@ -9,19 +9,25 @@ using Improbable.Gdk.Core;
 
 namespace Playground
 {
-    public class BulletFireTrigger : BulletFireBase
+    public class BulletFireTrigger : BulletFireTriggerBase
     {
-        [Require] BaseUnitActionReader actionReader;
         [Require] BulletComponentWriter bulletWriter;
         [Require] World world;
 
+        protected override BulletComponentWriter BulletWriter => bulletWriter;
         protected override World World => world;
+    }
+
+    public abstract class BulletFireTriggerBase : BulletFireBase
+    {
+        protected abstract BulletComponentWriter BulletWriter { get; }
 
         [SerializeField]
         Transform muzzleTransform;
+        protected Transform MuzzleTransform { get { return muzzleTransform; } }
 
         [SerializeField]
-        float bulletSpeed = 0.5f;
+        float bulletSpeed = 4.5f;
 
         [SerializeField]
         float lifeTime = 2.0f;
@@ -43,10 +49,9 @@ namespace Playground
             }
         }
 
-        private Vector3 origin;
-        private Vector3 target = Vector3.zero;
+        protected Vector3 origin { get; private set; }
 
-        public bool IsAvailable { get { return bulletWriter != null; } }
+        public bool IsAvailable { get { return this.BulletWriter != null; } }
 
         private void Start()
         {
@@ -54,11 +59,8 @@ namespace Playground
             base.Creator.RegisterTriggerEntityId(this.SpatialComp.EntityId, VanishBullet);
         }
 
-        private void OnEnable()
+        protected virtual void OnEnable()
         {
-            if (actionReader != null)
-                actionReader.OnFireTriggeredEvent += OnTarget;
-
             origin = World.GetExistingManager<WorkerSystem>().Origin;
         }
         
@@ -68,26 +70,9 @@ namespace Playground
                 base.Creator.RemoveTriggerEntity(this.SpatialComp.EntityId);
         }
 
-        private void OnTarget(AttackTargetInfo info)
-        {
-            // rotate to target
-            if (target.x != info.TargetPosition.X ||
-                target.y != info.TargetPosition.Y ||
-                target.z != info.TargetPosition.Z)
-            {
-                target.Set( info.TargetPosition.X,
-                            info.TargetPosition.Y,
-                            info.TargetPosition.Z);
-            }
-            
-            var diff = target + origin - muzzleTransform.position;
-            muzzleTransform.forward = diff.normalized;
-            OnFire();
-        }
-
         public void OnFire()
         {
-            if (this.SpatialComp == null || bulletWriter == null)
+            if (this.SpatialComp == null || this.BulletWriter == null)
                 return;
 
             var time = Time.realtimeSinceStartup;
@@ -100,7 +85,7 @@ namespace Playground
             var vec = muzzleTransform.forward;
             vec *= bulletSpeed;
 
-            var id = bulletWriter.Data.CurrentId;
+            var id = this.BulletWriter.Data.CurrentId;
             var fire = new BulletFireInfo()
             {
                 Power = 1,
@@ -115,11 +100,11 @@ namespace Playground
                 BulletId = id,
             };
 
-            bulletWriter.SendUpdate(new BulletComponent.Update
+            this.BulletWriter.SendUpdate(new BulletComponent.Update
             {
                 CurrentId = id + 1
             });
-            bulletWriter.SendFiresEvent(fire);
+            this.BulletWriter.SendFiresEvent(fire);
         }
 
         private void VanishBullet(ulong id)
@@ -130,7 +115,7 @@ namespace Playground
                 BulletId = id,
             };
 
-            bulletWriter.SendVanishesEvent(vanish);
+            this.BulletWriter.SendVanishesEvent(vanish);
         }
     }
 }

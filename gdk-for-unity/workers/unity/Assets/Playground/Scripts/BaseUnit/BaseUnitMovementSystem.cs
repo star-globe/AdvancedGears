@@ -21,6 +21,7 @@ namespace Playground
             public ComponentArray<Rigidbody> RigidBody;
             [ReadOnly] public ComponentDataArray<BaseUnitMovement.Component> Movement;
             [ReadOnly] public ComponentDataArray<BaseUnitStatus.Component> Status;
+            [ReadOnly] public ComponentDataArray<BaseUnitAction.Component> Action;
             // 権限情報
             [ReadOnly] public ComponentDataArray<Authoritative<BaseUnitMovement.Component>> DenoteAuthority;
         }
@@ -44,6 +45,7 @@ namespace Playground
                 var rigidbody = data.RigidBody[i];
                 var movement = data.Movement[i];
                 var status = data.Status[i];
+                var action = data.Action[i];
 
                 if (status.State != UnitState.Alive)
                     continue;
@@ -60,9 +62,20 @@ namespace Playground
                                        movement.TargetPosition.Y - origin.y,
                                        movement.TargetPosition.Z - origin.z);
 
+                int foward = 0;
+                var diff = tgt - pos;
+                var range = action.AttackRange;
+                var min_range = range * 0.9f;
+                var mag = diff.sqrMagnitude;
+
+                if (mag > range * range)
+                    foward = 1;
+                else if (mag < min_range * min_range)
+                    foward = -1;
+
                 rotate(rigidbody.transform, tgt - pos, movement.RotSpeed);
 
-                var uVec = rigidbody.transform.forward * movement.MoveSpeed;
+                var uVec = rigidbody.transform.forward * movement.MoveSpeed * foward;
 
                 rigidbody.MovePosition(pos + uVec * Time.fixedDeltaTime);
             }

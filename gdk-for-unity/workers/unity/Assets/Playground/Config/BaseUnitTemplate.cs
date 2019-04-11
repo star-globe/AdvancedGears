@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Improbable;
 using Improbable.Gdk.Core;
 using Improbable.Gdk.TransformSynchronization;
@@ -14,7 +15,7 @@ namespace Playground
             template.AddComponent(new Metadata.Snapshot("BaseUnit"), WorkerUtils.UnityGameLogic);
             template.AddComponent(new Persistence.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new BaseUnitMovement.Snapshot(), WorkerUtils.UnityGameLogic);
-            template.AddComponent(new BaseUnitAction.Snapshot(), WorkerUtils.UnityGameLogic);
+            template.AddComponent(new BaseUnitAction.Snapshot { EnemyPositions = new List<Vector3f>() }, WorkerUtils.UnityGameLogic);
             template.AddComponent(new BaseUnitStatus.Snapshot(side, UnitState.Alive, ActState.Idle), WorkerUtils.UnityGameLogic);
             template.AddComponent(new BaseUnitSight.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new Launchable.Snapshot(), WorkerUtils.UnityGameLogic);
