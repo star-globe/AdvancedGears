@@ -44,19 +44,6 @@ namespace Playground
 
             OnHit(fire.Value);
             base.Creator.InvokeVanishAction(fire.Value.ShooterEntityId, fire.Value.BulletId);
-            //var entity = objEntity.Entity;
-            //var manager = objEntity.EntityManager;
-            //var info = manager.GetComponentData<BulletInfo>(entity);
-
-            // Damage
-
-            // Destroy Bullet
-            //manager.DestroyEntity(entity);
-
-            // Destroy or Deactive pooled bullet object.
-            // info.IsActive = false;
-            // other.gameObject.SetActive(false);
-            // manager.SetComponentData(entity, info);
         }
 
         protected virtual void OnHit(BulletInfo info)

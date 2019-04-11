@@ -34,7 +34,7 @@ namespace Playground
             // ここで基準位置を取る
             origin = World.GetExistingManager<WorkerSystem>().Origin;
         }
-        
+
         protected override void OnUpdate()
         {
             for (var i = 0; i < data.Length; i++)
@@ -42,7 +42,7 @@ namespace Playground
                 var action = data.Action[i];
                 var triggerSender = data.FireTriggeredEventsSenders[i];
                 var status = data.Status[i];
-                var pos = data.Transform[i].position;
+                var trans = data.Transform[i];
 
                 if (status.State != UnitState.Alive)
                     continue;
@@ -58,17 +58,31 @@ namespace Playground
 
                 if (action.EnemyPositions.Count > 0)
                 {
-                    var info = new AttackTargetInfo
+                    var epos = action.EnemyPositions[0] + origin;
+                    if (CheckRange(trans, epos, 10.0f, 20.0f))
                     {
-                        Type = 1,
-                        TargetPosition = action.EnemyPositions[0],
-                    };
+                        var info = new AttackTargetInfo
+                        {
+                            Type = 1,
+                            TargetPosition = action.EnemyPositions[0],
+                        };
 
-                    triggerSender.Events.Add(info);
+                        triggerSender.Events.Add(info);
+                    }
                 }
 
                 data.Action[i] = action;
             }
+        }
+
+        bool CheckRange(Transform trans, Vector3 epos, float angle, float range)
+        {
+            var diff = epos - trans.position;
+            if (diff.sqrMagnitude > range * range)
+                return false;
+
+            var dot = Vector3.Dot(diff.normalized, trans.forward);
+            return dot > Mathf.Cos(angle);
         }
     }
 }
