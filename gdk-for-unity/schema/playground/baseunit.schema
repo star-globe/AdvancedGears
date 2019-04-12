@@ -2,6 +2,13 @@ package playground;
 import "improbable/vector3.schema";
 import "from_gdk_packages/com.improbable.gdk.core/common.schema";
 
+enum UnitType {
+    None = 0;
+    Soldier = 1;
+    Commander = 2;
+    Turret = 3;
+}
+
 enum UnitState {
     None = 0;
     Alive = 1;
@@ -23,8 +30,9 @@ type ActStateInfo {
 component BaseUnitStatus {
     id = 20000;
     uint32 side = 1;
-    UnitState state = 2;
-    ActState act = 3;
+    UnitType type = 2;
+    UnitState state = 3;
+    ActState act = 4;
 
     command improbable.common.Empty modify_actstate(ActStateInfo);
 }
@@ -44,6 +52,8 @@ component BaseUnitHealth {
     id = 20002;
     int32 health = 1;
     int32 max_health = 2;
+
+    int32 defense = 3;
 
     command improbable.common.Empty modify_health(HealthModifier);
     event HealthModifiedInfo health_modified;
