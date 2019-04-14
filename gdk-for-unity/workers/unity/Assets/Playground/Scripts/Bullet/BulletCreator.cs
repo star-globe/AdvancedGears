@@ -129,7 +129,9 @@ namespace Playground
             bullet.Rigid.detectCollisions = entityDic.ContainsKey(info.ShooterEntityId); 
 
             var pos = new Vector3(info.LaunchPosition.X, info.LaunchPosition.Y, info.LaunchPosition.Z);
-            bullet.Rigid.position = pos + Origin;
+            pos += Origin;
+            bullet.Rigid.position = pos;
+            bullet.Rigid.transform.position = pos;
 
             var vec = new Vector3(info.InitialVelocity.X, info.InitialVelocity.Y, info.InitialVelocity.Z);
             bullet.Rigid.transform.forward = vec.normalized;

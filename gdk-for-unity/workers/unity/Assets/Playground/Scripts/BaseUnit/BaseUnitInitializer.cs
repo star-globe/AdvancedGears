@@ -10,6 +10,7 @@ namespace Playground
         [Require] BaseUnitMovementWriter movement;
         [Require] BaseUnitSightWriter sight;
         [Require] BaseUnitActionWriter action;
+        [Require] BaseUnitHealthWriter health;
 
         float speed = 1.0f;
         float rot = 1.8f;
@@ -39,6 +40,13 @@ namespace Playground
                 LastActed = 0,
                 AttackRange = atkRange,
                 AttackAngle = atkAngle
+            });
+
+            health.SendUpdate(new BaseUnitHealth.Update
+            {
+                MaxHealth = 100,
+                Health = 100,
+                Defense = 10,
             });
         }
     }

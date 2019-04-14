@@ -16,10 +16,10 @@ namespace Playground
             template.AddComponent(new Persistence.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new BaseUnitMovement.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new BaseUnitAction.Snapshot { EnemyPositions = new List<Vector3f>() }, WorkerUtils.UnityGameLogic);
-            template.AddComponent(new BaseUnitStatus.Snapshot(side, UnitState.Alive, ActState.Idle), WorkerUtils.UnityGameLogic);
+            template.AddComponent(new BaseUnitStatus.Snapshot(side, UnitType.Soldier, UnitState.Alive, ActState.Idle), WorkerUtils.UnityGameLogic);
             template.AddComponent(new BaseUnitSight.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new Launchable.Snapshot(), WorkerUtils.UnityGameLogic);
-            template.AddComponent(new BaseUnitHealth.Snapshot(10,10), WorkerUtils.UnityGameLogic);
+            template.AddComponent(new BaseUnitHealth.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new BulletComponent.Snapshot(), WorkerUtils.UnityGameLogic);
             TransformSynchronizationHelper.AddTransformSynchronizationComponents(template, WorkerUtils.UnityGameLogic);
 
