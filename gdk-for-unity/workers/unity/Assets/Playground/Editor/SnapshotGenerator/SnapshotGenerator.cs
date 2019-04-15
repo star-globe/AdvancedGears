@@ -52,12 +52,10 @@ namespace Playground.Editor.SnapshotGenerator
             snapshot.AddEntity(template);
         }
 
-        static readonly double scale = 2.0;
+        static readonly double scale = 3.0;
         
         private static void AddCubeGrid(Snapshot snapshot, int cubeCount)
         {
-            //var cubeTemplate = CubeTemplate.CreateCubeEntityTemplate();
-
             // Calculate grid size
             var gridLength = (int) Math.Ceiling(Math.Sqrt(cubeCount));
             if (gridLength % 2 == 1) // To make sure nothing is in (0, 0)
@@ -83,29 +81,18 @@ namespace Playground.Editor.SnapshotGenerator
                         return;
                     }
 
-                    //var positionSnapshot = new Position.Snapshot
-                    //{
-                    //    Coords = new Coordinates(x, 1, z)
-                    //};
-                    //var transformSnapshot = new TransformInternal.Snapshot
-                    //{
-                    //    Location = new Location(x, 1, z),
-                    //    Rotation = new Quaternion(1, 0, 0, 0),
-                    //    TicksPerSecond = 1f / Time.fixedDeltaTime
-                    //};
-
-                    //cubeTemplate.SetComponent(positionSnapshot);
-                    //cubeTemplate.SetComponent(transformSnapshot);
-                    //snapshot.AddEntity(cubeTemplate);
-                    
-                    uint side = x < 0 ? (uint)1 : (uint)2;
+                    uint side = x < 0 ? (UnitSide)1 : (UnitSide)2;
                     double pos_x = x * scale;
                     double pos_z = z * scale;
-                    var entityTemplate = BaseUnitTemplate.CreateBaseUnitEntityTemplate(side, new Coordinates(pos_x, 1, pos_z));//CubeTemplate.CreateCubeEntityTemplate(new Coordinates(x, 1, z));
+                    var entityTemplate = BaseUnitTemplate.CreateBaseUnitEntityTemplate(side, new Coordinates(pos_x, 1, pos_z), UnitType.Soldier);
                     snapshot.AddEntity(entityTemplate);
-
                 }
             }
+
+            var templateA = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.A, new Coordinates(-gridLength/2, 1, 0), UnitType.Stronghold);
+            var templateB = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.B, new Coordinates(gridLength/2, 1, 0), UnitType.Stronghold);
+            snapshot.AddEntity(templateA);
+            snapshot.AddEntity(templateB);
         }
 
         private static void CreateSpinner(Snapshot snapshot, Coordinates coords)

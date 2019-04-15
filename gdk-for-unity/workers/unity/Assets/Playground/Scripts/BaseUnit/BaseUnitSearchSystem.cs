@@ -112,6 +112,9 @@ namespace Playground
                 if (EntityManager.HasComponent<BaseUnitStatus.Component>(entity))
                 {
                     var unit = EntityManager.GetComponentData<BaseUnitStatus.Component>(entity);
+                    if (unit.State == UnitState.Dead)
+                        continue;
+
                     if (unit.Side == self_side)
                         continue;
 
