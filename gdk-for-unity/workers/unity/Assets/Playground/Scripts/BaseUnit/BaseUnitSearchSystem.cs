@@ -49,6 +49,10 @@ namespace Playground
                 if (status.State != UnitState.Alive)
                     continue;
 
+                if (status.Type != UnitType.Soldier &&
+                    status.Type != UnitType.Commander)
+                    continue;
+
                 var time = Time.realtimeSinceStartup;
                 if (time - sight.LastSearched < sight.Interval)
                     continue;
@@ -58,30 +62,33 @@ namespace Playground
 
                 action.EnemyPositions.Clear();
 
+                // initial
+                movement.IsTarget = false;
+                action.IsTarget = false;
+
                 var enemy = getNearestEnemeyPosition(status.Side, pos, sight.Range);
-                var length = sight.Range;// * 0.2f;
-                if (enemy == null || (pos - enemy.Value).sqrMagnitude > length * length)
+                if (enemy == null)
+                    enemy = getNearestEnemeyPosition(status.Side, pos, sight.Range * 3.0f, UnitType.Stronghold);
+                else
+                     action.IsTarget = true;
+
+                if (enemy != null)
                 {
-                    movement.IsTarget = false;
-                    action.IsTarget = false;
-                    data.Movement[i] = movement;
-                    data.Action[i] = action;
-                    continue;
+                    movement.IsTarget = true;
+                    var epos = new Improbable.Vector3f( enemy.Value.x - origin.x,
+                                                        enemy.Value.y - origin.y,
+                                                        enemy.Value.z - origin.z);
+                    movement.TargetPosition = epos;
+                    if (action.IsTarget)
+                        action.EnemyPositions.Add(epos);
                 }
 
-                movement.IsTarget = true;
-                var epos = new Improbable.Vector3f( enemy.Value.x - origin.x,
-                                                    enemy.Value.y - origin.y,
-                                                    enemy.Value.z - origin.z);
-                movement.TargetPosition = epos;
-                action.IsTarget = true;
-                action.EnemyPositions.Add(epos);
                 data.Movement[i] = movement;
                 data.Action[i] = action;
             }
         }
 
-        Vector3? getNearestEnemeyPosition(uint self_side, Vector3 pos, float length)
+        Vector3? getNearestEnemeyPosition(UnitSide self_side, Vector3 pos, float length, UnitType type = UnitType.None)
         {
             float len = float.MaxValue;
             Vector3? e_pos = null;
@@ -106,6 +113,9 @@ namespace Playground
                 {
                     var unit = EntityManager.GetComponentData<BaseUnitStatus.Component>(entity);
                     if (unit.Side == self_side)
+                        continue;
+
+                    if (type != UnitType.None && type != unit.Type)
                         continue;
 
                     var t_pos = col.transform.position;

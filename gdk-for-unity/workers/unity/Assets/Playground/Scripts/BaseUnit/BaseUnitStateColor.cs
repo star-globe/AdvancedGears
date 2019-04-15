@@ -12,15 +12,22 @@ namespace Playground
         [Require] BaseUnitStatusReader reader;
 
         [SerializeField]
-        MeshRenderer renderer;
+        Renderer stateRenderer;
 
         [SerializeField]
         StateColor[] stateColors;
+
+        [SerializeField]
+        Renderer sideRenderer;
+
+        [SerializeField]
+        SideColor[] sideColors;
 
         private void OnEnable()
         {
             reader.OnStateUpdate += UpdateState;
             UpdateState(reader.Data.State);
+            UpdateSide(reader.Data.Side);
         }
 
         void UpdateState(UnitState state)
@@ -30,14 +37,35 @@ namespace Playground
             if (st != null)
                 col = st.col;
 
-            renderer.material.color = col;
+            stateRenderer.material.color = col;
+        }
+
+        void UpdateSide(UnitSide side)
+        {
+            var col = UnityEngine.Color.white;
+            var st = sideColors.FirstOrDefault(s => s.state == state);
+            if (st != null)
+                col = st.col;
+
+            sideRenderer.material.color = col;
         }
     }
 
     [Serializable]
-    internal class StateColor
+    internal class BaseColor
+    {
+        public UnityEngine.Color col;
+    }
+
+    [Serializable]
+    internal class StateColor : BaseColor
     {
         public UnitState state;
-        public UnityEngine.Color col;
+    }
+
+    [Serializable]
+    internal class SideColor : BaseColor
+    {
+        public UnitSide side;
     }
 }

@@ -50,6 +50,10 @@ namespace Playground
                 if (status.State != UnitState.Alive)
                     continue;
 
+                if (status.Type != UnitType.Soldier &&
+                    status.Type != UnitType.Commander)
+                    continue;
+
                 if (!movement.IsTarget)
                 {
                     rigidbody.velocity = Vector3.zero;
