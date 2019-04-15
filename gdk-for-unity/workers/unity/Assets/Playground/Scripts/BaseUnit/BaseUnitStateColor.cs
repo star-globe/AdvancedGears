@@ -43,7 +43,7 @@ namespace Playground
         void UpdateSide(UnitSide side)
         {
             var col = UnityEngine.Color.white;
-            var st = sideColors.FirstOrDefault(s => s.state == state);
+            var st = sideColors.FirstOrDefault(s => s.side == side);
             if (st != null)
                 col = st.col;
 

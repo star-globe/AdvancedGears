@@ -54,10 +54,11 @@ namespace Playground
                     continue;
 
                 var time = Time.realtimeSinceStartup;
-                if (time - sight.LastSearched < sight.Interval)
+                var inter = sight.Interval;
+                if (time - sight.LastSearched < inter)
                     continue;
 
-                sight.LastSearched = time;
+                sight.LastSearched = time + RandomInterval.GetRandom(inter);
                 data.Sight[i] = sight;
 
                 action.EnemyPositions.Clear();
@@ -70,12 +71,12 @@ namespace Playground
                 if (enemy == null)
                     enemy = getNearestEnemeyPosition(status.Side, pos, sight.Range * 3.0f, UnitType.Stronghold);
                 else
-                     action.IsTarget = true;
+                    action.IsTarget = true;
 
                 if (enemy != null)
                 {
                     movement.IsTarget = true;
-                    var epos = new Improbable.Vector3f( enemy.Value.x - origin.x,
+                    var epos = new Improbable.Vector3f(enemy.Value.x - origin.x,
                                                         enemy.Value.y - origin.y,
                                                         enemy.Value.z - origin.z);
                     movement.TargetPosition = epos;
@@ -132,6 +133,14 @@ namespace Playground
             }
 
             return e_pos;
+        }
+    }
+
+    public static class RandomInterval
+    {
+        public static float GetRandom(float inter)
+        {
+            return inter * 0.1f * UnityEngine.Random.Range(-1.0f, 1.0f);
         }
     }
 }

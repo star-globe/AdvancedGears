@@ -56,7 +56,7 @@ namespace Playground.MonoBehaviours
 
             var location = transformReader.Data.Location;
             var unitEntityTemplate =
-                BaseUnitTemplate.CreateBaseUnitEntityTemplate(1, new Coordinates(location.X, location.Y + 2, location.Z), UnityType.Soldier);
+                BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.A, new Coordinates(location.X, location.Y + 2, location.Z), UnitType.Soldier);
             var expectedEntityId = response.FirstEntityId.Value;
 
             worldCommandSender.SendCreateEntityCommand(

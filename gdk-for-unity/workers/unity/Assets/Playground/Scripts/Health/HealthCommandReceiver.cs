@@ -6,7 +6,7 @@ using Improbable.Common;
 
 namespace Playground
 {
-    public class HealthCommmandReceiver : MonoBehaviour
+    public class HealthCommandReceiver : MonoBehaviour
     {
         [Require] BaseUnitHealthCommandReceiver healthCommandReceiver;
         [Require] BaseUnitHealthWriter healthWriter;

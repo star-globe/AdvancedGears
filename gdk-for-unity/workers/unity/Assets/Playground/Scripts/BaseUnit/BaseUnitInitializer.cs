@@ -12,12 +12,22 @@ namespace Playground
         [Require] BaseUnitActionWriter action;
         [Require] BaseUnitHealthWriter health;
 
+        [SerializeField]
         float speed = 1.0f;
+
+        [SerializeField]
         float rot = 1.8f;
-        float inter = 3.0f;
+
+        float inter = 0.5f;
+
+        [SerializeField]
         float sightRange = 10.0f;
+
+        [SerializeField]
         float atkRange = 9.0f;
-        float atkAngle = Mathf.PI * (30.0f / 360);
+
+        [SerializeField]
+        float atkAngle = 30.0f;
 
         void Start()
         {
@@ -39,13 +49,13 @@ namespace Playground
                 Interval = inter,
                 LastActed = 0,
                 AttackRange = atkRange,
-                AttackAngle = atkAngle
+                AttackAngle = Mathf.PI * (atkAngle / 360)
             });
 
             health.SendUpdate(new BaseUnitHealth.Update
             {
-                MaxHealth = 100,
-                Health = 100,
+                MaxHealth = 10,
+                Health = 10,
                 Defense = 10,
             });
         }

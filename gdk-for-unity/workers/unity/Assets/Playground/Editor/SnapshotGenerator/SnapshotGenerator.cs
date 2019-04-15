@@ -81,7 +81,7 @@ namespace Playground.Editor.SnapshotGenerator
                         return;
                     }
 
-                    uint side = x < 0 ? (UnitSide)1 : (UnitSide)2;
+                    UnitSide side = x < 0 ? UnitSide.A : UnitSide.B;
                     double pos_x = x * scale;
                     double pos_z = z * scale;
                     var entityTemplate = BaseUnitTemplate.CreateBaseUnitEntityTemplate(side, new Coordinates(pos_x, 1, pos_z), UnitType.Soldier);
@@ -89,8 +89,9 @@ namespace Playground.Editor.SnapshotGenerator
                 }
             }
 
-            var templateA = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.A, new Coordinates(-gridLength/2, 1, 0), UnitType.Stronghold);
-            var templateB = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.B, new Coordinates(gridLength/2, 1, 0), UnitType.Stronghold);
+            var len = gridLength * 3;
+            var templateA = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.A, new Coordinates(-len, 1, 0), UnitType.Stronghold);
+            var templateB = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.B, new Coordinates( len, 1, 0), UnitType.Stronghold);
             snapshot.AddEntity(templateA);
             snapshot.AddEntity(templateB);
         }

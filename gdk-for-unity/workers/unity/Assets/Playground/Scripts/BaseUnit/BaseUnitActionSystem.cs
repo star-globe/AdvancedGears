@@ -51,10 +51,11 @@ namespace Playground
                     continue;
 
                 var time = Time.realtimeSinceStartup;
-                if (time - action.LastActed < action.Interval)
+                var inter = action.Interval;
+                if (time - action.LastActed < inter)
                     continue;
 
-                action.LastActed = time;
+                action.LastActed = time + RandomInterval.GetRandom(inter);
 
                 if (action.EnemyPositions.Count > 0)
                 {
