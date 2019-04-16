@@ -64,10 +64,15 @@ namespace Playground
                     var tpos = new Improbable.Vector3f(tgt.Value.x - origin.x,
                                                        tgt.Value.y - origin.y,
                                                        tgt.Value.z - origin.z);
-                    sight.TargetPosition = pos;
+                    sight.TargetPosition = tpos;
+
+                    foreach (var id in commander.Followers)
+                    {
+                        var worker = World.GetExistingManager<WorkerSystem>();
+                    }
                 }
 
-                data.CommanderStatus[i] = sight;
+                data.Sight[i] = sight;
             }
         }
     }

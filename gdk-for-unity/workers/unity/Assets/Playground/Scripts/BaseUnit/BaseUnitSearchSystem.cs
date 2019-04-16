@@ -49,7 +49,7 @@ namespace Playground
                 if (status.State != UnitState.Alive)
                     continue;
 
-                if (status.Act == ActState.Idle)
+                if (status.Order == OrderType.Idle)
                     continue;
 
                 if (status.Type != UnitType.Soldier &&
@@ -97,13 +97,22 @@ namespace Playground
 
     public abstract class BaseSearchSystem : ComponentSystem
     {
+        WorkerSystem worker = null;
+        WorkerSystem Worker
+        {
+            get
+            {
+                worker = worker ?? World.GetExistingManager<WorkerSystem>();
+                return worker;
+            }
+        }
+
         protected Vector3? getNearestEnemeyPosition(UnitSide self_side, Vector3 pos, float length, UnitType type = UnitType.None)
         {
             float len = float.MaxValue;
             Vector3? e_pos = null;
 
             var colls = Physics.OverlapSphere(pos, length, LayerMask.GetMask("Unit"));
-            var worker = World.GetExistingManager<WorkerSystem>();
             for (var i = 0; i < colls.Length; i++)
             {
                 var col = colls[i];
@@ -111,23 +120,16 @@ namespace Playground
                 if (comp == null)
                     continue;
 
-                Entity entity;
-                if (!worker.TryGetEntity(comp.EntityId, out entity))
+                BaseUnitStatus.Component? unit;
+                if (TryGetEntity(comp.EntityId, out unit))
                 {
-                    throw new InvalidOperationException(
-                        $"Entity with SpatialOS Entity ID {comp.EntityId.Id} is not in this worker's view");
-                }
-
-                if (EntityManager.HasComponent<BaseUnitStatus.Component>(entity))
-                {
-                    var unit = EntityManager.GetComponentData<BaseUnitStatus.Component>(entity);
-                    if (unit.State == UnitState.Dead)
+                    if (unit.Value.State == UnitState.Dead)
                         continue;
 
-                    if (unit.Side == self_side)
+                    if (unit.Value.Side == self_side)
                         continue;
 
-                    if (type != UnitType.None && type != unit.Type)
+                    if (type != UnitType.None && type != unit.Value.Type)
                         continue;
 
                     var t_pos = col.transform.position;
@@ -142,6 +144,26 @@ namespace Playground
 
             return e_pos;
         }
+
+        protected bool TryGetEntity<T>(EntityId id, out T? comp) where T : struct, IComponentData
+        {
+            comp = null;
+            Entity entity;
+            if (!this.Worker.TryGetEntity(id, out entity))
+            {
+                throw new InvalidOperationException(
+                    $"Entity with SpatialOS Entity ID {id} is not in this worker's view");
+            }
+
+            if (EntityManager.HasComponent<T>(entity))
+            {
+                comp = EntityManager.GetComponentData<T>(entity);
+                return true;
+            }
+            else
+                return false;
+        }
+
     }
 
     public static class RandomInterval

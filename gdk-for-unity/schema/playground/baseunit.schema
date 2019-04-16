@@ -69,6 +69,11 @@ component BaseUnitHealth {
 }
 
 // move:20010~20019
+type TargetInfo {
+    bool is_target = 1;
+    improbable.Vector3f position = 2;
+}
+
 component BaseUnitMovement {
     id = 20010;
 
@@ -77,6 +82,8 @@ component BaseUnitMovement {
 
     bool is_target = 3;
     improbable.Vector3f target_position = 4;
+
+    command improbable.common.Empty set_target(TargetInfo);
 }
 
 component BaseUnitSight {
@@ -108,6 +115,10 @@ component BaseUnitAction {
     event AttackTargetInfo fire_triggered;
 }
 
+type FollowerInfo {
+    EntityId entity_id = 1;
+}
+
 component CommanderStatus {
     id = 20020;
 
@@ -118,7 +129,7 @@ component CommanderStatus {
 
     list<EntityId> followers = 4;
 
-    command improbable.common.Empty add_folower(EntityId);
+    command improbable.common.Empty add_folower(FollowerInfo);
 }
 
 type WarPower {
@@ -136,18 +147,21 @@ component CommanderSight {
     bool is_target = 4;
     improbable.Vector3f target_position = 5;
 
-    list<UnitedPower> war_powers = 6;
+    list<WarPower> war_powers = 6;
 }
 
 type ProductOrder {
     EntityId customer = 1;
-    int32 number = 2;
+    UnitType typr = 2;
+    int32 number = 3;
 }
 
 component BaseUnitFactory {
     id = 20030;
 
-    transient list<ProductOrder> orders = 1;
+    int32 resource = 1;
+
+    transient list<ProductOrder> orders = 2;
 
     command improbable.common.Empty send_order(ProductOrder);
 }
