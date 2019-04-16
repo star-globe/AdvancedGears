@@ -12,7 +12,7 @@ using UnityEngine.Experimental.PlayerLoop;
 namespace Playground
 {
     [UpdateBefore(typeof(FixedUpdate.PhysicsFixedUpdate))]
-    internal class BaseUnitSearchSystem : ComponentSystem
+    public class BaseUnitSearchSystem : BaseSearchSystem
     {
         private struct Data
         {
@@ -47,6 +47,9 @@ namespace Playground
                 var pos = data.Transform[i].position;
 
                 if (status.State != UnitState.Alive)
+                    continue;
+
+                if (status.Act == ActState.Idle)
                     continue;
 
                 if (status.Type != UnitType.Soldier &&
@@ -89,7 +92,12 @@ namespace Playground
             }
         }
 
-        Vector3? getNearestEnemeyPosition(UnitSide self_side, Vector3 pos, float length, UnitType type = UnitType.None)
+
+    }
+
+    public abstract class BaseSearchSystem : ComponentSystem
+    {
+        protected Vector3? getNearestEnemeyPosition(UnitSide self_side, Vector3 pos, float length, UnitType type = UnitType.None)
         {
             float len = float.MaxValue;
             Vector3? e_pos = null;

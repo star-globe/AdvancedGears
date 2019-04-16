@@ -24,15 +24,15 @@ enum UnitState {
     Dead = 2;
 }
 
-enum ActState {
+enum OrderType {
     Idle = 0;
     Attack = 1;
     Keep = 2;
     Escape = 3;
 }
 
-type ActStateInfo {
-    ActState state = 1;
+type OrderTypeInfo {
+    OrderType order = 1;
 }
 
 // state:20000~20009
@@ -41,9 +41,9 @@ component BaseUnitStatus {
     UnitSide side = 1;
     UnitType type = 2;
     UnitState state = 3;
-    ActState act = 4;
+    OrderType order = 4;
 
-    command improbable.common.Empty modify_actstate(ActStateInfo);
+    command improbable.common.Empty modify_actstate(OrderTypeInfo);
 }
 
 type HealthModifier {
@@ -106,4 +106,48 @@ component BaseUnitAction {
     list<improbable.Vector3f> enemy_positions = 6;
 
     event AttackTargetInfo fire_triggered;
+}
+
+component CommanderStatus {
+    id = 20020;
+
+    OrderType self_order = 1;
+    OrderType upper_order = 2;
+
+    uint32 rank = 3;
+
+    list<EntityId> followers = 4;
+
+    command improbable.common.Empty add_folower(EntityId);
+}
+
+type WarPower {
+    UnitSide side = 1;
+    float power = 2;
+}
+
+component CommanderSight {
+    id = 20021;
+
+    float range = 1;
+    float interval = 2;
+    float last_searched = 3;
+
+    bool is_target = 4;
+    improbable.Vector3f target_position = 5;
+
+    list<UnitedPower> war_powers = 6;
+}
+
+type ProductOrder {
+    EntityId customer = 1;
+    int32 number = 2;
+}
+
+component BaseUnitFactory {
+    id = 20030;
+
+    transient list<ProductOrder> orders = 1;
+
+    command improbable.common.Empty send_order(ProductOrder);
 }
