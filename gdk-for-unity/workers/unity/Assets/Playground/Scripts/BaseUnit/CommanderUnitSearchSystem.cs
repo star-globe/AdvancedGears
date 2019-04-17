@@ -59,16 +59,29 @@ namespace Playground
 
                 var tgt = getNearestEnemeyPosition(status.Side, pos, sight.Range, UnitType.Stronghold);
                 sight.IsTarget = tgt != null;
+                var tpos = new Improbable.Vector3f(0,0,0);
                 if (sight.IsTarget)
                 {
-                    var tpos = new Improbable.Vector3f(tgt.Value.x - origin.x,
-                                                       tgt.Value.y - origin.y,
-                                                       tgt.Value.z - origin.z);
-                    sight.TargetPosition = tpos;
+                    tpos = new Improbable.Vector3f(tgt.Value.x - origin.x,
+                                                   tgt.Value.y - origin.y,
+                                                   tgt.Value.z - origin.z);
+                }
 
-                    foreach (var id in commander.Followers)
+                sight.TargetPosition = tpos;
+                foreach (var id in commander.Followers)
+                {
+                    BaseUnitMovement.CommandSenders.SetTarget? sender;
+                    if (base.TryGetComponent(id, out sender))
                     {
-                        var worker = World.GetExistingManager<WorkerSystem>();
+                        var request = new BaseUnitMovement.SetTarget.Request(
+                            new EntityId(id),
+                            new TargetInfo()
+                            {
+                                IsTarget = sight.IsTarget,
+                                Position = sight.TargetPosition,
+                            });
+                        sender.Value.RequestsToSend.Add(request);
+                        base.SetComponent(id, sender.Value);
                     }
                 }
 

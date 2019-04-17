@@ -72,16 +72,20 @@ namespace Playground
 
                 var enemy = getNearestEnemeyPosition(status.Side, pos, sight.Range);
                 if (enemy == null)
-                    enemy = getNearestEnemeyPosition(status.Side, pos, sight.Range * 3.0f, UnitType.Stronghold);
+                {
+                    if (movement.SetTarget)
+                    {
+                        movement.TargetPosition = movement.OrderedPosition;
+                        movement.IsTarget = true;
+                    }
+                }
                 else
-                    action.IsTarget = true;
-
-                if (enemy != null)
                 {
                     movement.IsTarget = true;
+                    action.IsTarget = true;
                     var epos = new Improbable.Vector3f(enemy.Value.x - origin.x,
-                                                        enemy.Value.y - origin.y,
-                                                        enemy.Value.z - origin.z);
+                                                       enemy.Value.y - origin.y,
+                                                       enemy.Value.z - origin.z);
                     movement.TargetPosition = epos;
                     if (action.IsTarget)
                         action.EnemyPositions.Add(epos);
@@ -121,7 +125,7 @@ namespace Playground
                     continue;
 
                 BaseUnitStatus.Component? unit;
-                if (TryGetEntity(comp.EntityId, out unit))
+                if (TryGetComponent(comp.EntityId, out unit))
                 {
                     if (unit.Value.State == UnitState.Dead)
                         continue;
@@ -145,15 +149,11 @@ namespace Playground
             return e_pos;
         }
 
-        protected bool TryGetEntity<T>(EntityId id, out T? comp) where T : struct, IComponentData
+        protected bool TryGetComponent<T>(EntityId id, out T? comp) where T : struct, IComponentData
         {
             comp = null;
             Entity entity;
-            if (!this.Worker.TryGetEntity(id, out entity))
-            {
-                throw new InvalidOperationException(
-                    $"Entity with SpatialOS Entity ID {id} is not in this worker's view");
-            }
+            this.TryGetEntity(id, out entity);
 
             if (EntityManager.HasComponent<T>(entity))
             {
@@ -164,6 +164,23 @@ namespace Playground
                 return false;
         }
 
+        protected void SetComponent<T>(EntityId id, T comp) where T: struct, IComponentData
+        {
+            Entity entity;
+            this.TryGetEntity(id, out entity);
+
+            if (EntityManager.HasComponent<T>(entity))
+                EntityManager.SetComponentData(entity, comp);
+        }
+
+        private void TryGetEntity(EntityId id, out Entity entity)
+        {
+            if (!this.Worker.TryGetEntity(id, out entity))
+            {
+                throw new InvalidOperationException(
+                    $"Entity with SpatialOS Entity ID {id} is not in this worker's view");
+            }
+        }
     }
 
     public static class RandomInterval
