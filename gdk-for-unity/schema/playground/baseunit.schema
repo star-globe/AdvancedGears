@@ -8,7 +8,7 @@ enum UnitType {
     Commander = 2;
     Stronghold = 3;
     Turret = 4;
-    Advanced = 5,
+    Advanced = 5;
 }
 
 enum UnitSide {
@@ -74,6 +74,8 @@ component BaseUnitHealth {
 type TargetInfo {
     bool is_target = 1;
     improbable.Vector3f position = 2;
+    EntityId commander_id = 3;
+    float ally_range = 4;
 }
 
 component BaseUnitMovement {
@@ -85,8 +87,8 @@ component BaseUnitMovement {
     bool is_target = 3;
     improbable.Vector3f target_position = 4;
 
-    bool set_target = 5;
-    improbable.Vector3f ordered_position = 6;
+    TargetInfo target_info = 5;
+    improbable.Vector3f commander_position = 6;
 
     command improbable.common.Empty set_target(TargetInfo);
 }
@@ -133,7 +135,8 @@ component CommanderStatus {
 
     uint32 rank = 3;
 
-    list<EntityId> followers = 4;
+    float ally_range = 4;
+    list<EntityId> followers = 5;
 
     command improbable.common.Empty add_folower(FollowerInfo);
 }

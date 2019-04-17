@@ -62,9 +62,14 @@ namespace Playground
                 }
 
                 var pos = rigidbody.position;
-                var tgt = new Vector3( movement.TargetPosition.X - origin.x,
-                                       movement.TargetPosition.Y - origin.y,
-                                       movement.TargetPosition.Z - origin.z);
+                var tgt = movement.TargetPosition.ToUnityVector() - origin;
+
+                // modify target
+                if (movement.TargetInfo.CommanderId.IsValid())
+                {
+                    var com = movement.CommanderPosition.ToUnityVector() - origin;
+                    tgt = get_nearly_position(pos, tgt, com, movement.TargetInfo.AllyRange);
+                }
 
                 int foward = 0;
                 var diff = tgt - pos;
@@ -129,6 +134,18 @@ namespace Playground
             }
 
             return v * speed;
+        }
+
+        Vector3 get_nearly_position(Vector3 pos, Vector3 tgt, Vector3 com, float range)
+        {
+            var diff = pos - com;
+            var length = diff.magnitude;
+            if (length < range)
+                return tgt;
+
+            var rev = -1 * diff.normalized * (length - range);
+
+            return tgt + rev;
         }
     }
 }

@@ -13,7 +13,7 @@ namespace Playground
 
         public void OnEnable()
         {
-            movementCommandReceiver.OnSetTargetRequestReceived += OnModifiedHealthRequest;
+            movementCommandReceiver.OnSetTargetRequestReceived += OnSetTargetRequest;
         }
 
         private void OnSetTargetRequest(BaseUnitMovement.SetTarget.ReceivedRequest request)
@@ -22,8 +22,7 @@ namespace Playground
 
             movementWriter.SendUpdate(new BaseUnitMovement.Update()
             {
-                SetTarget = request.Payload.IsTarget,
-                OrderedPosition = request.Payload.Position,
+                TargetInfo = request.Payload,
             });
         }
     }

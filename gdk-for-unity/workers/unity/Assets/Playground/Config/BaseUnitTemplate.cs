@@ -36,7 +36,7 @@ namespace Playground
             return template;
         }
 
-        private void SwitchType(EntityTemplate template, UnitType type, string writeAccess)
+        private static void SwitchType(EntityTemplate template, UnitType type, string writeAccess)
         {
             switch (type) {
                 case UnitType.Soldier:

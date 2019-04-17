@@ -21,6 +21,7 @@ namespace Playground
             public ComponentDataArray<CommanderStatus.Component> CommanderStatus;
             [ReadOnly] public ComponentDataArray<BaseUnitStatus.Component> BaseUnitStatus;
             [ReadOnly] public ComponentArray<Transform> Transform;
+            [ReadOnly] public ComponentDataArray<SpatialEntityId> EntityId;
         }
 
         [Inject] private Data data;
@@ -43,6 +44,7 @@ namespace Playground
                 var commander = data.CommanderStatus[i];
                 var status = data.BaseUnitStatus[i];
                 var pos = data.Transform[i].position;
+                var entityId = data.EntityId[i];
 
                 if (status.State != UnitState.Alive)
                     continue;
@@ -59,7 +61,7 @@ namespace Playground
 
                 var tgt = getNearestEnemeyPosition(status.Side, pos, sight.Range, UnitType.Stronghold);
                 sight.IsTarget = tgt != null;
-                var tpos = new Improbable.Vector3f(0,0,0);
+                var tpos = Improbable.Vector3f.Zero;
                 if (sight.IsTarget)
                 {
                     tpos = new Improbable.Vector3f(tgt.Value.x - origin.x,
@@ -76,9 +78,11 @@ namespace Playground
                 commander.SelfOrder = current;
 
                 SetFollowers(commander.Followers,
-                             sight.IsTarget,
-                             sight.TargetPosition,
-                             orderChanged,
+                             new TargetInfo (sight.IsTarget,
+                                             sight.TargetPosition,
+                                             entityId.EntityId,
+                                             commander.AllyRange),
+                             isOrderChanged,
                              current);
 
                 data.Sight[i] = sight;
@@ -120,12 +124,12 @@ namespace Playground
                 return OrderType.Attack;
             
             if (ally * rate * rate < enemy)
-                return OrderTye.Escape;
+                return OrderType.Escape;
 
             return OrderType.Keep;
         }
 
-        private void SetFollowers(List<EntityId> followers, bool isTarget, Improbable.Vector3f targetPosition, bool orderChanged, OrderType order)
+        private void SetFollowers(List<EntityId> followers, TargetInfo targetInfo, bool orderChanged, OrderType order)
         {
             foreach (var id in followers)
             {
@@ -133,12 +137,8 @@ namespace Playground
                 if (base.TryGetComponent(id, out tgtSender))
                 {
                     var request = new BaseUnitMovement.SetTarget.Request(
-                        new EntityId(id),
-                        new TargetInfo()
-                        {
-                            IsTarget = isTarget,
-                            Position = targetPosition,
-                        });
+                        id,
+                        targetInfo);
                     tgtSender.Value.RequestsToSend.Add(request);
                     base.SetComponent(id, tgtSender.Value);
                 }
@@ -150,7 +150,7 @@ namespace Playground
                 if (base.TryGetComponent(id, out orderSender))
                 {
                     var request = new BaseUnitStatus.SetOrder.Request(
-                        new EntityId(id),
+                        id,
                         new OrderInfo()
                         {
                             Order = order,

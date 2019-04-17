@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Improbable;
 using Improbable.Gdk.Core;
 using Improbable.Gdk.ReactiveComponents;
 using Improbable.Gdk.Subscriptions;
@@ -72,9 +73,9 @@ namespace Playground
                 var enemy = getNearestEnemeyPosition(status.Side, pos, sight.Range);
                 if (enemy == null)
                 {
-                    if (movement.SetTarget)
+                    if (movement.TargetInfo.IsTarget)
                     {
-                        movement.TargetPosition = movement.OrderedPosition;
+                        movement.TargetPosition = movement.TargetInfo.Position;
                         movement.IsTarget = true;
                     }
                 }
@@ -88,6 +89,17 @@ namespace Playground
                     movement.TargetPosition = epos;
                     action.EnemyPositions.Add(epos);
                 }
+
+                var entityId = movement.TargetInfo.CommanderId;
+                Position.Component? comp = null;
+                if (entityId.IsValid() && base.TryGetComponent<Position.Component>(entityId, out comp))
+                {
+                    movement.CommanderPosition = new Vector3f((float)comp.Value.Coords.X,
+                                                              (float)comp.Value.Coords.Y,
+                                                              (float)comp.Value.Coords.Z);
+                }
+                else
+                    movement.CommanderPosition = Vector3f.Zero;
 
                 data.Movement[i] = movement;
                 data.Action[i] = action;
@@ -149,7 +161,8 @@ namespace Playground
         {
             comp = null;
             Entity entity;
-            this.TryGetEntity(id, out entity);
+            if (!this.TryGetEntity(id, out entity))
+                return false;
 
             if (EntityManager.HasComponent<T>(entity))
             {
@@ -163,19 +176,22 @@ namespace Playground
         protected void SetComponent<T>(EntityId id, T comp) where T: struct, IComponentData
         {
             Entity entity;
-            this.TryGetEntity(id, out entity);
+            if (!this.TryGetEntity(id, out entity))
+                return;
 
             if (EntityManager.HasComponent<T>(entity))
                 EntityManager.SetComponentData(entity, comp);
         }
 
-        private void TryGetEntity(EntityId id, out Entity entity)
+        private bool TryGetEntity(EntityId id, out Entity entity)
         {
             if (!this.Worker.TryGetEntity(id, out entity))
             {
-                throw new InvalidOperationException(
-                    $"Entity with SpatialOS Entity ID {id} is not in this worker's view");
+                Debug.LogError($"Entity with SpatialOS Entity ID {id} is not in this worker's view");
+                return false;
             }
+
+            return true;
         }
     }
 
