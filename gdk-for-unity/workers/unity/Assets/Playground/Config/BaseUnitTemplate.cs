@@ -11,7 +11,8 @@ namespace Playground
         static readonly Dictionary<UnitType, string> metaDic = new Dictionary<UnitType, string>()
         {
             { UnitType.Soldier, "BaseUnit"},
-            { UnitType.Stronghold, "StrongholdUnit" }
+            { UnitType.Commander, "CommanderUnit"},
+            { UnitType.Stronghold, "StrongholdUnit"},
         };
 
         public static EntityTemplate CreateBaseUnitEntityTemplate(UnitSide side, Coordinates coords, UnitType type)
@@ -26,7 +27,21 @@ namespace Playground
             template.AddComponent(new BaseUnitSight.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new Launchable.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new BaseUnitHealth.Snapshot(), WorkerUtils.UnityGameLogic);
-            template.AddComponent(new BulletComponent.Snapshot(), WorkerUtils.UnityGameLogic);
+            switch (type) {
+                case UnitType.Soldier:
+                    template.AddComponent(new BulletComponent.Snapshot(), WorkerUtils.UnityGameLogic);
+                    break;
+
+                case UnitType.Commander:
+                    template.AddComponent(new BulletComponent.Snapshot(), WorkerUtils.UnityGameLogic);
+                    template.AddComponent(new CommanderStatus.Snapshot { Followers = new List<EntityId>(), SelfOrder = OrderType.Idle }, WorkerUtils.UnityGameLogic);
+                    template.AddComponent(new CommanderSight.Snapshot { WarPowers = new List<WarPower>() }, WorkerUtils.UnityGameLogic);
+                    break;
+
+                case UnitType.Stronghold:
+                    template.AddComponent(new BaseUnitFactory.Snapshot { Orders = new List<ProductOrder>() }, WorkerUtils.UnityGameLogic);
+                    break;
+            }
             TransformSynchronizationHelper.AddTransformSynchronizationComponents(template, WorkerUtils.UnityGameLogic);
 
             template.SetReadAccess(WorkerUtils.AllWorkerAttributes.ToArray());

@@ -19,7 +19,7 @@ namespace Playground
             public readonly int Length;
             public ComponentDataArray<CommanderSight.Component> Sight;
             public ComponentDataArray<CommanderStatus.Component> CommanderStatus;
-            public ComponentDataArray<BaseUnitStatus.Component> BaseUnitStatus;
+            [ReadOnly] public ComponentDataArray<BaseUnitStatus.Component> BaseUnitStatus;
             [ReadOnly] public ComponentArray<Transform> Transform;
         }
 
@@ -68,24 +68,96 @@ namespace Playground
                 }
 
                 sight.TargetPosition = tpos;
-                foreach (var id in commander.Followers)
-                {
-                    BaseUnitMovement.CommandSenders.SetTarget? sender;
-                    if (base.TryGetComponent(id, out sender))
-                    {
-                        var request = new BaseUnitMovement.SetTarget.Request(
-                            new EntityId(id),
-                            new TargetInfo()
-                            {
-                                IsTarget = sight.IsTarget,
-                                Position = sight.TargetPosition,
-                            });
-                        sender.Value.RequestsToSend.Add(request);
-                        base.SetComponent(id, sender.Value);
-                    }
-                }
+
+                // check 
+                OrderType current = GetOrder(status.Side, pos, sight.Range);
+
+                bool isOrderChanged = commander.SelfOrder != current;
+                commander.SelfOrder = current;
+
+                SetFollowers(commander.Followers,
+                             sight.IsTarget,
+                             sight.TargetPosition,
+                             orderChanged,
+                             current);
 
                 data.Sight[i] = sight;
+                data.CommanderStatus[i] = commander;
+            }
+        }
+
+        private OrderType GetOrder(UnitSide side, Vector3 pos, float length)
+        {
+            float len = float.MaxValue;
+            Vector3? e_pos = null;
+
+            float ally = 0.0f;
+            float enemy = 0.0f;
+
+            var colls = Physics.OverlapSphere(pos, length, LayerMask.GetMask("Unit"));
+            for (var i = 0; i < colls.Length; i++)
+            {
+                var col = colls[i];
+                var comp = col.GetComponent<LinkedEntityComponent>();
+                if (comp == null)
+                    continue;
+
+                BaseUnitStatus.Component? unit;
+                if (TryGetComponent(comp.EntityId, out unit))
+                {
+                    if (unit.Value.State == UnitState.Dead)
+                        continue;
+
+                    if (unit.Value.Side == side)
+                        ally += 1.0f;
+                    else
+                        enemy += 1.0f;
+                }
+            }
+
+            float rate = 1.1f;
+            if (ally > enemy * rate)
+                return OrderType.Attack;
+            
+            if (ally * rate * rate < enemy)
+                return OrderTye.Escape;
+
+            return OrderType.Keep;
+        }
+
+        private void SetFollowers(List<EntityId> followers, bool isTarget, Improbable.Vector3f targetPosition, bool orderChanged, OrderType order)
+        {
+            foreach (var id in followers)
+            {
+                BaseUnitMovement.CommandSenders.SetTarget? tgtSender;
+                if (base.TryGetComponent(id, out tgtSender))
+                {
+                    var request = new BaseUnitMovement.SetTarget.Request(
+                        new EntityId(id),
+                        new TargetInfo()
+                        {
+                            IsTarget = isTarget,
+                            Position = targetPosition,
+                        });
+                    tgtSender.Value.RequestsToSend.Add(request);
+                    base.SetComponent(id, tgtSender.Value);
+                }
+
+                if (!orderChanged)
+                    continue;
+
+                BaseUnitStatus.CommandSenders.SetOrder? orderSender; 
+                if (base.TryGetComponent(id, out orderSender))
+                {
+                    var request = new BaseUnitStatus.SetOrder.Request(
+                        new EntityId(id),
+                        new OrderInfo()
+                        {
+                            Order = order,
+                        });
+                    orderSender.Value.RequestsToSend.Add(request);
+                    base.SetComponent(id, orderSender.Value);
+                }
             }
         }
     }

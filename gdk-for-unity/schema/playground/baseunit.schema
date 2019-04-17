@@ -8,6 +8,7 @@ enum UnitType {
     Commander = 2;
     Stronghold = 3;
     Turret = 4;
+    Advanced = 5,
 }
 
 enum UnitSide {
@@ -26,12 +27,13 @@ enum UnitState {
 
 enum OrderType {
     Idle = 0;
-    Attack = 1;
-    Keep = 2;
-    Escape = 3;
+    Move = 1;
+    Attack = 2;
+    Keep = 3;
+    Escape = 5;
 }
 
-type OrderTypeInfo {
+type OrderInfo {
     OrderType order = 1;
 }
 
@@ -43,7 +45,7 @@ component BaseUnitStatus {
     UnitState state = 3;
     OrderType order = 4;
 
-    command improbable.common.Empty modify_actstate(OrderTypeInfo);
+    command improbable.common.Empty set_order(OrderInfo);
 }
 
 type HealthModifier {
@@ -122,6 +124,7 @@ type FollowerInfo {
     EntityId entity_id = 1;
 }
 
+// commander:20020~
 component CommanderStatus {
     id = 20020;
 
@@ -159,6 +162,7 @@ type ProductOrder {
     int32 number = 3;
 }
 
+// stronghold:20030~
 component BaseUnitFactory {
     id = 20030;
 

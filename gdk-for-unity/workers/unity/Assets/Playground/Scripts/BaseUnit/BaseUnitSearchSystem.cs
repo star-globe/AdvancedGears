@@ -64,11 +64,10 @@ namespace Playground
                 sight.LastSearched = time + RandomInterval.GetRandom(inter);
                 data.Sight[i] = sight;
 
-                action.EnemyPositions.Clear();
-
                 // initial
                 movement.IsTarget = false;
                 action.IsTarget = false;
+                action.EnemyPositions.Clear();
 
                 var enemy = getNearestEnemeyPosition(status.Side, pos, sight.Range);
                 if (enemy == null)
@@ -87,16 +86,13 @@ namespace Playground
                                                        enemy.Value.y - origin.y,
                                                        enemy.Value.z - origin.z);
                     movement.TargetPosition = epos;
-                    if (action.IsTarget)
-                        action.EnemyPositions.Add(epos);
+                    action.EnemyPositions.Add(epos);
                 }
 
                 data.Movement[i] = movement;
                 data.Action[i] = action;
             }
         }
-
-
     }
 
     public abstract class BaseSearchSystem : ComponentSystem
