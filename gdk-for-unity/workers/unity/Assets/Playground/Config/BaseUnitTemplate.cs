@@ -27,27 +27,32 @@ namespace Playground
             template.AddComponent(new BaseUnitSight.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new Launchable.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new BaseUnitHealth.Snapshot(), WorkerUtils.UnityGameLogic);
-            switch (type) {
-                case UnitType.Soldier:
-                    template.AddComponent(new BulletComponent.Snapshot(), WorkerUtils.UnityGameLogic);
-                    break;
-
-                case UnitType.Commander:
-                    template.AddComponent(new BulletComponent.Snapshot(), WorkerUtils.UnityGameLogic);
-                    template.AddComponent(new CommanderStatus.Snapshot { Followers = new List<EntityId>(), SelfOrder = OrderType.Idle }, WorkerUtils.UnityGameLogic);
-                    template.AddComponent(new CommanderSight.Snapshot { WarPowers = new List<WarPower>() }, WorkerUtils.UnityGameLogic);
-                    break;
-
-                case UnitType.Stronghold:
-                    template.AddComponent(new BaseUnitFactory.Snapshot { Orders = new List<ProductOrder>() }, WorkerUtils.UnityGameLogic);
-                    break;
-            }
+            SwitchType(template, type, WorkerUtils.UnityGameLogic);
             TransformSynchronizationHelper.AddTransformSynchronizationComponents(template, WorkerUtils.UnityGameLogic);
 
             template.SetReadAccess(WorkerUtils.AllWorkerAttributes.ToArray());
             template.SetComponentWriteAccess(EntityAcl.ComponentId, WorkerUtils.UnityGameLogic);
 
             return template;
+        }
+
+        private void SwitchType(EntityTemplate template, UnitType type, string writeAccess)
+        {
+            switch (type) {
+                case UnitType.Soldier:
+                    template.AddComponent(new BulletComponent.Snapshot(), writeAccess);
+                    break;
+
+                case UnitType.Commander:
+                    template.AddComponent(new BulletComponent.Snapshot(), writeAccess);
+                    template.AddComponent(new CommanderStatus.Snapshot { Followers = new List<EntityId>(), SelfOrder = OrderType.Idle }, writeAccess);
+                    template.AddComponent(new CommanderSight.Snapshot { WarPowers = new List<WarPower>() }, writeAccess);
+                    break;
+
+                case UnitType.Stronghold:
+                    template.AddComponent(new BaseUnitFactory.Snapshot { Orders = new List<ProductOrder>() }, writeAccess);
+                    break;
+            }
         }
     }
 }
