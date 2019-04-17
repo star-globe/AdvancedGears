@@ -69,6 +69,13 @@ namespace Playground
                 int foward = 0;
                 var diff = tgt - pos;
                 var range = action.AttackRange;
+                switch (status.Order) {
+                    case OrderType.Move:    range = 0.0f;   break;
+                    case OrderType.Attack:  range *= 0.8f;  break;
+                    case OrderType.Escape:  range *= 1.5f;  break;
+                    case OrderType.Keep:    range *= 1.1f;  break;
+                }
+
                 var min_range = range * 0.9f;
                 var mag = diff.sqrMagnitude;
 
