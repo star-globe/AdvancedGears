@@ -166,11 +166,16 @@ type ProductOrder {
 }
 
 // stronghold:20030~
-component BaseUnitFactory {
+component StrongholdUnitStatus {
     id = 20030;
 
-    int32 resource = 1;
+    float capture_range = 1;
+}
 
+component UnitFactoryComponent {
+    id = 20032;
+
+    int32 resource = 1;
     transient list<ProductOrder> orders = 2;
 
     command improbable.common.Empty send_order(ProductOrder);
