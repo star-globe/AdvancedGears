@@ -50,7 +50,7 @@ namespace Playground
                     break;
 
                 case UnitType.Stronghold:
-                    template.AddComponent(new BaseUnitFactory.Snapshot { Orders = new List<ProductOrder>() }, writeAccess);
+                    template.AddComponent(new UnitFactoryComponent.Snapshot { Orders = new List<ProductOrder>() }, writeAccess);
                     break;
             }
         }
