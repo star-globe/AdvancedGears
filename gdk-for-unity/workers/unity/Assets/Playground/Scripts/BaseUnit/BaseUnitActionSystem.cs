@@ -20,7 +20,7 @@ namespace Playground
             public ComponentDataArray<BaseUnitAction.Component> Action;
             public ComponentDataArray<BaseUnitAction.EventSender.FireTriggered> FireTriggeredEventsSenders;
             [ReadOnly] public ComponentDataArray<BaseUnitStatus.Component> Status;
-            [ReadOnly] public ComponentArray<Transform> Transform;
+            public ComponentArray<UnitTransform> UnitTransform;
         }
 
         [Inject] private Data data;
@@ -42,7 +42,7 @@ namespace Playground
                 var action = data.Action[i];
                 var triggerSender = data.FireTriggeredEventsSenders[i];
                 var status = data.Status[i];
-                var trans = data.Transform[i];
+                var unit = data.UnitTransform[i];
 
                 if (status.State != UnitState.Alive)
                     continue;
@@ -60,7 +60,7 @@ namespace Playground
                 if (action.EnemyPositions.Count > 0)
                 {
                     var epos = action.EnemyPositions[0].ToUnityVector() + origin;
-                    if (CheckRange(trans, epos, action.AttackRange, action.AttackAngle))
+                    if (CheckRange(unit, epos, action.AttackRange, action.AttackAngle))
                     {
                         var info = new AttackTargetInfo
                         {
@@ -76,14 +76,19 @@ namespace Playground
             }
         }
 
-        bool CheckRange(Transform trans, Vector3 epos, float range, float angle)
+        bool CheckRange(UnitTransform unit, Vector3 epos, float range, float angle)
         {
-            var diff = epos - trans.position;
+            var trans = unit.Cannon.Muzzle;
+            var diff = epos - trans.positon;
             if (diff.sqrMagnitude > range * range)
                 return false;
 
             var dot = Vector3.Dot(diff.normalized, trans.forward);
-            return dot > Mathf.Cos(angle);
+            if (dot > Mathf.Cos(angle))
+                return true;
+
+            unit.Cannon.Turret.MoveRotate();
+            return false;
         }
     }
 }
