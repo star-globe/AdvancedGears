@@ -60,7 +60,7 @@ namespace Playground
                 if (action.EnemyPositions.Count > 0)
                 {
                     var epos = action.EnemyPositions[0].ToUnityVector() + origin;
-                    if (CheckRange(unit, epos, action.AttackRange, action.AttackAngle))
+                    if (CheckRange(unit, epos, action.AttackRange, action.AttackAngle, action.AngleSpeed))
                     {
                         var info = new AttackTargetInfo
                         {
@@ -76,18 +76,19 @@ namespace Playground
             }
         }
 
-        bool CheckRange(UnitTransform unit, Vector3 epos, float range, float angle)
+        bool CheckRange(UnitTransform unit, Vector3 epos, float range, float angle, float angleSpeed)
         {
             var trans = unit.Cannon.Muzzle;
-            var diff = epos - trans.positon;
+            var diff = epos - trans.position;
             if (diff.sqrMagnitude > range * range)
                 return false;
 
-            var dot = Vector3.Dot(diff.normalized, trans.forward);
+            var foward = diff.normalized;
+            var dot = Vector3.Dot(foward, unit.Cannon.Forward);
             if (dot > Mathf.Cos(angle))
                 return true;
 
-            unit.Cannon.Turret.MoveRotate();
+            CannonTransform.Rotate(unit.Cannon, foward, angleSpeed * Time.deltaTime);
             return false;
         }
     }

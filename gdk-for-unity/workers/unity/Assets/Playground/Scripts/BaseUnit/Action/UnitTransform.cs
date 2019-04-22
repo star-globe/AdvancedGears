@@ -8,10 +8,10 @@ using Improbable.Common;
 
 namespace Playground
 {
-    public class ActionTransform : MonoBehaviour
+    public class UnitTransform : MonoBehaviour
     {
         [SerializeField] CannonTransform cannon;
-        public CannonTrandform Cannon { get { return cannon; } }
+        public CannonTransform Cannon { get { return cannon; } }
 
         [SerializeField] Rigidbody vehicle;
         public Rigidbody Vehicle { get { return vehicle; }}
