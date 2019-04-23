@@ -49,7 +49,8 @@ namespace Playground
                 Interval = inter,
                 LastActed = 0,
                 AttackRange = atkRange,
-                AttackAngle = Mathf.PI * (atkAngle / 360)
+                AttackAngle = Mathf.PI * (atkAngle / 360),
+                AngleSpeed = AttackAngle / 0.5f,
             });
 
             health.SendUpdate(new BaseUnitHealth.Update
