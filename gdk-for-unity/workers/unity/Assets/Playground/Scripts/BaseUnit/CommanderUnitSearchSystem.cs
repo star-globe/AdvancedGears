@@ -52,6 +52,9 @@ namespace Playground
                 if (status.Type != UnitType.Commander)
                     continue;
 
+                if (status.Order == OrderType.Idle)
+                    continue;
+
                 var time = Time.realtimeSinceStartup;
                 var inter = sight.Interval;
                 if (time - sight.LastSearched < inter)

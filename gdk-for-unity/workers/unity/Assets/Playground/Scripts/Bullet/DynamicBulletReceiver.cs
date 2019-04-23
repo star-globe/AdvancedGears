@@ -33,7 +33,7 @@ namespace Playground
     {
         const string bulletTag = "Bullet";
 
-        private void OnCollisionEnter(Collision other)
+        protected void OnCollisionEnter(Collision other)
         {
             if (other.gameObject.tag != bulletTag)
                 return;

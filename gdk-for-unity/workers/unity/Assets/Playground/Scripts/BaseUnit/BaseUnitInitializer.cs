@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -27,7 +28,10 @@ namespace Playground
         float atkRange = 9.0f;
 
         [SerializeField]
-        float atkAngle = 30.0f;
+        float atkAngle = 5.0f;
+
+        [SerializeField]
+        float angleSpeed = 5.0f;
 
         void Start()
         {
@@ -44,13 +48,14 @@ namespace Playground
                 Range = sightRange
             });
 
+            Func<float,float> func = (angle) => Mathf.PI * (angle / 360);
             action.SendUpdate(new BaseUnitAction.Update
             {
                 Interval = inter,
                 LastActed = 0,
                 AttackRange = atkRange,
-                AttackAngle = Mathf.PI * (atkAngle / 360),
-                AngleSpeed = AttackAngle / 0.5f,
+                AttackAngle = func(atkAngle),
+                AngleSpeed = func(angleSpeed),
             });
 
             health.SendUpdate(new BaseUnitHealth.Update

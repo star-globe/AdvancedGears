@@ -18,7 +18,7 @@ namespace Playground
             // データ長
             public readonly int Length;
             // 剛体配列
-            public ComponentArray<Rigidbody> RigidBody;
+            public ComponentArray<Transform> Transform;
             [ReadOnly] public ComponentDataArray<BaseUnitMovement.Component> Movement;
             [ReadOnly] public ComponentDataArray<BaseUnitStatus.Component> Status;
             [ReadOnly] public ComponentDataArray<BaseUnitAction.Component> Action;
@@ -42,7 +42,12 @@ namespace Playground
         {
             for (var i = 0; i < data.Length; i++)
             {
-                var rigidbody = data.RigidBody[i];
+                var trans = data.Transform[i];
+                var unit = trans.GetComponent<UnitTransform>();
+                if (unit == null)
+                    continue;
+
+                var rigidbody = unit.Vehicle;
                 var movement = data.Movement[i];
                 var status = data.Status[i];
                 var action = data.Action[i];

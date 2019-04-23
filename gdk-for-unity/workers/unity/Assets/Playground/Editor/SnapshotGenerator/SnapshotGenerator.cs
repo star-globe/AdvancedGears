@@ -52,7 +52,7 @@ namespace Playground.Editor.SnapshotGenerator
             snapshot.AddEntity(template);
         }
 
-        static readonly double scale = 3.0;
+        static readonly double scale = 4.0;
         
         private static void AddCubeGrid(Snapshot snapshot, int cubeCount)
         {
@@ -89,11 +89,16 @@ namespace Playground.Editor.SnapshotGenerator
                 }
             }
 
-            var len = gridLength * 3;
-            var templateA = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.A, new Coordinates(-len, 1, 0), UnitType.Stronghold);
-            var templateB = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.B, new Coordinates( len, 1, 0), UnitType.Stronghold);
+            var len = gridLength * scale;
+            var templateA = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.A, new Coordinates(-len * 3, 1, 0), UnitType.Stronghold);
+            var templateB = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.B, new Coordinates( len * 3, 1, 0), UnitType.Stronghold);
             snapshot.AddEntity(templateA);
             snapshot.AddEntity(templateB);
+
+            var templateCa = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.A, new Coordinates(-len * 2, 1, 0), UnitType.Commander);
+            var templateCb = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.B, new Coordinates( len * 2, 1, 0), UnitType.Commander);
+            snapshot.AddEntity(templateCa);
+            snapshot.AddEntity(templateCb);
         }
 
         private static void CreateSpinner(Snapshot snapshot, Coordinates coords)

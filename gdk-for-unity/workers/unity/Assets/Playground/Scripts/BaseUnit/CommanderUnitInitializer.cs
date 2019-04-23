@@ -42,7 +42,8 @@ namespace Playground
                 return;
 
             var selfSide = status.Data.Side;
-            var list = new Option<List<EntityId>>();
+            var list = new List<EntityId>();
+            //var option = new Option<List<EntityId>>(list);
 
             var pos = this.transform.position;
             var colls = Physics.OverlapSphere(pos, allyRange, LayerMask.GetMask("Unit"));
@@ -62,7 +63,7 @@ namespace Playground
 
                 var status = entityManager.GetComponentData<BaseUnitStatus.Component>(entity);
                 if (status.Side == selfSide)
-                    list.Value.Add(comp.EntityId);
+                    list.Add(comp.EntityId);
             }
 
             commander.SendUpdate(new CommanderStatus.Update

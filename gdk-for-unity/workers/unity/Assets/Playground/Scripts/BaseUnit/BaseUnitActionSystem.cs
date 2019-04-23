@@ -20,7 +20,7 @@ namespace Playground
             public ComponentDataArray<BaseUnitAction.Component> Action;
             public ComponentDataArray<BaseUnitAction.EventSender.FireTriggered> FireTriggeredEventsSenders;
             [ReadOnly] public ComponentDataArray<BaseUnitStatus.Component> Status;
-            public ComponentArray<UnitTransform> UnitTransform;
+            public ComponentArray<Transform> Transform;
         }
 
         [Inject] private Data data;
@@ -42,7 +42,11 @@ namespace Playground
                 var action = data.Action[i];
                 var triggerSender = data.FireTriggeredEventsSenders[i];
                 var status = data.Status[i];
-                var unit = data.UnitTransform[i];
+                var trans = data.Transform[i];
+
+                var unit = trans.GetComponent<UnitTransform>();
+                if (unit == null)
+                    continue;
 
                 if (status.State != UnitState.Alive)
                     continue;

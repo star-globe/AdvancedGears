@@ -15,6 +15,13 @@ namespace Playground
             { UnitType.Stronghold, "StrongholdUnit"},
         };
 
+        static readonly Dictionary<UnitType, OrderType> orderDic = new Dictionary<UnitType, OrderType>()
+        {
+            { UnitType.Soldier, OrderType.Idle },
+            { UnitType.Commander, OrderType.Attack },
+            { UnitType.Stronghold, OrderType.Idle },
+        };
+
         public static EntityTemplate CreateBaseUnitEntityTemplate(UnitSide side, Coordinates coords, UnitType type)
         {
             var template = new EntityTemplate();
@@ -23,7 +30,7 @@ namespace Playground
             template.AddComponent(new Persistence.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new BaseUnitMovement.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new BaseUnitAction.Snapshot { EnemyPositions = new List<Vector3f>() }, WorkerUtils.UnityGameLogic);
-            template.AddComponent(new BaseUnitStatus.Snapshot(side, type, UnitState.Alive, OrderType.Idle), WorkerUtils.UnityGameLogic);
+            template.AddComponent(new BaseUnitStatus.Snapshot(side, type, UnitState.Alive, orderDic[type]), WorkerUtils.UnityGameLogic);
             template.AddComponent(new BaseUnitSight.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new Launchable.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new BaseUnitHealth.Snapshot(), WorkerUtils.UnityGameLogic);
