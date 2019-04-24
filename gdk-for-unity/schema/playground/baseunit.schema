@@ -9,6 +9,7 @@ enum UnitType {
     Stronghold = 3;
     Turret = 4;
     Advanced = 5;
+    Supply = 6;
 }
 
 enum UnitSide {
@@ -68,6 +69,27 @@ component BaseUnitHealth {
 
     command improbable.common.Empty modify_health(HealthModifier);
     event HealthModifiedInfo health_modified;
+}
+
+type FuelModifier {
+    uint32 type = 1;
+    int32 amount = 2;
+}
+
+type FuelModifiedInfo {
+    FuelModifier modifier = 1;
+    int32 fuel_before = 2;
+    int32 fuel_after = 3;
+}
+
+component BaseUnitFuel {
+    id = 2003;
+
+    int32 fuel = 1;
+    int32 max_fuel = 2;
+
+    command improbable.common.Empty modify_fuel(FuelModifier);
+    event FuelModifiedInfo fuel_modified;
 }
 
 // move:20010~20019
