@@ -15,8 +15,10 @@ GameObject:
   - component: {fileID: 5818714838523815769}
   - component: {fileID: 8109108231732432492}
   - component: {fileID: 283816187959169782}
+  - component: {fileID: 1985233692177594437}
   - component: {fileID: 8851085694738977507}
   - component: {fileID: 1866897282900105233}
+  - component: {fileID: 4905585778221578842}
   m_Layer: 11
   m_Name: BaseUnit
   m_TagString: Untagged
@@ -148,6 +150,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b231b4d344e57d747a7f4d5c9147de0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1985233692177594437
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 271362001951848692}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 39e8d530da9601841906c0c4fd1e864f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &8851085694738977507
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -178,6 +192,19 @@ MonoBehaviour:
   - {fileID: 3981904694872019468}
   - {fileID: 7730654447355781718}
   - {fileID: 4567155313125381642}
+--- !u!135 &4905585778221578842
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 271362001951848692}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 1.5
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &451944514828947887
 GameObject:
   m_ObjectHideFlags: 0
@@ -193,7 +220,7 @@ GameObject:
   - component: {fileID: 2815442499179690276}
   - component: {fileID: 9172202423588735937}
   - component: {fileID: 3981904694872019468}
-  m_Layer: 11
+  m_Layer: 13
   m_Name: Vehicle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -323,7 +350,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5808412069782809489}
-  m_Layer: 11
+  m_Layer: 13
   m_Name: Muzzle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -357,7 +384,7 @@ GameObject:
   - component: {fileID: 7456359391478628272}
   - component: {fileID: 7163156125100661253}
   - component: {fileID: 7730654447355781718}
-  m_Layer: 11
+  m_Layer: 13
   m_Name: TurretCore
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -457,7 +484,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1742945487304504061}
-  m_Layer: 11
+  m_Layer: 13
   m_Name: Cannon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -491,7 +518,7 @@ GameObject:
   - component: {fileID: 5322640344666089232}
   - component: {fileID: 1550245847840333827}
   - component: {fileID: 3818840324298005026}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Corn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -568,7 +595,7 @@ GameObject:
   - component: {fileID: 6805852749335118370}
   - component: {fileID: 1223948021315262415}
   - component: {fileID: 1075984108713852426}
-  m_Layer: 11
+  m_Layer: 13
   m_Name: Turret
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -636,7 +663,7 @@ GameObject:
   - component: {fileID: 8014045363727731649}
   - component: {fileID: 4612723405558075773}
   - component: {fileID: 4567155313125381642}
-  m_Layer: 11
+  m_Layer: 13
   m_Name: Barell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
