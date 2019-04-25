@@ -15,7 +15,7 @@ namespace Playground
         [Require] BaseUnitStatusReader status;
         [Require] World world;
 
-        float inter = 1.5f;
+        float inter = 2.0f;
 
         [SerializeField]
         float sightRange = 100.0f;

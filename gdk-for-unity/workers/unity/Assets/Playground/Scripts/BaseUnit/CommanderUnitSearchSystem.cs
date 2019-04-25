@@ -77,15 +77,13 @@ namespace Playground
                 // check 
                 OrderType current = GetOrder(status.Side, pos, sight.Range);
 
-                bool isOrderChanged = commander.SelfOrder != current;
                 commander.SelfOrder = current;
 
-                SetFollowers(commander.Followers,
+                SetFollowers(commander.FollowerInfo.Followers,
                              new TargetInfo (sight.IsTarget,
                                              sight.TargetPosition,
                                              entityId.EntityId,
                                              commander.AllyRange),
-                             isOrderChanged,
                              current);
 
                 data.Sight[i] = sight;
@@ -132,7 +130,7 @@ namespace Playground
             return OrderType.Keep;
         }
 
-        private void SetFollowers(List<EntityId> followers, TargetInfo targetInfo, bool orderChanged, OrderType order)
+        private void SetFollowers(List<EntityId> followers, TargetInfo targetInfo, OrderType order)
         {
             foreach (var id in followers)
             {
@@ -146,10 +144,14 @@ namespace Playground
                     base.SetComponent(id, tgtSender.Value);
                 }
 
-                if (!orderChanged)
+                BaseUnitStatus.Component? status;
+                if (base.TryGetComponent(id, out status) == false)
                     continue;
 
-                BaseUnitStatus.CommandSenders.SetOrder? orderSender; 
+                if (status.Value.Order == order)
+                    continue;
+
+                BaseUnitStatus.CommandSenders.SetOrder? orderSender;
                 if (base.TryGetComponent(id, out orderSender))
                 {
                     var request = new BaseUnitStatus.SetOrder.Request(

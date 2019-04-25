@@ -20,6 +20,7 @@ namespace Playground
             // 剛体配列
             public ComponentArray<Transform> Transform;
             [ReadOnly] public ComponentDataArray<BaseUnitMovement.Component> Movement;
+            [ReadOnly] public ComponentDataArray<BaseUnitTarget.Component> Target;
             [ReadOnly] public ComponentDataArray<BaseUnitStatus.Component> Status;
             [ReadOnly] public ComponentDataArray<BaseUnitAction.Component> Action;
             // 権限情報
@@ -49,6 +50,7 @@ namespace Playground
 
                 var rigidbody = unit.Vehicle;
                 var movement = data.Movement[i];
+                var target = data.Target[i];
                 var status = data.Status[i];
                 var action = data.Action[i];
 
@@ -70,10 +72,10 @@ namespace Playground
                 var tgt = movement.TargetPosition.ToUnityVector() - origin;
 
                 // modify target
-                if (movement.TargetInfo.CommanderId.IsValid())
+                if (target.TargetInfo.CommanderId.IsValid())
                 {
                     var com = movement.CommanderPosition.ToUnityVector() - origin;
-                    tgt = get_nearly_position(pos, tgt, com, movement.TargetInfo.AllyRange);
+                    tgt = get_nearly_position(pos, tgt, com, target.TargetInfo.AllyRange);
                 }
 
                 int foward = 0;

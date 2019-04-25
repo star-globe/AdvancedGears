@@ -200,7 +200,7 @@ component StrongholdUnitStatus {
     float capture_range = 1;
 }
 
-component UnitFactoryComponent {
+component UnitFactory {
     id = 20032;
 
     int32 resource = 1;

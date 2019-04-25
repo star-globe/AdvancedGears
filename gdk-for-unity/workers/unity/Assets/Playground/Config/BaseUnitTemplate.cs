@@ -53,12 +53,13 @@ namespace Playground
 
                 case UnitType.Commander:
                     template.AddComponent(new BulletComponent.Snapshot(), writeAccess);
-                    template.AddComponent(new CommanderStatus.Snapshot { Followers = new List<EntityId>(), SelfOrder = OrderType.Idle }, writeAccess);
+                    template.AddComponent(new CommanderStatus.Snapshot { FollowerInfo = new FollowerInfo { Followers = new List<EntityId>() },
+                                                                         SelfOrder = OrderType.Idle }, writeAccess);
                     template.AddComponent(new CommanderSight.Snapshot { WarPowers = new List<WarPower>() }, writeAccess);
                     break;
 
                 case UnitType.Stronghold:
-                    template.AddComponent(new UnitFactoryComponent.Snapshot { Orders = new List<ProductOrder>() }, writeAccess);
+                    template.AddComponent(new UnitFactory.Snapshot { Orders = new List<ProductOrder>() }, writeAccess);
                     break;
             }
         }

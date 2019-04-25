@@ -16,7 +16,8 @@ GameObject:
   - component: {fileID: 3778200349404015307}
   - component: {fileID: 2145706868738799048}
   - component: {fileID: 1517569414156497103}
-  - component: {fileID: 6449714851922569073}
+  - component: {fileID: 5948181704267263066}
+  - component: {fileID: 5291865983427059135}
   - component: {fileID: 7599479101984732614}
   - component: {fileID: 2205258035376095520}
   m_Layer: 11
@@ -164,22 +165,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cannon: {fileID: 8493711273801824655}
   vehicle: {fileID: 6419111483461744918}
---- !u!114 &6449714851922569073
+--- !u!114 &5948181704267263066
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 35685457512260396}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eae8da7704cabb04d9fb97db671a33b8, type: 3}
+  m_Script: {fileID: 11500000, guid: 23a5b085eb2392f4ebcdb5a44c79328d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &5291865983427059135
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 35685457512260396}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7dbc376f39de9c84fb754221e66f9c9f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   notifiers:
   - {fileID: 9038721557012802927}
-  - {fileID: 7959325973897474629}
   - {fileID: 8911895495601102280}
+  - {fileID: 7959325973897474629}
 --- !u!114 &7599479101984732614
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -295,6 +308,7 @@ GameObject:
   - component: {fileID: 4772754321379168669}
   - component: {fileID: 8493711273801824655}
   - component: {fileID: 4645978855272070220}
+  - component: {fileID: 3540538808280542937}
   m_Layer: 13
   m_Name: Turret
   m_TagString: Untagged
@@ -351,6 +365,101 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!153 &3540538808280542937
+ConfigurableJoint:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3849676698530373413}
+  m_ConnectedBody: {fileID: 6419111483461744918}
+  m_Anchor: {x: 0, y: 0, z: 0}
+  m_Axis: {x: 1, y: 0, z: 0}
+  m_AutoConfigureConnectedAnchor: 1
+  m_ConnectedAnchor: {x: 0, y: 0.89830506, z: 0}
+  serializedVersion: 2
+  m_SecondaryAxis: {x: 0, y: 1, z: 0}
+  m_XMotion: 0
+  m_YMotion: 0
+  m_ZMotion: 0
+  m_AngularXMotion: 0
+  m_AngularYMotion: 2
+  m_AngularZMotion: 0
+  m_LinearLimitSpring:
+    spring: 0
+    damper: 0
+  m_LinearLimit:
+    limit: 0
+    bounciness: 0
+    contactDistance: 0
+  m_AngularXLimitSpring:
+    spring: 0
+    damper: 0
+  m_LowAngularXLimit:
+    limit: 0
+    bounciness: 0
+    contactDistance: 0
+  m_HighAngularXLimit:
+    limit: 0
+    bounciness: 0
+    contactDistance: 0
+  m_AngularYZLimitSpring:
+    spring: 0
+    damper: 0
+  m_AngularYLimit:
+    limit: 0
+    bounciness: 0
+    contactDistance: 0
+  m_AngularZLimit:
+    limit: 0
+    bounciness: 0
+    contactDistance: 0
+  m_TargetPosition: {x: 0, y: 0, z: 0}
+  m_TargetVelocity: {x: 0, y: 0, z: 0}
+  m_XDrive:
+    serializedVersion: 3
+    positionSpring: 0
+    positionDamper: 0
+    maximumForce: 3.4028233e+38
+  m_YDrive:
+    serializedVersion: 3
+    positionSpring: 0
+    positionDamper: 0
+    maximumForce: 3.4028233e+38
+  m_ZDrive:
+    serializedVersion: 3
+    positionSpring: 0
+    positionDamper: 0
+    maximumForce: 3.4028233e+38
+  m_TargetRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_TargetAngularVelocity: {x: 0, y: 0, z: 0}
+  m_RotationDriveMode: 0
+  m_AngularXDrive:
+    serializedVersion: 3
+    positionSpring: 0
+    positionDamper: 0
+    maximumForce: 3.4028233e+38
+  m_AngularYZDrive:
+    serializedVersion: 3
+    positionSpring: 0
+    positionDamper: 0
+    maximumForce: 3.4028233e+38
+  m_SlerpDrive:
+    serializedVersion: 3
+    positionSpring: 0
+    positionDamper: 0
+    maximumForce: 3.4028233e+38
+  m_ProjectionMode: 0
+  m_ProjectionDistance: 0.1
+  m_ProjectionAngle: 180
+  m_ConfiguredInWorldSpace: 0
+  m_SwapBodies: 0
+  m_BreakForce: Infinity
+  m_BreakTorque: Infinity
+  m_EnableCollision: 0
+  m_EnablePreprocessing: 1
+  m_MassScale: 1
+  m_ConnectedMassScale: 1
 --- !u!1 &4341636020862959421
 GameObject:
   m_ObjectHideFlags: 0

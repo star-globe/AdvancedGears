@@ -16,8 +16,9 @@ GameObject:
   - component: {fileID: 8109108231732432492}
   - component: {fileID: 283816187959169782}
   - component: {fileID: 1985233692177594437}
+  - component: {fileID: 4633755808106729605}
+  - component: {fileID: 2180213511553547773}
   - component: {fileID: 8851085694738977507}
-  - component: {fileID: 1866897282900105233}
   - component: {fileID: 4905585778221578842}
   m_Layer: 11
   m_Name: BaseUnit
@@ -162,6 +163,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 39e8d530da9601841906c0c4fd1e864f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &4633755808106729605
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 271362001951848692}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23a5b085eb2392f4ebcdb5a44c79328d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2180213511553547773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 271362001951848692}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7dbc376f39de9c84fb754221e66f9c9f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  notifiers:
+  - {fileID: 3981904694872019468}
+  - {fileID: 4567155313125381642}
+  - {fileID: 7730654447355781718}
 --- !u!114 &8851085694738977507
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -176,22 +205,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cannon: {fileID: 1223948021315262415}
   vehicle: {fileID: 2815442499179690276}
---- !u!114 &1866897282900105233
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 271362001951848692}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eae8da7704cabb04d9fb97db671a33b8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  notifiers:
-  - {fileID: 3981904694872019468}
-  - {fileID: 7730654447355781718}
-  - {fileID: 4567155313125381642}
 --- !u!135 &4905585778221578842
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -218,7 +231,6 @@ GameObject:
   - component: {fileID: 8278753552193408798}
   - component: {fileID: 7468827801654331987}
   - component: {fileID: 2815442499179690276}
-  - component: {fileID: 9172202423588735937}
   - component: {fileID: 3981904694872019468}
   m_Layer: 13
   m_Name: Vehicle
@@ -315,20 +327,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!138 &9172202423588735937
-FixedJoint:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 451944514828947887}
-  m_ConnectedBody: {fileID: 1075984108713852426}
-  m_BreakForce: Infinity
-  m_BreakTorque: Infinity
-  m_EnableCollision: 0
-  m_EnablePreprocessing: 1
-  m_MassScale: 1
-  m_ConnectedMassScale: 1
 --- !u!114 &3981904694872019468
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -595,6 +593,7 @@ GameObject:
   - component: {fileID: 6805852749335118370}
   - component: {fileID: 1223948021315262415}
   - component: {fileID: 1075984108713852426}
+  - component: {fileID: 5962815753504141689}
   m_Layer: 13
   m_Name: Turret
   m_TagString: Untagged
@@ -650,6 +649,101 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!153 &5962815753504141689
+ConfigurableJoint:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8943959594715239977}
+  m_ConnectedBody: {fileID: 2815442499179690276}
+  m_Anchor: {x: 0, y: 0, z: 0}
+  m_Axis: {x: 1, y: 0, z: 0}
+  m_AutoConfigureConnectedAnchor: 1
+  m_ConnectedAnchor: {x: 0, y: 0.89830506, z: 0}
+  serializedVersion: 2
+  m_SecondaryAxis: {x: 0, y: 1, z: 0}
+  m_XMotion: 0
+  m_YMotion: 0
+  m_ZMotion: 0
+  m_AngularXMotion: 0
+  m_AngularYMotion: 2
+  m_AngularZMotion: 0
+  m_LinearLimitSpring:
+    spring: 0
+    damper: 0
+  m_LinearLimit:
+    limit: 0
+    bounciness: 0
+    contactDistance: 0
+  m_AngularXLimitSpring:
+    spring: 0
+    damper: 0
+  m_LowAngularXLimit:
+    limit: 0
+    bounciness: 0
+    contactDistance: 0
+  m_HighAngularXLimit:
+    limit: 0
+    bounciness: 0
+    contactDistance: 0
+  m_AngularYZLimitSpring:
+    spring: 0
+    damper: 0
+  m_AngularYLimit:
+    limit: 0
+    bounciness: 0
+    contactDistance: 0
+  m_AngularZLimit:
+    limit: 0
+    bounciness: 0
+    contactDistance: 0
+  m_TargetPosition: {x: 0, y: 0, z: 0}
+  m_TargetVelocity: {x: 0, y: 0, z: 0}
+  m_XDrive:
+    serializedVersion: 3
+    positionSpring: 0
+    positionDamper: 0
+    maximumForce: 3.4028233e+38
+  m_YDrive:
+    serializedVersion: 3
+    positionSpring: 0
+    positionDamper: 0
+    maximumForce: 3.4028233e+38
+  m_ZDrive:
+    serializedVersion: 3
+    positionSpring: 0
+    positionDamper: 0
+    maximumForce: 3.4028233e+38
+  m_TargetRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_TargetAngularVelocity: {x: 0, y: 0, z: 0}
+  m_RotationDriveMode: 0
+  m_AngularXDrive:
+    serializedVersion: 3
+    positionSpring: 0
+    positionDamper: 0
+    maximumForce: 3.4028233e+38
+  m_AngularYZDrive:
+    serializedVersion: 3
+    positionSpring: 0
+    positionDamper: 0
+    maximumForce: 3.4028233e+38
+  m_SlerpDrive:
+    serializedVersion: 3
+    positionSpring: 0
+    positionDamper: 0
+    maximumForce: 3.4028233e+38
+  m_ProjectionMode: 0
+  m_ProjectionDistance: 0.1
+  m_ProjectionAngle: 180
+  m_ConfiguredInWorldSpace: 0
+  m_SwapBodies: 0
+  m_BreakForce: Infinity
+  m_BreakTorque: Infinity
+  m_EnableCollision: 0
+  m_EnablePreprocessing: 1
+  m_MassScale: 1
+  m_ConnectedMassScale: 1
 --- !u!1 &9198605222881676846
 GameObject:
   m_ObjectHideFlags: 0

@@ -18,6 +18,9 @@ namespace Playground
         [Require] World world;
         protected override World World => world;
 
+        [SerializeField]
+        HitNotifier[] notifiers;
+
         protected override void OnHit(BulletInfo info)
         {
             var current = healthReader.Data.Health;
@@ -26,6 +29,24 @@ namespace Playground
                 current = 0;
 
             healthCommandSender.SendModifyHealthCommand(entityId, new HealthModifier(0, current));
+        }
+
+        void Start()
+        {
+            foreach (var n in notifiers)
+            {
+                if (n != null)
+                    n.OnCollisionEvent += OnCollisionEnter;
+            }
+        }
+
+        void OnDestroy()
+        {
+            foreach (var n in notifiers)
+            {
+                if (n != null)
+                    n.OnCollisionEvent -= OnCollisionEnter;
+            }
         }
     }
 

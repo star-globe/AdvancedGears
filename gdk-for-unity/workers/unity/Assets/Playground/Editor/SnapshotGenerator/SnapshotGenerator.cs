@@ -94,7 +94,7 @@ namespace Playground.Editor.SnapshotGenerator
             var templateB = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.B, new Coordinates( len * 3, 1, 0), UnitType.Stronghold);
             snapshot.AddEntity(templateA);
             snapshot.AddEntity(templateB);
-
+            
             var templateCa = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.A, new Coordinates(-len * 2, 1, 0), UnitType.Commander);
             var templateCb = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.B, new Coordinates( len * 2, 1, 0), UnitType.Commander);
             snapshot.AddEntity(templateCa);

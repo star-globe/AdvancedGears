@@ -46,8 +46,8 @@ namespace Playground
             TransformSynchronizationHelper.AddServerSystems(world);
             PlayerLifecycleHelper.AddServerSystems(world);
             GameObjectCreationHelper.EnableStandardGameObjectCreation(world);
-            world.GetOrCreateManager<CubeMovementSystem>();
-            world.GetOrCreateManager<TriggerColorChangeSystem>();
+            //world.GetOrCreateManager<CubeMovementSystem>();
+            //world.GetOrCreateManager<TriggerColorChangeSystem>();
             world.GetOrCreateManager<ProcessLaunchCommandSystem>();
             world.GetOrCreateManager<ProcessRechargeSystem>();
             world.GetOrCreateManager<MetricSendSystem>();
