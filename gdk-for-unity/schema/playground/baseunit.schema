@@ -135,10 +135,6 @@ component BaseUnitAction {
     event AttackTargetInfo fire_triggered;
 }
 
-type FollowerInfo {
-    EntityId entity_id = 1;
-}
-
 type TargetInfo {
     bool is_target = 1;
     improbable.Vector3f position = 2;
@@ -155,6 +151,10 @@ component BaseUnitTarget {
 }
 
 // commander:20020~
+type FollowerInfo {
+    list<EntityId> followers = 1;
+}
+
 component CommanderStatus {
     id = 20020;
 
@@ -164,9 +164,9 @@ component CommanderStatus {
     uint32 rank = 3;
 
     float ally_range = 4;
-    list<EntityId> followers = 5;
+    FollowerInfo follower_info = 5;
 
-    command improbable.common.Empty add_folower(FollowerInfo);
+    command improbable.common.Empty add_follower(FollowerInfo);
 }
 
 type WarPower {

@@ -69,7 +69,7 @@ namespace Playground
             commander.SendUpdate(new CommanderStatus.Update
             {
                 AllyRange = allyRange,
-                Followers = list,
+                FollowerInfo = new FollowerInfo(list),
             });
         }
     }
