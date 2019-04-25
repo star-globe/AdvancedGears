@@ -136,10 +136,10 @@ namespace Playground
         {
             foreach (var id in followers)
             {
-                BaseUnitMovement.CommandSenders.SetTarget? tgtSender;
+                BaseUnitTarget.CommandSenders.SetTarget? tgtSender;
                 if (base.TryGetComponent(id, out tgtSender))
                 {
-                    var request = new BaseUnitMovement.SetTarget.Request(
+                    var request = new BaseUnitTarget.SetTarget.Request(
                         id,
                         targetInfo);
                     tgtSender.Value.RequestsToSend.Add(request);

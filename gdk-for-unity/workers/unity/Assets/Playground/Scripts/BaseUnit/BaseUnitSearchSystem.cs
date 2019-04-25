@@ -22,6 +22,7 @@ namespace Playground
             public ComponentDataArray<BaseUnitAction.Component> Action;
             public ComponentDataArray<BaseUnitSight.Component> Sight;
             [ReadOnly] public ComponentDataArray<BaseUnitStatus.Component> Status;
+            [ReadOnly] public ComponentDataArray<BaseUnitTarget.Component> Target;
             [ReadOnly] public ComponentArray<Transform> Transform;
         }
 
@@ -45,6 +46,7 @@ namespace Playground
                 var action = data.Action[i];
                 var sight = data.Sight[i];
                 var status = data.Status[i];
+                var target = data.Target[i];
                 var pos = data.Transform[i].position;
 
                 if (status.State != UnitState.Alive)
@@ -73,9 +75,9 @@ namespace Playground
                 var enemy = getNearestEnemeyPosition(status.Side, pos, sight.Range);
                 if (enemy == null)
                 {
-                    if (movement.TargetInfo.IsTarget)
+                    if (target.TargetInfo.IsTarget)
                     {
-                        movement.TargetPosition = movement.TargetInfo.Position;
+                        movement.TargetPosition = target.TargetInfo.Position;
                         movement.IsTarget = true;
                     }
                 }
@@ -90,7 +92,7 @@ namespace Playground
                     action.EnemyPositions.Add(epos);
                 }
 
-                var entityId = movement.TargetInfo.CommanderId;
+                var entityId = target.TargetInfo.CommanderId;
                 Position.Component? comp = null;
                 if (entityId.IsValid() && base.TryGetComponent<Position.Component>(entityId, out comp))
                 {

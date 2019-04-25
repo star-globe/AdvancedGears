@@ -93,13 +93,6 @@ component BaseUnitFuel {
 }
 
 // move:20010~20019
-type TargetInfo {
-    bool is_target = 1;
-    improbable.Vector3f position = 2;
-    EntityId commander_id = 3;
-    float ally_range = 4;
-}
-
 component BaseUnitMovement {
     id = 20010;
 
@@ -109,10 +102,7 @@ component BaseUnitMovement {
     bool is_target = 3;
     improbable.Vector3f target_position = 4;
 
-    TargetInfo target_info = 5;
     improbable.Vector3f commander_position = 6;
-
-    command improbable.common.Empty set_target(TargetInfo);
 }
 
 component BaseUnitSight {
@@ -147,6 +137,21 @@ component BaseUnitAction {
 
 type FollowerInfo {
     EntityId entity_id = 1;
+}
+
+type TargetInfo {
+    bool is_target = 1;
+    improbable.Vector3f position = 2;
+    EntityId commander_id = 3;
+    float ally_range = 4;
+}
+
+component BaseUnitTarget {
+    id = 20013;
+
+    TargetInfo target_info = 1;
+
+    command improbable.common.Empty set_target(TargetInfo);
 }
 
 // commander:20020~
