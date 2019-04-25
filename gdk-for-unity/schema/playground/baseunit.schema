@@ -204,7 +204,11 @@ component UnitFactoryComponent {
     id = 20032;
 
     int32 resource = 1;
-    transient list<ProductOrder> orders = 2;
+
+    float interval = 2;
+    float last_searched = 3;
+
+    transient list<ProductOrder> orders = 4;
 
     command improbable.common.Empty send_order(ProductOrder);
 }
