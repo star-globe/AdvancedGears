@@ -17,7 +17,7 @@ namespace Playground
         float speed = 1.0f;
 
         [SerializeField]
-        float rot = 1.8f;
+        float rot =0.3f;
 
         float inter = 0.5f;
 
@@ -54,8 +54,8 @@ namespace Playground
                 Interval = inter,
                 LastActed = 0,
                 AttackRange = atkRange,
-                AttackAngle = func(atkAngle),
-                AngleSpeed = func(angleSpeed),
+                AttackAngle = atkAngle,//func(atkAngle),
+                AngleSpeed = angleSpeed,//func(angleSpeed),
             });
 
             health.SendUpdate(new BaseUnitHealth.Update

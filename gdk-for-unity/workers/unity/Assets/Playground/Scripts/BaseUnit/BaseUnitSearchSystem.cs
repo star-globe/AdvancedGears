@@ -204,4 +204,24 @@ namespace Playground
             return inter * 0.1f * UnityEngine.Random.Range(-1.0f, 1.0f);
         }
     }
+
+    public static class RotateLogic
+    {
+        public static void Rotate(Transform trans, Vector3 foward, float angle)
+        {
+            var dot = Vector3.Dot(trans.up, foward);
+            foward -= dot * trans.up;
+            foward.Normalize();
+
+            var deg = angle * Mathf.Rad2Deg;
+            var axis = Vector3.Cross(trans.forward, foward);
+            var ang = Vector3.Angle(trans.forward, foward);
+            if (ang < deg)
+                deg = ang;
+
+            var q = Quaternion.AngleAxis(deg, axis.normalized);
+            var nq = trans.rotation * q;
+            trans.rotation = nq;
+        }
+    }
 }

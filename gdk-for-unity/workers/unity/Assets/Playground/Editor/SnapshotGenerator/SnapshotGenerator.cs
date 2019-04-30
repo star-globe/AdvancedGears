@@ -82,7 +82,13 @@ namespace Playground.Editor.SnapshotGenerator
                     }
 
                     UnitSide side = x < 0 ? UnitSide.A : UnitSide.B;
-                    double pos_x = x * scale;
+                    int nx;
+                    if (x < 0)
+                        nx = x-3;
+                    else
+                        nx = x+3;
+
+                        double pos_x = nx * scale;
                     double pos_z = z * scale;
                     var entityTemplate = BaseUnitTemplate.CreateBaseUnitEntityTemplate(side, new Coordinates(pos_x, 1, pos_z), UnitType.Soldier);
                     snapshot.AddEntity(entityTemplate);

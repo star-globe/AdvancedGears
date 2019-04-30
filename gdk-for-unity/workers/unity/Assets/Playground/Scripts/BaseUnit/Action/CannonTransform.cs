@@ -10,8 +10,8 @@ namespace Playground
 {
     public class CannonTransform : MonoBehaviour
     {
-        [SerializeField] Rigidbody turret;
-        public Rigidbody Turret { get { return turret; } }
+        [SerializeField] Transform turret;
+        public Transform Turret { get { return turret; } }
 
         [SerializeField] Transform barell;
         public Transform Barrell { get { return barell; } }
@@ -27,22 +27,5 @@ namespace Playground
         }
 
         public Vector3 Forward { get { return barell.forward; } }
-
-        public static void Rotate(CannonTransform cannon, Vector3 foward, float angle)
-        {
-            var trans = cannon.Turret.transform;
-            var dot = Vector3.Dot(trans.up,foward);
-            foward -= dot * trans.up;
-            foward.Normalize();
-
-            var axis = Vector3.Cross(trans.forward, foward);
-            var ang = Vector3.Angle(trans.forward, foward);
-            if (ang < angle)
-                angle = ang;
-
-            var q = Quaternion.AngleAxis(angle, axis.normalized);
-            var nq = trans.rotation * q;
-            cannon.Turret.MoveRotation(nq);
-        }
     }
 }

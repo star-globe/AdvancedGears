@@ -79,12 +79,11 @@ namespace Playground
 
                 commander.SelfOrder = current;
 
-                SetFollowers(commander.FollowerInfo.Followers,
-                             new TargetInfo (sight.IsTarget,
+                var targetInfo = new TargetInfo(sight.IsTarget,
                                              sight.TargetPosition,
                                              entityId.EntityId,
-                                             commander.AllyRange),
-                             current);
+                                             commander.AllyRange);
+                SetFollowers(commander.FollowerInfo.Followers, ref targetInfo, current);
 
                 data.Sight[i] = sight;
                 data.CommanderStatus[i] = commander;
@@ -120,7 +119,7 @@ namespace Playground
                 }
             }
 
-            float rate = 1.1f;
+            float rate = 1.3f;
             if (ally > enemy * rate)
                 return OrderType.Attack;
             
@@ -130,40 +129,49 @@ namespace Playground
             return OrderType.Keep;
         }
 
-        private void SetFollowers(List<EntityId> followers, TargetInfo targetInfo, OrderType order)
+        private void SetFollowers(List<EntityId> followers, ref TargetInfo targetInfo, OrderType order)
         {
             foreach (var id in followers)
             {
-                BaseUnitTarget.CommandSenders.SetTarget? tgtSender;
-                if (base.TryGetComponent(id, out tgtSender))
-                {
-                    var request = new BaseUnitTarget.SetTarget.Request(
-                        id,
-                        targetInfo);
-                    tgtSender.Value.RequestsToSend.Add(request);
-                    base.SetComponent(id, tgtSender.Value);
-                }
-
-                BaseUnitStatus.Component? status;
-                if (base.TryGetComponent(id, out status) == false)
-                    continue;
-
-                if (status.Value.Order == order)
-                    continue;
-
-                BaseUnitStatus.CommandSenders.SetOrder? orderSender;
-                if (base.TryGetComponent(id, out orderSender))
-                {
-                    var request = new BaseUnitStatus.SetOrder.Request(
-                        id,
-                        new OrderInfo()
-                        {
-                            Order = order,
-                        });
-                    orderSender.Value.RequestsToSend.Add(request);
-                    base.SetComponent(id, orderSender.Value);
-                }
+                SetCommand(id, ref targetInfo, order);
             }
+
+            SetCommand(targetInfo.CommanderId, ref targetInfo, order);
+        }
+
+        private bool SetCommand(EntityId id, ref TargetInfo targetInfo, OrderType order)
+        {
+            BaseUnitTarget.CommandSenders.SetTarget? tgtSender;
+            if (base.TryGetComponent(id, out tgtSender))
+            {
+                var request = new BaseUnitTarget.SetTarget.Request(
+                    id,
+                    targetInfo);
+                tgtSender.Value.RequestsToSend.Add(request);
+                base.SetComponent(id, tgtSender.Value);
+            }
+
+            BaseUnitStatus.Component? status;
+            if (base.TryGetComponent(id, out status) == false)
+                return false;
+
+            if (status.Value.Order == order)
+                return false;
+
+            BaseUnitStatus.CommandSenders.SetOrder? orderSender;
+            if (base.TryGetComponent(id, out orderSender))
+            {
+                var request = new BaseUnitStatus.SetOrder.Request(
+                    id,
+                    new OrderInfo()
+                    {
+                        Order = order,
+                    });
+                orderSender.Value.RequestsToSend.Add(request);
+                base.SetComponent(id, orderSender.Value);
+            }
+
+            return true;
         }
     }
 }

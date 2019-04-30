@@ -72,7 +72,7 @@ namespace Playground
                 var tgt = movement.TargetPosition.ToUnityVector() - origin;
 
                 // modify target
-                if (target.TargetInfo.CommanderId.IsValid())
+                if (action.IsTarget == false && target.TargetInfo.CommanderId.IsValid())
                 {
                     var com = movement.CommanderPosition.ToUnityVector() - origin;
                     tgt = get_nearly_position(pos, tgt, com, target.TargetInfo.AllyRange);
@@ -117,10 +117,11 @@ namespace Playground
         void rotate(Transform transform, Vector3 diff, float rot_speed)
         {
             Vector3 rot;
-            if (in_range(transform.forward, diff.normalized, rot_speed, out rot) == false)
+            Vector3 foward = diff.normalized;
+            float angle = rot_speed * Time.deltaTime;
+            if (in_range(transform.forward, foward, angle, out rot) == false)
             {
-                var v = Vector3.Dot(rot, Vector3.up) > 0 ? 1 : -1;
-                transform.Rotate(Vector3.up, v * rot_speed);
+                RotateLogic.Rotate(transform, foward, angle);
             }
         }
 

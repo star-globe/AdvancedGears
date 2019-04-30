@@ -92,7 +92,7 @@ namespace Playground
             if (dot > Mathf.Cos(angle))
                 return true;
 
-            CannonTransform.Rotate(unit.Cannon, foward, angleSpeed * Time.deltaTime);
+            RotateLogic.Rotate(unit.Cannon.Turret, foward, angleSpeed * Time.deltaTime);
             return false;
         }
     }
