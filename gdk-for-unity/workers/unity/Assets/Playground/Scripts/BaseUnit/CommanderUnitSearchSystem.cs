@@ -62,7 +62,7 @@ namespace Playground
 
                 sight.LastSearched = time + RandomInterval.GetRandom(inter);
 
-                var tgt = getNearestEnemeyPosition(status.Side, pos, sight.Range, UnitType.Stronghold);
+                var tgt = getNearestEnemey(status.Side, pos, sight.Range, UnitType.Stronghold, UnitType.Commander);
                 sight.IsTarget = tgt != null;
                 var tpos = Improbable.Vector3f.Zero;
                 if (sight.IsTarget)
