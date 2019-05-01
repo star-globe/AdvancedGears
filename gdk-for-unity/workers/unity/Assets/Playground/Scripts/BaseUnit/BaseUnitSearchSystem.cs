@@ -72,7 +72,7 @@ namespace Playground
                 action.IsTarget = false;
                 action.EnemyPositions.Clear();
 
-                var enemy = getNearestEnemeyPosition(status.Side, pos, sight.Range);
+                var enemy = getNearestEnemey(status.Side, pos, sight.Range);
                 if (enemy == null)
                 {
                     if (target.TargetInfo.IsTarget)
@@ -85,9 +85,9 @@ namespace Playground
                 {
                     movement.IsTarget = true;
                     action.IsTarget = true;
-                    var epos = new Improbable.Vector3f(enemy.Value.x - origin.x,
-                                                       enemy.Value.y - origin.y,
-                                                       enemy.Value.z - origin.z);
+                    var epos = new Improbable.Vector3f(enemy.pos.x - origin.x,
+                                                       enemy.pos.y - origin.y,
+                                                       enemy.pos.z - origin.z);
                     movement.TargetPosition = epos;
                     action.EnemyPositions.Add(epos);
                 }
@@ -121,11 +121,11 @@ namespace Playground
             }
         }
 
-        protected Vector3? getNearestEnemeyPosition(UnitSide self_side, Vector3 pos, float length, params UnitType[] types)
+        protected UnitInfo getNearestEnemey(UnitSide self_side, Vector3 pos, float length, params UnitType[] types)
         {
             float len = float.MaxValue;
-            Vector3? e_pos = null;
-
+            UnitInfo info = null;
+            
             var colls = Physics.OverlapSphere(pos, length, LayerMask.GetMask("Unit"));
             for (var i = 0; i < colls.Length; i++)
             {
@@ -151,12 +151,14 @@ namespace Playground
                     if (l < len)
                     {
                         len = l;
-                        e_pos = t_pos;
+                        info = info ?? new UnitInfo();
+                        info.pos = t_pos;
+                        info.type = unit.Value.Type;
                     }
                 }
             }
 
-            return e_pos;
+            return unit;
         }
 
         protected bool TryGetComponent<T>(EntityId id, out T? comp) where T : struct, IComponentData
@@ -197,6 +199,13 @@ namespace Playground
         }
     }
 
+    // Utils
+    public class UnitInfo
+    {
+        public Vector3 pos;
+        public UnitType type;
+    }
+    
     public static class RandomInterval
     {
         public static float GetRandom(float inter)
