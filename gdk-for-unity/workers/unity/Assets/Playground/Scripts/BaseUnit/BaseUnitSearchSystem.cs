@@ -121,7 +121,7 @@ namespace Playground
             }
         }
 
-        protected Vector3? getNearestEnemeyPosition(UnitSide self_side, Vector3 pos, float length, UnitType type = UnitType.None)
+        protected Vector3? getNearestEnemeyPosition(UnitSide self_side, Vector3 pos, float length, params UnitType[] types)
         {
             float len = float.MaxValue;
             Vector3? e_pos = null;
@@ -143,7 +143,7 @@ namespace Playground
                     if (unit.Value.Side == self_side)
                         continue;
 
-                    if (type != UnitType.None && type != unit.Value.Type)
+                    if (types.Length == 0 && types.Contains(unit.Value.Type) == false)
                         continue;
 
                     var t_pos = col.transform.position;
