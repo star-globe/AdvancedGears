@@ -65,14 +65,17 @@ namespace Playground
                 var tgt = getNearestEnemey(status.Side, pos, sight.Range, UnitType.Stronghold, UnitType.Commander);
                 sight.IsTarget = tgt != null;
                 var tpos = Improbable.Vector3f.Zero;
+                var type = UnitType.None;
                 if (sight.IsTarget)
                 {
-                    tpos = new Improbable.Vector3f(tgt.Value.x - origin.x,
-                                                   tgt.Value.y - origin.y,
-                                                   tgt.Value.z - origin.z);
+                    tpos = new Improbable.Vector3f(tgt.pos.x - origin.x,
+                                                   tgt.pos.y - origin.y,
+                                                   tgt.pos.z - origin.z);
+                    type = tgt.type;
                 }
 
                 sight.TargetPosition = tpos;
+                sight.TargetType = type;
 
                 // check 
                 OrderType current = GetOrder(status.Side, pos, sight.Range);
@@ -81,6 +84,7 @@ namespace Playground
 
                 var targetInfo = new TargetInfo(sight.IsTarget,
                                              sight.TargetPosition,
+                                             sight.TargetType,
                                              entityId.EntityId,
                                              commander.AllyRange);
                 SetFollowers(commander.FollowerInfo.Followers, ref targetInfo, current);
