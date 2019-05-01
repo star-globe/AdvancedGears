@@ -138,8 +138,9 @@ component BaseUnitAction {
 type TargetInfo {
     bool is_target = 1;
     improbable.Vector3f position = 2;
-    EntityId commander_id = 3;
-    float ally_range = 4;
+    UnitType type = 3;
+    EntityId commander_id = 4;
+    float ally_range = 5;
 }
 
 component BaseUnitTarget {
@@ -183,8 +184,9 @@ component CommanderSight {
 
     bool is_target = 4;
     improbable.Vector3f target_position = 5;
+    UnitType target_type = 6;
 
-    list<WarPower> war_powers = 6;
+    list<WarPower> war_powers = 7;
 }
 
 type ProductOrder {
