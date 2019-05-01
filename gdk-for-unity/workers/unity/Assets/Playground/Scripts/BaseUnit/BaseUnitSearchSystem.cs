@@ -103,6 +103,24 @@ namespace Playground
                 else
                     movement.CommanderPosition = Vector3f.Zero;
 
+                var range = action.AttackRange;
+                if (status.Type == UnitType.Commander)
+                {
+                    switch(target.TargetType)
+                    {
+                        case UnitType.Commander:
+                        case UnitType.Stronghold:   range += target.TargetInfo.AllyRange; break;
+                    }               
+                }
+                
+                switch (status.Order) {
+                    case OrderType.Move:    range = 0.2f;   break;
+                    case OrderType.Attack:  range *= 0.8f;  break;
+                    case OrderType.Escape:  range *= 1.6f;  break;
+                    case OrderType.Keep:    range *= 1.3f;  break;
+                }
+                movement.TargetRange = range;
+
                 data.Movement[i] = movement;
                 data.Action[i] = action;
             }
