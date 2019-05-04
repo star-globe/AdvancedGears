@@ -19,6 +19,7 @@ namespace Playground
             public readonly int Length;
             public ComponentDataArray<BaseUnitAction.Component> Action;
             public ComponentDataArray<BaseUnitAction.EventSender.FireTriggered> FireTriggeredEventsSenders;
+            public ComponentDataArray<BaseUnitPosture.EventSender.PostureChanged> PostureChangedEventSenders;
             [ReadOnly] public ComponentDataArray<BaseUnitStatus.Component> Status;
             public ComponentArray<Transform> Transform;
         }
@@ -41,6 +42,7 @@ namespace Playground
             {
                 var action = data.Action[i];
                 var triggerSender = data.FireTriggeredEventsSenders[i];
+                var postureSender = data.PostureChangedEventSenders[i];
                 var status = data.Status[i];
                 var trans = data.Transform[i];
 
@@ -64,15 +66,23 @@ namespace Playground
                 if (action.EnemyPositions.Count > 0)
                 {
                     var epos = action.EnemyPositions[0].ToUnityVector() + origin;
-                    if (CheckRange(unit, epos, action.AttackRange, action.AttackAngle, action.AngleSpeed))
+                    var result = CheckRange(unit, epos, action.AttackRange, action.AttackAngle, action.AngleSpeed);
+                    switch (result)
                     {
-                        var info = new AttackTargetInfo
-                        {
-                            Type = 1,
-                            TargetPosition = action.EnemyPositions[0],
-                        };
+                        case Result.InRange:
+                            var atk = new AttackTargetInfo
+                            {
+                                Type = 1,
+                                TargetPosition = action.EnemyPositions[0],
+                            };
+                            triggerSender.Events.Add(atk);
+                            break;
 
-                        triggerSender.Events.Add(info);
+                        case Result.Rotate:
+                            var rot = unit.Cannon.Turret.rotation;
+                            var data = new PostureData(PosturePoint.Bust, new Improbable.Transform.Quaternion(rot.w, rot.x, rot.y, rot.z));
+                            postureSender.Events.Add(data);
+                            break;
                     }
                 }
 
@@ -80,20 +90,27 @@ namespace Playground
             }
         }
 
-        bool CheckRange(UnitTransform unit, Vector3 epos, float range, float angle, float angleSpeed)
+        enum Result
+        {
+            OutOfRange = 0,
+            InRange,
+            Rotate,
+        }
+
+        Result CheckRange(UnitTransform unit, Vector3 epos, float range, float angle, float angleSpeed)
         {
             var trans = unit.Cannon.Muzzle;
             var diff = epos - trans.position;
             if (diff.sqrMagnitude > range * range)
-                return false;
+                return Result.OutOfRange;
 
             var foward = diff.normalized;
             var dot = Vector3.Dot(foward, unit.Cannon.Forward);
             if (dot > Mathf.Cos(angle))
-                return true;
+                return Result.InRange;
 
             RotateLogic.Rotate(unit.Cannon.Turret, foward, angleSpeed * Time.deltaTime);
-            return false;
+            return Result.OutOfRange;
         }
     }
 }

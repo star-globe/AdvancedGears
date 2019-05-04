@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Improbable;
 using Improbable.Gdk.Core;
 using Improbable.Gdk.ReactiveComponents;
@@ -106,7 +107,7 @@ namespace Playground
                 var range = action.AttackRange;
                 if (status.Type == UnitType.Commander)
                 {
-                    switch(target.TargetType)
+                    switch(target.TargetInfo.Type)
                     {
                         case UnitType.Commander:
                         case UnitType.Stronghold:   range += target.TargetInfo.AllyRange; break;
@@ -117,7 +118,7 @@ namespace Playground
                     case OrderType.Move:    range = 0.2f;   break;
                     case OrderType.Attack:  range *= 0.8f;  break;
                     case OrderType.Escape:  range *= 1.6f;  break;
-                    case OrderType.Keep:    range *= 1.3f;  break;
+                    case OrderType.Keep:    range *= 1.0f;  break;
                 }
                 movement.TargetRange = range;
 
@@ -161,7 +162,7 @@ namespace Playground
                     if (unit.Value.Side == self_side)
                         continue;
 
-                    if (types.Length == 0 && types.Contains(unit.Value.Type) == false)
+                    if (types.Length != 0 && types.Contains(unit.Value.Type) == false)
                         continue;
 
                     var t_pos = col.transform.position;
@@ -176,7 +177,7 @@ namespace Playground
                 }
             }
 
-            return unit;
+            return info;
         }
 
         protected bool TryGetComponent<T>(EntityId id, out T? comp) where T : struct, IComponentData
@@ -234,13 +235,13 @@ namespace Playground
 
     public static class RotateLogic
     {
-        public static void Rotate(Transform trans, Vector3 foward, float angle)
+        public static void Rotate(Transform trans, Vector3 foward, float angle = float.MaxValue)
         {
             var dot = Vector3.Dot(trans.up, foward);
             foward -= dot * trans.up;
             foward.Normalize();
 
-            var deg = angle * Mathf.Rad2Deg;
+            var deg = angle != float.MaxValue ? angle * Mathf.Rad2Deg: float.MaxValue;
             var axis = Vector3.Cross(trans.forward, foward);
             var ang = Vector3.Angle(trans.forward, foward);
             if (ang < deg)

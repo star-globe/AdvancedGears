@@ -38,7 +38,7 @@ namespace Playground
             movement.SendUpdate(new BaseUnitMovement.Update
             {
                 MoveSpeed = speed,
-                RotSpeed = rot
+                RotSpeed = rot * Mathf.Deg2Rad
             });
 
             sight.SendUpdate(new BaseUnitSight.Update
@@ -48,14 +48,13 @@ namespace Playground
                 Range = sightRange
             });
 
-            Func<float,float> func = (angle) => Mathf.PI * (angle / 360);
             action.SendUpdate(new BaseUnitAction.Update
             {
                 Interval = inter,
                 LastActed = 0,
                 AttackRange = atkRange,
-                AttackAngle = atkAngle,//func(atkAngle),
-                AngleSpeed = angleSpeed,//func(angleSpeed),
+                AttackAngle = atkAngle * Mathf.Deg2Rad,
+                AngleSpeed = angleSpeed * Mathf.Deg2Rad,
             });
 
             health.SendUpdate(new BaseUnitHealth.Update

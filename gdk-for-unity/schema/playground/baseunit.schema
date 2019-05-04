@@ -1,6 +1,7 @@
 package playground;
 import "improbable/vector3.schema";
 import "from_gdk_packages/com.improbable.gdk.core/common.schema";
+import "from_gdk_packages/com.improbable.gdk.transformsynchronization/transform_internal.schema";
 
 enum UnitType {
     None = 0;
@@ -150,6 +151,29 @@ component BaseUnitTarget {
     TargetInfo target_info = 1;
 
     command improbable.common.Empty set_target(TargetInfo);
+}
+
+enum PosturePoint {
+    Root = 0;
+    Bust = 1;
+}
+
+type PostureData {
+    PosturePoint point = 1;
+    improbable.transform.Quaternion rotation = 2;
+}
+
+type PostureInfo {
+    list<PostureData> datas = 1;
+}
+
+component BaseUnitPosture {
+    id = 20014;
+
+    improbable.transform.Quaternion root = 1;
+    PostureInfo posture = 2;
+
+    event PostureData posture_changed;
 }
 
 // commander:20020~

@@ -96,9 +96,6 @@ namespace Playground
 
         private OrderType GetOrder(UnitSide side, Vector3 pos, float length)
         {
-            float len = float.MaxValue;
-            Vector3? e_pos = null;
-
             float ally = 0.0f;
             float enemy = 0.0f;
 
