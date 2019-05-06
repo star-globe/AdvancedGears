@@ -55,11 +55,10 @@ namespace Playground
 
                 var time = Time.realtimeSinceStartup;
                 var inter = factory.Interval;
-                if (time - factory.LastSearched < inter)
+                if (inter.CheckTime(time) == false)
                     continue;
 
-                factory.LastSearched = time + RandomInterval.GetRandom(inter);
-
+                factory.Interval = inter;
                 /*
                 var tgt = getNearestEnemeyPosition(status.Side, pos, sight.Range, UnitType.Stronghold);
                 sight.IsTarget = tgt != null;

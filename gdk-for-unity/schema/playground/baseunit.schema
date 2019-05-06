@@ -107,12 +107,17 @@ component BaseUnitMovement {
     improbable.Vector3f commander_position = 6;
 }
 
+type IntervalChecker
+{
+    float interval = 1;
+    float last_checked = 2;
+}
+
 component BaseUnitSight {
     id = 20011;
 
     float range = 1;
-    float interval = 2;
-    float last_searched = 3;
+    IntervalChecker interval = 2;
     // ability:night vision
 }
 
@@ -124,8 +129,7 @@ type AttackTargetInfo {
 component BaseUnitAction {
     id = 20012;
 
-    float interval = 1;
-    float last_acted = 2;
+    IntervalChecker interval = 1;
 
     float attack_range = 3;
     float attack_angle = 4;
@@ -164,14 +168,17 @@ type PostureData {
 }
 
 type PostureInfo {
-    list<PostureData> datas = 1;
+    map<PosturePoint, PostureData> datas = 1;
 }
 
 component BaseUnitPosture {
     id = 20014;
 
-    improbable.transform.Quaternion root = 1;
-    PostureInfo posture = 2;
+    bool initialized = 1;
+    IntervalChecker interval = 2;
+
+    improbable.transform.Quaternion root = 3;
+    PostureInfo posture = 4;
 
     event PostureData posture_changed;
 }
@@ -204,8 +211,7 @@ component CommanderSight {
     id = 20021;
 
     float range = 1;
-    float interval = 2;
-    float last_searched = 3;
+    IntervalChecker interval = 2;
 
     bool is_target = 4;
     improbable.Vector3f target_position = 5;
@@ -232,8 +238,7 @@ component UnitFactory {
 
     int32 resource = 1;
 
-    float interval = 2;
-    float last_searched = 3;
+    IntervalChecker interval = 2;
 
     transient list<ProductOrder> orders = 4;
 

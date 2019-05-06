@@ -49,7 +49,7 @@ namespace Playground
             switch (type) {
                 case UnitType.Soldier:
                     template.AddComponent(new BulletComponent.Snapshot(), writeAccess);
-                    template.AddComponent(new BaseUnitPosture.Snapshot { Posture = new PostureInfo { Datas = new List<PostureData>() } }, writeAccess);
+                    template.AddComponent(new BaseUnitPosture.Snapshot { Posture = new PostureInfo { Datas = new Dictionary<PosturePoint, PostureData>() } }, writeAccess);
                     break;
 
                 case UnitType.Commander:
@@ -57,7 +57,7 @@ namespace Playground
                     template.AddComponent(new CommanderStatus.Snapshot { FollowerInfo = new FollowerInfo { Followers = new List<EntityId>() },
                                                                          SelfOrder = OrderType.Idle }, writeAccess);
                     template.AddComponent(new CommanderSight.Snapshot { WarPowers = new List<WarPower>() }, writeAccess);
-                    template.AddComponent(new BaseUnitPosture.Snapshot { Posture = new PostureInfo { Datas = new List<PostureData>() } }, writeAccess);
+                    template.AddComponent(new BaseUnitPosture.Snapshot { Posture = new PostureInfo { Datas = new Dictionary<PosturePoint, PostureData>() } }, writeAccess);
                     break;
 
                 case UnitType.Stronghold:

@@ -62,10 +62,10 @@ namespace Playground
 
                 var time = Time.realtimeSinceStartup;
                 var inter = sight.Interval;
-                if (time - sight.LastSearched < inter)
+                if (inter.CheckTime(time) == false)
                     continue;
 
-                sight.LastSearched = time + RandomInterval.GetRandom(inter);
+                sight.Interval = inter;
                 data.Sight[i] = sight;
 
                 // initial

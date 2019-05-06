@@ -337,6 +337,8 @@ GameObject:
   - component: {fileID: 172552952301854353}
   - component: {fileID: 3469608103390567251}
   - component: {fileID: 4005048915369244130}
+  - component: {fileID: 630352288142829180}
+  - component: {fileID: 9214823645137195810}
   m_Layer: 11
   m_Name: CommanderUnit
   m_TagString: Untagged
@@ -562,6 +564,32 @@ MonoBehaviour:
   atkRange: 9
   atkAngle: 5
   angleSpeed: 5
+--- !u!114 &630352288142829180
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5181175297171742801}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24e5978b29e30e54ca59e689c6dd3855, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  unit: {fileID: 8608431435383575143}
+--- !u!114 &9214823645137195810
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5181175297171742801}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdf0324339e132b45966db49925ab67c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  unit: {fileID: 8608431435383575143}
 --- !u!1 &5434689098519824318
 GameObject:
   m_ObjectHideFlags: 0

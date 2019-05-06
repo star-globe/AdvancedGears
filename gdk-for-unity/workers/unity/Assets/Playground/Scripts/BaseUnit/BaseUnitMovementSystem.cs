@@ -19,6 +19,7 @@ namespace Playground
             public readonly int Length;
             // 剛体配列
             public ComponentArray<Transform> Transform;
+            public ComponentDataArray<BaseUnitPosture.Component> Posture;
             [ReadOnly] public ComponentDataArray<BaseUnitMovement.Component> Movement;
             [ReadOnly] public ComponentDataArray<BaseUnitTarget.Component> Target;
             [ReadOnly] public ComponentDataArray<BaseUnitStatus.Component> Status;
@@ -49,6 +50,7 @@ namespace Playground
                     continue;
 
                 var rigidbody = unit.Vehicle;
+                var posture = data.Posture[i];
                 var movement = data.Movement[i];
                 var target = data.Target[i];
                 var status = data.Status[i];
@@ -89,7 +91,17 @@ namespace Playground
                 else if (mag < min_range * min_range)
                     foward = -1;
 
-                rotate(rigidbody.transform, tgt - pos, movement.RotSpeed);
+                if (rotate(rigidbody.transform, tgt - pos, movement.RotSpeed))
+                {
+                    var time = Time.realtimeSinceStartup;
+                    var inter = posture.Interval;
+                    if (posture.Initialized && inter.CheckTime(time))
+                    {
+                        posture.Interval = inter;
+                        posture.Root = rigidbody.transform.rotation.ToImprobableQuaternion();
+                        data.Posture[i] = posture;
+                    }
+                }
 
                 var uVec = rigidbody.transform.forward * movement.MoveSpeed * foward;
 
@@ -107,7 +119,7 @@ namespace Playground
             return Mathf.Asin(rot.magnitude) < Mathf.Deg2Rad * range;
         }
 
-        void rotate(Transform transform, Vector3 diff, float rot_speed)
+        bool rotate(Transform transform, Vector3 diff, float rot_speed)
         {
             Vector3 rot;
             Vector3 foward = diff.normalized;
@@ -115,7 +127,10 @@ namespace Playground
             if (in_range(transform.forward, foward, angle, out rot) == false)
             {
                 RotateLogic.Rotate(transform, foward, angle);
+                return true;
             }
+
+            return false;
         }
 
         float get_move_velocity(Vector3 diff, float check_length, float speed)

@@ -19,6 +19,7 @@ namespace Playground
             public readonly int Length;
             public ComponentDataArray<BaseUnitAction.Component> Action;
             public ComponentDataArray<BaseUnitAction.EventSender.FireTriggered> FireTriggeredEventsSenders;
+            public ComponentDataArray<BaseUnitPosture.Component> Posture;
             public ComponentDataArray<BaseUnitPosture.EventSender.PostureChanged> PostureChangedEventSenders;
             [ReadOnly] public ComponentDataArray<BaseUnitStatus.Component> Status;
             public ComponentArray<Transform> Transform;
@@ -42,6 +43,7 @@ namespace Playground
             {
                 var action = data.Action[i];
                 var triggerSender = data.FireTriggeredEventsSenders[i];
+                var posture = data.Posture[i];
                 var postureSender = data.PostureChangedEventSenders[i];
                 var status = data.Status[i];
                 var trans = data.Transform[i];
@@ -58,10 +60,10 @@ namespace Playground
 
                 var time = Time.realtimeSinceStartup;
                 var inter = action.Interval;
-                if (time - action.LastActed < inter)
+                if (inter.CheckTime(time) == false)
                     continue;
 
-                action.LastActed = time + RandomInterval.GetRandom(inter);
+                action.Interval = inter;
 
                 if (action.EnemyPositions.Count > 0)
                 {
@@ -82,6 +84,7 @@ namespace Playground
                             var rot = unit.Cannon.Turret.rotation;
                             var data = new PostureData(PosturePoint.Bust, new Improbable.Transform.Quaternion(rot.w, rot.x, rot.y, rot.z));
                             postureSender.Events.Add(data);
+                            //posture.Posture.Datas
                             break;
                     }
                 }

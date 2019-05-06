@@ -43,15 +43,13 @@ namespace Playground
 
             sight.SendUpdate(new BaseUnitSight.Update
             {
-                Interval = inter,
-                LastSearched = 0,
+                Interval = new IntervalChecker(inter,0),
                 Range = sightRange
             });
 
             action.SendUpdate(new BaseUnitAction.Update
             {
-                Interval = inter,
-                LastActed = 0,
+                Interval = new IntervalChecker(inter,0),
                 AttackRange = atkRange,
                 AttackAngle = atkAngle * Mathf.Deg2Rad,
                 AngleSpeed = angleSpeed * Mathf.Deg2Rad,

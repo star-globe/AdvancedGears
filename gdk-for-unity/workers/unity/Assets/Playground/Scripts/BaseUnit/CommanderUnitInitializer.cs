@@ -27,8 +27,7 @@ namespace Playground
         {
             sight.SendUpdate(new CommanderSight.Update
             {
-                Interval = inter,
-                LastSearched = 0,
+                Interval = new IntervalChecker(inter,0),
                 Range = sightRange
             });
 
