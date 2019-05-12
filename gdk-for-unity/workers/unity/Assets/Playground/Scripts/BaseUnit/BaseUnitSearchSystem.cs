@@ -107,18 +107,19 @@ namespace Playground
                 var range = action.AttackRange;
                 if (status.Type == UnitType.Commander)
                 {
-                    switch(target.TargetInfo.Type)
+                    switch (target.TargetInfo.Type)
                     {
                         case UnitType.Commander:
-                        case UnitType.Stronghold:   range += target.TargetInfo.AllyRange; break;
-                    }               
+                        case UnitType.Stronghold: range += target.TargetInfo.AllyRange; break;
+                    }
                 }
-                
-                switch (status.Order) {
-                    case OrderType.Move:    range = 0.2f;   break;
-                    case OrderType.Attack:  range *= 0.8f;  break;
-                    case OrderType.Escape:  range *= 1.6f;  break;
-                    case OrderType.Keep:    range *= 1.0f;  break;
+
+                switch (status.Order)
+                {
+                    case OrderType.Move: range = 0.2f; break;
+                    case OrderType.Attack: range *= 0.8f; break;
+                    case OrderType.Escape: range *= 1.6f; break;
+                    case OrderType.Keep: range *= 1.0f; break;
                 }
                 movement.TargetRange = range;
 
@@ -144,7 +145,7 @@ namespace Playground
         {
             float len = float.MaxValue;
             UnitInfo info = null;
-            
+
             var colls = Physics.OverlapSphere(pos, length, LayerMask.GetMask("Unit"));
             for (var i = 0; i < colls.Length; i++)
             {
@@ -196,7 +197,7 @@ namespace Playground
                 return false;
         }
 
-        protected void SetComponent<T>(EntityId id, T comp) where T: struct, IComponentData
+        protected void SetComponent<T>(EntityId id, T comp) where T : struct, IComponentData
         {
             Entity entity;
             if (!this.TryGetEntity(id, out entity))
@@ -224,7 +225,7 @@ namespace Playground
         public Vector3 pos;
         public UnitType type;
     }
-    
+
     public static class RandomInterval
     {
         public static float GetRandom(float inter)
@@ -237,19 +238,41 @@ namespace Playground
     {
         public static void Rotate(Transform trans, Vector3 foward, float angle = float.MaxValue)
         {
-            var dot = Vector3.Dot(trans.up, foward);
-            foward -= dot * trans.up;
+            Rotate(trans, trans.up, foward, angle, false);
+        }
+
+        public static void Rotate(Transform trans, Vector3 up, Vector3 foward, float angle = float.MaxValue, bool fit = true)
+        {
+            var dot = Vector3.Dot(up, foward);
+            foward -= dot * up;
             foward.Normalize();
 
-            var deg = angle != float.MaxValue ? angle * Mathf.Rad2Deg: float.MaxValue;
+            var deg = angle != float.MaxValue ? angle * Mathf.Rad2Deg : float.MaxValue;
             var axis = Vector3.Cross(trans.forward, foward);
             var ang = Vector3.Angle(trans.forward, foward);
             if (ang < deg)
                 deg = ang;
 
-            var q = Quaternion.AngleAxis(deg, axis.normalized);
+            var u = up;
+            if (Vector3.Dot(axis, up) < 0)
+                u = -up;
+
+            var q = Quaternion.AngleAxis(deg, u);
             var nq = trans.rotation * q;
             trans.rotation = nq;
+
+            if (fit)
+                trans.rotation = Quaternion.LookRotation(trans.forward, up);
+        }
+
+        public static bool CheckRotate(Transform trans, Vector3 up, Vector3 foward, float angle)
+        {
+            var dot = Vector3.Dot(up, foward);
+            foward -= dot * up;
+            foward.Normalize();
+
+            var d = Vector3.Dot(foward, trans.forward);
+            return d > Mathf.Cos(angle);
         }
     }
 }

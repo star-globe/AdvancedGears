@@ -13,8 +13,14 @@ namespace Playground
         [SerializeField] CannonTransform cannon;
         public CannonTransform Cannon { get { return cannon; } }
 
+        [SerializeField] Transform connector;
+        public Transform Conntector { get { return connector; } }
+
         [SerializeField] Rigidbody vehicle;
         public Rigidbody Vehicle { get { return vehicle; }}
+
+        [SerializeField] BoxCollider groundDetect;
+        public BoxCollider GroundDetect { get { return groundDetect; } }
 
         void Start()
         {

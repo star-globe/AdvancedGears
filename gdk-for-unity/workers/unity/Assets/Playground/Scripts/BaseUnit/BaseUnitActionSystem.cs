@@ -82,9 +82,12 @@ namespace Playground
 
                         case Result.Rotate:
                             var rot = unit.Cannon.Turret.rotation;
-                            var data = new PostureData(PosturePoint.Bust, new Improbable.Transform.Quaternion(rot.w, rot.x, rot.y, rot.z));
-                            postureSender.Events.Add(data);
-                            //posture.Posture.Datas
+                            var pdata = new PostureData(PosturePoint.Bust, new Improbable.Transform.Quaternion(rot.w, rot.x, rot.y, rot.z));
+                            postureSender.Events.Add(pdata);
+                            var pos = posture.Posture;
+                            pos.SetData(pdata);
+                            posture.Posture = pos;
+                            data.Posture[i] = posture;
                             break;
                     }
                 }
@@ -108,12 +111,12 @@ namespace Playground
                 return Result.OutOfRange;
 
             var foward = diff.normalized;
-            var dot = Vector3.Dot(foward, unit.Cannon.Forward);
-            if (dot > Mathf.Cos(angle))
+            var up = unit.Conntector.up;
+            if (RotateLogic.CheckRotate(unit.Cannon.Turret, up, foward, angle))
                 return Result.InRange;
 
-            RotateLogic.Rotate(unit.Cannon.Turret, foward, angleSpeed * Time.deltaTime);
-            return Result.OutOfRange;
+            RotateLogic.Rotate(unit.Cannon.Turret, up, foward, angleSpeed * Time.deltaTime);
+            return Result.Rotate;
         }
     }
 }

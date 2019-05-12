@@ -18,7 +18,7 @@ namespace Playground
             // データ長
             public readonly int Length;
             // 剛体配列
-            public ComponentArray<Transform> Transform;
+            public ComponentArray<UnitTransform> UnitTransform;
             public ComponentDataArray<BaseUnitPosture.Component> Posture;
             [ReadOnly] public ComponentDataArray<BaseUnitMovement.Component> Movement;
             [ReadOnly] public ComponentDataArray<BaseUnitTarget.Component> Target;
@@ -44,11 +44,7 @@ namespace Playground
         {
             for (var i = 0; i < data.Length; i++)
             {
-                var trans = data.Transform[i];
-                var unit = trans.GetComponent<UnitTransform>();
-                if (unit == null)
-                    continue;
-
+                var unit = data.UnitTransform[i];
                 var rigidbody = unit.Vehicle;
                 var posture = data.Posture[i];
                 var movement = data.Movement[i];
@@ -71,6 +67,13 @@ namespace Playground
                 }
 
                 var pos = rigidbody.position;
+
+                // check ground
+                var bounds = unit.GroundDetect.bounds;
+                var up = unit.GroundDetect.transform.up;
+                if (!Physics.Raycast(new Ray(bounds.center, -up), bounds.extents.y * 1.1f, LayerMask.GetMask("Ground")))
+                    continue;
+
                 var tgt = movement.TargetPosition.ToUnityVector() - origin;
 
                 // modify target

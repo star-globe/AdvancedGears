@@ -24,6 +24,14 @@ namespace Playground
             inter.LastChecked = current + RandomInterval.GetRandom(inter.Interval);
             return true;
         }
+
+        public static void SetData(this ref PostureInfo info, PostureData data)
+        {
+            if (info.Datas.ContainsKey(data.Point))
+                info.Datas[data.Point] = data;
+            else
+                info.Datas.Add(data.Point, data);
+        }
     }
 }
 

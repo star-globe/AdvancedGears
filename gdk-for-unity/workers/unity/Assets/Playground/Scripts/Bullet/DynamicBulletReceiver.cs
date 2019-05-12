@@ -31,6 +31,11 @@ namespace Playground
             healthCommandSender.SendModifyHealthCommand(entityId, new HealthModifier(0, current));
         }
 
+        protected override bool CheckSelf(long id)
+        {
+            return entityId.Id == id;
+        }
+
         void Start()
         {
             foreach (var n in notifiers)
@@ -63,12 +68,20 @@ namespace Playground
             if (fire == null)
                 return;
 
+            if (CheckSelf(fire.Value.ShooterEntityId))
+                return;
+
             OnHit(fire.Value);
             base.Creator.InvokeVanishAction(fire.Value.ShooterEntityId, fire.Value.BulletId);
         }
 
         protected virtual void OnHit(BulletInfo info)
         {
+        }
+
+        protected virtual bool CheckSelf(long id)
+        {
+            return false;
         }
     }
 }
