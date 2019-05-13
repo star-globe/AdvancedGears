@@ -160,6 +160,8 @@ component BaseUnitTarget {
 enum PosturePoint {
     Root = 0;
     Bust = 1;
+    Arm1 = 2;
+    Arm2 = 3;
 }
 
 type PostureData {
