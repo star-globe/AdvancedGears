@@ -14,52 +14,35 @@ namespace Playground
         [Require] BaseUnitHealthWriter health;
 
         [SerializeField]
-        float speed = 1.0f;
-
-        [SerializeField]
-        float rot =0.3f;
-
-        float inter = 0.5f;
-
-        [SerializeField]
-        float sightRange = 10.0f;
-
-        [SerializeField]
-        float atkRange = 9.0f;
-
-        [SerializeField]
-        float atkAngle = 5.0f;
-
-        [SerializeField]
-        float angleSpeed = 5.0f;
+        BaseUnitInitSettings settings;
 
         void Start()
         {
             movement.SendUpdate(new BaseUnitMovement.Update
             {
-                MoveSpeed = speed,
-                RotSpeed = rot * Mathf.Deg2Rad
+                MoveSpeed = settings.Speed,
+                RotSpeed = settings.Rot * Mathf.Deg2Rad
             });
 
             sight.SendUpdate(new BaseUnitSight.Update
             {
-                Interval = new IntervalChecker(inter,0),
-                Range = sightRange
+                Interval = new IntervalChecker(settings.Inter,0),
+                Range = settings.SightRange
             });
 
             action.SendUpdate(new BaseUnitAction.Update
             {
-                Interval = new IntervalChecker(inter,0),
-                AttackRange = atkRange,
-                AttackAngle = atkAngle * Mathf.Deg2Rad,
-                AngleSpeed = angleSpeed * Mathf.Deg2Rad,
+                Interval = new IntervalChecker(settings.Inter,0),
+                AttackRange = settings.AtkRange,
+                AttackAngle = settings.AtkAngle * Mathf.Deg2Rad,
+                AngleSpeed = settings.AngleSpeed * Mathf.Deg2Rad,
             });
 
             health.SendUpdate(new BaseUnitHealth.Update
             {
-                MaxHealth = 10,
-                Health = 10,
-                Defense = 10,
+                MaxHealth = settings.MaxHealth,
+                Health = settings.MaxHealth,
+                Defense = settings.Defense,
             });
         }
     }
