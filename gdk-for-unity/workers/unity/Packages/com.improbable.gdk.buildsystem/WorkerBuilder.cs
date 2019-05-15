@@ -111,6 +111,25 @@ namespace Improbable.Gdk.BuildSystem
             var activeBuildTarget = EditorUserBuildSettings.activeBuildTarget;
             var activeBuildTargetGroup = BuildPipeline.GetBuildTargetGroup(activeBuildTarget);
 
+            if (BuildConfig.GetInstance() == null)
+            {
+                const string errorMessage =
+                    "Could not find an instance of the SpatialOS Build Configuration.\n\nPlease create one via Assets > Create > SpatialOS > SpatialOS Build Configuration.\n\nIf you already have an instance of the SpatialOS Build Configuration in your project, please open it in the Unity Inspector to force the asset to load and retry the build.";
+
+                if (Application.isEditor)
+                {
+                    EditorApplication.delayCall += () =>
+                    {
+                        EditorUtility.DisplayDialog("Could not find SpatialOS Build Configuration",
+                            errorMessage,
+                            "OK");
+                    };
+                }
+
+                Debug.LogError(errorMessage);
+                return false;
+            }
+
             try
             {
                 LocalLaunch.BuildConfig();
@@ -175,7 +194,7 @@ namespace Improbable.Gdk.BuildSystem
                 var activeScriptingBackend = PlayerSettings.GetScriptingBackend(buildTargetGroup);
                 try
                 {
-                    if (scriptingBackend != null)
+                    if (scriptingBackend != null && config.Target != BuildTarget.iOS)
                     {
                         Debug.Log($"Setting scripting backend to {scriptingBackend.Value}");
                         PlayerSettings.SetScriptingBackend(buildTargetGroup, scriptingBackend.Value);
@@ -274,6 +293,7 @@ namespace Improbable.Gdk.BuildSystem
             using (new ShowProgressBarScope($"Package {basePath}"))
             {
                 RedirectedProcess.Command(Common.SpatialBinary)
+                    .InDirectory(Path.GetFullPath(Path.Combine(Application.dataPath, "..")))
                     .WithArgs("file", "zip", $"--output=\"{Path.GetFullPath(zipAbsolutePath)}\"",
                         $"--basePath=\"{Path.GetFullPath(basePath)}\"", "\"**\"",
                         $"--compression={useCompression}")

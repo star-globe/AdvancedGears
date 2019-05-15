@@ -5,14 +5,12 @@
         "Improbable.Gdk.TransformSynchronization",
         "Improbable.Gdk.PlayerLifecycle",
         "Improbable.Gdk.GameObjectCreation",
+        "Improbable.Gdk.QueryBasedInterestHelper",
         "Unity.Entities",
         "Unity.Entities.Hybrid",
         "Unity.Mathematics",
         "Improbable.Gdk.Generated",
-        "Improbable.Gdk.Mobile",
-        "Improbable.Gdk.Mobile.Android",
-        "Improbable.Gdk.Mobile.iOS",
-        "Improbable.Gdk.ObjectPooling"
+        "Improbable.Gdk.Mobile"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],

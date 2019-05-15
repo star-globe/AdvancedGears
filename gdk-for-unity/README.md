@@ -1,4 +1,4 @@
-# The SpatialOS GDK for Unity (alpha)
+![](spatialos_gdk_for_unity_header.png)
 
 ![](https://img.shields.io/badge/license-MIT-brightgreen.svg) ![](https://badge.buildkite.com/fec962a4df6e6705871bffa4dfcdea4f2ff7efcd737e5186ea.svg?branch=develop)
 
@@ -14,15 +14,15 @@ The GDK is composed of three layers:
 * A [**First Person Shooter (FPS) Starter Project**](https://github.com/spatialos/gdk-for-unity-fps-starter-project/) that enables you and your friends to experience the true scale of SpatialOS, providing a solid foundation for entirely new games.
 * A [**Blank Starter Project**](https://github.com/spatialos/gdk-for-unity-blank-project) containing the minimum GDK feature set you need to start developing games for SpatialOS.
 
-[Get started](https://docs.improbable.io/unity/alpha/content/get-started/get-started) with the SpatialOS GDK for Unity, by setting up the FPS Starter Project.
+[Get started](https://docs.improbable.io/unity/alpha/projects/fps/get-started/get-started) with the SpatialOS GDK for Unity, by setting up the FPS Starter Project.
 
 ---
 
-* [Get started](https://docs.improbable.io/unity/alpha/content/get-started/get-started)
+* [Get started](https://docs.improbable.io/unity/alpha/projects/fps/get-started/get-started)
 * [Documentation](https://docs.improbable.io/unity/alpha/)
 
 * [Development roadmap](https://github.com/spatialos/gdk-for-unity/projects/1)
-* [Issue reporting](https://github.com/spatialos/UnityGDK/issues) ([Known issues](https://docs.improbable.io/unity/alpha/known-issues))
+* [Issue reporting](https://github.com/spatialos/UnityGDK/issues)
 
 * Community: [Discord](https://discord.gg/SCZTCYm) - [Forums](https://forums.improbable.io/latest?tags=unity-gdk) - [Mailing list](http://go.pardot.com/l/169082/2018-06-25/27mhsb)
 
@@ -30,7 +30,7 @@ The GDK is composed of three layers:
 
 ## Recommended use
 
-This is the alpha release of the SpatialOS GDK for Unity. We invite projects to start using it but warn that all APIs are subject to change as we learn from feedback. 
+This is the alpha release of the SpatialOS GDK for Unity. We invite projects to start using it but warn that all APIs are subject to change as we learn from feedback.
 
 ## Contributions
 

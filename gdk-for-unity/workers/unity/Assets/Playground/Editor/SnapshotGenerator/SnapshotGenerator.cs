@@ -29,33 +29,36 @@ namespace Playground.Editor.SnapshotGenerator
         {
             var snapshot = new Snapshot();
 
-            AddPlayerSpawner(snapshot);
+            AddPlayerSpawner(snapshot, new Coordinates(2000, 0, 2000));
+            AddPlayerSpawner(snapshot, new Coordinates(2000, 0, -2000));
+            AddPlayerSpawner(snapshot, new Coordinates(-2000, 0, -2000));
+            AddPlayerSpawner(snapshot, new Coordinates(-2000, 0, 2000));
+
             AddCubeGrid(snapshot, cubeCount);
-            //AddBulletCore(snapshot);
-            //CreateSpinner(snapshot, new Coordinates { X = 5.5, Y = 0.5f, Z = 0.0 });
-            //CreateSpinner(snapshot, new Coordinates { X = -5.5, Y = 0.5f, Z = 0.0 });
+            CreateSpinner(snapshot, new Coordinates { X = 5.5, Y = 0.5f, Z = 0.0 });
+            CreateSpinner(snapshot, new Coordinates { X = -5.5, Y = 0.5f, Z = 0.0 });
 
             return snapshot;
         }
 
-        private static void AddPlayerSpawner(Snapshot snapshot)
+        private static void AddPlayerSpawner(Snapshot snapshot, Coordinates playerSpawnerLocation)
         {
             var template = new EntityTemplate();
-            template.AddComponent(new Position.Snapshot(), WorkerUtils.UnityGameLogic);
+            template.AddComponent(new Position.Snapshot(playerSpawnerLocation), WorkerUtils.UnityGameLogic);
             template.AddComponent(new Metadata.Snapshot { EntityType = "PlayerCreator" }, WorkerUtils.UnityGameLogic);
             template.AddComponent(new Persistence.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new PlayerCreator.Snapshot(), WorkerUtils.UnityGameLogic);
 
-            template.SetReadAccess(WorkerUtils.UnityGameLogic, WorkerUtils.UnityClient, WorkerUtils.AndroidClient, WorkerUtils.iOSClient);
+            template.SetReadAccess(WorkerUtils.UnityGameLogic, WorkerUtils.UnityClient, WorkerUtils.MobileClient);
             template.SetComponentWriteAccess(EntityAcl.ComponentId, WorkerUtils.UnityGameLogic);
 
             snapshot.AddEntity(template);
         }
 
-        static readonly double scale = 4.0;
-        
         private static void AddCubeGrid(Snapshot snapshot, int cubeCount)
         {
+            var cubeTemplate = CubeTemplate.CreateCubeEntityTemplate();
+
             // Calculate grid size
             var gridLength = (int) Math.Ceiling(Math.Sqrt(cubeCount));
             if (gridLength % 2 == 1) // To make sure nothing is in (0, 0)
@@ -81,30 +84,22 @@ namespace Playground.Editor.SnapshotGenerator
                         return;
                     }
 
-                    UnitSide side = x < 0 ? UnitSide.A : UnitSide.B;
-                    int nx;
-                    if (x < 0)
-                        nx = x-3;
-                    else
-                        nx = x+3;
+                    var positionSnapshot = new Position.Snapshot
+                    {
+                        Coords = new Coordinates(x, 1, z)
+                    };
+                    var transformSnapshot = new TransformInternal.Snapshot
+                    {
+                        Location = new Location(x, 1, z),
+                        Rotation = new Quaternion(1, 0, 0, 0),
+                        TicksPerSecond = 1f / Time.fixedDeltaTime
+                    };
 
-                        double pos_x = nx * scale;
-                    double pos_z = z * scale;
-                    var entityTemplate = BaseUnitTemplate.CreateBaseUnitEntityTemplate(side, new Coordinates(pos_x, 1, pos_z), UnitType.Soldier);
-                    snapshot.AddEntity(entityTemplate);
+                    cubeTemplate.SetComponent(positionSnapshot);
+                    cubeTemplate.SetComponent(transformSnapshot);
+                    snapshot.AddEntity(cubeTemplate);
                 }
             }
-
-            var len = gridLength * scale;
-            var templateA = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.A, new Coordinates(-len * 3, 1, 0), UnitType.Stronghold);
-            var templateB = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.B, new Coordinates( len * 3, 1, 0), UnitType.Stronghold);
-            snapshot.AddEntity(templateA);
-            snapshot.AddEntity(templateB);
-            
-            var templateCa = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.A, new Coordinates(-len * 2, 1, 0), UnitType.Commander);
-            var templateCb = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.B, new Coordinates( len * 2, 1, 0), UnitType.Commander);
-            snapshot.AddEntity(templateCa);
-            snapshot.AddEntity(templateCb);
         }
 
         private static void CreateSpinner(Snapshot snapshot, Coordinates coords)
@@ -127,17 +122,11 @@ namespace Playground.Editor.SnapshotGenerator
             template.AddComponent(new SpinnerColor.Snapshot { Color = Color.BLUE }, WorkerUtils.UnityGameLogic);
             template.AddComponent(new SpinnerRotation.Snapshot(), WorkerUtils.UnityGameLogic);
 
-            template.SetReadAccess(WorkerUtils.UnityGameLogic, WorkerUtils.UnityClient, WorkerUtils.AndroidClient, WorkerUtils.iOSClient);
+            template.SetReadAccess(WorkerUtils.UnityGameLogic, WorkerUtils.UnityClient, WorkerUtils.MobileClient);
             template.SetComponentWriteAccess(EntityAcl.ComponentId, WorkerUtils.UnityGameLogic);
 
 
             snapshot.AddEntity(template);
         }
-        
-        //private static void AddBulletCore(Snapshot snapshot)
-        //{
-        //    var entityTemplate = BulletTemplate.CreateBulletEntityTemplate(new Coordinates(0, 0, 0));
-        //    snapshot.AddEntity(entityTemplate);
-        //}
     }
 }

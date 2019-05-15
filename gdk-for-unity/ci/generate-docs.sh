@@ -44,7 +44,7 @@ popd
 DOCS_BRANCH="docs/api-docs-${TAG}"
 git clone "${CLONE_URL}" "${DOCS_DIR}"
 pushd "${DOCS_DIR}"
-    git checkout docs/improbadoc-conversion
+    git checkout docs-next
     if [ -n "$(git show-ref origin/${DOCS_BRANCH})" ]; then
         echo "Docs branch ${DOCS_BRANCH} already exists"
         exit 1
@@ -58,6 +58,7 @@ dotnet run -p "${DOCGEN_DIR}/Docgen/Docgen.csproj" -- \
     --target-namespace="Improbable.Gdk" \
     --output-directory="${DOCS_DIR}/docs/api" \
     --namespace-filter=".*EditmodeTests" \
+    --namespace-filter=".*DeploymentLauncher" \
     --namespace-filter=".*PlaymodeTests" \
     --api-path="api" \
     --git-tag="${TAG}"
@@ -71,5 +72,5 @@ popd
 
 # If the hub CLI is on the command line, open a PR automatically.
 if [ -x "$(command -v hub)" ]; then
-    hub pull-request -b spatialos/gdk-for-unity:docs/improbadoc-conversion -h "spatialos/gdk-for-unity:${DOCS_BRANCH}" -o -m "API docs update for ${TAG}"
+    hub pull-request -b spatialos/gdk-for-unity:docs-next -h "spatialos/gdk-for-unity:${DOCS_BRANCH}" -o -m "API docs update for ${TAG}"
 fi

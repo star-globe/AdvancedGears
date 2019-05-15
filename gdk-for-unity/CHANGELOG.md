@@ -2,6 +2,80 @@
 
 ## Unreleased
 
+## `0.2.2` - 2019-05-15
+
+### Breaking Changes
+- Removed the `Improbable.Gdk.Mobile.Android` and `Improbable.Gdk.Mobile.iOS` packages. All functionality is now available inside the `Improbable.Gdk.Mobile` package.
+
+### Added
+
+- Added support for Windows x86 builds.
+- Added a user-friendly error message when the build system fails to find a SpatialOS Build Configuration instance.
+- Added two menu items: `SpatialOS > Launch mobile device > Android on local` and `SpatialOS > Launch mobile device > Android on cloud`.
+- Added a new, project-generic, deployment launcher feature module, `com.improbable.gdk.deploymentlauncher`. This editor-only module includes functionality to:
+    - Upload assemblies from the editor.
+    - Launch and stop deployments from the editor.
+    - View basic information about live deployments (start time, region, number of connected workers) in the editor.
+
+### Changed
+
+- Added a `Improbable.Gdk.Core.Editor` asmdef.
+    - Moved `SingletonScriptableObject<T>` from the build system feature module into this assembly and made it public.
+    - Pulled out the `UiStateManager` from the `BuildConfigEditor` into this assembly and made it public.
+- Exceptions thrown in user-code callbacks no longer cause other callbacks scheduled for that frame to not fire. Instead, the exceptions are caught and logged with Debug.LogException.
+- Upgraded the Worker SDK version to `13.7.1`.
+- Updated the default method of loading a Development Authentication Token to search for a `DevAuthToken.txt` asset at the root of any `Resources` folder.
+- Removed the `AndroidClientWorkerConnector` and `iOSClientWorkerConnector` and their specific scenes. You can now use the `MobileClientWorkerConnector` and its `MobileClientScene` to connect to a mobile device.
+
+### Fixed
+
+- Fixed a bug where if an entity received an event and was removed from your worker's view in the same ops list, the event would not be removed.
+- Fixed a bug where clicking on `SpatialOS` > `Generate Dev Authentication Token` would not always refresh the asset database correctly.
+- Fixed a bug where requireables on a GameObject linked to the worker entity were not injected properly.
+- Fixed a bug where the `DevAuthToken.txt` asset would be imported from an invalid AssetDatabase path.
+
+## `0.2.1` - 2019-04-15
+
+### Breaking Changes
+
+- Removed `clientAccess` from the `AddPlayerLifecycleComponents` signature. We now construct the client access attribute within the helper.
+
+### Added
+
+- Added a static helper in the `EntityTemplate` class to construct worker access attributes.
+- Added an optional callback as an argument to the `RequestPlayerCreation` method in `SendCreatePlayerRequestSystem`. This callback is invoked upon receiving a response to a player creation request.
+- Added a new Query-based interest helper module, `com.improbable.gdk.querybasedinteresthelper`.
+    - `InterestTemplate` provides functionality to ergonomically add, replace and clear queries from an Interest component.
+    - `InterestQuery` reduces boilerplate code required to construct interest queries.
+    - `Constraint` contains static methods to easily create constraints for an interest query.
+- Added a `WithTimeout(TimeSpan timeout)` method to the `RedirectedProcess` class. This allows you to set a timeout for the underlying process execution.
+- Added a `Improbable.Gdk.Core.Collections.Result<T, E>` struct to represent a result which can either contain a value `T` or an error `E`.
+- Added Scripting Define Symbol `DISABLE_REACTIVE_COMPONENTS`. Using this symbol will disable all reactive componts and systems.
+- Added a `WorkerFlagReader` which you can subscribe and `Require`. This allows you to:
+    - Add callbacks for changes to worker flags.
+    - Read the value of worker flags.
+
+### Changed
+
+- The player lifecycle module now dynamically queries for PlayerCreator entities, and sends requests to a random one each time. This removes the reliance on a hardcoded PlayerCreator Entity ID.
+- Removed the `Type` suffix from player lifecycle schema types.
+- `RedirectedProcess.RunAsync()` now takes a `CancellationToken?` as a parameter. This token can be used to cancel the underlying process.
+- Updated the Unity version to `2018.3.11`.
+
+### Fixed
+
+- Fixed an issue where player creation requests could retry infinitely without logging failure.
+- Fixed an issue where if you called `RedirectedProcess.Command(...)` in a non-main thread, it would throw an exception.
+- Fixed an issue where having the same name for a schema package and a schema component would lead to generating invalid code.
+
+### Internal
+
+- Tools package now uses PackageManager API instead of parsing manifest.json.
+- Updated default snapshot to have more than one PlayerCreator entity.
+- Fixed package dependencies.
+- Worker flag changes are propagated to the `ViewDiff`.
+- Exposed `GetWorkerFlag(string name)` on the `View`.
+
 ## `0.2.0` - 2019-03-18
 
 ### Breaking Changes

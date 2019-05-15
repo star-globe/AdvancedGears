@@ -5,7 +5,6 @@ using Improbable.Gdk.Core;
 using Improbable.Gdk.Subscriptions;
 using UnityEngine;
 using Object = UnityEngine.Object;
-using Playground;
 
 namespace Improbable.Gdk.GameObjectCreation
 {
@@ -25,8 +24,7 @@ namespace Improbable.Gdk.GameObjectCreation
         {
             typeof(UnityEngine.Transform),
             typeof(Rigidbody),
-            typeof(MeshRenderer),
-            typeof(UnitTransform)
+            typeof(MeshRenderer)
         };
 
         public GameObjectCreatorFromMetadata(string workerType, Vector3 workerOrigin, ILogDispatcher logger)

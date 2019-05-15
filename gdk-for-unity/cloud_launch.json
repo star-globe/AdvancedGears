@@ -33,7 +33,25 @@
       "worker_type": "UnityClient",
       "permissions": [
         {
-          "all": {}
+          "entity_query": {
+            "allow": true,
+            "components": [
+              "*"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "worker_type": "MobileClient",
+      "permissions": [
+        {
+          "entity_query": {
+            "allow": true,
+            "components": [
+              "*"
+            ]
+          }
         }
       ]
     }
