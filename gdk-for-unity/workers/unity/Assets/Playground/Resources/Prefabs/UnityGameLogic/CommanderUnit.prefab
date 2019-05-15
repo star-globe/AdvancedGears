@@ -561,7 +561,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5cb8294180b0f244b5643b95c363b8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  settings: {fileID: 11400000, guid: e3dc46b377a5a2846b02593af84bae54, type: 2}
+  speed: 1
+  rot: 3
+  sightRange: 30
+  atkRange: 15
+  atkAngle: 1
+  angleSpeed: 90
 --- !u!114 &630352288142829180
 MonoBehaviour:
   m_ObjectHideFlags: 0
