@@ -22,12 +22,12 @@ namespace Playground
 
         private void Fire(BulletFireInfo info)
         {
-            base.Creator.OnFire(info);
+            base.Creator?.OnFire(info);
         }
 
         private void Vanish(BulletVanishInfo info)
         {
-            base.Creator.OnVanish(info);
+            base.Creator?.OnVanish(info);
         }
     }
 

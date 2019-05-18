@@ -14,17 +14,8 @@ namespace Playground
     [UpdateBefore(typeof(FixedUpdate.PhysicsFixedUpdate))]
     public class CommanderUnitSearchSystem : BaseSearchSystem
     {
-        private struct Data
-        {
-            public readonly int Length;
-            public ComponentDataArray<CommanderSight.Component> Sight;
-            public ComponentDataArray<CommanderStatus.Component> CommanderStatus;
-            [ReadOnly] public ComponentDataArray<BaseUnitStatus.Component> BaseUnitStatus;
-            [ReadOnly] public ComponentArray<Transform> Transform;
-            [ReadOnly] public ComponentDataArray<SpatialEntityId> EntityId;
-        }
-
-        [Inject] private Data data;
+        private CommandSystem commandSystem;
+        private ComponentGroup group;
 
         private Vector3 origin;
 
@@ -32,19 +23,34 @@ namespace Playground
         {
             base.OnCreateManager();
 
+            commandSystem = World.GetExistingManager<CommandSystem>();
             // ここで基準位置を取る
             origin = World.GetExistingManager<WorkerSystem>().Origin;
+
+            group = GetComponentGroup(
+                ComponentType.Create<CommanderSight.Component>(),
+                ComponentType.Create<CommanderStatus.Component>(),
+                ComponentType.ReadOnly<BaseUnitStatus.Component>(),
+                ComponentType.ReadOnly<Transform>(),
+                ComponentType.ReadOnly<SpatialEntityId>()
+            );
         }
 
         protected override void OnUpdate()
         {
-            for (var i = 0; i < data.Length; i++)
+            var sightData = group.GetComponentDataArray<CommanderSight.Component>();
+            var commanderData = group.GetComponentDataArray<CommanderStatus.Component>();
+            var statusData = group.GetComponentDataArray<BaseUnitStatus.Component>();
+            var transData = group.GetComponentArray<Transform>();
+            var entityIdData = group.GetComponentDataArray<SpatialEntityId>();
+
+            for (var i = 0; i < sightData.Length; i++)
             {
-                var sight = data.Sight[i];
-                var commander = data.CommanderStatus[i];
-                var status = data.BaseUnitStatus[i];
-                var pos = data.Transform[i].position;
-                var entityId = data.EntityId[i];
+                var sight = sightData[i];
+                var commander = commanderData[i];
+                var status = statusData[i];
+                var pos = transData[i].position;
+                var entityId = entityIdData[i];
 
                 if (status.State != UnitState.Alive)
                     continue;
@@ -89,8 +95,8 @@ namespace Playground
                                              commander.AllyRange);
                 SetFollowers(commander.FollowerInfo.Followers, ref targetInfo, current);
 
-                data.Sight[i] = sight;
-                data.CommanderStatus[i] = commander;
+                sightData[i] = sight;
+                commanderData[i] = commander;
             }
         }
 
@@ -142,15 +148,11 @@ namespace Playground
 
         private bool SetCommand(EntityId id, ref TargetInfo targetInfo, OrderType order)
         {
-            BaseUnitTarget.CommandSenders.SetTarget? tgtSender;
-            if (base.TryGetComponent(id, out tgtSender))
-            {
-                var request = new BaseUnitTarget.SetTarget.Request(
-                    id,
-                    targetInfo);
-                tgtSender.Value.RequestsToSend.Add(request);
-                base.SetComponent(id, tgtSender.Value);
-            }
+            Entity entity;
+            if (!base.TryGetEntity(id, out entity))
+                return false;
+
+            commandSystem.SendCommand(new BaseUnitTarget.SetTarget.Request(id, targetInfo), entity);
 
             BaseUnitStatus.Component? status;
             if (base.TryGetComponent(id, out status) == false)
@@ -159,19 +161,7 @@ namespace Playground
             if (status.Value.Order == order)
                 return false;
 
-            BaseUnitStatus.CommandSenders.SetOrder? orderSender;
-            if (base.TryGetComponent(id, out orderSender))
-            {
-                var request = new BaseUnitStatus.SetOrder.Request(
-                    id,
-                    new OrderInfo()
-                    {
-                        Order = order,
-                    });
-                orderSender.Value.RequestsToSend.Add(request);
-                base.SetComponent(id, orderSender.Value);
-            }
-
+            commandSystem.SendCommand(new BaseUnitStatus.SetOrder.Request(id, new OrderInfo(){ Order = order }), entity);
             return true;
         }
     }

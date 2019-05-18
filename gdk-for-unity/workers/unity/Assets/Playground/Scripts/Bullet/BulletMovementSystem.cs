@@ -13,14 +13,7 @@ namespace Playground
     [UpdateBefore(typeof(FixedUpdate.PhysicsFixedUpdate))]
     internal class BulletMovementSystem : ComponentSystem
     {
-        private struct Data
-        {
-            public readonly int Length;
-            public ComponentArray<Rigidbody> Rigidbody;
-            public ComponentDataArray<BulletInfo> BulletInfo;
-        }
-
-        [Inject] private Data data;
+        ComponentGroup group;
 
         private WorkerSystem worker;
 
@@ -33,14 +26,22 @@ namespace Playground
             var go = new GameObject("BulletCreator");
             BulletCreator = go.AddComponent<BulletCreator>();
             BulletCreator.Setup(this.EntityManager, worker.Origin);
+
+            group = GetComponentGroup(
+                ComponentType.Create<Rigidbody>(),
+                ComponentType.Create<BulletInfo>()
+           );
         }
 
         protected override void OnUpdate()
         {
-            for (var i = 0; i < data.Length; i++)
+            var rigidData = group.GetComponentArray<Rigidbody>();
+            var bulletData = group.GetComponentDataArray<BulletInfo>();
+
+            for (var i = 0; i < rigidData.Length; i++)
             {
-                var rigid = data.Rigidbody[i];
-                var info = data.BulletInfo[i];
+                var rigid = rigidData[i];
+                var info = bulletData[i];
 
                 if (!info.IsActive)
                     continue;
@@ -51,7 +52,7 @@ namespace Playground
                 {
                     info.IsActive = false;
                     rigid.gameObject.SetActive(false);
-                    data.BulletInfo[i] = info;
+                    bulletData[i] = info;
                     continue;
                 }
 

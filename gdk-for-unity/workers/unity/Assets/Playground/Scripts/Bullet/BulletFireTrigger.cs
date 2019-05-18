@@ -56,7 +56,7 @@ namespace Playground
         private void Start()
         {
             Assert.IsNotNull(muzzleTransform);
-            base.Creator.RegisterTriggerEntityId(this.SpatialComp.EntityId, VanishBullet);
+            base.Creator?.RegisterTriggerEntityId(this.SpatialComp.EntityId, VanishBullet);
         }
 
         protected virtual void OnEnable()
@@ -66,8 +66,7 @@ namespace Playground
         
         private void OnDestroy()
         {
-            if (this.Creator != null)
-                base.Creator.RemoveTriggerEntity(this.SpatialComp.EntityId);
+            base.Creator?.RemoveTriggerEntity(this.SpatialComp.EntityId);
         }
 
         public void OnFire()

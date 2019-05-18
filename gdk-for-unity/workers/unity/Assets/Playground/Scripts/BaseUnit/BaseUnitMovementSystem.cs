@@ -13,22 +13,7 @@ namespace Playground
     [UpdateBefore(typeof(FixedUpdate.PhysicsFixedUpdate))]
     internal class BaseUnitMovementSystem : ComponentSystem
     {
-        private struct Data
-        {
-            // データ長
-            public readonly int Length;
-            // 剛体配列
-            public ComponentArray<UnitTransform> UnitTransform;
-            public ComponentDataArray<BaseUnitPosture.Component> Posture;
-            [ReadOnly] public ComponentDataArray<BaseUnitMovement.Component> Movement;
-            [ReadOnly] public ComponentDataArray<BaseUnitTarget.Component> Target;
-            [ReadOnly] public ComponentDataArray<BaseUnitStatus.Component> Status;
-            [ReadOnly] public ComponentDataArray<BaseUnitAction.Component> Action;
-            // 権限情報
-            [ReadOnly] public ComponentDataArray<Authoritative<BaseUnitMovement.Component>> DenoteAuthority;
-        }
-
-        [Inject] private Data data;
+        ComponentGroup group;
 
         private Vector3 origin;
 
@@ -38,19 +23,38 @@ namespace Playground
 
             // ここで基準位置を取る
             origin = World.GetExistingManager<WorkerSystem>().Origin;
+
+            group = GetComponentGroup(
+                    ComponentType.Create<BaseUnitPosture.Component>(),
+                    ComponentType.ReadOnly<BaseUnitPosture.ComponentAuthority>(),
+                    ComponentType.ReadOnly<UnitTransform>(),
+                    ComponentType.ReadOnly<BaseUnitMovement.Component>(),
+                    ComponentType.ReadOnly<BaseUnitTarget.Component>(),
+                    ComponentType.ReadOnly<BaseUnitStatus.Component>(),
+                    ComponentType.ReadOnly<BaseUnitAction.Component>()
+            );
+
+            group.SetFilter(BaseUnitPosture.ComponentAuthority.Authoritative);
         }
 
         protected override void OnUpdate()
         {
-            for (var i = 0; i < data.Length; i++)
+            var postureData = group.GetComponentDataArray<BaseUnitPosture.Component>();
+            var unitData = group.GetComponentArray<UnitTransform>();
+            var movementData = group.GetComponentDataArray<BaseUnitMovement.Component>();
+            var targetData = group.GetComponentDataArray<BaseUnitTarget.Component>();
+            var statusData = group.GetComponentDataArray<BaseUnitStatus.Component>();
+            var actionData = group.GetComponentDataArray<BaseUnitAction.Component>();
+
+            for (var i = 0; i < postureData.Length; i++)
             {
-                var unit = data.UnitTransform[i];
+                var unit = unitData[i];
                 var rigidbody = unit.Vehicle;
-                var posture = data.Posture[i];
-                var movement = data.Movement[i];
-                var target = data.Target[i];
-                var status = data.Status[i];
-                var action = data.Action[i];
+                var posture = postureData[i];
+                var movement = movementData[i];
+                var target = targetData[i];
+                var status = statusData[i];
+                var action = actionData[i];
 
                 if (status.State != UnitState.Alive)
                     continue;
@@ -102,7 +106,7 @@ namespace Playground
                     {
                         posture.Interval = inter;
                         posture.Root = rigidbody.transform.rotation.ToImprobableQuaternion();
-                        data.Posture[i] = posture;
+                        postureData[i] = posture;
                     }
                 }
 

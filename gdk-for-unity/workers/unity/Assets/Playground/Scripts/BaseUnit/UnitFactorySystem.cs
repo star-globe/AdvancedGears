@@ -14,16 +14,7 @@ namespace Playground
     [UpdateBefore(typeof(FixedUpdate.PhysicsFixedUpdate))]
     public class UnitFactorySystem : ComponentSystem
     {
-        private struct Data
-        {
-            public readonly int Length;
-            public ComponentDataArray<UnitFactory.Component> Factory;
-            [ReadOnly] public ComponentDataArray<BaseUnitStatus.Component> Status;
-            [ReadOnly] public ComponentArray<Transform> Transform;
-            [ReadOnly] public ComponentDataArray<SpatialEntityId> EntityId;
-        }
-
-        [Inject] private Data data;
+        ComponentGroup group;
 
         private Vector3 origin;
 
@@ -33,16 +24,28 @@ namespace Playground
 
             // ここで基準位置を取る
             origin = World.GetExistingManager<WorkerSystem>().Origin;
+
+            group = GetComponentGroup(
+                ComponentType.Create<UnitFactory.Component>(),
+                ComponentType.ReadOnly<BaseUnitStatus.Component>(),
+                ComponentType.ReadOnly<Transform>(),
+                ComponentType.ReadOnly<SpatialEntityId>()
+            );
         }
 
         protected override void OnUpdate()
         {
-            for (var i = 0; i < data.Length; i++)
+            var factoryData = group.GetComponentDataArray<UnitFactory.Component>();
+            var statusData = group.GetComponentDataArray<BaseUnitStatus.Component>();
+            var transData = group.GetComponentArray<Transform>();
+            var entityIdData = group.GetComponentDataArray<SpatialEntityId>();
+
+            for (var i = 0; i < factoryData.Length; i++)
             {
-                var factory = data.Factory[i];
-                var status = data.Status[i];
-                var pos = data.Transform[i].position;
-                var entityId = data.EntityId[i];
+                var factory = factoryData[i];
+                var status = statusData[i];
+                var pos = transData[i].position;
+                var entityId = entityIdData[i];
 
                 if (status.State != UnitState.Alive)
                     continue;
@@ -87,7 +90,7 @@ namespace Playground
                              current);
                 */
 
-                data.Factory[i] = factory;
+                factoryData[i] = factory;
                 //data.CommanderStatus[i] = commander;
             }
         }

@@ -4,7 +4,6 @@
     "com.improbable.gdk.core": "file:com.improbable.gdk.core",
     "com.improbable.gdk.deploymentlauncher": "file:com.improbable.gdk.deploymentlauncher",
     "com.improbable.gdk.gameobjectcreation": "file:com.improbable.gdk.gameobjectcreation",
-    "com.improbable.gdk.guns": "file:com.improbable.gdk.guns",
     "com.improbable.gdk.mobile": "file:com.improbable.gdk.mobile",
     "com.improbable.gdk.movement": "file:com.improbable.gdk.movement",
     "com.improbable.gdk.objectpooling": "file:com.improbable.gdk.objectpooling",

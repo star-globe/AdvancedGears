@@ -16,18 +16,7 @@ namespace Playground
     [UpdateBefore(typeof(FixedUpdate.PhysicsFixedUpdate))]
     public class BaseUnitSearchSystem : BaseSearchSystem
     {
-        private struct Data
-        {
-            public readonly int Length;
-            public ComponentDataArray<BaseUnitMovement.Component> Movement;
-            public ComponentDataArray<BaseUnitAction.Component> Action;
-            public ComponentDataArray<BaseUnitSight.Component> Sight;
-            [ReadOnly] public ComponentDataArray<BaseUnitStatus.Component> Status;
-            [ReadOnly] public ComponentDataArray<BaseUnitTarget.Component> Target;
-            [ReadOnly] public ComponentArray<Transform> Transform;
-        }
-
-        [Inject] private Data data;
+        ComponentGroup group;
 
         private Vector3 origin;
 
@@ -37,18 +26,37 @@ namespace Playground
 
             // ここで基準位置を取る
             origin = World.GetExistingManager<WorkerSystem>().Origin;
+
+            group = GetComponentGroup(
+                ComponentType.Create<BaseUnitMovement.Component>(),
+                ComponentType.Create<BaseUnitAction.Component>(),
+                ComponentType.ReadOnly<BaseUnitAction.ComponentAuthority>(),
+                ComponentType.Create < BaseUnitSight.Component>(),
+                ComponentType.ReadOnly<BaseUnitStatus.Component>(),
+                ComponentType.ReadOnly<BaseUnitTarget.Component>(),
+                ComponentType.ReadOnly<Transform>()
+            );
+
+            group.SetFilter(BaseUnitAction.ComponentAuthority.Authoritative);
         }
 
         protected override void OnUpdate()
         {
-            for (var i = 0; i < data.Length; i++)
+            var movementData = group.GetComponentDataArray<BaseUnitMovement.Component>();
+            var actionData = group.GetComponentDataArray<BaseUnitAction.Component>();
+            var sightData = group.GetComponentDataArray<BaseUnitSight.Component>();
+            var statusData = group.GetComponentDataArray<BaseUnitStatus.Component>();
+            var targetData = group.GetComponentDataArray<BaseUnitTarget.Component>();
+            var transData = group.GetComponentArray<Transform>();
+
+            for (var i = 0; i < movementData.Length; i++)
             {
-                var movement = data.Movement[i];
-                var action = data.Action[i];
-                var sight = data.Sight[i];
-                var status = data.Status[i];
-                var target = data.Target[i];
-                var pos = data.Transform[i].position;
+                var movement = movementData[i];
+                var action = actionData[i];
+                var sight = sightData[i];
+                var status = statusData[i];
+                var target = targetData[i];
+                var pos = transData[i].position;
 
                 if (status.State != UnitState.Alive)
                     continue;
@@ -66,7 +74,7 @@ namespace Playground
                     continue;
 
                 sight.Interval = inter;
-                data.Sight[i] = sight;
+                sightData[i] = sight;
 
                 // initial
                 movement.IsTarget = false;
@@ -123,8 +131,8 @@ namespace Playground
                 }
                 movement.TargetRange = range;
 
-                data.Movement[i] = movement;
-                data.Action[i] = action;
+                movementData[i] = movement;
+                actionData[i] = action;
             }
         }
     }
@@ -207,7 +215,7 @@ namespace Playground
                 EntityManager.SetComponentData(entity, comp);
         }
 
-        private bool TryGetEntity(EntityId id, out Entity entity)
+        protected bool TryGetEntity(EntityId id, out Entity entity)
         {
             if (!this.Worker.TryGetEntity(id, out entity))
             {

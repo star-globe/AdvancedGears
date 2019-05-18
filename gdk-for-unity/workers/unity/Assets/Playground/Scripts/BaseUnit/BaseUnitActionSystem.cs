@@ -14,18 +14,8 @@ namespace Playground
     [UpdateBefore(typeof(FixedUpdate.PhysicsFixedUpdate))]
     internal class BaseUnitActionSystem : ComponentSystem
     {
-        private struct Data
-        {
-            public readonly int Length;
-            public ComponentDataArray<BaseUnitAction.Component> Action;
-            public ComponentDataArray<BaseUnitAction.EventSender.FireTriggered> FireTriggeredEventsSenders;
-            public ComponentDataArray<BaseUnitPosture.Component> Posture;
-            public ComponentDataArray<BaseUnitPosture.EventSender.PostureChanged> PostureChangedEventSenders;
-            [ReadOnly] public ComponentDataArray<BaseUnitStatus.Component> Status;
-            public ComponentArray<Transform> Transform;
-        }
-
-        [Inject] private Data data;
+        private ComponentUpdateSystem updateSystem;
+        private ComponentGroup group;
 
         private Vector3 origin;
 
@@ -33,24 +23,39 @@ namespace Playground
         {
             base.OnCreateManager();
 
+            updateSystem = World.GetExistingManager<ComponentUpdateSystem>();
+
             // ここで基準位置を取る
             origin = World.GetExistingManager<WorkerSystem>().Origin;
+
+            group = GetComponentGroup(
+                ComponentType.Create<BaseUnitAction.Component>(),
+                ComponentType.ReadOnly<BaseUnitAction.ComponentAuthority>(),
+                ComponentType.Create<BaseUnitPosture.Component>(),
+                ComponentType.ReadOnly<BaseUnitPosture.ComponentAuthority>(),
+                ComponentType.Create<UnitTransform>(),
+                ComponentType.ReadOnly<BaseUnitStatus.Component>(),
+                ComponentType.ReadOnly<SpatialEntityId>()
+            );
+            group.SetFilter(BaseUnitAction.ComponentAuthority.Authoritative);
+            group.SetFilter(BaseUnitPosture.ComponentAuthority.Authoritative);
         }
 
         protected override void OnUpdate()
         {
-            for (var i = 0; i < data.Length; i++)
-            {
-                var action = data.Action[i];
-                var triggerSender = data.FireTriggeredEventsSenders[i];
-                var posture = data.Posture[i];
-                var postureSender = data.PostureChangedEventSenders[i];
-                var status = data.Status[i];
-                var trans = data.Transform[i];
+            var actionData = group.GetComponentDataArray<BaseUnitAction.Component>();
+            var postureData = group.GetComponentDataArray<BaseUnitPosture.Component>();
+            var unitData = group.GetComponentArray<UnitTransform>();
+            var statusData = group.GetComponentDataArray<BaseUnitStatus.Component>();
+            var entityIdData = group.GetComponentDataArray<SpatialEntityId>();
 
-                var unit = trans.GetComponent<UnitTransform>();
-                if (unit == null)
-                    continue;
+            for (var i = 0; i < actionData.Length; i++)
+            {
+                var action = actionData[i];
+                var posture = postureData[i];
+                var status = statusData[i];
+                var unit = unitData[i];
+                var entityId = entityIdData[i];
 
                 if (status.State != UnitState.Alive)
                     continue;
@@ -77,22 +82,22 @@ namespace Playground
                                 Type = 1,
                                 TargetPosition = action.EnemyPositions[0],
                             };
-                            triggerSender.Events.Add(atk);
+                            updateSystem.SendEvent(new BaseUnitAction.FireTriggered.Event(atk), entityId.EntityId);
                             break;
 
                         case Result.Rotate:
                             var rot = unit.Cannon.Turret.rotation;
                             var pdata = new PostureData(PosturePoint.Bust, new Improbable.Transform.Quaternion(rot.w, rot.x, rot.y, rot.z));
-                            postureSender.Events.Add(pdata);
+                            updateSystem.SendEvent(new BaseUnitPosture.PostureChanged.Event(pdata), entityId.EntityId);
                             var pos = posture.Posture;
                             pos.SetData(pdata);
                             posture.Posture = pos;
-                            data.Posture[i] = posture;
+                            postureData[i] = posture;
                             break;
                     }
                 }
 
-                data.Action[i] = action;
+                actionData[i] = action;
             }
         }
 

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Improbable.Gdk.GameObjectCreation;
 using Improbable.Gdk.PlayerLifecycle;
 using Improbable.Gdk.TransformSynchronization;
