@@ -650,23 +650,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stateRenderer: {fileID: 7341762513073841191}
-  stateColors:
-  - col: {r: 1, g: 1, b: 1, a: 1}
-    state: 0
-  - col: {r: 0, g: 1, b: 0.38457632, a: 1}
-    state: 1
-  - col: {r: 0, g: 0, b: 0, a: 1}
-    state: 2
   sideRenderer: {fileID: 3172224793024926981}
-  sideColors:
-  - col: {r: 1, g: 0, b: 0, a: 1}
-    side: 1
-  - col: {r: 0, g: 1, b: 0.14022207, a: 1}
-    side: 2
-  - col: {r: 0, g: 0.31886768, b: 1, a: 1}
-    side: 3
-  - col: {r: 0.73, g: 0.73, b: 0.73, a: 1}
-    side: 99
+  colorSettings: {fileID: 11400000, guid: e9653011b1bcf4847b2c0b2d702b450d, type: 2}
 --- !u!114 &48894600238254786
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -776,12 +761,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5cb8294180b0f244b5643b95c363b8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 1
-  rot: 3
-  sightRange: 30
-  atkRange: 15
-  atkAngle: 1
-  angleSpeed: 90
+  settings: {fileID: 11400000, guid: 6a0a53c2b739402478a473e8cf2593e3, type: 2}
 --- !u!114 &6791084287969681247
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -15,13 +15,10 @@ namespace Playground
         Renderer stateRenderer;
 
         [SerializeField]
-        StateColor[] stateColors;
-
-        [SerializeField]
         Renderer sideRenderer;
 
         [SerializeField]
-        SideColor[] sideColors;
+        BaseUnitStateColorSettings colorSettings;
 
         private void OnEnable()
         {
@@ -32,40 +29,12 @@ namespace Playground
 
         void UpdateState(UnitState state)
         {
-            var col = UnityEngine.Color.white;
-            var st = stateColors.FirstOrDefault(s => s.state == state);
-            if (st != null)
-                col = st.col;
-
-            stateRenderer.material.color = col;
+            stateRenderer.material.color = colorSettings.GetStateColor(state);
         }
 
         void UpdateSide(UnitSide side)
         {
-            var col = UnityEngine.Color.white;
-            var st = sideColors.FirstOrDefault(s => s.side == side);
-            if (st != null)
-                col = st.col;
-
-            sideRenderer.material.color = col;
+            sideRenderer.material.color = colorSettings.GetSideColor(side);
         }
-    }
-
-    [Serializable]
-    internal class BaseColor
-    {
-        public UnityEngine.Color col;
-    }
-
-    [Serializable]
-    internal class StateColor : BaseColor
-    {
-        public UnitState state;
-    }
-
-    [Serializable]
-    internal class SideColor : BaseColor
-    {
-        public UnitSide side;
     }
 }
