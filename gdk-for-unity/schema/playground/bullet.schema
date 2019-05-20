@@ -1,6 +1,7 @@
 package playground;
 import "from_gdk_packages/com.improbable.gdk.core/common.schema";
 import "improbable/vector3.schema";
+import "playground/common.schema";
 
 type BulletFireInfo {
     int32 power = 1;
@@ -44,11 +45,12 @@ type GunInfo {
     uint64 gun_id = 1;
     uint32 gun_type_id = 2;
     int32 stock_bullets = 3;
+    IntervalChecker interval = 4;
 }
 
 component GunComponent {
     id = 21001;
 
-    List<GunInfo> guns_info = 1;
+    list<GunInfo> guns_info = 1;
     event BulletChangeInfo changes;
 }

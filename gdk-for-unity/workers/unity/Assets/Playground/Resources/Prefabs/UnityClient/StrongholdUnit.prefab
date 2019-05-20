@@ -387,23 +387,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stateRenderer: {fileID: 5327119983822093462}
-  stateColors:
-  - col: {r: 1, g: 1, b: 1, a: 1}
-    state: 0
-  - col: {r: 0, g: 1, b: 0.38457632, a: 1}
-    state: 1
-  - col: {r: 0, g: 0, b: 0, a: 1}
-    state: 2
   sideRenderer: {fileID: 6111495360319142165}
-  sideColors:
-  - col: {r: 1, g: 0, b: 0, a: 1}
-    side: 1
-  - col: {r: 0, g: 1, b: 0.14022207, a: 1}
-    side: 2
-  - col: {r: 0, g: 0.31886768, b: 1, a: 1}
-    side: 3
-  - col: {r: 0.73, g: 0.73, b: 0.73, a: 1}
-    side: 99
+  colorSettings: {fileID: 11400000, guid: e9653011b1bcf4847b2c0b2d702b450d, type: 2}
 --- !u!114 &3702280155031341494
 MonoBehaviour:
   m_ObjectHideFlags: 0

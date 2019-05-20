@@ -2,6 +2,7 @@ package playground;
 import "improbable/vector3.schema";
 import "from_gdk_packages/com.improbable.gdk.core/common.schema";
 import "from_gdk_packages/com.improbable.gdk.transformsynchronization/transform_internal.schema";
+import "playground/common.schema";
 
 enum UnitType {
     None = 0;
@@ -105,12 +106,6 @@ component BaseUnitMovement {
     float target_range = 5;
     
     improbable.Vector3f commander_position = 6;
-}
-
-type IntervalChecker
-{
-    float interval = 1;
-    float last_checked = 2;
 }
 
 component BaseUnitSight {
