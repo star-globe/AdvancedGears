@@ -152,13 +152,6 @@ component BaseUnitTarget {
     command improbable.common.Empty set_target(TargetInfo);
 }
 
-enum PosturePoint {
-    Root = 0;
-    Bust = 1;
-    Arm1 = 2;
-    Arm2 = 3;
-}
-
 type PostureData {
     PosturePoint point = 1;
     improbable.transform.Quaternion rotation = 2;

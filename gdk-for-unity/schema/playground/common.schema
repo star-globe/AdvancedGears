@@ -1,8 +1,14 @@
 package playground;
 import "from_gdk_packages/com.improbable.gdk.core/common.schema";
 
-type IntervalChecker
-{
+type IntervalChecker {
     float interval = 1;
     float last_checked = 2;
+}
+
+enum PosturePoint {
+    Root = 0;
+    Bust = 1;
+    Arm1 = 2;
+    Arm2 = 3;
 }

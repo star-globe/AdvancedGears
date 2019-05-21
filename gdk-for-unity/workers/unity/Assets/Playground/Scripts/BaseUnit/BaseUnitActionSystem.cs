@@ -33,6 +33,7 @@ namespace Playground
                 ComponentType.ReadOnly<BaseUnitAction.ComponentAuthority>(),
                 ComponentType.Create<BaseUnitPosture.Component>(),
                 ComponentType.ReadOnly<BaseUnitPosture.ComponentAuthority>(),
+                ComponentType.Create<GunComponent.Component>(),
                 ComponentType.Create<UnitTransform>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
@@ -45,6 +46,7 @@ namespace Playground
         {
             var actionData = group.GetComponentDataArray<BaseUnitAction.Component>();
             var postureData = group.GetComponentDataArray<BaseUnitPosture.Component>();
+            var gunData = group.GetComponentDataArray<GunComponent.Component>();
             var unitData = group.GetComponentArray<UnitTransform>();
             var statusData = group.GetComponentDataArray<BaseUnitStatus.Component>();
             var entityIdData = group.GetComponentDataArray<SpatialEntityId>();
@@ -53,6 +55,7 @@ namespace Playground
             {
                 var action = actionData[i];
                 var posture = postureData[i];
+                var gun = gunData[i];
                 var status = statusData[i];
                 var unit = unitData[i];
                 var entityId = entityIdData[i];

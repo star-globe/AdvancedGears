@@ -46,6 +46,7 @@ type GunInfo {
     uint32 gun_type_id = 2;
     int32 stock_bullets = 3;
     IntervalChecker interval = 4;
+    PosturePoint attached_posture = 5;
 }
 
 component GunComponent {
