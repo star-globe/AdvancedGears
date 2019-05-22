@@ -154,7 +154,7 @@ component BaseUnitTarget {
 
 type PostureData {
     PosturePoint point = 1;
-    improbable.transform.Quaternion rotation = 2;
+    list<improbable.transform.Quaternion> rotations = 2;
 }
 
 type PostureInfo {

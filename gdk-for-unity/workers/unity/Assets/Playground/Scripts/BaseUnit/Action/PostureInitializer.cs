@@ -30,9 +30,13 @@ namespace Playground
             {
                 update.Root = this.transform.rotation.ToImprobableQuaternion();
 
-                var pos = new PostureData(PosturePoint.Bust, unit.Cannon.Turret.rotation.ToImprobableQuaternion());
                 var dic = new Dictionary<PosturePoint, PostureData>();
-                dic.Add(pos.Point, pos);
+                foreach (var k in unit.GetKeys())
+                {
+                    var pos = new PostureData(k, unit.GetAllRotates(k));
+                    dic.Add(pos.Point, pos);
+                }
+
                 update.Posture = new PostureInfo() { Datas = dic };
 
                 update.Initialized = new Option<BlittableBool>(true);

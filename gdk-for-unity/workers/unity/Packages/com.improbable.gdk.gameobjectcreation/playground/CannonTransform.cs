@@ -8,11 +8,8 @@ using Improbable.Common;
 
 namespace Playground
 {
-    public class CannonTransform : MonoBehaviour
+    public class CannonTransform : AttachedTransform
     {
-        [SerializeField] Transform turret;
-        public Transform Turret { get { return turret; } }
-
         [SerializeField] Transform barell;
         public Transform Barrell { get { return barell; } }
 
@@ -21,7 +18,6 @@ namespace Playground
 
         void Start()
         {
-            Assert.IsNotNull(turret);
             Assert.IsNotNull(barell);
             Assert.IsNotNull(muzzle);
         }

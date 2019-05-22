@@ -12,11 +12,6 @@ namespace Playground
 
         [SerializeField] UnitTransform unit;
 
-        Transform Turret
-        {
-            get{ return unit.Cannon.Turret; }
-        }
-
         private void Start()
         {
             Assert.IsNotNull(unit);
@@ -30,10 +25,18 @@ namespace Playground
             var data = reader.Data;
             this.transform.rotation = data.Root.ToUnityQuaternion();
 
-            PostureData pos;
-            if (data.Posture.Datas.TryGetValue(PosturePoint.Bust, out pos))
+            foreach(var k in unit.GetKeys())
             {
-                this.Turret.rotation = pos.Rotation.ToUnityQuaternion();
+                PostureData pos;
+                if (data.Posture.Datas.TryGetValue(k, out pos))
+                {
+                    int index = 0;
+                    foreach (var r in pos.Rotations)
+                    {
+                        unit.SetQuaternion(k, index, r.ToUnityQuaternion());
+                        index++;
+                    }
+                }
             }
         }
 
@@ -42,6 +45,17 @@ namespace Playground
             if (data.Point == PosturePoint.Bust)
             {
                 this.Turret.rotation = data.Rotation.ToUnityQuaternion();
+            }
+
+            PostureTransform posture;
+            if (unit.PostureDic.TryGetValue(data.Point, out posture) == false)
+                return;
+
+            int index = 0;
+            foreach (var r in data.Rotations)
+            {
+                posture.SetQuaternion(index, r.ToUnityQuaternion());
+                index++;
             }
         }
     }
