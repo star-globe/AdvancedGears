@@ -687,7 +687,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6832309e6599f3f47b8aa495442b8d14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hingeVectorType: 3
+  hingeVectorType: 5
+  fowardVectorType: 2
   attached: {fileID: 7469834025826572811}
 --- !u!114 &2178430208816130479
 MonoBehaviour:
@@ -755,6 +756,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hingeVectorType: 1
+  fowardVectorType: 2
   attached: {fileID: 5433975718707367781}
 --- !u!1 &6210624439686172966
 GameObject:
@@ -1052,6 +1054,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hingeVectorType: 0
+  fowardVectorType: 2
   barell: {fileID: 234845576606364650}
   muzzle: {fileID: 2928826667489692996}
 --- !u!1 &8957339900292741465
@@ -1100,5 +1103,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6832309e6599f3f47b8aa495442b8d14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hingeVectorType: 3
+  hingeVectorType: 5
+  fowardVectorType: 2
   attached: {fileID: 2060910323217080075}
