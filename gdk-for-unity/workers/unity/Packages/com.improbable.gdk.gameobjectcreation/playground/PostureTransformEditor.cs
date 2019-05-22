@@ -14,17 +14,17 @@ namespace Playground
     public class PostureTransformEditor : Editor
     {
         public override void OnInspectorGUI()
-	    {
+        {
             base.OnInspectorGUI();
 
             var posture = target as PostureTransform;
-		    if (posture == null)
-			    return;
+            if (posture == null)
+                return;
 
-		    if (GUILayout.Button("Connector検索", GUILayout.Width(300)))
-		    {
-		    	posture.CheckConnectors();
-		    }
+            if (GUILayout.Button("Connector検索", GUILayout.Width(300)))
+            {
+            	posture.CheckConnectors();
+            }
         }
     }
 }

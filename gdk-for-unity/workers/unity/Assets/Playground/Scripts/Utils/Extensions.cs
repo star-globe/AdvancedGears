@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Playground
@@ -31,6 +32,51 @@ namespace Playground
                 info.Datas[data.Point] = data;
             else
                 info.Datas.Add(data.Point, data);
+        }
+
+        public static void Resolve(this PostureTransform posture, Vector3 position)
+        {
+            if (posture.IsSet == false)
+                return;
+
+            var connectors = posture.Connectors;
+            int length = connectors.Length;
+            if (length == 0)
+                return;
+
+            if (length == 1)
+            {
+                SetAndGetDummyPosition(posture, connectors[0], null, position);
+                return;
+            }
+
+            Vector3 dmy = SetAndGetDummyPosition(posture, connectors[length - 2], connectors[length - 1], position);
+            for (int j = length - 3; j > 0; j--)
+            {
+                dmy = SetAndGetDummyPosition(posture, connectors[j], connectors[j + 1], dmy);
+            }
+            for (int i = 0; i < length - 2; i++)
+            {
+                dmy = SetAndGetDummyPosition(posture, connectors[i + 1], connectors[i], dmy);
+            }
+        }
+
+        internal static Vector3 SetAndGetDummyPosition(this PostureTransform posture, AttachedTransform attached, AttachedTransform next, Vector3 tgt)
+        {
+            var foward = (tgt - attached.transform.position).normalized;
+            RotateLogic.Rotate(attached.transform, attached.HingeAxis, foward);
+            if (next == null)
+                return Vector3.zero;
+
+            return attached.transform.position + (tgt - next.transform.position);
+        }
+
+        public static List<Improbable.Transform.Quaternion> GetAllRotates(this UnitTransform unit, PosturePoint point)
+        {
+            if (unit.PostureDic.ContainsKey(point) == false)
+                return new List<Improbable.Transform.Quaternion>();
+
+            return unit.PostureDic[point].Connectors.Select(c => c.transform.rotation.ToImprobableQuaternion()).ToList();
         }
     }
 }

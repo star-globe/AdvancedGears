@@ -76,7 +76,7 @@ namespace Playground
                 if (action.EnemyPositions.Count > 0)
                 {
                     var epos = action.EnemyPositions[0].ToUnityVector() + origin;
-                    var result = CheckRange(unit, epos, action.AttackRange, action.AttackAngle, action.AngleSpeed);
+                    var result = CheckRange(unit.GetTerminal<CannonTransform>(PosturePoint.Bust), epos, action.AttackRange, action.AttackAngle, action.AngleSpeed);
                     switch (result)
                     {
                         case Result.InRange:
@@ -89,8 +89,9 @@ namespace Playground
                             break;
 
                         case Result.Rotate:
-                            var rot = unit.Cannon.Turret.rotation;
-                            var pdata = new PostureData(PosturePoint.Bust, new Improbable.Transform.Quaternion(rot.w, rot.x, rot.y, rot.z));
+                            var rot = unit.transform.rotation;
+                            var list = new List<Improbable.Transform.Quaternion>();
+                            var pdata = new PostureData(PosturePoint.Bust, list);//new Improbable.Transform.Quaternion(rot.w, rot.x, rot.y, rot.z));
                             updateSystem.SendEvent(new BaseUnitPosture.PostureChanged.Event(pdata), entityId.EntityId);
                             var pos = posture.Posture;
                             pos.SetData(pdata);
@@ -111,19 +112,19 @@ namespace Playground
             Rotate,
         }
 
-        Result CheckRange(UnitTransform unit, Vector3 epos, float range, float angle, float angleSpeed)
+        Result CheckRange(CannonTransform cannon, Vector3 epos, float range, float angle, float angleSpeed)
         {
-            var trans = unit.Cannon.Muzzle;
+            var trans = cannon.Muzzle;
             var diff = epos - trans.position;
             if (diff.sqrMagnitude > range * range)
                 return Result.OutOfRange;
 
-            var foward = diff.normalized;
-            var up = unit.Conntector.up;
-            if (RotateLogic.CheckRotate(unit.Cannon.Turret, up, foward, angle))
-                return Result.InRange;
-
-            RotateLogic.Rotate(unit.Cannon.Turret, up, foward, angleSpeed * Time.deltaTime);
+            //var foward = diff.normalized;
+            //var up = unit.Conntector.up;
+            //if (RotateLogic.CheckRotate(unit.Cannon.Turret, up, foward, angle))
+            //    return Result.InRange;
+            //
+            //RotateLogic.Rotate(unit.Cannon.Turret, up, foward, angleSpeed * Time.deltaTime);
             return Result.Rotate;
         }
     }

@@ -24,9 +24,9 @@ namespace Playground
             {
                 switch(hingeVectorType)
                 {
-                    case HingeVectorType.Up:        return axisTransform.up;
-                    case HingeVectorType.Forward:   return axisTransform.forward;
-                    case HingeVectorType.Right:     return axisTransform.right;
+                    case HingeVectorType.Up:        return this.transform.up;
+                    case HingeVectorType.Forward:   return this.transform.forward;
+                    case HingeVectorType.Right:     return this.transform.right;
 
                     default:    return Vector3.zero;
                 }

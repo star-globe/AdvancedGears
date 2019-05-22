@@ -17,7 +17,7 @@ namespace Playground
         [SerializeField] ConnectorTransform root;
 
         AttachedTransform[] connectors = null;
-        public AttachedTransform[] Connectors { get { return conectors; } }
+        public AttachedTransform[] Connectors { get { return connectors; } }
         public AttachedTransform TerminalAttached
         {
             get
@@ -29,9 +29,9 @@ namespace Playground
                 return connectors[length -1];
             }
         }
-        bool IsSet { get { return connectors != null; } }
+        public bool IsSet { get { return connectors != null; } }
 
-        Start()
+        void Start()
         {
             Assert.IsNotNull(root);
 
@@ -41,7 +41,8 @@ namespace Playground
 
         public void CheckConnectors()
         {
-                var list = new List<AttachedTransform>(root);
+                var list = new List<AttachedTransform>();
+                list.Add(root);
 
                 CheckChildren<AttachedTransform>(root, list);
 
@@ -75,53 +76,14 @@ namespace Playground
             connectors[index].transform.rotation = quo;
         }
 
-        public void Resolve(Vector3 position)
-        {
-            if (this.IsSet == false)
-                return;
-
-            int length = connectors.Length;
-            if (length == 0)
-                return;
-
-            if (length == 1)
-            {
-                SetAndGetDummyPosition(connectors[0],null,position);
-                return;
-            }
-
-            Vector3 dmy = SetAndGetDummyPosition(connetctors[length-2], connectors[length-1], position);
-            for (int j = length -3; j > 0; j--)
-            {
-                dmy = SetAndGetDummyPosition(conntectors[j], connectors[j+1], dmy);
-            }
-            for (int i = 0; i < length -2; i++)
-            {
-                dmy = SetAndGetDummyPosition(conntectors[i+1], connectors[i], dmy);
-            }
-        }
-
-        Vector3 SetAndGetDummyPosition(AttachedTransform attached, AttachedTransform next, Vector3 tgt)
-        {
-            var foward = (tgt - attached.transform.position).normalized;
-            RotateLogic.Rotate(attached.transform, attached.HingeAxis, foward);
-            if (next == null)
-                return Vector3.zero;
-
-            return attached.position + (tgt - next.position);
-        }
-
         static void CheckChildren<T>(T tgt, List<T> list) where T : Component
         {
-            var child = tgt.gameObject.GetComponentInChildren();
+            var child = tgt.gameObject.GetComponentInChildren<T>();
             if (child == null)
                 return;
 
-            foreach (var c in children)
-            {
-                list.Add(c);
-                CheckChildren(c, list);
-            }
+            list.Add(child);
+            CheckChildren(child, list);
         }
     }
 }

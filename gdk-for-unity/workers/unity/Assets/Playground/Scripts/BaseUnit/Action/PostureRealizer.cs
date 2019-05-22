@@ -42,11 +42,6 @@ namespace Playground
 
         void PostureChanged(PostureData data)
         {
-            if (data.Point == PosturePoint.Bust)
-            {
-                this.Turret.rotation = data.Rotation.ToUnityQuaternion();
-            }
-
             PostureTransform posture;
             if (unit.PostureDic.TryGetValue(data.Point, out posture) == false)
                 return;

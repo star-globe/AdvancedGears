@@ -13,7 +13,7 @@ namespace Playground
 
         public void SetAttach(AttachedTransform trans)
         {
-            attachedTrans = trans;
+            attached = trans;
         }
     }
 }

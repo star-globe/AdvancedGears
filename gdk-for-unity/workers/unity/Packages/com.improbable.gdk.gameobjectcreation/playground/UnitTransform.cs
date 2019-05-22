@@ -41,7 +41,7 @@ namespace Playground
         }
         public PosturePoint[] GetKeys()
         {
-            return this.postureDic.Keys();
+            return this.postureDic.Keys.ToArray();
         }
 
         void Start()
@@ -57,17 +57,9 @@ namespace Playground
             return null;
         }
 
-        public List<Improbable.Transform.Quaternion> GetAllRotates(PosturePoint point)
-        {
-            if (this.PostureDic.ContainsKey(point) == false)
-                return new List<Improbable.Transform.Quaternion>();
-
-            return this.PostureDic[point].Connectors.Select(c => c.transform.rotation.ToImprobableQuaternion()).ToList();
-        }
-
         public void SetQuaternion(PosturePoint point, int index, Quaternion quo)
         {
-            if (this.PostureDic.ContainsKey[point] == false)
+            if (this.PostureDic.ContainsKey(point) == false)
                 return;
 
             this.PostureDic[point].SetQuaternion(index, quo);
