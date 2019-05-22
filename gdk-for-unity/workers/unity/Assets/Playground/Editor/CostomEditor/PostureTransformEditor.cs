@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
-using Improbable.Gdk.Subscriptions;
 using Improbable.Common;
 
 using UnityEditor;
@@ -11,7 +10,7 @@ using UnityEditor;
 namespace Playground
 {
     [CustomEditor(typeof(PostureTransform))]
-    public class PostureTransformEditor : Editor
+    public class PostureTransformEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {

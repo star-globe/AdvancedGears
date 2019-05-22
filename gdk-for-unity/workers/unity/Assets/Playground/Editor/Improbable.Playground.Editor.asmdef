@@ -3,7 +3,8 @@
     "references": [
         "Improbable.Playground",
         "Improbable.Gdk.Core",
-        "Improbable.Gdk.Generated"
+        "Improbable.Gdk.Generated",
+        "Improbable.Gdk.GameObjectCreation"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [

@@ -16,7 +16,8 @@ namespace Playground
 
         [SerializeField] ConnectorTransform root;
 
-        AttachedTransform[] connectors = null;
+        [SerializeField] AttachedTransform[] connectors = null;
+
         public AttachedTransform[] Connectors { get { return connectors; } }
         public AttachedTransform TerminalAttached
         {
@@ -62,7 +63,7 @@ namespace Playground
                         break;
                 }
 
-                connectors = list.ToArray();//list.OrderBy(c => c.transform.GetSiblingIndex()).ToArray();
+                connectors = list.OrderBy(c => c.transform.GetSiblingIndex()).ToArray();
         }
 
         public void SetQuaternion(int index, Quaternion quo)
@@ -78,7 +79,8 @@ namespace Playground
 
         static void CheckChildren<T>(T tgt, List<T> list) where T : Component
         {
-            var child = tgt.gameObject.GetComponentInChildren<T>();
+            var children = tgt.gameObject.GetComponentsInChildren<T>();
+            var child = children.FirstOrDefault(c => c != tgt);
             if (child == null)
                 return;
 

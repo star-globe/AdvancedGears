@@ -64,7 +64,7 @@ namespace Playground
         internal static Vector3 SetAndGetDummyPosition(this PostureTransform posture, AttachedTransform attached, AttachedTransform next, Vector3 tgt)
         {
             var foward = (tgt - attached.transform.position).normalized;
-            RotateLogic.Rotate(attached.transform, attached.HingeAxis, foward);
+            RotateLogic.Rotate(attached.transform, attached.BoneFoward, attached.HingeAxis, foward);
             if (next == null)
                 return Vector3.zero;
 
@@ -77,6 +77,16 @@ namespace Playground
                 return new List<Improbable.Transform.Quaternion>();
 
             return unit.PostureDic[point].Connectors.Select(c => c.transform.rotation.ToImprobableQuaternion()).ToList();
+        }
+
+        public static T[] GetComponentsInChildrenWithoutSelf<T>(this GameObject self) where T : Component
+        {
+            return self.GetComponentsInChildren<T>().Where(c => self != c.gameObject).ToArray();
+        }
+
+        public static T GetComponentInChildrenWithoutSelf<T>(this GameObject self) where T : Component
+        {
+            return self.GetComponentsInChildrenWithoutSelf<T>().FirstOrDefault();
         }
     }
 }

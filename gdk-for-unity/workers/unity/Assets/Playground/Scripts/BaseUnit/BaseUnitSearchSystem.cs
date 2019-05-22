@@ -246,18 +246,18 @@ namespace Playground
     {
         public static void Rotate(Transform trans, Vector3 foward, float angle = float.MaxValue)
         {
-            Rotate(trans, trans.up, foward, angle, false);
+            Rotate(trans, trans.forward, trans.up, foward, angle, false);
         }
 
-        public static void Rotate(Transform trans, Vector3 up, Vector3 foward, float angle = float.MaxValue, bool fit = true)
+        public static void Rotate(Transform trans, Vector3 front, Vector3 up, Vector3 foward, float angle = float.MaxValue, bool fit = true)
         {
             var dot = Vector3.Dot(up, foward);
             foward -= dot * up;
             foward.Normalize();
 
             var deg = angle != float.MaxValue ? angle * Mathf.Rad2Deg : float.MaxValue;
-            var axis = Vector3.Cross(trans.forward, foward);
-            var ang = Vector3.Angle(trans.forward, foward);
+            var axis = Vector3.Cross(front, foward);
+            var ang = Vector3.Angle(front, foward);
             if (ang < deg)
                 deg = ang;
 
