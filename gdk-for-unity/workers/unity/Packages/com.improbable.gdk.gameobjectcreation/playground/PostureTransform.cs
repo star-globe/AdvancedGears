@@ -14,7 +14,7 @@ namespace Playground
         [SerializeField] PosturePoint point;
         public PosturePoint Point{ get { return point; } }
 
-        [SerializeField] ConnectorTransform root;
+        //[SerializeField] ConnectorTransform root;
 
         [SerializeField] AttachedTransform[] connectors = null;
 
@@ -34,12 +34,13 @@ namespace Playground
 
         void Start()
         {
-            Assert.IsNotNull(root);
+            //Assert.IsNotNull(root);
 
-            if (IsSet == false)
-                CheckConnectors();
+            //if (IsSet == false)
+                //CheckConnectors();
         }
 
+        /*
         public void CheckConnectors()
         {
                 var list = new List<AttachedTransform>();
@@ -65,6 +66,7 @@ namespace Playground
 
                 connectors = list.OrderBy(c => c.transform.GetSiblingIndex()).ToArray();
         }
+        */
 
         public void SetQuaternion(int index, Quaternion quo)
         {

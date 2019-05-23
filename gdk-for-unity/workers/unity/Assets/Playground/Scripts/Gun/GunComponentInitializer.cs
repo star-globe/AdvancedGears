@@ -13,27 +13,27 @@ namespace Playground
         [Require] GunComponentWriter gunWriter;
 
         [SerializeField]
-        int[] gunIds;
+        uint[] gunIds;
 
         void Start()
         {
             Assert.IsNotNull(gunIds);
 
-            var gunsList = gunIds.Select(id => GunDictionary.Instance.GetGunSettings(id)).ToArrya();
+            var gunsList = gunIds.Select(id => GunDictionary.GetGunSettings(id)).ToArray();
             Dictionary<PosturePoint,GunInfo> dic =  new Dictionary<PosturePoint,GunInfo>();
-            long uid = 0;
+            ulong uid = 0;
             foreach (var gun in gunsList)
             {
-                if (gun == null || gun.ContainsKey(gun.Attached))
+                if (gun == null || dic.ContainsKey(gun.Attached))
                     continue;
 
-                gun.Add(gun.Attached, gun.GetGunInfo(uid));
+                dic.Add(gun.Attached, gun.GetGunInfo(uid));
                 uid++;
             }
 
             gunWriter.SendUpdate(new GunComponent.Update
             {
-                GunDic = dic
+                GunsDic = dic
             });
         }
     }

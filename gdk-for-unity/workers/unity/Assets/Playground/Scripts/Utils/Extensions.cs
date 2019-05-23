@@ -69,11 +69,14 @@ namespace Playground
 
         internal static Vector3 SetAndGetDummyPosition(this PostureTransform posture, AttachedTransform attached, AttachedTransform next, Vector3 tgt)
         {
-            if (next == null || attached.HingeAxis == Vector3.zero)
+            if (attached.HingeAxis == Vector3.zero)
                 return Vector3.zero;
 
             var foward = (tgt - attached.transform.position).normalized;
-            RotateLogic.Rotate(attached.transform, attached.transform.foward, attached.HingeAxis, foward);
+            RotateLogic.Rotate(attached.transform, attached.transform.forward, attached.HingeAxis, foward, fit:false);
+
+            if (next == null)
+                return Vector3.zero;
 
             return attached.transform.position + (tgt - next.transform.position);
         }

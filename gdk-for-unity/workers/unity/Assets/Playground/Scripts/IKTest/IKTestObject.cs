@@ -49,7 +49,7 @@ namespace Playground
             if (Terminal == null)
                 return;
 
-            var diff = Terminal.transform.position - pos;
+            var diff = Terminal.Muzzle.position - pos;
             if (diff.magnitude < 0.5f)
                 return;
 

@@ -20,14 +20,16 @@ namespace Playground
 
         private void OnTarget(AttackTargetInfo info)
         {
-            var dic = gunWriter.Data.GunsDIc;
-            GunInfo info;
-            if (dic.TryGetValue(info.Attached, oput info) == false)
-                
+            var dic = gunWriter.Data.GunsDic;
+            GunInfo gun;
+            if (dic.TryGetValue(info.Attached, out gun) == false)
+                return;
 
-            gunWriter.Update(new GunComponent.Update
+            gun.StockBullets--;
+
+            gunWriter.SendUpdate(new GunComponent.Update
             {
-                
+                GunsDic = dic
             });
         }
     }

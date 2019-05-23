@@ -11,14 +11,14 @@ namespace Playground
 
         [SerializeField] private GunSettings[] gunsList;
 
-        Dictionary<int,GunSettings> dic = null;
-        Dictionary<int,GunSettings> Dic
+        Dictionary<uint,GunSettings> dic = null;
+        Dictionary<uint,GunSettings> Dic
         {
             get
             {
                 if (dic == null)
                 {
-                    dic = new Dictionary<int,GunSettings>();
+                    dic = new Dictionary<uint,GunSettings>();
                     foreach (var gun in gunsList)
                     {
                         if (dic.ContainsKey(gun.TypeId) == false)
@@ -30,7 +30,7 @@ namespace Playground
             }
         }
 
-        public static GunSettings GetGunSettings(int gunId)
+        public static GunSettings GetGunSettings(uint gunId)
         {
             if (Instance == null)
             {
@@ -40,11 +40,11 @@ namespace Playground
 
             if (Instance.Dic.ContainsKey(gunId) == false)
             {
-                Debug.LogErrorFormat("The id {0} doesn't exist in the dictionary", index);
+                Debug.LogErrorFormat("The id {0} doesn't exist in the dictionary", gunId);
                 return null;
             }
 
-            return Instance.Dic[gunID];
+            return Instance.Dic[gunId];
         }
     }
 }

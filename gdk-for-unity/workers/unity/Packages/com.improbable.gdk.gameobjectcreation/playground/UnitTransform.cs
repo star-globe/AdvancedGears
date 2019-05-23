@@ -50,7 +50,7 @@ namespace Playground
             cannonDic = cannonDic ?? new Dictionary<PosturePoint,CannonTransform>();
             if (cannonDic.ContainsKey(point) == false)
             {
-                var cannon = unitTransform.GetTerminal<CannonTransform>(point);
+                var cannon = this.GetTerminal<CannonTransform>(point);
                 if (cannon == null)
                     return null;
 
