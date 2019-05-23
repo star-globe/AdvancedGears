@@ -25,20 +25,10 @@ namespace Playground
         [SerializeField]
         UnitTransform unitTransform;
 
-        Dictionary<PosturePoint,CannonTransform> cannonDic = new Dictionary<PosturePoint,CannonTransform>();
-
         protected Transform GetMuzzleTransform(PosturePoint point)
         {
-            if (cannonDic.ContainsKey(point) == false)
-            {
-                var cannon = unitTransform.GetTerminal<CannonTransform>(point);
-                if (cannon == null)
-                    return null;
-
-                cannonDic.Add(point, cannon);
-            }
-
-            return cannonDic[point];
+            var cannon = unitTransform.GetCannonTransform(point);
+            return cannon == null ? null: cannon.Muzzle;
         }
 
         [SerializeField]

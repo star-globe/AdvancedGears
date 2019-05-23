@@ -77,7 +77,7 @@ namespace Playground
                 {
                     var epos = action.EnemyPositions[0].ToUnityVector() + origin;
                     var posturePoint = PosturePoint.Bust;
-                    var result = CheckRange(unit.GetTerminal<CannonTransform>(posturePoint), epos, action.AttackRange, action.AttackAngle, action.AngleSpeed);
+                    var result = CheckRange(unit.GetCannonTransform(posturePoint), epos, action.AttackRange, action.AttackAngle, action.AngleSpeed);
                     switch (result)
                     {
                         case Result.InRange:
