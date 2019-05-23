@@ -45,13 +45,22 @@ type GunInfo {
     uint64 gun_id = 1;
     uint32 gun_type_id = 2;
     int32 stock_bullets = 3;
-    IntervalChecker interval = 4;
-    PosturePoint attached_posture = 5;
+    int32 stock_max = 4;
+    float attack_range = 5;
+    float attack_angle = 6;
+    IntervalChecker interval = 7;
+    PosturePoint attached_posture = 8;
+}
+
+type AttackTargetInfo {
+    uint32 type = 1;
+    improbable.Vector3f target_position = 2;
+    PosturePoint attached = 3;
 }
 
 component GunComponent {
     id = 21001;
 
-    list<GunInfo> guns_info = 1;
-    event BulletChangeInfo changes;
+    map<PosturePoint,GunInfo> guns_dic = 1;
+    event AttackTargetInfo fire_triggered;
 }

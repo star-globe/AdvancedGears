@@ -73,7 +73,7 @@ namespace Playground
                 return Vector3.zero;
 
             var foward = (tgt - attached.transform.position).normalized;
-            RotateLogic.Rotate(attached.transform, attached.BoneFoward, attached.HingeAxis, foward);
+            RotateLogic.Rotate(attached.transform, attached.transform.foward, attached.HingeAxis, foward);
 
             return attached.transform.position + (tgt - next.transform.position);
         }

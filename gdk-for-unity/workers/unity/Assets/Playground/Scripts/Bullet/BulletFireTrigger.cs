@@ -23,8 +23,23 @@ namespace Playground
         protected abstract BulletComponentWriter BulletWriter { get; }
 
         [SerializeField]
-        Transform muzzleTransform;
-        protected Transform MuzzleTransform { get { return muzzleTransform; } }
+        UnitTransform unitTransform;
+
+        Dictionary<PosturePoint,CannonTransform> cannonDic = new Dictionary<PosturePoint,CannonTransform>();
+
+        protected Transform GetMuzzleTransform(PosturePoint point)
+        {
+            if (cannonDic.ContainsKey(point) == false)
+            {
+                var cannon = unitTransform.GetTerminal<CannonTransform>(point);
+                if (cannon == null)
+                    return null;
+
+                cannonDic.Add(point, cannon);
+            }
+
+            return cannonDic[point];
+        }
 
         [SerializeField]
         float bulletSpeed = 4.5f;
@@ -55,7 +70,7 @@ namespace Playground
 
         private void Start()
         {
-            Assert.IsNotNull(muzzleTransform);
+            Assert.IsNotNull(unitTransform);
             base.Creator?.RegisterTriggerEntityId(this.SpatialComp.EntityId, VanishBullet);
         }
 
@@ -69,7 +84,7 @@ namespace Playground
             base.Creator?.RemoveTriggerEntity(this.SpatialComp.EntityId);
         }
 
-        public void OnFire()
+        public void OnFire(PosturePoint point)
         {
             if (this.SpatialComp == null || this.BulletWriter == null)
                 return;
@@ -78,10 +93,14 @@ namespace Playground
             if (time - fireTime <= interval)
                 return;
 
+            var muzzle = GetMuzzleTransform(point);
+            if (muzzle == null)
+                return;
+
             fireTime = time;
 
-            var pos = muzzleTransform.position - origin;
-            var vec = muzzleTransform.forward;
+            var pos = muzzle.position - origin;
+            var vec = muzzle.forward;
             vec *= bulletSpeed;
 
             var id = this.BulletWriter.Data.CurrentId;

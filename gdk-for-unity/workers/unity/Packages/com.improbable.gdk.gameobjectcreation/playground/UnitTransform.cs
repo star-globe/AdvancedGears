@@ -44,6 +44,28 @@ namespace Playground
             return this.postureDic.Keys.ToArray();
         }
 
+        Dictionary<PosturePoint,CannonTransform> cannonDic = null;
+        public CannonTransform GetCannonTransform(PosturePoint point)
+        {
+            cannonDic = cannonDic ?? new Dictionary<PosturePoint,CannonTransform>();
+            if (cannonDic.ContainsKey(point) == false)
+            {
+                var cannon = unitTransform.GetTerminal<CannonTransform>(point);
+                if (cannon == null)
+                    return null;
+
+                cannonDic.Add(point, cannon);
+            }
+
+            return cannonDic[point];
+        }
+
+        public void Clear()
+        {
+            postureDic?.Clear();
+            cannonDic?.Clear();
+        }
+
         void Start()
         {
             Assert.IsNotNull(vehicle);

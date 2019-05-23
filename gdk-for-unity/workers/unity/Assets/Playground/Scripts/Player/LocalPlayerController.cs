@@ -22,7 +22,7 @@ namespace Playground
 
 			if (Input.GetKey(KeyCode.Space))
 			{
-				trigger.OnFire();
+				trigger.OnFire(PosturePoint.Arm1);
 			}
 		}
 	}

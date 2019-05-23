@@ -10,7 +10,7 @@ namespace Playground
 {
     public class BaseUnitBulletFireTrigger : BulletFireTriggerBase
     {
-        [Require] BaseUnitActionReader actionReader;
+        [Require] GunComponentReader gunReader;
         [Require] BulletComponentWriter bulletWriter;
         [Require] World world;
 
@@ -22,24 +22,12 @@ namespace Playground
         protected override void OnEnable()
         {
             base.OnEnable();
-            actionReader.OnFireTriggeredEvent += OnTarget;
+            gunReader.OnFireTriggeredEvent += OnTarget;
         }
 
         private void OnTarget(AttackTargetInfo info)
         {
-            // rotate to target
-            if (target.x != info.TargetPosition.X ||
-                target.y != info.TargetPosition.Y ||
-                target.z != info.TargetPosition.Z)
-            {
-                target.Set(info.TargetPosition.X,
-                            info.TargetPosition.Y,
-                            info.TargetPosition.Z);
-            }
-
-            var diff = target + origin - this.MuzzleTransform.position;
-            this.MuzzleTransform.forward = diff.normalized;
-            OnFire();
+            OnFire(info.Attached);
         }
     }
 }

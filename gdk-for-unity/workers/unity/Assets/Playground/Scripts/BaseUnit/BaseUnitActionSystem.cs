@@ -76,7 +76,8 @@ namespace Playground
                 if (action.EnemyPositions.Count > 0)
                 {
                     var epos = action.EnemyPositions[0].ToUnityVector() + origin;
-                    var result = CheckRange(unit.GetTerminal<CannonTransform>(PosturePoint.Bust), epos, action.AttackRange, action.AttackAngle, action.AngleSpeed);
+                    var posturePoint = PosturePoint.Bust;
+                    var result = CheckRange(unit.GetTerminal<CannonTransform>(posturePoint), epos, action.AttackRange, action.AttackAngle, action.AngleSpeed);
                     switch (result)
                     {
                         case Result.InRange:
@@ -84,8 +85,9 @@ namespace Playground
                             {
                                 Type = 1,
                                 TargetPosition = action.EnemyPositions[0],
+                                Attached = posturePoint,
                             };
-                            updateSystem.SendEvent(new BaseUnitAction.FireTriggered.Event(atk), entityId.EntityId);
+                            updateSystem.SendEvent(new GunComponent.FireTriggered.Event(atk), entityId.EntityId);
                             break;
 
                         case Result.Rotate:

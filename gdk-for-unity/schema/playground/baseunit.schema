@@ -116,24 +116,17 @@ component BaseUnitSight {
     // ability:night vision
 }
 
-type AttackTargetInfo {
-    uint32 type = 1;
-    improbable.Vector3f target_position = 2;
-}
-
 component BaseUnitAction {
     id = 20012;
 
     IntervalChecker interval = 1;
 
-    float attack_range = 3;
-    float attack_angle = 4;
+    float attack_range = 3;     // delete
+    float attack_angle = 4;     // delete
     float angle_speed = 5;
 
     bool is_target = 6;
     list<improbable.Vector3f> enemy_positions = 7;
-
-    event AttackTargetInfo fire_triggered;
 }
 
 type TargetInfo {
