@@ -241,46 +241,4 @@ namespace Playground
             return inter * 0.1f * UnityEngine.Random.Range(-1.0f, 1.0f);
         }
     }
-
-    public static class RotateLogic
-    {
-        public static void Rotate(Transform trans, Vector3 foward, float angle = float.MaxValue)
-        {
-            Rotate(trans, trans.forward, trans.up, foward, angle, false);
-        }
-
-        public static void Rotate(Transform trans, Vector3 front, Vector3 up, Vector3 foward, float angle = float.MaxValue, bool fit = true)
-        {
-            var dot = Vector3.Dot(up, foward);
-            foward -= dot * up;
-            foward.Normalize();
-
-            var deg = angle != float.MaxValue ? angle * Mathf.Rad2Deg : float.MaxValue;
-            var axis = Vector3.Cross(front, foward);
-            var ang = Vector3.Angle(front, foward);
-            if (ang < deg)
-                deg = ang;
-
-            var u = up;
-            if (Vector3.Dot(axis, up) < 0)
-                u = -up;
-
-            var q = Quaternion.AngleAxis(deg, u);
-            var nq = trans.rotation * q;
-            trans.rotation = nq;
-
-            if (fit)
-                trans.rotation = Quaternion.LookRotation(trans.forward, up);
-        }
-
-        public static bool CheckRotate(Transform trans, Vector3 up, Vector3 foward, float angle)
-        {
-            var dot = Vector3.Dot(up, foward);
-            foward -= dot * up;
-            foward.Normalize();
-
-            var d = Vector3.Dot(foward, trans.forward);
-            return d > Mathf.Cos(angle);
-        }
-    }
 }

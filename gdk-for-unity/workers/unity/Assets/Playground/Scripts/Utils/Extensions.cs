@@ -44,41 +44,33 @@ namespace Playground
             if (length == 0)
                 return;
 
-            if (length == 1)
+            Vector3 end = position;
+            Vector3 start = connectors[0].transform.position;
+
+            Vector3 dmy = end;
+            for (int j = length - 1; j >= 0; j--)
             {
-                SetAndGetDummyPosition(posture, connectors[0], null, position);
-                return;
+                dmy = SetAndGetDummyPosition(posture, connectors[j], dmy, true);
             }
-
-            Vector3 dmy = SetAndGetDummyPosition(posture, connectors[length - 2], connectors[length - 1], position);
-            for (int j = length - 3; j > 0; j--)
+            dmy = start;
+            for (int i = 0; i < length - 1; i++)
             {
-                if (dmy == Vector3.zero)
-                    break;
-
-                dmy = SetAndGetDummyPosition(posture, connectors[j], connectors[j + 1], dmy);
-            }
-            for (int i = 0; i < length - 2; i++)
-            {
-                if (dmy == Vector3.zero)
-                    break;
-
-                dmy = SetAndGetDummyPosition(posture, connectors[i + 1], connectors[i], dmy);
+                dmy = SetAndGetDummyPosition(posture, connectors[i], dmy, false);
             }
         }
 
-        internal static Vector3 SetAndGetDummyPosition(this PostureTransform posture, AttachedTransform attached, AttachedTransform next, Vector3 tgt)
+        internal static Vector3 SetAndGetDummyPosition(this PostureTransform posture, AttachedTransform attached, Vector3 tgt, bool isFoward)
         {
+            // foward to back de syoriga tigau
+
             if (attached.HingeAxis == Vector3.zero)
                 return Vector3.zero;
 
-            var foward = (tgt - attached.transform.position).normalized;
-            RotateLogic.Rotate(attached.transform, attached.transform.forward, attached.HingeAxis, foward, fit:false);
+            var tgtFoward = (tgt - attached.transform.position).normalized;
+            var vec = attached.TargetVector;
+            RotateLogic.Rotate(attached.transform, vec.normalized, attached.HingeAxis, tgtFoward);
 
-            if (next == null)
-                return Vector3.zero;
-
-            return attached.transform.position + (tgt - next.transform.position);
+            return tgt - tgtFoward * vec.Length;
         }
 
         public static List<Improbable.Transform.Quaternion> GetAllRotates(this UnitTransform unit, PosturePoint point)

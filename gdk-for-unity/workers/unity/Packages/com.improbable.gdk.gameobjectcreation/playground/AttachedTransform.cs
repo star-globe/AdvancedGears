@@ -34,6 +34,8 @@ namespace Playground
         {
             get { return getVecor(hingeVectorType); }
         }
+
+        public abstract Vector3 TargetVector { get; }
     }
 }
 
