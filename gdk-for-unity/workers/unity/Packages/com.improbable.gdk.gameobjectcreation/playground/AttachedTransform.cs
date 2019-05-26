@@ -17,14 +17,15 @@ namespace Playground
         }
 
         [SerializeField] VectorType hingeVectorType;
+        public VectorType HingeVectorType => hingeVectorType;
 
-        Vector3 getVecor(VectorType type)
+        protected Vector3 getVector(VectorType type)
         {
             switch (type)
             {
-                case VectorType.Up:         return this.transform.up;
-                case VectorType.Forward:    return this.transform.forward;
-                case VectorType.Right:      return this.transform.right;
+                case VectorType.Up: return this.transform.up;
+                case VectorType.Forward: return this.transform.forward;
+                case VectorType.Right: return this.transform.right;
 
                 default: return Vector3.zero;
             }
@@ -32,10 +33,10 @@ namespace Playground
 
         public Vector3 HingeAxis
         {
-            get { return getVecor(hingeVectorType); }
+            get { return getVector(hingeVectorType); }
         }
 
-        public abstract Vector3 TargetVector { get; }
+        public virtual ConnectorConstrain Constrain { get { return null; } }
     }
 }
 

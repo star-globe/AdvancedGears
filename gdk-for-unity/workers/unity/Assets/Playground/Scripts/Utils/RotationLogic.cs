@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,37 +8,69 @@ namespace Playground
 {
     public static class RotateLogic
     {
-        public static void Rotate(Transform trans, Vector3 foward, float angle = float.MaxValue)
+        public static void Rotate(Transform trans, Vector3 foward, float max = float.MaxValue)
         {
-            Rotate(trans, trans.forward, trans.up, foward, angle, false);
+            Rotate(trans, trans.forward, trans.up, foward, max: max);
+        }
+
+        public static void Rotate(Transform trans, Vector3 front, Vector3 upAxis, Vector3 tgtFoward, ConnectorConstrain constrain)
+        {
+            if (constrain == null)
+                Rotate(trans, front, upAxis, tgtFoward);
+            else
+                Rotate(trans, front, upAxis, tgtFoward, constrain.OrderVector, constrain.Min, constrain.Max);
         }
 
         internal static Vector3 Verticalize(Vector3 upAxis, Vector3 src)
         {
-            var dot = Vector3.Dot(axisUp, src);
-            src -= dot * axisUp;
+            var dot = Vector3.Dot(upAxis, src);
+            src -= dot * upAxis;
             return src.normalized;
         }
 
-        public static void Rotate(Transform trans, Vector3 front, Vector3 upAxis, Vector3 tgtFoward, float angle = float.MaxValue, bool fit = true)
+        public static float GetAngle(Vector3 upAxis, Vector3 front, Vector3 target)
         {
-            var tgt = Verticalize(upAxis, tgtFoward);
+            bool reversed;
+            return GetAngle(upAxis, front, target, out reversed);
+        }
+
+        public static float GetAngle(Vector3 upAxis, Vector3 front, Vector3 target, out bool reversed)
+        {
+            reversed = false;
+            var tgt = Verticalize(upAxis, target);
             var frt = Verticalize(upAxis, front);
 
-            var deg = angle != float.MaxValue ? angle * Mathf.Rad2Deg : float.MaxValue;
             var axis = Vector3.Cross(frt, tgt);
             var ang = Vector3.Angle(frt, tgt);
-            if (ang < deg)
-                deg = ang;
-
-            var u = upAxis;
+            //
             if (Vector3.Dot(axis, upAxis) < 0)
-                u = -upAxis;
+            {
+                reversed = true;
+                ang = -ang;
+            }
 
-            trans.Rotate(u, deg);
+            return ang;
+        }
 
-            //if (fit)
-            //    trans.rotation = Quaternion.LookRotation(trans.forward, up);
+        public static void Rotate(Transform trans, Vector3 front, Vector3 upAxis, Vector3 tgtFoward, Vector3? orderAxis = null, float min = float.MinValue, float max = float.MaxValue)
+        {
+            var ang = GetAngle(upAxis, front, tgtFoward);
+
+            if (orderAxis == null)
+                orderAxis = front;
+
+            if (orderAxis != Vector3.zero && Vector3.Dot(orderAxis.Value, upAxis) <= 0.0001f)
+            {
+                var order = GetAngle(upAxis, front, orderAxis.Value);
+                if (min != float.MinValue)
+                    min += order;
+                if (max != float.MaxValue)
+                    max += order;
+
+                ang = Mathf.Clamp(ang, min, max);
+            }
+
+            trans.Rotate(upAxis, ang, Space.World);
         }
 
         public static bool CheckRotate(Transform trans, Vector3 up, Vector3 foward, float angle)

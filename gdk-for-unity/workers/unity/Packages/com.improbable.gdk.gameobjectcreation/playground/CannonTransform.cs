@@ -23,10 +23,5 @@ namespace Playground
         }
 
         public Vector3 Forward { get { return barell.forward; } }
-
-        public override Vector3 TargetVector3
-        {
-            get { return muzzle.position - this.transform.position; }
-        }
     }
 }

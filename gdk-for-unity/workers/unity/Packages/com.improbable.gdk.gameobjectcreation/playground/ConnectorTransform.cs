@@ -8,23 +8,17 @@ namespace Playground
 {
     public class ConnectorTransform : AttachedTransform
     {
-        [SerializeField] AttachedTransform attached;
-        public AttachedTransform Attached { get { return attached; } }
+        [SerializeField] ConnectorTransform parentConnector;
+        public ConnectorTransform ParentConnector => parentConnector;
 
-        void Start()
-        {
-            Assert.IsNotNull(attached);
-        }
+        [SerializeField] ConnectorConstrain selfConstrain;
+        public ConnectorConstrain SlefConstrain => selfConstrain;
 
-        public void SetAttach(AttachedTransform trans)
-        {
-            attached = trans;
-        }
 
-        public override Vector3 TargetTargetVector
+        public override ConnectorConstrain Constrain
         {
-            get { return attached.transform.position - this.transform.position; }
+            get { return parentConnector?.selfConstrain; }
         }
-    }
+   }
 }
 

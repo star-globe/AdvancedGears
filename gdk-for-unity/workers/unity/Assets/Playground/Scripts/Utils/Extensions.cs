@@ -34,7 +34,7 @@ namespace Playground
                 info.Datas.Add(data.Point, data);
         }
 
-        public static void Resolve(this PostureTransform posture, Vector3 position)
+        public static void Resolve(this PostureTransform posture, Vector3 position, Transform effector)
         {
             if (posture.IsSet == false)
                 return;
@@ -44,33 +44,30 @@ namespace Playground
             if (length == 0)
                 return;
 
-            Vector3 end = position;
-            Vector3 start = connectors[0].transform.position;
+            Vector3 dmy = position;
+            System.Action<AttachedTransform> rotate = (connector) =>
+            {
+                RotateAndMoveEffector(connector, position, effector);
+            };
 
-            Vector3 dmy = end;
-            for (int j = length - 1; j >= 0; j--)
-            {
-                dmy = SetAndGetDummyPosition(posture, connectors[j], dmy, true);
-            }
-            dmy = start;
-            for (int i = 0; i < length - 1; i++)
-            {
-                dmy = SetAndGetDummyPosition(posture, connectors[i], dmy, false);
-            }
+            foreach (var c in connectors.Reverse())
+                rotate(c);
+
+            foreach (var c in connectors)
+                rotate(c);
         }
 
-        internal static Vector3 SetAndGetDummyPosition(this PostureTransform posture, AttachedTransform attached, Vector3 tgt, bool isFoward)
+        internal static Vector3 RotateAndMoveEffector(AttachedTransform attached, Vector3 tgt, Transform effector)
         {
-            // foward to back de syoriga tigau
-
             if (attached.HingeAxis == Vector3.zero)
                 return Vector3.zero;
 
-            var tgtFoward = (tgt - attached.transform.position).normalized;
-            var vec = attached.TargetVector;
-            RotateLogic.Rotate(attached.transform, vec.normalized, attached.HingeAxis, tgtFoward);
+            var foward = (tgt - attached.transform.position).normalized;
+            var vec = effector.position - attached.transform.position; //attached.TargetVector;
+            var length = vec.magnitude;
+            RotateLogic.Rotate(attached.transform, vec.normalized, attached.HingeAxis, foward, attached.Constrain);
 
-            return tgt - tgtFoward * vec.Length;
+            return tgt - foward * length;
         }
 
         public static List<Improbable.Transform.Quaternion> GetAllRotates(this UnitTransform unit, PosturePoint point)

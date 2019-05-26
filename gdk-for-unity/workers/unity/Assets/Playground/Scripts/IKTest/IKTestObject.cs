@@ -53,7 +53,7 @@ namespace Playground
             if (diff.magnitude < 0.5f)
                 return;
 
-            this.Posture.Resolve(pos);
+            this.Posture.Resolve(pos, Terminal.Muzzle);
         }
     }
 }
