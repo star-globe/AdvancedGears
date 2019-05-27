@@ -77,11 +77,11 @@ namespace Playground
             trans.Rotate(upAxis, ang, Space.World);
         }
 
-        public static bool CheckRotate(Transform trans, Vector3 up, Vector3 foward, float angle)
+        public static bool CheckRotate(Vector3 front, Vector3 up, Vector3 tgtFoward, float angle)
         {
-            foward = Verticalize(up,foward);
+            tgtFoward = Verticalize(up,tgtFoward);
 
-            var d = Vector3.Dot(foward, trans.forward);
+            var d = Vector3.Dot(tgtFoward, front);
             return d > Mathf.Cos(angle);
         }
     }
