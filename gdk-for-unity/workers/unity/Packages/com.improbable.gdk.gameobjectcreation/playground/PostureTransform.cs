@@ -14,8 +14,6 @@ namespace Playground
         [SerializeField] PosturePoint point;
         public PosturePoint Point{ get { return point; } }
 
-        //[SerializeField] ConnectorTransform root;
-
         [SerializeField] AttachedTransform[] connectors = null;
 
         public AttachedTransform[] Connectors { get { return connectors; } }
@@ -34,10 +32,6 @@ namespace Playground
 
         void Start()
         {
-            //Assert.IsNotNull(root);
-
-            //if (IsSet == false)
-                //CheckConnectors();
         }
 
         /*
@@ -68,6 +62,13 @@ namespace Playground
         }
         */
 
+        public Quaternion[] GetQuaternions()
+        {
+            if (IsSet == false)
+                return new Quaternion[0];
+
+            return connectors.Select(c => c.transform.rotation).ToArray();
+        }
         public void SetQuaternion(int index, Quaternion quo)
         {
             if (IsSet == false)

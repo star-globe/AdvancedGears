@@ -34,7 +34,7 @@ namespace Playground
                 info.Datas.Add(data.Point, data);
         }
 
-        public static void Resolve(this PostureTransform posture, Vector3 position, Transform effector)
+        public static void Resolve(this PostureTransform posture, Vector3 position, Transform effector, float angleSpeed = float.MaxValue)
         {
             if (posture.IsSet == false)
                 return;
@@ -47,7 +47,7 @@ namespace Playground
             Vector3 dmy = position;
             System.Action<AttachedTransform> rotate = (connector) =>
             {
-                RotateAndMoveEffector(connector, position, effector);
+                RotateAndMoveEffector(connector, position, effector, angleSpeed);
             };
 
             foreach (var c in connectors.Reverse())
@@ -57,15 +57,15 @@ namespace Playground
                 rotate(c);
         }
 
-        internal static Vector3 RotateAndMoveEffector(AttachedTransform attached, Vector3 tgt, Transform effector)
+        internal static Vector3 RotateAndMoveEffector(AttachedTransform attached, Vector3 tgt, Transform effector, float angleSpeed = float.MaxValue)
         {
             if (attached.HingeAxis == Vector3.zero)
                 return Vector3.zero;
 
             var foward = (tgt - attached.transform.position).normalized;
-            var vec = effector.position - attached.transform.position; //attached.TargetVector;
+            var vec = effector.position - attached.transform.position;
             var length = vec.magnitude;
-            RotateLogic.Rotate(attached.transform, vec.normalized, attached.HingeAxis, foward, attached.Constrain);
+            RotateLogic.Rotate(attached.transform, vec.normalized, attached.HingeAxis, foward, attached.Constrain, angleSpeed);
 
             return tgt - foward * length;
         }
@@ -86,6 +86,20 @@ namespace Playground
         public static T GetComponentInChildrenWithoutSelf<T>(this GameObject self) where T : Component
         {
             return self.GetComponentsInChildrenWithoutSelf<T>().FirstOrDefault();
+        }
+
+        public static float GetHeight(this TerrainCollider ground, float x, float z, float maxHeight = 1000.0f)
+        {
+            var ray = new Ray(new Vector3(x,maxHeight,z), Vector3.down);
+            RaycastHit hit;
+            if (ground.Raycast(ray, out hit, maxHeight))
+            {
+                return hit.point.y;
+            }
+            else
+            {
+                return 0;
+            }
         }
     }
 }

@@ -13,12 +13,12 @@ namespace Playground
             Rotate(trans, trans.forward, trans.up, foward, max: max);
         }
 
-        public static void Rotate(Transform trans, Vector3 front, Vector3 upAxis, Vector3 tgtFoward, ConnectorConstrain constrain)
+        public static void Rotate(Transform trans, Vector3 front, Vector3 upAxis, Vector3 tgtFoward, ConnectorConstrain constrain, float angleSpeed = float.MaxValue)
         {
             if (constrain == null)
-                Rotate(trans, front, upAxis, tgtFoward);
+                Rotate(trans, front, upAxis, tgtFoward, angleSpeed:angleSpeed);
             else
-                Rotate(trans, front, upAxis, tgtFoward, constrain.OrderVector, constrain.Min, constrain.Max);
+                Rotate(trans, front, upAxis, tgtFoward, constrain.OrderVector, constrain.Min, constrain.Max, angleSpeed:angleSpeed);
         }
 
         internal static Vector3 Verticalize(Vector3 upAxis, Vector3 src)
@@ -52,7 +52,8 @@ namespace Playground
             return ang;
         }
 
-        public static void Rotate(Transform trans, Vector3 front, Vector3 upAxis, Vector3 tgtFoward, Vector3? orderAxis = null, float min = float.MinValue, float max = float.MaxValue)
+        public static void Rotate(Transform trans, Vector3 front, Vector3 upAxis, Vector3 tgtFoward,
+                                    Vector3? orderAxis = null, float min = float.MinValue, float max = float.MaxValue, float angleSpeed = float.MaxValue)
         {
             var ang = GetAngle(upAxis, front, tgtFoward);
 
@@ -68,6 +69,9 @@ namespace Playground
                     max += order;
 
                 ang = Mathf.Clamp(ang, min, max);
+
+                if (angleSpeed != float.MaxValue)
+                    ang = Mathf.Clamp(ang, -angleSpeed, angleSpeed);
             }
 
             trans.Rotate(upAxis, ang, Space.World);

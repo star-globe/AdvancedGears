@@ -25,20 +25,26 @@ namespace Playground.Editor.SnapshotGenerator
             snapshot.WriteToFile(arguments.OutputPath);
         }
 
-        private static Snapshot CreateSnapshot(int cubeCount)
+        private static Snapshot CreateSnapshot(int cubeCount, TerrainCollider ground = null)
         {
             var snapshot = new Snapshot();
 
-            AddPlayerSpawner(snapshot, new Coordinates(2000, 0, 2000));
-            AddPlayerSpawner(snapshot, new Coordinates(2000, 0, -2000));
-            AddPlayerSpawner(snapshot, new Coordinates(-2000, 0, -2000));
-            AddPlayerSpawner(snapshot, new Coordinates(-2000, 0, 2000));
+            AddPlayerSpawner(snapshot, GroundCoordinates( 2000, 2000, ground));//new Coordinates(2000, 0, 2000));
+            AddPlayerSpawner(snapshot, GroundCoordinates( 2000,-2000, ground));//new Coordinates(2000, 0, -2000));
+            AddPlayerSpawner(snapshot, GroundCoordinates(-2000,-2000, ground));//new Coordinates(-2000, 0, -2000));
+            AddPlayerSpawner(snapshot, GroundCoordinates(-2000, 2000, ground));//new Coordinates(-2000, 0, 2000));
 
             AddCubeGrid(snapshot, cubeCount);
             //CreateSpinner(snapshot, new Coordinates { X = 5.5, Y = 0.5f, Z = 0.0 });
             //CreateSpinner(snapshot, new Coordinates { X = -5.5, Y = 0.5f, Z = 0.0 });
 
             return snapshot;
+        }
+
+        private static Coordinates GroundCoordinates(int x, int z, TerrainCollider ground)
+        {
+            var y = ground == null ?  0: (int)ground.GetHeight(x,z);
+            return new Coordinates(x,y,z);
         }
 
         private static void AddPlayerSpawner(Snapshot snapshot, Coordinates playerSpawnerLocation)
@@ -57,7 +63,7 @@ namespace Playground.Editor.SnapshotGenerator
 
         static readonly double scale = 4.0;
         
-        private static void AddCubeGrid(Snapshot snapshot, int cubeCount)
+        private static void AddCubeGrid(Snapshot snapshot, int cubeCount, TerrainCollider ground = null)
         {
             // Calculate grid size
             var gridLength = (int) Math.Ceiling(Math.Sqrt(cubeCount));
@@ -93,19 +99,19 @@ namespace Playground.Editor.SnapshotGenerator
 
                         double pos_x = nx * scale;
                     double pos_z = z * scale;
-                    var entityTemplate = BaseUnitTemplate.CreateBaseUnitEntityTemplate(side, new Coordinates(pos_x, 1, pos_z), UnitType.Soldier);
+                    var entityTemplate = BaseUnitTemplate.CreateBaseUnitEntityTemplate(side, GroundCoordinates(pos_x, pos_z, ground), UnitType.Soldier);
                     snapshot.AddEntity(entityTemplate);
                 }
             }
 
             var len = gridLength * scale;
-            var templateA = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.A, new Coordinates(-len * 3, 1, 0), UnitType.Stronghold);
-            var templateB = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.B, new Coordinates( len * 3, 1, 0), UnitType.Stronghold);
+            var templateA = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.A, GroundCoordinates(-len * 3, 0, ground),UnitType.Stronghold);
+            var templateB = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.B, GroundCoordinates( len * 3, 0, ground),UnitType.Stronghold);
             snapshot.AddEntity(templateA);
             snapshot.AddEntity(templateB);
             
-            var templateCa = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.A, new Coordinates(-len * 2, 1, 0), UnitType.Commander);
-            var templateCb = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.B, new Coordinates( len * 2, 1, 0), UnitType.Commander);
+            var templateCa = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.A, GroundCoordinates(-len * 2, 0, ground), UnitType.Commander);
+            var templateCb = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.B, GroundCoordinates( len * 2, 0, ground), UnitType.Commander);
             snapshot.AddEntity(templateCa);
             snapshot.AddEntity(templateCb);
         }

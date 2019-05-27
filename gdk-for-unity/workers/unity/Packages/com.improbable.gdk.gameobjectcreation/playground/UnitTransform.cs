@@ -44,6 +44,13 @@ namespace Playground
             return this.postureDic.Keys.ToArray();
         }
 
+        public PostureTransform GetPosture(PosturePoint point)
+        {
+            PostureTransform posture = null;
+            this.PostureDic.TryGetValue(point, out posture);
+            return posture;
+        }
+
         Dictionary<PosturePoint,CannonTransform> cannonDic = null;
         public CannonTransform GetCannonTransform(PosturePoint point)
         {
