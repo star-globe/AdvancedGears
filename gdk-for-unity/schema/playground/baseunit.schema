@@ -205,7 +205,7 @@ component CommanderSight {
 
 type ProductOrder {
     EntityId customer = 1;
-    UnitType typr = 2;
+    UnitType type = 2;
     int32 number = 3;
 }
 
@@ -220,8 +220,9 @@ component UnitFactory {
     id = 20032;
 
     int32 resource = 1;
+    int32 resource_max = 2;
 
-    IntervalChecker interval = 2;
+    IntervalChecker interval = 3;
 
     transient list<ProductOrder> orders = 4;
 

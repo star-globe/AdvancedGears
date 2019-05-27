@@ -59,7 +59,7 @@ namespace Playground.Editor.SnapshotGenerator
                 {
                     if (GUILayout.Button("Generate snapshot"))
                     {
-                        SnapshotGenerator.Generate(arguments);
+                        SnapshotGenerator.Generate(arguments, ground);
                     }
                 }
             }
