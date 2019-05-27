@@ -16,10 +16,10 @@ namespace Playground.Editor.SnapshotGenerator
             public string OutputPath;
         }
 
-        public static void Generate(Arguments arguments)
+        public static void Generate(Arguments arguments, TerrainCollider ground = null)
         {
             Debug.Log("Generating snapshot.");
-            var snapshot = CreateSnapshot(arguments.NumberEntities);
+            var snapshot = CreateSnapshot(arguments.NumberEntities, ground);
 
             Debug.Log($"Writing snapshot to: {arguments.OutputPath}");
             snapshot.WriteToFile(arguments.OutputPath);
@@ -41,9 +41,9 @@ namespace Playground.Editor.SnapshotGenerator
             return snapshot;
         }
 
-        private static Coordinates GroundCoordinates(int x, int z, TerrainCollider ground)
+        private static Coordinates GroundCoordinates(double x, double z, TerrainCollider ground)
         {
-            var y = ground == null ?  0: (int)ground.GetHeight(x,z);
+            double y = ground == null ?  0: (double)ground.GetHeight((float)x, (float)z);
             return new Coordinates(x,y,z);
         }
 
@@ -141,6 +141,23 @@ namespace Playground.Editor.SnapshotGenerator
 
 
             snapshot.AddEntity(template);
+        }
+    }
+
+    static class EditorExtensions
+    {
+        public static float GetHeight(this TerrainCollider ground, float x, float z, float maxHeight = 1000.0f)
+        {
+            var ray = new Ray(new Vector3(x, maxHeight, z), Vector3.down);
+            RaycastHit hit;
+            if (ground.Raycast(ray, out hit, maxHeight))
+            {
+                return hit.point.y;
+            }
+            else
+            {
+                return 0;
+            }
         }
     }
 }

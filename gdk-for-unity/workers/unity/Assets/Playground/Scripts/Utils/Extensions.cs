@@ -17,6 +17,11 @@ namespace Playground
             return new Improbable.Transform.Quaternion(quo.w, quo.x, quo.y, quo.z);
         }
 
+        public static Improbable.Vector3f ToImprobableVector3(this Vector3 vec)
+        {
+            return new Improbable.Vector3f(vec.x, vec.y, vec.z);
+        }
+
         public static bool CheckTime(this ref IntervalChecker inter, float current)
         {
             if (current - inter.LastChecked < inter.Interval)
@@ -88,19 +93,7 @@ namespace Playground
             return self.GetComponentsInChildrenWithoutSelf<T>().FirstOrDefault();
         }
 
-        public static float GetHeight(this TerrainCollider ground, float x, float z, float maxHeight = 1000.0f)
-        {
-            var ray = new Ray(new Vector3(x,maxHeight,z), Vector3.down);
-            RaycastHit hit;
-            if (ground.Raycast(ray, out hit, maxHeight))
-            {
-                return hit.point.y;
-            }
-            else
-            {
-                return 0;
-            }
-        }
+
     }
 }
 
