@@ -78,24 +78,58 @@ namespace Playground
                 {
                     var epos = action.EnemyPositions[0].ToUnityVector() + origin;
                     var pos = posture.Posture;
-                    bool tof = false;
+                    var gunsDic = gun.GunsDic;
+                    bool updPosture = false;
+                    bool updGuns = false;
 
-                    foreach (var k in unit.GetKeys())
+                    foreach (var point in unit.GetKeys())
                     {
-                        List<Improbable.Transform.Quaternion> list = null;
-                        SetPosture(entityId.EntityId, unit, k, epos, action.AttackRange, action.AttackAngle, action.AngleSpeed, out list);
+                        GunInfo gunInfo = null;
+                        if (gunsDic.TryGetValue(point, out gunInfo) == false)
+                            continue;
 
-                        if (list != null)
+                        PostureData pdata = null;
+                        var result = GetSetPosture(unit, point, epos, gunInfo, action.AngleSpeed, out pdata);
+                        switch (result)
                         {
-                            pos.SetData(new PostureData(k, list));
-                            tof |= true;
+                            case Result.InRange:
+                                if (gunInfo.StockBullets == 0)
+                                    break;
+
+                                var inter = gunInfo.Interval;
+                                if (inter.Check(time) == false)
+                                    break;
+
+                                gunInfo.Interval = inter;
+
+                                var atk = new AttackTargetInfo
+                                {
+                                    Type = 1,
+                                    TargetPosition = epos.ToImprobableVector3(),
+                                    Attached = point,
+                                };
+                                updGuns |= true;
+                                updateSystem.SendEvent(new GunComponent.FireTriggered.Event(atk), entityId.EntityId);
+                                break;
+
+                            case Result.Rotate:
+                                pos.SetData(pdata);
+                                updPosture |= true;
+                                updateSystem.SendEvent(new BaseUnitPosture.PostureChanged.Event(pdata), entityId.EntityId);
+                                break;
                         }
                     }
 
-                    if (tof)
+                    if (updPosture)
                     {
                         posture.Posture = pos;
                         postureData[i] = posture;
+                    }
+
+                    if (updGuns)
+                    {
+                        gun.GunsDic = gunsDic;
+                        gunData[i] = gun;
                     }
                 }
 
@@ -110,34 +144,23 @@ namespace Playground
             Rotate,
         }
 
-        void SetPosture(EntityId entityId, UnitTransform unit, PosturePoint point, Vector3 epos, float attackRange, float attackAngle, float angleSpeed, out List<Improbable.Transform.Quaternion> list)
+        Result GetSetPosture(UnitTransform unit, PosturePoint point, Vector3 epos, GunInfo gun, float angleSpeed,
+                     out PostureData pdata)
         {
-            list = null;
+            pdata = null;
 
             var postrans = unit.GetPosture(point);
             var cannon = unit.GetCannonTransform(point);
-            var result = CheckRange(postrans, cannon, epos, attackRange, attackAngle, angleSpeed);
-            switch (result)
+            var result = CheckRange(postrans, cannon, epos, gun.attackRange, gun.attackAngle, angleSpeed);
+            if (result == Result.Rotate)
             {
-                case Result.InRange:
-                    var atk = new AttackTargetInfo
-                    {
-                        Type = 1,
-                        TargetPosition = epos.ToImprobableVector3(),
-                        Attached = point,
-                    };
-                    updateSystem.SendEvent(new GunComponent.FireTriggered.Event(atk), entityId);
-                    break;
-
-                case Result.Rotate:
-                    var rot = unit.transform.rotation;
-                    list = new List<Improbable.Transform.Quaternion>(postrans.GetQuaternions().Select(q => q.ToImprobableQuaternion()));
-                    var pdata = new PostureData(point, list);
-                    updateSystem.SendEvent(new BaseUnitPosture.PostureChanged.Event(pdata), entityId);
-                    break;
+                var rot = unit.transform.rotation;
+                var list = new List<Improbable.Transform.Quaternion>(postrans.GetQuaternions().Select(q => q.ToImprobableQuaternion()));
+                pdata = new PostureData(point, list);
             }
-        }
 
+            return result;
+        }
 
         Result CheckRange(PostureTransform posture, CannonTransform cannon, Vector3 epos, float range, float angle, float angleSpeed)
         {

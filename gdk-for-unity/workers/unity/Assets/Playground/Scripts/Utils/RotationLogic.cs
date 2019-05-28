@@ -57,6 +57,9 @@ namespace Playground
         {
             var ang = GetAngle(upAxis, front, tgtFoward);
 
+            if (angleSpeed != float.MaxValue)
+                ang = Mathf.Clamp(ang, -angleSpeed, angleSpeed);
+
             if (orderAxis == null)
                 orderAxis = front;
 
@@ -69,9 +72,6 @@ namespace Playground
                     max += order;
 
                 ang = Mathf.Clamp(ang, min, max);
-
-                if (angleSpeed != float.MaxValue)
-                    ang = Mathf.Clamp(ang, -angleSpeed, angleSpeed);
             }
 
             trans.Rotate(upAxis, ang, Space.World);
