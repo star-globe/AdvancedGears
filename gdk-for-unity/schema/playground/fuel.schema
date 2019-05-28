@@ -1,0 +1,24 @@
+package playground;
+import "from_gdk_packages/com.improbable.gdk.core/common.schema";
+
+// fuel:21100~21109
+type FuelModifier {
+    uint32 type = 1;
+    int32 amount = 2;
+}
+
+type FuelModifiedInfo {
+    FuelModifier modifier = 1;
+    int32 fuel_before = 2;
+    int32 fuel_after = 3;
+}
+
+component FuelComponent {
+    id = 21100;
+
+    int32 fuel = 1;
+    int32 max_fuel = 2;
+
+    command improbable.common.Empty modify_fuel(FuelModifier);
+    event FuelModifiedInfo fuel_modified;
+}

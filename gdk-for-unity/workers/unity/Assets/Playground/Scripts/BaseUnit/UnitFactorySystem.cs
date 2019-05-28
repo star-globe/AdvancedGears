@@ -15,8 +15,16 @@ namespace Playground
     public class UnitFactorySystem : ComponentSystem
     {
         ComponentGroup group;
+        CommandSystem commandSystem;
+        ILogDispatcher logDispatcher;
 
         private Vector3 origin;
+
+        private class ProductOrderCotext
+        {
+            public ProductOrder order;
+        }
+
 
         protected override void OnCreateManager()
         {
@@ -25,6 +33,7 @@ namespace Playground
             // ここで基準位置を取る
             origin = World.GetExistingManager<WorkerSystem>().Origin;
 
+            commandSystem = World.GetExistingManager<CommandSystem>();
             group = GetComponentGroup(
                 ComponentType.Create<UnitFactory.Component>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
@@ -34,6 +43,12 @@ namespace Playground
         }
 
         protected override void OnUpdate()
+        {
+            HandleProductUnit();
+            HandleProductResponse();
+        }
+
+        void HandleProductUnit()
         {
             var factoryData = group.GetComponentDataArray<UnitFactory.Component>();
             var statusData = group.GetComponentDataArray<BaseUnitStatus.Component>();
@@ -56,42 +71,81 @@ namespace Playground
                 if (status.Order == OrderType.Idle)
                     continue;
 
+                if (factory.CurrentOrder.Type == UnitType.None && factory.Orders.Count == 0)
+                    continue;
+
                 var time = Time.realtimeSinceStartup;
                 var inter = factory.Interval;
                 if (inter.CheckTime(time) == false)
                     continue;
 
                 factory.Interval = inter;
-                /*
-                var tgt = getNearestEnemeyPosition(status.Side, pos, sight.Range, UnitType.Stronghold);
-                sight.IsTarget = tgt != null;
-                var tpos = Improbable.Vector3f.Zero;
-                if (sight.IsTarget)
+
+                // TODO:getFromSettings;
+                float timeCost = 5;
+
+
+                if (factory.CurrentOrder.Type == UnitType.None)
                 {
-                    tpos = new Improbable.Vector3f(tgt.Value.x - origin.x,
-                                                   tgt.Value.y - origin.y,
-                                                   tgt.Value.z - origin.z);
+                    factory.CurrentOrder = factory.Orders[0];
+                    factory.Orders.RemoveAt(0);
+                    factory.ProductInterval = new IntervalChecker(timeCost, time + timeCost);
                 }
 
-                sight.TargetPosition = tpos;
+                inter = factory.ProductInterval;
+                if (inter.CheckTime(time))
+                {
+                    var current = factory.CurrentOrder;
 
-                // check 
-                OrderType current = GetOrder(status.Side, pos, sight.Range);
+                    factory.CurrentOrder.number--;
+                    if (factory.CurrentOrder.number <= 0)
+                        factory.CurrentOrder.Type = UnitType.None;
 
-                bool isOrderChanged = commander.SelfOrder != current;
-                commander.SelfOrder = current;
-
-                SetFollowers(commander.Followers,
-                             new TargetInfo (sight.IsTarget,
-                                             sight.TargetPosition,
-                                             entityId.EntityId,
-                                             commander.AllyRange),
-                             isOrderChanged,
-                             current);
-                */
+                    // create unit
+                    var unitEntityTemplate =
+                        BaseUnitTemplate.CreateBaseUnitEntityTemplate(current.Side, new Coordinates(pos.x, pos.y, pos.z), current.Type);
+                    var request = new WorldCommands.CreateEntity.Request
+                    {
+                        unitEntityTemplate,
+                        Context = new ProductOrderCotext() { order = current },
+                    };
+                   commandSystem.SendCommand(request);
+                }
 
                 factoryData[i] = factory;
-                //data.CommanderStatus[i] = commander;
+            }
+        }
+
+        void HandleProductResponse()
+        {
+            var responses = commandSystem.GetResponses<WorldCommands.CreateEntity.ReceivedResponse>();
+            for (var i = 0; i < responses.Count; i++)
+            {
+                ref readonly var response = ref responses[i];
+                if (!(response.Context is ProductOrderCotext requestContext))
+                {
+                    // Ignore non-player entity creation requests
+                    continue;
+                }
+
+                if (response.StatusCode != StatusCode.Success)
+                {
+                    //var responseFailed = new PlayerCreator.CreatePlayer.Response(
+                    //    requestContext.createPlayerRequest.RequestId,
+                    //    $"Failed to create player: \"{response.Message}\""
+                    //);
+                    //commandSystem.SendResponse(responseFailed);
+                }
+                else
+                {
+                    //var responseSuccess = new PlayerCreator.CreatePlayer.Response(
+                    //    requestContext.createPlayerRequest.RequestId,
+                    //    new CreatePlayerResponse(response.EntityId.Value)
+                    //);
+                    //commandSystem.SendResponse(responseSuccess);
+
+                    // TODO:SetFollowers
+                }
             }
         }
     }

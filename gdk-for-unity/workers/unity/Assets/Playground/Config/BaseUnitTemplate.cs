@@ -36,6 +36,7 @@ namespace Playground
             template.AddComponent(new Launchable.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new BaseUnitHealth.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new GunComponent.Snapshot { GunsDic = new Dictionary<PosturePoint, GunInfo>() }, WorkerUtils.UnityGameLogic);
+            template.AddComponent(new FuelComponent.Snapshot(), WorkerUtils.UnityGameLogic);
             SwitchType(template, type, WorkerUtils.UnityGameLogic);
             TransformSynchronizationHelper.AddTransformSynchronizationComponents(template, WorkerUtils.UnityGameLogic);
 
@@ -62,7 +63,7 @@ namespace Playground
                     break;
 
                 case UnitType.Stronghold:
-                    template.AddComponent(new UnitFactory.Snapshot { Orders = new List<ProductOrder>() }, writeAccess);
+                    template.AddComponent(new UnitFactory.Snapshot { Orders = new List<ProductOrder>(), CurrentOrder = new ProductOrder { Type = UnitType.None } }, writeAccess);
                     break;
             }
         }

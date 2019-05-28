@@ -3,6 +3,8 @@ import "from_gdk_packages/com.improbable.gdk.core/common.schema";
 import "improbable/vector3.schema";
 import "playground/common.schema";
 
+// bullet/gun:21000~21009
+
 type BulletFireInfo {
     int32 power = 1;
     uint32 type = 2;

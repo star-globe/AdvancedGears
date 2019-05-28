@@ -16,6 +16,8 @@ namespace Playground
         [SerializeField] float angleSpeed = 90.0f;
         [SerializeField] int maxHp = 10;
         [SerializeField] int defense = 10;
+        [SerializeField] int maxFuel = 50;
+        [SerializeField] float consumeRate = 1.0f;
 
         public float Speed => speed;
         public float Rot => rot;
@@ -26,5 +28,7 @@ namespace Playground
         public float AngleSpeed => angleSpeed;
         public int MaxHp => maxHp;
         public int Defense => defense;
+        public int MaxFuel => maxFuel;
+        public float ConsumeRate => consumeRate;
     }
 }

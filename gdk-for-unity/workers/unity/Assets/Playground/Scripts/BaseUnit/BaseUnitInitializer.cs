@@ -13,6 +13,7 @@ namespace Playground
         [Require] BaseUnitSightWriter sight;
         [Require] BaseUnitActionWriter action;
         [Require] BaseUnitHealthWriter health;
+        [Require] FuelComponentWriter fuel;
 
         [SerializeField]
         BaseUnitInitSettings settings;
@@ -24,7 +25,8 @@ namespace Playground
             movement.SendUpdate(new BaseUnitMovement.Update
             {
                 MoveSpeed = settings.Speed,
-                RotSpeed = settings.Rot * Mathf.Deg2Rad
+                RotSpeed = settings.Rot * Mathf.Deg2Rad,
+                ConsumeRate = settings.ConsumeRate,
             });
 
             sight.SendUpdate(new BaseUnitSight.Update
@@ -46,6 +48,12 @@ namespace Playground
                 MaxHealth = settings.MaxHp,
                 Health = settings.MaxHp,
                 Defense = settings.Defense,
+            });
+
+            fuel.SendUpdate(new FuelComponent.Update
+            {
+                MaxFuel = settings.MaxFuel,
+                fuel = settings.MaxFuel,
             });
         }
     }

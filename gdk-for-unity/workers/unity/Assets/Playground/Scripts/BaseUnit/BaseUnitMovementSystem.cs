@@ -31,10 +31,12 @@ namespace Playground
                     ComponentType.ReadOnly<BaseUnitMovement.Component>(),
                     ComponentType.ReadOnly<BaseUnitTarget.Component>(),
                     ComponentType.ReadOnly<BaseUnitStatus.Component>(),
-                    ComponentType.ReadOnly<BaseUnitAction.Component>()
+                    ComponentType.ReadOnly<BaseUnitAction.Component>(),
+                    ComponentType.Create<FuelComponent.Component>()
             );
 
             group.SetFilter(BaseUnitPosture.ComponentAuthority.Authoritative);
+            group.SetFilter(FuelComponent.ComponentAuthority.Authoritative);
         }
 
         protected override void OnUpdate()
@@ -45,6 +47,7 @@ namespace Playground
             var targetData = group.GetComponentDataArray<BaseUnitTarget.Component>();
             var statusData = group.GetComponentDataArray<BaseUnitStatus.Component>();
             var actionData = group.GetComponentDataArray<BaseUnitAction.Component>();
+            var fuelData = group.GetComponentDataArray<FuelComponent.Component>();
 
             for (var i = 0; i < postureData.Length; i++)
             {
@@ -55,6 +58,7 @@ namespace Playground
                 var target = targetData[i];
                 var status = statusData[i];
                 var action = actionData[i];
+                var fuel = fuelData[i];
 
                 if (status.State != UnitState.Alive)
                     continue;
@@ -69,6 +73,10 @@ namespace Playground
                     rigidbody.angularVelocity = Vector3.zero;
                     continue;
                 }
+
+                // check fueld
+                if (fuel.Fuel == 0)
+                    continue;
 
                 var pos = rigidbody.position;
 
@@ -111,8 +119,15 @@ namespace Playground
                 }
 
                 var uVec = rigidbody.transform.forward * movement.MoveSpeed * foward;
+                var moveVec = uVec * Time.fixedDeltaTime;
+                rigidbody.MovePosition(pos + moveVec);
 
-                rigidbody.MovePosition(pos + uVec * Time.fixedDeltaTime);
+                var consume = (int)(moveVec.magnitude * movement.ConsumeRate);
+                fuel.Fuel -= consume;
+                if (fuel.Fuel < 0)
+                    fuel.Fuel = 0;
+
+                fuelData[i] = fuel;
             }
         }
 
