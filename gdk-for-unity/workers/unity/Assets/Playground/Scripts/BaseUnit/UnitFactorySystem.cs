@@ -1,9 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Improbable;
 using Improbable.Gdk.Core;
+using Improbable.Gdk.Core.Commands;
 using Improbable.Gdk.ReactiveComponents;
 using Improbable.Gdk.Subscriptions;
+using Improbable.Gdk.Standardtypes;
+using Improbable.Worker.CInterop;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
@@ -97,18 +101,18 @@ namespace Playground
                 {
                     var current = factory.CurrentOrder;
 
-                    factory.CurrentOrder.number--;
-                    if (factory.CurrentOrder.number <= 0)
-                        factory.CurrentOrder.Type = UnitType.None;
+                    current.Number--;
+                    if (current.Number <= 0)
+                        current.Type = UnitType.None;
 
                     // create unit
                     var unitEntityTemplate =
                         BaseUnitTemplate.CreateBaseUnitEntityTemplate(current.Side, new Coordinates(pos.x, pos.y, pos.z), current.Type);
                     var request = new WorldCommands.CreateEntity.Request
-                    {
+                    (
                         unitEntityTemplate,
-                        Context = new ProductOrderCotext() { order = current },
-                    };
+                        context: new ProductOrderCotext() { order = current }
+                    );
                    commandSystem.SendCommand(request);
                 }
 

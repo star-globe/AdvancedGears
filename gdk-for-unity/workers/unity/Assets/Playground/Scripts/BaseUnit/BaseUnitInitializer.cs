@@ -53,7 +53,7 @@ namespace Playground
             fuel.SendUpdate(new FuelComponent.Update
             {
                 MaxFuel = settings.MaxFuel,
-                fuel = settings.MaxFuel,
+                Fuel = settings.MaxFuel,
             });
         }
     }

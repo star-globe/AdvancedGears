@@ -84,11 +84,11 @@ namespace Playground
 
                     foreach (var point in unit.GetKeys())
                     {
-                        GunInfo gunInfo = null;
+                        GunInfo gunInfo;
                         if (gunsDic.TryGetValue(point, out gunInfo) == false)
                             continue;
 
-                        PostureData pdata = null;
+                        PostureData pdata;
                         var result = GetSetPosture(unit, point, epos, gunInfo, action.AngleSpeed, out pdata);
                         switch (result)
                         {
@@ -96,8 +96,8 @@ namespace Playground
                                 if (gunInfo.StockBullets == 0)
                                     break;
 
-                                var inter = gunInfo.Interval;
-                                if (inter.Check(time) == false)
+                                inter = gunInfo.Interval;
+                                if (inter.CheckTime(time) == false)
                                     break;
 
                                 gunInfo.Interval = inter;
@@ -147,11 +147,10 @@ namespace Playground
         Result GetSetPosture(UnitTransform unit, PosturePoint point, Vector3 epos, GunInfo gun, float angleSpeed,
                      out PostureData pdata)
         {
-            pdata = null;
-
+            pdata = new PostureData();
             var postrans = unit.GetPosture(point);
             var cannon = unit.GetCannonTransform(point);
-            var result = CheckRange(postrans, cannon, epos, gun.attackRange, gun.attackAngle, angleSpeed);
+            var result = CheckRange(postrans, cannon, epos, gun.AttackRange, gun.AttackAngle, angleSpeed);
             if (result == Result.Rotate)
             {
                 var rot = unit.transform.rotation;

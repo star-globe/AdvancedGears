@@ -86,7 +86,7 @@ component BaseUnitMovement {
     
     improbable.Vector3f commander_position = 6;
 
-    float consume_rate = 6;
+    float consume_rate = 7;
 }
 
 component BaseUnitSight {
