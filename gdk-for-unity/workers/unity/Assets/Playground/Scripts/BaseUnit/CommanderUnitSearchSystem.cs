@@ -68,6 +68,11 @@ namespace Playground
 
                 sight.Interval = inter;
 
+                if (commander.FollowerInfo.Followers.Count == 0)
+                {
+                    // Search Stronghold and Get Followers
+                }
+
                 var tgt = getNearestEnemey(status.Side, pos, sight.Range, UnitType.Stronghold, UnitType.Commander);
                 sight.IsTarget = tgt != null;
                 var tpos = Improbable.Vector3f.Zero;

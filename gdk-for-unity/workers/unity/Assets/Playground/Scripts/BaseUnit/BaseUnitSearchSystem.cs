@@ -151,6 +151,16 @@ namespace Playground
 
         protected UnitInfo getNearestEnemey(UnitSide self_side, Vector3 pos, float length, params UnitType[] types)
         {
+            return getNearestUnit(self_side, pos, length, true, types);
+        }
+
+        protected UnitInfo getNearestAlly(UnitSide self_side, Vector3 pos, float length, params UnitType[] types)
+        {
+            return getNearestUnit(self_side, pos, length, false, types);
+        }
+
+        protected UnitInfo getNearestUnit(UnitSide self_side, Vector3 pos, float length, bool isEnemy, params UnitType[] types)
+        {
             float len = float.MaxValue;
             UnitInfo info = null;
 
@@ -168,7 +178,7 @@ namespace Playground
                     if (unit.Value.State == UnitState.Dead)
                         continue;
 
-                    if (unit.Value.Side == self_side)
+                    if ((unit.Value.Side == self_side) == isEnemy)
                         continue;
 
                     if (types.Length != 0 && types.Contains(unit.Value.Type) == false)

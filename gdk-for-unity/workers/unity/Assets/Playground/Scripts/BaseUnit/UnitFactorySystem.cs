@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Improbable;
 using Improbable.Gdk.Core;
 using Improbable.Gdk.Core.Commands;
@@ -29,13 +30,14 @@ namespace Playground
             public ProductOrder order;
         }
 
-
         protected override void OnCreateManager()
         {
             base.OnCreateManager();
 
             // ここで基準位置を取る
-            origin = World.GetExistingManager<WorkerSystem>().Origin;
+            var worker = World.GetExistingManager<WorkerSystem>();
+            origin = worker.Origin;
+            logDispatcher = worker.LogDispatcher;
 
             commandSystem = World.GetExistingManager<CommandSystem>();
             group = GetComponentGroup(
@@ -122,6 +124,8 @@ namespace Playground
 
         void HandleProductResponse()
         {
+            var followerDic = new Dictionary<EntityId,List<EntityId>>();
+
             var responses = commandSystem.GetResponses<WorldCommands.CreateEntity.ReceivedResponse>();
             for (var i = 0; i < responses.Count; i++)
             {
@@ -133,23 +137,19 @@ namespace Playground
                 }
 
                 if (response.StatusCode != StatusCode.Success)
-                {
-                    //var responseFailed = new PlayerCreator.CreatePlayer.Response(
-                    //    requestContext.createPlayerRequest.RequestId,
-                    //    $"Failed to create player: \"{response.Message}\""
-                    //);
-                    //commandSystem.SendResponse(responseFailed);
-                }
-                else
-                {
-                    //var responseSuccess = new PlayerCreator.CreatePlayer.Response(
-                    //    requestContext.createPlayerRequest.RequestId,
-                    //    new CreatePlayerResponse(response.EntityId.Value)
-                    //);
-                    //commandSystem.SendResponse(responseSuccess);
+                    continue;
 
-                    // TODO:SetFollowers
-                }
+                var id = requestContext.order.Customer;
+                if (followerDic.ContainsKey(id) == false)
+                    followerDic.Add(id, new List<EntityId>());
+                List<EntityId> list = followerDic[id];
+                list.Add(response.EntityId.Value);
+            }
+
+            // SetFollowers
+            foreach(var kvp in followerDic)
+            {
+                commandSystem.SendCommand(new CommanderStatus.AddFollower.Request(kvp.Key, new FollowerInfo { Followers = kvp.Value.ToList() }));
             }
         }
     }
