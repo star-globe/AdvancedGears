@@ -71,39 +71,52 @@ namespace Playground
                 if (commander.FollowerInfo.Followers.Count == 0)
                 {
                     // Search Stronghold and Get Followers
+                    GetFollowers();
                 }
-
-                var tgt = getNearestEnemey(status.Side, pos, sight.Range, UnitType.Stronghold, UnitType.Commander);
-                sight.IsTarget = tgt != null;
-                var tpos = Improbable.Vector3f.Zero;
-                var type = UnitType.None;
-                if (sight.IsTarget)
+                else
                 {
-                    tpos = new Improbable.Vector3f(tgt.pos.x - origin.x,
-                                                   tgt.pos.y - origin.y,
-                                                   tgt.pos.z - origin.z);
-                    type = tgt.type;
+                    AttackEnemy(status, entityId, pos, ref sight, ref commander);
                 }
-
-                sight.TargetPosition = tpos;
-                sight.TargetType = type;
-
-                // check 
-                OrderType current = GetOrder(status.Side, pos, sight.Range);
-
-                commander.SelfOrder = current;
-
-                var targetInfo = new TargetInfo(sight.IsTarget,
-                                             sight.TargetPosition,
-                                             sight.TargetType,
-                                             entityId.EntityId,
-                                             commander.AllyRange);
-                SetFollowers(commander.FollowerInfo.Followers, ref targetInfo, current);
 
                 sightData[i] = sight;
                 commanderData[i] = commander;
             }
         }
+
+        void GetFollowers()
+        {
+        }
+
+        void AttackEnemy(BaseUnitStatus.Component status, SpatialEntityId entityId, Vector3 pos, ref CommanderSight.Component sight, ref CommanderStatus.Component commander)
+        {
+            var tgt = getNearestEnemey(status.Side, pos, sight.Range, UnitType.Stronghold, UnitType.Commander);
+            sight.IsTarget = tgt != null;
+            var tpos = Improbable.Vector3f.Zero;
+            var type = UnitType.None;
+            if (sight.IsTarget)
+            {
+                tpos = new Improbable.Vector3f(tgt.pos.x - origin.x,
+                                               tgt.pos.y - origin.y,
+                                               tgt.pos.z - origin.z);
+                type = tgt.type;
+            }
+
+            sight.TargetPosition = tpos;
+            sight.TargetType = type;
+
+            // check 
+            OrderType current = GetOrder(status.Side, pos, sight.Range);
+
+            commander.SelfOrder = current;
+
+            var targetInfo = new TargetInfo(sight.IsTarget,
+                                         sight.TargetPosition,
+                                         sight.TargetType,
+                                         entityId.EntityId,
+                                         commander.AllyRange);
+            SetFollowers(commander.FollowerInfo.Followers, ref targetInfo, current);
+        }
+
 
         private OrderType GetOrder(UnitSide side, Vector3 pos, float length)
         {
