@@ -77,64 +77,64 @@ namespace Playground
                 if (action.EnemyPositions.Count > 0)
                 {
                     var epos = action.EnemyPositions[0].ToUnityVector() + origin;
-                    var pos = posture.Posture;
-                    var gunsDic = gun.GunsDic;
-                    bool updPosture = false;
-                    bool updGuns = false;
-
-                    foreach (var point in unit.GetKeys())
-                    {
-                        GunInfo gunInfo;
-                        if (gunsDic.TryGetValue(point, out gunInfo) == false)
-                            continue;
-
-                        PostureData pdata;
-                        var result = GetSetPosture(unit, point, epos, gunInfo, action.AngleSpeed, out pdata);
-                        switch (result)
-                        {
-                            case Result.InRange:
-                                if (gunInfo.StockBullets == 0)
-                                    break;
-
-                                inter = gunInfo.Interval;
-                                if (inter.CheckTime(time) == false)
-                                    break;
-
-                                gunInfo.Interval = inter;
-
-                                var atk = new AttackTargetInfo
-                                {
-                                    Type = 1,
-                                    TargetPosition = epos.ToImprobableVector3(),
-                                    Attached = point,
-                                };
-                                updGuns |= true;
-                                updateSystem.SendEvent(new GunComponent.FireTriggered.Event(atk), entityId.EntityId);
-                                break;
-
-                            case Result.Rotate:
-                                pos.SetData(pdata);
-                                updPosture |= true;
-                                updateSystem.SendEvent(new BaseUnitPosture.PostureChanged.Event(pdata), entityId.EntityId);
-                                break;
-                        }
-                    }
+                    bool updPosture,updGuns;
+                    Attack(epos, ref posture, ref gun, out updPosture, out updGuns);
 
                     if (updPosture)
-                    {
-                        posture.Posture = pos;
                         postureData[i] = posture;
-                    }
 
                     if (updGuns)
-                    {
-                        gun.GunsDic = gunsDic;
                         gunData[i] = gun;
-                    }
                 }
 
                 actionData[i] = action;
             }
+        }
+
+        void Attack(in Vector3 epos, ref BaseUnitPosture.Component posture, ref GunComponent.Component gun, out bool updPosture, out bool updGuns)
+        {
+            var pos = posture.Posture;
+            var gunsDic = gun.GunsDic;
+            updPosture = false;
+            updGuns = false;
+            foreach (var point in unit.GetKeys())
+            {
+                GunInfo gunInfo;
+                if (gunsDic.TryGetValue(point, out gunInfo) == false)
+                    continue;
+                PostureData pdata;
+                var result = GetSetPosture(unit, point, epos, gunInfo, action.AngleSpeed, out pdata);
+                switch (result)
+                {
+                    case Result.InRange:
+                        if (gunInfo.StockBullets == 0)
+                            break;
+                        inter = gunInfo.Interval;
+                        if (inter.CheckTime(time) == false)
+                            break;
+                        gunInfo.Interval = inter;
+                        var atk = new AttackTargetInfo
+                        {
+                            Type = 1,
+                            TargetPosition = epos.ToImprobableVector3(),
+                            Attached = point,
+                        };
+                        updGuns |= true;
+                        updateSystem.SendEvent(new GunComponent.FireTriggered.Event(atk), entityId.EntityId);
+                        break;
+                    case Result.Rotate:
+                        pos.SetData(pdata);
+                        updPosture |= true;
+                        updateSystem.SendEvent(new BaseUnitPosture.PostureChanged.Event(pdata), entityId.EntityId);
+                        break;
+                }
+            }
+
+            if (updPosture)
+                posture.Posture = pos;
+
+            if (updGuns)
+                guns.Dic = gunsDic;
         }
 
         enum Result
@@ -144,7 +144,7 @@ namespace Playground
             Rotate,
         }
 
-        Result GetSetPosture(UnitTransform unit, PosturePoint point, Vector3 epos, GunInfo gun, float angleSpeed,
+        Result GetSetPosture(UnitTransform unit, PosturePoint point, in Vector3 epos, in GunInfo gun, float angleSpeed,
                      out PostureData pdata)
         {
             pdata = new PostureData();
@@ -161,7 +161,7 @@ namespace Playground
             return result;
         }
 
-        Result CheckRange(PostureTransform posture, CannonTransform cannon, Vector3 epos, float range, float angle, float angleSpeed)
+        Result CheckRange(PostureTransform posture, CannonTransform cannon, in Vector3 epos, float range, float angle, float angleSpeed)
         {
             var trans = cannon.Muzzle;
             var diff = epos - trans.position;

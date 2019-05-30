@@ -30,16 +30,20 @@ namespace Playground
             group = GetComponentGroup(
                 ComponentType.Create<CommanderSight.Component>(),
                 ComponentType.Create<CommanderStatus.Component>(),
+                ComponentType.Create<CommanderAction.Component>(),
+                ComponentType.ReadOnly<CommanderAction.ComponentAuthority>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<Transform>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
+            group.SetFilter(CommanderAction.ComponentAuthority.Authoritative);
         }
 
         protected override void OnUpdate()
         {
             var sightData = group.GetComponentDataArray<CommanderSight.Component>();
             var commanderData = group.GetComponentDataArray<CommanderStatus.Component>();
+            var actionData = group.GetComponentDataArray<CommanderAction.Component>();
             var statusData = group.GetComponentDataArray<BaseUnitStatus.Component>();
             var transData = group.GetComponentArray<Transform>();
             var entityIdData = group.GetComponentDataArray<SpatialEntityId>();
@@ -48,6 +52,7 @@ namespace Playground
             {
                 var sight = sightData[i];
                 var commander = commanderData[i];
+                var action = actionData[i];
                 var status = statusData[i];
                 var pos = transData[i].position;
                 var entityId = entityIdData[i];
@@ -68,57 +73,80 @@ namespace Playground
 
                 sight.Interval = inter;
 
+                bool is_target;
                 if (commander.FollowerInfo.Followers.Count == 0)
-                {
-                    // Search Stronghold and Get Followers
-                    GetFollowers();
-                }
+                    is_target = escapeOrder(status, entityId, pos, ref sight, ref commander);
                 else
-                {
-                    AttackEnemy(status, entityId, pos, ref sight, ref commander);
-                }
+                    is_target = attackOrder(status, entityId, pos, ref sight, ref commander);
 
+                action.IsTarget = is_target;
+
+                actionData[i] = action;
                 sightData[i] = sight;
                 commanderData[i] = commander;
             }
         }
 
-        void GetFollowers()
+        void commonTargeting(UnitInfo tgt, in SpatialEntityId entityId, in CommanderStatus.Component commander,
+                            ref ComanderSight.Component sight, out TargetInfo targetInfo)
         {
-        }
-
-        void AttackEnemy(BaseUnitStatus.Component status, SpatialEntityId entityId, Vector3 pos, ref CommanderSight.Component sight, ref CommanderStatus.Component commander)
-        {
-            var tgt = getNearestEnemey(status.Side, pos, sight.Range, UnitType.Stronghold, UnitType.Commander);
-            sight.IsTarget = tgt != null;
+            BaseTargetInfo baseInfo; 
+            baseInfo.IsTarget = tgt != null;
             var tpos = Improbable.Vector3f.Zero;
             var type = UnitType.None;
-            if (sight.IsTarget)
+            var side = UnitSide.None;
+            if (baseInfo.IsTarget)
             {
                 tpos = new Improbable.Vector3f(tgt.pos.x - origin.x,
                                                tgt.pos.y - origin.y,
                                                tgt.pos.z - origin.z);
                 type = tgt.type;
+                side = tgt.side;
             }
 
-            sight.TargetPosition = tpos;
-            sight.TargetType = type;
+            baseInfo.TargetPosition = tpos;
+            baseInfo.TargetType = type;
+            baseInfo.Side = side;
 
-            // check 
-            OrderType current = GetOrder(status.Side, pos, sight.Range);
+            sight.TargetInfo = baseInfo;
 
-            commander.SelfOrder = current;
-
-            var targetInfo = new TargetInfo(sight.IsTarget,
-                                         sight.TargetPosition,
-                                         sight.TargetType,
-                                         entityId.EntityId,
-                                         commander.AllyRange);
-            SetFollowers(commander.FollowerInfo.Followers, ref targetInfo, current);
+            targetInfo = new TargetInfo(baseInfo.IsTarget,
+                                        baseInfo.TargetPosition,
+                                        baseInfo.TargetType,
+                                        baseInfo.Side,
+                                        entityId.EntityId,
+                                        commander.AllyRange);
         }
 
+        bool escapeOrder(in BaseUnitStatus.Component status, in SpatialEntityId entityId, in Vector3 pos, ref ComanderSight.Component sight, ref CommanderStatus.Component commander)
+        {
+            var tgt = getNearestAlly(status.Side, pos, sight.Range, UnityType.Stronghold);
+            TargetInfo targetInfo;
+            commonTargeting(tgt, entityId, commander, ref sight, out targetInfo);
 
-        private OrderType GetOrder(UnitSide side, Vector3 pos, float length)
+            commander.SelfOrder = OrderType.Escape;
+
+            SetCommand(targetInfo.CommanderId, targetInfo, commander.SelfOrder);
+
+            return tgt != null;
+        }
+
+        bool attackOrder(in BaseUnitStatus.Component status, in SpatialEntityId entityId, in Vector3 pos, ref CommanderSight.Component sight, ref CommanderStatus.Component commander)
+        {
+            var tgt = getNearestEnemey(status.Side, pos, sight.Range, UnitType.Stronghold, UnitType.Commander);
+            TargetInfo targetInfo;
+            commonTargeting(tgt, entityId, commander, ref sight, out targetInfo);
+
+            // check power
+            OrderType current = GetOrder(status.Side, pos, sight.Range);
+            commander.SelfOrder = current;
+
+            SetFollowers(commander.FollowerInfo.Followers, targetInfo, current);
+
+            return tgt != null;
+        }
+
+        private OrderType GetOrder(UnitSide side, in Vector3 pos, float length)
         {
             float ally = 0.0f;
             float enemy = 0.0f;
@@ -154,17 +182,17 @@ namespace Playground
             return OrderType.Keep;
         }
 
-        private void SetFollowers(List<EntityId> followers, ref TargetInfo targetInfo, OrderType order)
+        private void SetFollowers(List<EntityId> followers, in TargetInfo targetInfo, OrderType order)
         {
             foreach (var id in followers)
             {
-                SetCommand(id, ref targetInfo, order);
+                SetCommand(id, targetInfo, order);
             }
 
-            SetCommand(targetInfo.CommanderId, ref targetInfo, order);
+            SetCommand(targetInfo.CommanderId, targetInfo, order);
         }
 
-        private bool SetCommand(EntityId id, ref TargetInfo targetInfo, OrderType order)
+        private bool SetCommand(EntityId id, in TargetInfo targetInfo, OrderType order)
         {
             Entity entity;
             if (!base.TryGetEntity(id, out entity))

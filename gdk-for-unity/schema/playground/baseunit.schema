@@ -102,20 +102,26 @@ component BaseUnitAction {
 
     IntervalChecker interval = 1;
 
-    float attack_range = 3;     // delete
-    float attack_angle = 4;     // delete
     float angle_speed = 5;
 
     bool is_target = 6;
     list<improbable.Vector3f> enemy_positions = 7;
 }
 
+type TargetBaseInfo {
+    bool is_target = 1;
+    improbable.Vector3f position = 2;
+    UnitType type = 3;
+    UnitSide side = 4;
+}
+
 type TargetInfo {
     bool is_target = 1;
     improbable.Vector3f position = 2;
     UnitType type = 3;
-    EntityId commander_id = 4;
-    float ally_range = 5;
+    UnitSide side = 4;
+    EntityId commander_id = 5;
+    float ally_range = 6;
 }
 
 component BaseUnitTarget {
@@ -177,9 +183,7 @@ component CommanderSight {
     float range = 1;
     IntervalChecker interval = 2;
 
-    bool is_target = 4;
-    improbable.Vector3f target_position = 5;
-    UnitType target_type = 6;
+    TargetBaseInfo target_info = 5;
 
     list<WarPower> war_powers = 7;
 }
@@ -189,6 +193,13 @@ type ProductOrder {
     UnitSide side = 2;
     UnitType type = 3;
     int32 number = 4;
+}
+
+component CommanderAction {
+    id = 20022;
+
+    bool is_target = 1;
+    IntervalChecker interval = 2;
 }
 
 // stronghold:20030~

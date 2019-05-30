@@ -81,7 +81,10 @@ namespace Playground
                 action.IsTarget = false;
                 action.EnemyPositions.Clear();
 
-                var enemy = getNearestEnemey(status.Side, pos, sight.Range);
+                UnitInfo enemy = null;
+                if (status.Order != OrderType.Escape)
+                    enemy = getNearestEnemey(status.Side, pos, sight.Range);
+
                 if (enemy == null)
                 {
                     if (target.TargetInfo.IsTarget)
@@ -113,7 +116,7 @@ namespace Playground
                     movement.CommanderPosition = Vector3f.Zero;
 
                 var range = action.AttackRange;
-                if (status.Type == UnitType.Commander)
+                if (status.Type == UnitType.Commander && target.TargetInfo.Side != status.Side)
                 {
                     switch (target.TargetInfo.Type)
                     {
@@ -124,11 +127,13 @@ namespace Playground
 
                 switch (status.Order)
                 {
-                    case OrderType.Move: range = 0.2f; break;
-                    case OrderType.Attack: range *= 0.8f; break;
-                    case OrderType.Escape: range *= 1.6f; break;
-                    case OrderType.Keep: range *= 1.0f; break;
+                    case OrderType.Move:
+                    case OrderType.Escape:  range = 0.2f; break;
+                    case OrderType.Attack:  range *= 0.8f; break;
+                    case OrderType.Escape:  range *= 1.6f; break;
+                    case OrderType.Keep:    range *= 1.0f; break;
                 }
+
                 movement.TargetRange = range;
 
                 movementData[i] = movement;
@@ -149,17 +154,17 @@ namespace Playground
             }
         }
 
-        protected UnitInfo getNearestEnemey(UnitSide self_side, Vector3 pos, float length, params UnitType[] types)
+        protected UnitInfo getNearestEnemey(UnitSide self_side, in Vector3 pos, float length, params UnitType[] types)
         {
             return getNearestUnit(self_side, pos, length, true, types);
         }
 
-        protected UnitInfo getNearestAlly(UnitSide self_side, Vector3 pos, float length, params UnitType[] types)
+        protected UnitInfo getNearestAlly(UnitSide self_side, in Vector3 pos, float length, params UnitType[] types)
         {
             return getNearestUnit(self_side, pos, length, false, types);
         }
 
-        protected UnitInfo getNearestUnit(UnitSide self_side, Vector3 pos, float length, bool isEnemy, params UnitType[] types)
+        protected UnitInfo getNearestUnit(UnitSide self_side, in Vector3 pos, float length, bool isEnemy, params UnitType[] types)
         {
             float len = float.MaxValue;
             UnitInfo info = null;
@@ -192,6 +197,7 @@ namespace Playground
                         info = info ?? new UnitInfo();
                         info.pos = t_pos;
                         info.type = unit.Value.Type;
+                        info.side = unit.Value.Side;
                     }
                 }
             }
@@ -242,6 +248,7 @@ namespace Playground
     {
         public Vector3 pos;
         public UnitType type;
+        public UnitSide side;
     }
 
     public static class RandomInterval
