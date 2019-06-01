@@ -197,6 +197,7 @@ namespace Playground
                     {
                         len = l;
                         info = info ?? new UnitInfo();
+                        info.id = comp.EntityId;
                         info.pos = t_pos;
                         info.type = unit.Value.Type;
                         info.side = unit.Value.Side;
@@ -248,6 +249,7 @@ namespace Playground
     // Utils
     public class UnitInfo
     {
+        public EntityId id;
         public Vector3 pos;
         public UnitType type;
         public UnitSide side;

@@ -110,18 +110,20 @@ component BaseUnitAction {
 
 type TargetBaseInfo {
     bool is_target = 1;
-    improbable.Vector3f position = 2;
-    UnitType type = 3;
-    UnitSide side = 4;
+    EntityId target_id = 2;
+    improbable.Vector3f position = 3;
+    UnitType type = 4;
+    UnitSide side = 5;
 }
 
 type TargetInfo {
     bool is_target = 1;
-    improbable.Vector3f position = 2;
-    UnitType type = 3;
-    UnitSide side = 4;
-    EntityId commander_id = 5;
-    float ally_range = 6;
+    EntityId target_id = 2;
+    improbable.Vector3f position = 3;
+    UnitType type = 4;
+    UnitSide side = 5;
+    EntityId commander_id = 6;
+    float ally_range = 7;
 }
 
 component BaseUnitTarget {

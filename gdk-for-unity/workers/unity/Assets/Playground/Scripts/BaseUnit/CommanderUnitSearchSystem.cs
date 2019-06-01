@@ -95,8 +95,10 @@ namespace Playground
             var tpos = Improbable.Vector3f.Zero;
             var type = UnitType.None;
             var side = UnitSide.None;
+            var id = new EntityId();
             if (baseInfo.IsTarget)
             {
+                id = tgt.id;
                 tpos = new Improbable.Vector3f(tgt.pos.x - origin.x,
                                                tgt.pos.y - origin.y,
                                                tgt.pos.z - origin.z);
@@ -104,6 +106,7 @@ namespace Playground
                 side = tgt.side;
             }
 
+            baseInfo.TargetId = id;
             baseInfo.Position = tpos;
             baseInfo.Type = type;
             baseInfo.Side = side;
@@ -111,6 +114,7 @@ namespace Playground
             sight.TargetInfo = baseInfo;
 
             targetInfo = new TargetInfo(baseInfo.IsTarget,
+                                        baseInfo.TargetId,
                                         baseInfo.Position,
                                         baseInfo.Type,
                                         baseInfo.Side,

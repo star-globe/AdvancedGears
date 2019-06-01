@@ -13,9 +13,9 @@ using UnityEngine.Experimental.PlayerLoop;
 namespace Playground
 {
     [UpdateBefore(typeof(FixedUpdate.PhysicsFixedUpdate))]
-    internal class CommanderActionSystem : ComponentSystem
+    internal class CommanderActionSystem : BaseSearchSystem
     {
-        private ComponentUpdateSystem updateSystem;
+        private CommandSystem commandSystem;
         private ComponentGroup group;
 
         private Vector3 origin;
@@ -24,7 +24,7 @@ namespace Playground
         {
             base.OnCreateManager();
 
-            updateSystem = World.GetExistingManager<ComponentUpdateSystem>();
+            commandSystem = World.GetExistingManager<CommandSystem>();
 
             // ここで基準位置を取る
             origin = World.GetExistingManager<WorkerSystem>().Origin;
@@ -32,9 +32,9 @@ namespace Playground
             group = GetComponentGroup(
                 ComponentType.Create<CommanderAction.Component>(),
                 ComponentType.ReadOnly<CommanderAction.ComponentAuthority>(),
-                ComponentType.ReadOnly<CommanderSight.Component>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<BaseUnitTarget.Component>(),
+                ComponentType.ReadOnly<Transform>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
             group.SetFilter(CommanderAction.ComponentAuthority.Authoritative);
@@ -45,6 +45,7 @@ namespace Playground
             var actionData = group.GetComponentDataArray<CommanderAction.Component>();
             var statusData = group.GetComponentDataArray<BaseUnitStatus.Component>();
             var tgtData = group.GetComponentDataArray<BaseUnitTarget.Component>();
+            var transData = group.GetComponentArray<Transform>();
             var entityIdData = group.GetComponentDataArray<SpatialEntityId>();
 
             for (var i = 0; i < actionData.Length; i++)
@@ -52,6 +53,7 @@ namespace Playground
                 var action = actionData[i];
                 var status = statusData[i];
                 var tgt = tgtData[i];
+                var trans = transData[i];
                 var entityId = entityIdData[i];
 
                 if (status.State != UnitState.Alive)
@@ -72,7 +74,24 @@ namespace Playground
 
                 if (status.Order == OrderType.Escape)
                 {
-                    
+                    var diff = tgt.TargetInfo.Position.ToUnityVector() - trans.position;
+
+                    float length = 10.0f;   // TODO from:master
+                    int num = 5;
+                    if (diff.sqrMagnitude < diff.sqrMagnitude)
+                    {
+                        var id = tgt.TargetInfo.TargetId;
+                        var request = new UnitFactory.SendOrder.Request(id, new ProductOrder() { Customer = entityId.EntityId,
+                                                                                                 Number = num,
+                                                                                                 Type = UnitType.Soldier,
+                                                                                                 Side = status.Side });
+
+                        Entity entity;
+                        if (TryGetEntity(id, out entity))
+                        {
+                            commandSystem.SendCommand(request, entity);
+                        }
+                    }
                 }
 
                 actionData[i] = action;
