@@ -38,8 +38,6 @@ namespace Playground
             action.SendUpdate(new BaseUnitAction.Update
             {
                 Interval = new IntervalChecker(settings.Inter,0),
-                AttackRange = settings.AtkRange,
-                AttackAngle = settings.AtkAngle * Mathf.Deg2Rad,
                 AngleSpeed = settings.AngleSpeed * Mathf.Deg2Rad,
             });
 

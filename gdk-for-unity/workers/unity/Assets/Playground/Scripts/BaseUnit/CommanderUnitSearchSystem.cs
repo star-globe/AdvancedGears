@@ -88,9 +88,9 @@ namespace Playground
         }
 
         void commonTargeting(UnitInfo tgt, in SpatialEntityId entityId, in CommanderStatus.Component commander,
-                            ref ComanderSight.Component sight, out TargetInfo targetInfo)
+                            ref CommanderSight.Component sight, out TargetInfo targetInfo)
         {
-            BaseTargetInfo baseInfo; 
+            TargetBaseInfo baseInfo; 
             baseInfo.IsTarget = tgt != null;
             var tpos = Improbable.Vector3f.Zero;
             var type = UnitType.None;
@@ -104,23 +104,23 @@ namespace Playground
                 side = tgt.side;
             }
 
-            baseInfo.TargetPosition = tpos;
-            baseInfo.TargetType = type;
+            baseInfo.Position = tpos;
+            baseInfo.Type = type;
             baseInfo.Side = side;
 
             sight.TargetInfo = baseInfo;
 
             targetInfo = new TargetInfo(baseInfo.IsTarget,
-                                        baseInfo.TargetPosition,
-                                        baseInfo.TargetType,
+                                        baseInfo.Position,
+                                        baseInfo.Type,
                                         baseInfo.Side,
                                         entityId.EntityId,
                                         commander.AllyRange);
         }
 
-        bool escapeOrder(in BaseUnitStatus.Component status, in SpatialEntityId entityId, in Vector3 pos, ref ComanderSight.Component sight, ref CommanderStatus.Component commander)
+        bool escapeOrder(in BaseUnitStatus.Component status, in SpatialEntityId entityId, in Vector3 pos, ref CommanderSight.Component sight, ref CommanderStatus.Component commander)
         {
-            var tgt = getNearestAlly(status.Side, pos, sight.Range, UnityType.Stronghold);
+            var tgt = getNearestAlly(status.Side, pos, sight.Range, UnitType.Stronghold);
             TargetInfo targetInfo;
             commonTargeting(tgt, entityId, commander, ref sight, out targetInfo);
 

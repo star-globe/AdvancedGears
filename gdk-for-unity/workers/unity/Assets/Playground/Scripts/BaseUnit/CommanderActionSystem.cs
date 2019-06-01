@@ -44,7 +44,7 @@ namespace Playground
         {
             var actionData = group.GetComponentDataArray<CommanderAction.Component>();
             var statusData = group.GetComponentDataArray<BaseUnitStatus.Component>();
-            var tgtData = group.GetComponentDataArray<BaseUnitTarget.Componet>();
+            var tgtData = group.GetComponentDataArray<BaseUnitTarget.Component>();
             var entityIdData = group.GetComponentDataArray<SpatialEntityId>();
 
             for (var i = 0; i < actionData.Length; i++)
@@ -70,7 +70,7 @@ namespace Playground
 
                 action.Interval = inter;
 
-                if (status.OrderType == OrderType.Escape)
+                if (status.Order == OrderType.Escape)
                 {
                     
                 }

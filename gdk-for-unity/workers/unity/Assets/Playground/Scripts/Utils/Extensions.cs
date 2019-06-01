@@ -93,7 +93,18 @@ namespace Playground
             return self.GetComponentsInChildrenWithoutSelf<T>().FirstOrDefault();
         }
 
+        public static float GetAttackRange(this GunComponent.Component gun)
+        {
+            float length = 0;
+            foreach (var kvp in gun.GunsDic)
+            {
+                var l = kvp.Value.AttackRange;
+                if (length < l)
+                    length = l;
+            }
 
+            return length;
+        }
     }
 }
 

@@ -34,6 +34,7 @@ namespace Playground
                 ComponentType.Create < BaseUnitSight.Component>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<BaseUnitTarget.Component>(),
+                ComponentType.ReadOnly<GunComponent.Component>(),
                 ComponentType.ReadOnly<Transform>()
             );
 
@@ -47,6 +48,7 @@ namespace Playground
             var sightData = group.GetComponentDataArray<BaseUnitSight.Component>();
             var statusData = group.GetComponentDataArray<BaseUnitStatus.Component>();
             var targetData = group.GetComponentDataArray<BaseUnitTarget.Component>();
+            var gunData = group.GetComponentDataArray<GunComponent.Component>();
             var transData = group.GetComponentArray<Transform>();
 
             for (var i = 0; i < movementData.Length; i++)
@@ -56,6 +58,7 @@ namespace Playground
                 var sight = sightData[i];
                 var status = statusData[i];
                 var target = targetData[i];
+                var gun = gunData[i];
                 var pos = transData[i].position;
 
                 if (status.State != UnitState.Alive)
@@ -115,7 +118,7 @@ namespace Playground
                 else
                     movement.CommanderPosition = Vector3f.Zero;
 
-                var range = action.AttackRange;
+                var range = gun.GetAttackRange();
                 if (status.Type == UnitType.Commander && target.TargetInfo.Side != status.Side)
                 {
                     switch (target.TargetInfo.Type)
@@ -130,7 +133,6 @@ namespace Playground
                     case OrderType.Move:
                     case OrderType.Escape:  range = 0.2f; break;
                     case OrderType.Attack:  range *= 0.8f; break;
-                    case OrderType.Escape:  range *= 1.6f; break;
                     case OrderType.Keep:    range *= 1.0f; break;
                 }
 

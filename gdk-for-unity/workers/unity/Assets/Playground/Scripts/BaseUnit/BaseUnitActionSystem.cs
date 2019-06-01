@@ -78,7 +78,7 @@ namespace Playground
                 {
                     var epos = action.EnemyPositions[0].ToUnityVector() + origin;
                     bool updPosture,updGuns;
-                    Attack(epos, ref posture, ref gun, out updPosture, out updGuns);
+                    Attack(unit, time, action.AngleSpeed, epos, entityId, ref posture, ref gun, out updPosture, out updGuns);
 
                     if (updPosture)
                         postureData[i] = posture;
@@ -91,7 +91,7 @@ namespace Playground
             }
         }
 
-        void Attack(in Vector3 epos, ref BaseUnitPosture.Component posture, ref GunComponent.Component gun, out bool updPosture, out bool updGuns)
+        void Attack(UnitTransform unit, float time, float angleSpeed, in Vector3 epos, in SpatialEntityId entityId, ref BaseUnitPosture.Component posture, ref GunComponent.Component gun, out bool updPosture, out bool updGuns)
         {
             var pos = posture.Posture;
             var gunsDic = gun.GunsDic;
@@ -103,13 +103,13 @@ namespace Playground
                 if (gunsDic.TryGetValue(point, out gunInfo) == false)
                     continue;
                 PostureData pdata;
-                var result = GetSetPosture(unit, point, epos, gunInfo, action.AngleSpeed, out pdata);
+                var result = GetSetPosture(unit, point, epos, gunInfo, angleSpeed, out pdata);
                 switch (result)
                 {
                     case Result.InRange:
                         if (gunInfo.StockBullets == 0)
                             break;
-                        inter = gunInfo.Interval;
+                        var inter = gunInfo.Interval;
                         if (inter.CheckTime(time) == false)
                             break;
                         gunInfo.Interval = inter;
@@ -134,7 +134,7 @@ namespace Playground
                 posture.Posture = pos;
 
             if (updGuns)
-                guns.Dic = gunsDic;
+                gun.GunsDic = gunsDic;
         }
 
         enum Result
