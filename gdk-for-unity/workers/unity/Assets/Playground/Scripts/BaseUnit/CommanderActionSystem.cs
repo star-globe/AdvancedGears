@@ -72,7 +72,7 @@ namespace Playground
 
                 action.Interval = inter;
 
-                if (status.Order == OrderType.Escape)
+                if (status.Order == OrderType.Escape && action.Type != CommandActionType.Product)
                 {
                     var diff = tgt.TargetInfo.Position.ToUnityVector() - trans.position;
 
@@ -90,6 +90,7 @@ namespace Playground
                         if (TryGetEntity(id, out entity))
                         {
                             commandSystem.SendCommand(request, entity);
+                            action.Type = CommandActionType.Product;
                         }
                     }
                 }
