@@ -197,11 +197,18 @@ type ProductOrder {
     int32 number = 4;
 }
 
+enum CommandActionType
+{
+    None = 0;
+    Product = 1;
+}
+
 component CommanderAction {
     id = 20022;
 
     bool is_target = 1;
     IntervalChecker interval = 2;
+    CommandActionType type = 3;
 }
 
 // stronghold:20030~
