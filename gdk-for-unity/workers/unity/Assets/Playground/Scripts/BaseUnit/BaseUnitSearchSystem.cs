@@ -208,6 +208,43 @@ namespace Playground
             return info;
         }
 
+        protected List<UnitInfo> getUnits(UnitSide self_side, in Vector3 pos, float length, bool isEnemy, params UnitType[] types)
+        {
+            List<UnitInfo> unitList = new List<UnitInfo>();
+
+            var colls = Physics.OverlapSphere(pos, length, LayerMask.GetMask("Unit"));
+            for (var i = 0; i < colls.Length; i++)
+            {
+                var col = colls[i];
+                var comp = col.GetComponent<LinkedEntityComponent>();
+                if (comp == null)
+                    continue;
+
+                BaseUnitStatus.Component? unit;
+                if (TryGetComponent(comp.EntityId, out unit))
+                {
+                    if (unit.Value.State == UnitState.Dead)
+                        continue;
+
+                    if ((unit.Value.Side == self_side) == isEnemy)
+                        continue;
+
+                    if (types.Length != 0 && types.Contains(unit.Value.Type) == false)
+                        continue;
+
+                    var info = new UnitInfo();
+                    info.id = comp.EntityId;
+                    info.pos = t_pos;
+                    info.type = unit.Value.Type;
+                    info.side = unit.Value.Side;
+
+                    unitList.Add(info);
+                }
+            }
+
+            return unitList;
+        }
+
         protected bool TryGetComponent<T>(EntityId id, out T? comp) where T : struct, IComponentData
         {
             comp = null;

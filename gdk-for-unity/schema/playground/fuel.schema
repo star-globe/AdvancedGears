@@ -1,5 +1,6 @@
 package playground;
 import "from_gdk_packages/com.improbable.gdk.core/common.schema";
+import "playground/common.schema";
 
 // fuel:21100~21109
 type FuelModifier {
@@ -21,4 +22,12 @@ component FuelComponent {
 
     command improbable.common.Empty modify_fuel(FuelModifier);
     event FuelModifiedInfo fuel_modified;
+}
+
+component FuelServer {
+    id = 21101;
+
+    IntervalChecker interval = 1;
+    float range = 2;
+    int32 feed = 3;
 }

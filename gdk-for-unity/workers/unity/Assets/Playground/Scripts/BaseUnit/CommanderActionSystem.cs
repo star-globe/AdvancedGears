@@ -94,6 +94,10 @@ namespace Playground
                         }
                     }
                 }
+                else
+                {
+                    action.Type = CommandActionType.None;
+                }
 
                 actionData[i] = action;
             }
