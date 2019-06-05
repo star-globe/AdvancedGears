@@ -234,7 +234,7 @@ namespace Playground
 
                     var info = new UnitInfo();
                     info.id = comp.EntityId;
-                    info.pos = t_pos;
+                    info.pos = col.transform.position;
                     info.type = unit.Value.Type;
                     info.side = unit.Value.Side;
 

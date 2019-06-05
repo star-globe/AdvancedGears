@@ -41,7 +41,7 @@ namespace Playground
             logDispatcher = worker.LogDispatcher;
 
             commandSystem = World.GetExistingManager<CommandSystem>();
-            updateSystem = world.GetExistingManager<ComponentUpdateSystem>();
+            updateSystem = World.GetExistingManager<ComponentUpdateSystem>();
             group = GetComponentGroup(
                 ComponentType.Create<FuelServer.Component>(),
                 ComponentType.ReadOnly<FuelComponent.Component>(),
@@ -56,7 +56,7 @@ namespace Playground
 
         protected override void OnUpdate()
         {
-            var fuelServer = group.GetComponentDataArray<fuelServer.Component>();
+            var fuelServer = group.GetComponentDataArray<FuelServer.Component>();
             var fuelData = group.GetComponentDataArray<FuelComponent.Component>();
             var statusData = group.GetComponentDataArray<BaseUnitStatus.Component>();
             var transData = group.GetComponentArray<Transform>();
