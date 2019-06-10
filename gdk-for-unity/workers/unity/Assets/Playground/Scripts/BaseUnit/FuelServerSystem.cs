@@ -87,8 +87,9 @@ namespace Playground
                 server.Interval = inter;
 
                 float range = server.Range;
-                int baseFeed = server.Feed;
+                int baseFeed = server.FeedRate;
                 int current = fuel.Fuel;
+                current += server.GainRate;
 
                 var list = getUnits(status.Side, pos, range, false, UnitType.Soldier, UnitType.Commander);
                 foreach(var unit in list)

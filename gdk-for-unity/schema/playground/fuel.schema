@@ -29,5 +29,6 @@ component FuelServer {
 
     IntervalChecker interval = 1;
     float range = 2;
-    int32 feed = 3;
+    int32 feed_rate = 3;
+    int32 gain_rate = 4;
 }
