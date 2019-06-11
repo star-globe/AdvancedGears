@@ -160,6 +160,10 @@ type FollowerInfo {
     list<EntityId> followers = 1;
 }
 
+type SuperiorInfo {
+    EntityId entity_id = 1;
+}
+
 component CommanderStatus {
     id = 20020;
 
@@ -171,7 +175,10 @@ component CommanderStatus {
     float ally_range = 4;
     FollowerInfo follower_info = 5;
 
+    EntityId superior_commander_id = 6;
+
     command improbable.common.Empty add_follower(FollowerInfo);
+    command improbable.common.Empty set_superior(SuperiorInfo);
 }
 
 type WarPower {
@@ -232,4 +239,36 @@ component UnitFactory {
     IntervalChecker product_interval = 6;
 
     command improbable.common.Empty send_order(ProductOrder);
+}
+
+// headquarters:20040~
+type CommanderInfo {
+    EntityId self_id = 1;
+    EntityId superior_id = 2;
+    UnitSide side = 3;
+    uint32 rank = 4;
+    uint32 group_id = 5;
+}
+
+type CommanderGroup {
+    map<EntityId,CommanderInfo> datas = 1;
+    uint32 rank = 2;
+    uint32 group_id = 3;
+}
+
+type OrganizeOrder {
+    EntityId customer = 1;
+    UnitSide side = 2;
+    uint32 customer_rank = 3;
+    improbable.Vector3f pos = 4;
+}
+
+component HQStatus {
+    id = 20040;
+
+    IntervalChecker interval = 1;
+
+    map<uint32, CommanderGroup> groop_datas = 2;
+
+    transient list<OrganizeOrder> orders = 4;
 }
