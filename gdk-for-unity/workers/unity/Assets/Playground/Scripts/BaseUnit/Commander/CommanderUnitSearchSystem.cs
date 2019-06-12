@@ -76,6 +76,8 @@ namespace Playground
                 bool is_target;
                 if (commander.FollowerInfo.Followers.Count == 0)
                     is_target = escapeOrder(status, entityId, pos, ref sight, ref commander);
+                else if (commander.SuperiorCommanderId.IsValid() == false)
+                    is_target = organizeOrder(status.Side, pos, ref commander);
                 else
                     is_target = attackOrder(status, entityId, pos, ref sight, ref commander);
 
@@ -132,6 +134,15 @@ namespace Playground
 
             SetCommand(targetInfo.CommanderId, targetInfo, commander.SelfOrder);
 
+            return tgt != null;
+        }
+
+        const float radioRange = 1000.0f;
+        bool organizeOrder(UnitSide side, in Vector3 pos, ref CommanderStatus.Component commander)
+        {
+            var tgt = getNearestAlly(side, pos, radioRange, UnitType.HeadQuarter)
+
+            commander.SelfOrder = OrderType.Organize;
             return tgt != null;
         }
 

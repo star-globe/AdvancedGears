@@ -12,6 +12,7 @@ enum UnitType {
     Turret = 4;
     Advanced = 5;
     Supply = 6;
+    HeadQuarter = 7;
 }
 
 enum UnitSide {
@@ -34,6 +35,7 @@ enum OrderType {
     Attack = 2;
     Keep = 3;
     Escape = 5;
+    Organize = 6;
 }
 
 type OrderInfo {
@@ -202,12 +204,14 @@ type ProductOrder {
     UnitSide side = 2;
     UnitType type = 3;
     int32 number = 4;
+    uint32 commander_rank = 5;
 }
 
 enum CommandActionType
 {
     None = 0;
     Product = 1;
+    Organize = 2;
 }
 
 component CommanderAction {
@@ -215,7 +219,7 @@ component CommanderAction {
 
     bool is_target = 1;
     IntervalChecker interval = 2;
-    CommandActionType type = 3;
+    CommandActionType action_type = 3;
 }
 
 // stronghold:20030~
@@ -238,7 +242,7 @@ component UnitFactory {
     ProductOrder current_order = 5;
     IntervalChecker product_interval = 6;
 
-    command improbable.common.Empty send_order(ProductOrder);
+    command improbable.common.Empty add_order(ProductOrder);
 }
 
 // headquarters:20040~
@@ -263,12 +267,14 @@ type OrganizeOrder {
     improbable.Vector3f pos = 4;
 }
 
-component HQStatus {
+component HeadQuarters {
     id = 20040;
 
     IntervalChecker interval = 1;
 
-    map<uint32, CommanderGroup> groop_datas = 2;
+    map<uint32, CommanderGroup> group_datas = 2;
 
     transient list<OrganizeOrder> orders = 4;
+
+    command improbable.common.Empty add_order(OrganizeOrder);
 }
