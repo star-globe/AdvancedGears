@@ -81,16 +81,16 @@ namespace Playground
                 const float range = 500.0f;
                 foreach (var order in  headQuarter.Orders)
                 {
-                    var pos = order.pos.ToUnityVector();
-                    var tgt = getNearestAlly(status.Side, pos, range, UnitType.Stronghold);
-                    if (tgt == null)
+                    var pos = order.Pos.ToUnityVector();
+                    var str = getNearestAlly(status.Side, pos, range, UnitType.Stronghold);
+                    if (str == null)
                         continue;
 
                     var id = tgt.TargetInfo.TargetId;
                     var request = new UnitFactory.AddOrder.Request(id, new ProductOrder() { Customer = order.Customer,
                                                                                              Number = 1,
                                                                                              Type = UnitType.Commander,
-                                                                                             Side = side,
+                                                                                             Side = status.Side,
                                                                                              CommanderRank = order.CustomerRank + 1 });
                     Entity entity;
                     if (TryGetEntity(id, out entity))

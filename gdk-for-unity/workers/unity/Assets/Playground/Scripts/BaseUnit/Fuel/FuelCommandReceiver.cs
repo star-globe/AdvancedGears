@@ -13,38 +13,33 @@ namespace Playground
 
         public void OnEnable()
         {
-            commandReceiver.OnModifyFuealRequestReceived += OnAddOrderRequest;
-            writer.OnFuelModifiedEvent += OnModifed;
+            commandReceiver.OnModifyFuelRequestReceived += OnAddOrderRequest;
+            writer.OnFuelModifiedEvent += OnModified;
         }
 
-        void OnModifed(FuelModifier modifier)
+        void OnModified(FuelModifier modifier)
         {
             var current = writer.Data.Fuel;
             var max = writer.Data.MaxFuel;
             switch (modifier.Type)
             {
-                case FuelModifyType.Consume:    current - modifier.Amount;  break;
-                case FuelModifyType.Feed:       current + modifier.Amount;  break;
+                case FuelModifyType.Consume:    current -= modifier.Amount;  break;
+                case FuelModifyType.Feed:       current += modifier.Amount;  break;
             }
 
             current = Mathf.Clamp(current,0,max);
 
             writer.SendUpdate(new FuelComponent.Update()
             {
-                FuelCommandReceiver = current,
+                Fuel = current,
             });
         }
 
-        private void OnAddOrderRequest(FuelComponent.ModifyFueal.ReceivedRequest request)
+        private void OnAddOrderRequest(FuelComponent.ModifyFuel.ReceivedRequest request)
         {
-            commandReceiver.SendModifyFuelResponse(new FuelComponent.ModifyFueal.Response(request.RequestId, new Empty()));
+            commandReceiver.SendModifyFuelResponse(new FuelComponent.ModifyFuel.Response(request.RequestId, new Empty()));
 
-            writer.Data.Orders;
-            list.Add(request.Payload);
-            writer.SendUpdate(new FuelComponent.Update()
-            {
-                orders = list,
-            });
+            OnModified(request.Payload);
         }
     }
 }

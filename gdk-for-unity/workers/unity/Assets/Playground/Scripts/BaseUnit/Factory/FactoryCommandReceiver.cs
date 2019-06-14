@@ -24,7 +24,7 @@ namespace Playground
             list.Add(request.Payload);
             factoryWriter.SendUpdate(new UnitFactory.Update()
             {
-                orders = list,
+                Orders = list,
             });
         }
     }

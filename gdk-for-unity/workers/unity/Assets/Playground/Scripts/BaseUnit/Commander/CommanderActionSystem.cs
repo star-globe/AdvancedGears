@@ -118,7 +118,7 @@ namespace Playground
             }
         }
 
-        void OrganizeAlly(in Vector3 pos, UnitSide side, unit32 rank, in SpatialEntityId entityId, in BaseUnitTarget.Component tgt, ref CommanderAction.Component action)
+        void OrganizeAlly(in Vector3 pos, UnitSide side, uint rank, in SpatialEntityId entityId, in BaseUnitTarget.Component tgt, ref CommanderAction.Component action)
         {
             if (action.ActionType == CommandActionType.Organize)
                 return;
@@ -129,7 +129,7 @@ namespace Playground
             if (diff.sqrMagnitude < diff.sqrMagnitude)
             {
                 var id = tgt.TargetInfo.TargetId;
-                var request = new HeadQuaters.AddOrder.Request(id, new OrganizeOrder() { Customer = entityId.EntityId,
+                var request = new HeadQuarters.AddOrder.Request(id, new OrganizeOrder() { Customer = entityId.EntityId,
                                                                                           CustomerRank = rank,
                                                                                           Pos = pos.ToImprobableVector3(),
                                                                                           Side = side });

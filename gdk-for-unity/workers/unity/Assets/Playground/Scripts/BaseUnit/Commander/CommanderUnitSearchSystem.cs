@@ -140,7 +140,7 @@ namespace Playground
         const float radioRange = 1000.0f;
         bool organizeOrder(UnitSide side, in Vector3 pos, ref CommanderStatus.Component commander)
         {
-            var tgt = getNearestAlly(side, pos, radioRange, UnitType.HeadQuarter)
+            var tgt = getNearestAlly(side, pos, radioRange, UnitType.HeadQuarter);
 
             commander.SelfOrder = OrderType.Organize;
             return tgt != null;
