@@ -86,22 +86,41 @@ namespace Playground
                     if (str == null)
                         continue;
 
-                    var id = tgt.TargetInfo.TargetId;
-                    var request = new UnitFactory.AddOrder.Request(id, new ProductOrder() { Customer = order.Customer,
-                                                                                             Number = 1,
-                                                                                             Type = UnitType.Commander,
-                                                                                             Side = status.Side,
-                                                                                             CommanderRank = order.CustomerRank + 1 });
-                    Entity entity;
-                    if (TryGetEntity(id, out entity))
-                    {
-                        commandSystem.SendCommand(request, entity);
-                        // add
-                    }
+                    SetSuperior(tgt.TargetInfo.TargetId, status.Side, order, ref headQuarter.FactoryDatas);
                 }
 
+                headQuarter.Orders.Clear();
                 hqData[i] = headQuarter;
             }
+        }
+
+        void SetSuperior(EntityId id, UnitSide side, in OrganizeOrder order, ref FactoryMap map)
+        {
+            if (map.Reserve.ContaisKey(id) == false)
+                map.Reserve.Add(id, new ReserveMap());
+            var reserve = map.Reserve[id];
+
+            var rank = order.CustomerRank;
+            if (reserve.Datas.ContainsKey(rank) == false)
+                reserve.Datas.Add(rank, new List<EntityId>());
+            var list = reserve.Datas[rank];
+
+            list.Add(order.Customer);
+            if (list.Count < 3)
+            {
+                map.Reserve[id] = reserve;
+                return;
+            }
+
+            var request = new UnitFactory.AddSuperiorOrder.Request(id, new SuperiorOrder() { Followers = list.ToList(),
+                                                                                             Side = side,
+                                                                                             Rank = rank + 1 });
+            Entity entity;
+            if (TryGetEntity(id, out entity))
+                commandSystem.SendCommand(request, entity);
+
+            list.Clear();
+            map.Reserve[id] = reserve;
         }
     }
 }

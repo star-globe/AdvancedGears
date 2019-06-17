@@ -105,10 +105,10 @@ namespace Playground
             if (diff.sqrMagnitude < diff.sqrMagnitude)
             {
                 var id = tgt.TargetInfo.TargetId;
-                var request = new UnitFactory.AddOrder.Request(id, new ProductOrder() { Customer = entityId.EntityId,
-                                                                                         Number = num,
-                                                                                         Type = UnitType.Soldier,
-                                                                                         Side = side });
+                var request = new UnitFactory.AddFollowerOrder.Request(id, new FollowerOrder() { Customer = entityId.EntityId,
+                                                                                                 Number = num,
+                                                                                                 Type = UnitType.Soldier,
+                                                                                                 Side = side });
                 Entity entity;
                 if (TryGetEntity(id, out entity))
                 {

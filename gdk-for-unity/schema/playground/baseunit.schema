@@ -176,8 +176,7 @@ component CommanderStatus {
 
     float ally_range = 4;
     FollowerInfo follower_info = 5;
-
-    EntityId superior_commander_id = 6;
+    SuperiorInfo superior_info = 6;
 
     command improbable.common.Empty add_follower(FollowerInfo);
     command improbable.common.Empty set_superior(SuperiorInfo);
@@ -199,12 +198,18 @@ component CommanderSight {
     list<WarPower> war_powers = 7;
 }
 
-type ProductOrder {
+type FollowerOrder {
     EntityId customer = 1;
     UnitSide side = 2;
     UnitType type = 3;
     int32 number = 4;
-    uint32 commander_rank = 5;
+    uint32 rank = 5;
+}
+
+type SuperiorOrder {
+    List<EntityId> followers = 1;
+    UnitSide side = 2;
+    uint32 rank = 3;
 }
 
 enum CommandActionType
@@ -237,12 +242,15 @@ component UnitFactory {
 
     IntervalChecker interval = 3;
 
-    transient list<ProductOrder> orders = 4;
+    UnitType current_type = 4;
 
-    ProductOrder current_order = 5;
-    IntervalChecker product_interval = 6;
+    transient list<FollowerOrder> follower_orders = 5;
+    transient list<SuperiorOrder> superior_orders = 6;
 
-    command improbable.common.Empty add_order(ProductOrder);
+    IntervalChecker product_interval = 7;
+
+    command improbable.common.Empty add_follower_order(FollowerOrder);
+    command improbable.common.Empty add_superior_order(SuperiorOrder);
 }
 
 // headquarters:20040~
@@ -267,12 +275,21 @@ type OrganizeOrder {
     improbable.Vector3f pos = 4;
 }
 
+type ReserveMap {
+    map<uint32,List<EntityId>> datas = 1;
+}
+
+type FactoryMap {
+    map<EntityId,ReserveMap> reserves = 1;
+}
+
 component HeadQuarters {
     id = 20040;
 
     IntervalChecker interval = 1;
 
     map<uint32, CommanderGroup> group_datas = 2;
+    FactoryMap factory_datas = 3;
 
     transient list<OrganizeOrder> orders = 4;
 

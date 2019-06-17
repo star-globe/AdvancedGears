@@ -76,7 +76,7 @@ namespace Playground
                 bool is_target;
                 if (commander.FollowerInfo.Followers.Count == 0)
                     is_target = escapeOrder(status, entityId, pos, ref sight, ref commander);
-                else if (commander.SuperiorCommanderId.IsValid() == false)
+                else if (commander.SuperiorInfo.EntityId.IsValid() == false)
                     is_target = organizeOrder(status.Side, pos, ref commander);
                 else
                     is_target = attackOrder(status, entityId, pos, ref sight, ref commander);

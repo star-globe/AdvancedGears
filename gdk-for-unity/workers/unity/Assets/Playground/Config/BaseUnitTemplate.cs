@@ -67,5 +67,16 @@ namespace Playground
                     break;
             }
         }
+
+        public static EntityTemplate CreateCommanderUnitEntityTemplate(UnitSide side, Coordinates coords, uint rank)
+        {
+            var template = CreateBaseUnitEntityTemplate(side, coords, UnitType.Commander);
+            var snap = template.GetComponent<CommanderStatus.Snapshot>();
+            if (snap != null) {
+                snap.Rank = rank;
+            }
+
+            return template;
+        }
     }
 }

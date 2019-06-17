@@ -27,7 +27,8 @@ namespace Playground
 
         private class ProductOrderCotext
         {
-            public ProductOrder order;
+            public FollowerOrder? f_order;
+            public SuperiorOrder? s_order;
         }
 
         protected override void OnCreateManager()
@@ -54,6 +55,8 @@ namespace Playground
             HandleProductResponse();
         }
 
+        // TODO:getFromSettings;
+        const float timeCost = 5;
         void HandleProductUnit()
         {
             var factoryData = group.GetComponentDataArray<UnitFactory.Component>();
@@ -61,8 +64,7 @@ namespace Playground
             var transData = group.GetComponentArray<Transform>();
             var entityIdData = group.GetComponentDataArray<SpatialEntityId>();
 
-            for (var i = 0; i < factoryData.Length; i++)
-            {
+            for (var i = 0; i < factoryData.Length; i++) {
                 var factory = factoryData[i];
                 var status = statusData[i];
                 var pos = transData[i].position;
@@ -87,44 +89,109 @@ namespace Playground
 
                 factory.Interval = inter;
 
-                // TODO:getFromSettings;
-                float timeCost = 5;
+                FollowerOrder? f_order = null;
+                SuperiorOrder? s_order = null;
 
+                if (factory.SuperiorOrders.Count > 0)
+                    s_order = factory.SuperiorOrders[0];
+                else if (factory.FollowerOrders.Count > 0)
+                    f_order = factory.FollowerOrders[0];
 
-                if (factory.CurrentOrder.Type == UnitType.None)
-                {
-                    factory.CurrentOrder = factory.Orders[0];
-                    factory.Orders.RemoveAt(0);
-                    factory.ProductInterval = new IntervalChecker(timeCost, time + timeCost);
+                // calc time cost
+                float cost = 0.0f;
+                if (s_order == null && f_order == null) {
+                    factoryData[i] = factory;
+                    continue;
+                }
+
+                cost = timeCost;
+                if (factory.CurrenType == UnitType.None) {
+                    factory.ProductInterval = new IntervalChecker(cost, time + cost);
+                    factory.CurrenType = s_order != null ? UnitType.Commander: f_order.Value.Type;
                 }
 
                 inter = factory.ProductInterval;
-                if (inter.CheckTime(time))
-                {
-                    var current = factory.CurrentOrder;
+                if (inter.CheckTime(time)) {
+                    EntityTemplate template = null;
+                    var coords = new Coordinates(pos.x, pos.y, pos.z);
 
-                    current.Number--;
-                    if (current.Number <= 0)
-                        current.Type = UnitType.None;
+                    bool finished;
+                    if (s_order != null)
+                        template = null;
+                    else if (f_order != null)
+                        template = CreateFollower(factory.FollowerOrders, coords, out finished);
 
-                    // create unit
-                    var unitEntityTemplate =
-                        BaseUnitTemplate.CreateBaseUnitEntityTemplate(current.Side, new Coordinates(pos.x, pos.y, pos.z), current.Type);
+                    if (finished)
+                        factory.CurrenType = UnitType.None;
+
                     var request = new WorldCommands.CreateEntity.Request
                     (
-                        unitEntityTemplate,
-                        context: new ProductOrderCotext() { order = current }
+                        template,
+                        context: new ProductOrderCotext() { f_order = f_order, s_order = s_order }
                     );
                    commandSystem.SendCommand(request);
                 }
 
+                factory.ProductInterval = inter;
                 factoryData[i] = factory;
             }
+        }
+
+        EntityTemplate CreateFollower(List<FollowerOrder> orders, in Coordinates coords, out bool finished)
+        {
+            finished = false;
+            if (orders.Count == 0)
+                return null;
+
+            var current = orders[0];
+            // create unit
+            EntityTemplate template = null;
+            switch (current.Type)
+            {
+                case UnitType.Commander:
+                    template = BaseUnitTemplate.CreateCommanderUnitEntityTemplate(current.Side, coords, current.Rank);
+                    break;
+                default:
+                    template = BaseUnitTemplate.CreateBaseUnitEntityTemplate(current.Side, coords, current.Type);
+                    break;
+            }
+
+            current.Number--;
+            if (current.Number <= 0) {
+                orders.RemoveAt(0);
+                finished = true;
+            }
+
+            return template;
+        }
+
+        EntityTemplate CreateSuperior(List<SuperiorOrder> orders, in Coordinates coords, out bool finished)
+        {
+            finished = false;
+            if (orders.Count == 0)
+                return null;
+
+            var current = orders[0];
+            // create unit
+            EntityTemplate template = BaseUnitTemplate.CreateCommanderUnitEntityTemplate(current.Side, coords, current.Rank);
+            var snap = template.GetComponent<CommanderStatus.Snapshot>();
+            if (snap != null) {
+                snap.FollowerInfo.Followers.AddRange(current.Followers);
+            }
+
+            current.Number--;
+            if (current.Number <= 0) {
+                orders.RemoveAt(0);
+                finished = true;
+            }
+
+            return template;
         }
 
         void HandleProductResponse()
         {
             var followerDic = new Dictionary<EntityId,List<EntityId>>();
+            var superiorDic = new Dictionary<EntityId,List<EntityId>>();
 
             var responses = commandSystem.GetResponses<WorldCommands.CreateEntity.ReceivedResponse>();
             for (var i = 0; i < responses.Count; i++)
@@ -139,17 +206,34 @@ namespace Playground
                 if (response.StatusCode != StatusCode.Success)
                     continue;
 
-                var id = requestContext.order.Customer;
-                if (followerDic.ContainsKey(id) == false)
-                    followerDic.Add(id, new List<EntityId>());
-                List<EntityId> list = followerDic[id];
-                list.Add(response.EntityId.Value);
+                var order = resquestContext.order;
+                if (order.f_order != null) {
+                    var id = order.f_order.Value.Customer;
+                    if (followerDic.ContainsKey(id) == false)
+                        followerDic.Add(id, new List<EntityId>());
+                    var list = followerDic[id];
+                    list.Add(response.EntityId.Value);
+                }
+
+                if (order.s_order != null) {
+                    var id = response.EntityId.Value;
+                    if (superiorDic.ContainsKey(id) == false)
+                        superiorDic.Add(id, new List<EntityId>());
+                    var list = superiorDic[id];
+                    list.AddRange(order.s_order.Value.Followers);
+                }
             }
 
             // SetFollowers
-            foreach(var kvp in followerDic)
-            {
+            foreach(var kvp in followerDic) {
                 commandSystem.SendCommand(new CommanderStatus.AddFollower.Request(kvp.Key, new FollowerInfo { Followers = kvp.Value.ToList() }));
+            }
+
+            // SetSuperiors
+            foreach(var kvp in superiorDic) {
+                foreach(var f in kvp.Value) {
+                    commandSystem.SendCommand(new CommandStatus.AddSuperior.Request(f, new SuperiorInfo { EntityId = kvp.Key }));
+                }
             }
         }
     }

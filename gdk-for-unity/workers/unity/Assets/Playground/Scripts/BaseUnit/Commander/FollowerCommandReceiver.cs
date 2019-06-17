@@ -8,21 +8,31 @@ namespace Playground
 {
     public class FollowerCommandReceiver : MonoBehaviour
     {
-        [Require] CommanderStatusCommandReceiver commanderCommandReceiver;
-        [Require] CommanderStatusWriter commanderWriter;
+        [Require] CommanderStatusCommandReceiver commandReceiver;
+        [Require] CommanderStatusWriter writer;
 
         public void OnEnable()
         {
-            commanderCommandReceiver.OnAddFollowerRequestReceived += OnAddFollowerRequest;
+            commandReceiver.OnAddFollowerRequestReceived += OnAddFollowerRequest;
         }
 
         private void OnAddFollowerRequest(CommanderStatus.AddFollower.ReceivedRequest request)
         {
-            commanderCommandReceiver.SendAddFollowerResponse(new CommanderStatus.AddFollower.Response(request.RequestId, new Empty()));
+            commandReceiver.SendAddFollowerResponse(new CommanderStatus.AddFollower.Response(request.RequestId, new Empty()));
 
-            commanderWriter.SendUpdate(new CommanderStatus.Update()
+            writer.SendUpdate(new CommanderStatus.Update()
             {
                 FollowerInfo = request.Payload,
+            });
+        }
+
+        private void OnSetSuperiorRequest(CommanderStatus.SetSuperior.ReceivedRequest request)
+        {
+            commandReceiver.SendAddFollowerResponse(new CommanderStatus.SetSuperior.Response(request.RequestId, new Empty()));
+
+            writer.SendUpdate(new CommanderStatus.Update()
+            {
+                SuperiorInfo = request.Payload,
             });
         }
     }
