@@ -63,7 +63,7 @@ namespace Playground
                     break;
 
                 case UnitType.Stronghold:
-                    template.AddComponent(new UnitFactory.Snapshot { Orders = new List<ProductOrder>(), CurrentOrder = new ProductOrder { Type = UnitType.None } }, writeAccess);
+                    template.AddComponent(new UnitFactory.Snapshot { FollowerOrders = new List<FollowerOrder>(), SuperiorOrders = new List<SuperiorOrder>() }, writeAccess);
                     break;
             }
         }
@@ -73,7 +73,9 @@ namespace Playground
             var template = CreateBaseUnitEntityTemplate(side, coords, UnitType.Commander);
             var snap = template.GetComponent<CommanderStatus.Snapshot>();
             if (snap != null) {
-                snap.Rank = rank;
+                var s = snap.Value;
+                s.Rank = rank;
+                template.SetComponent(s);
             }
 
             return template;

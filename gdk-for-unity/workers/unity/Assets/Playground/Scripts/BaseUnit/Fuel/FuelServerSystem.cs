@@ -26,11 +26,6 @@ namespace Playground
 
         private Vector3 origin;
 
-        private class ProductOrderCotext
-        {
-            public ProductOrder order;
-        }
-
         protected override void OnCreateManager()
         {
             base.OnCreateManager();

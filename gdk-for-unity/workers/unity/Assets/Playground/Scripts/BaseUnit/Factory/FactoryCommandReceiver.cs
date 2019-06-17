@@ -8,23 +8,36 @@ namespace Playground
 {
     public class FactoryCommandReceiver : MonoBehaviour
     {
-        [Require] UnitFactoryCommandReceiver factoryCommandReceiver;
-        [Require] UnitFactoryWriter factoryWriter;
+        [Require] UnitFactoryCommandReceiver commandReceiver;
+        [Require] UnitFactoryWriter writer;
 
         public void OnEnable()
         {
-            factoryCommandReceiver.OnAddOrderRequestReceived += OnAddOrderRequest;
+            commandReceiver.OnAddFollowerOrderRequestReceived += OnAddFollowerOrderRequest;
+            commandReceiver.OnAddSuperiorOrderRequestReceived += OnAddSuperiorOrderRequest;
         }
 
-        private void OnAddOrderRequest(UnitFactory.AddOrder.ReceivedRequest request)
+        private void OnAddFollowerOrderRequest(UnitFactory.AddFollowerOrder.ReceivedRequest request)
         {
-            factoryCommandReceiver.SendAddOrderResponse(new UnitFactory.AddOrder.Response(request.RequestId, new Empty()));
+            commandReceiver.SendAddFollowerOrderResponse(new UnitFactory.AddFollowerOrder.Response(request.RequestId, new Empty()));
 
-            var list = factoryWriter.Data.Orders;
+            var list = writer.Data.FollowerOrders;
             list.Add(request.Payload);
-            factoryWriter.SendUpdate(new UnitFactory.Update()
+            writer.SendUpdate(new UnitFactory.Update()
             {
-                Orders = list,
+                FollowerOrders = list,
+            });
+        }
+
+        private void OnAddSuperiorOrderRequest(UnitFactory.AddSuperiorOrder.ReceivedRequest request)
+        {
+            commandReceiver.SendAddSuperiorOrderResponse(new UnitFactory.AddSuperiorOrder.Response(request.RequestId, new Empty()));
+
+            var list = writer.Data.SuperiorOrders;
+            list.Add(request.Payload);
+            writer.SendUpdate(new UnitFactory.Update()
+            {
+                SuperiorOrders = list,
             });
         }
     }

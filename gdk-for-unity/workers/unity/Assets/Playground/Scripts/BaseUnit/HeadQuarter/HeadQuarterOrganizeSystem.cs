@@ -86,7 +86,9 @@ namespace Playground
                     if (str == null)
                         continue;
 
-                    SetSuperior(tgt.TargetInfo.TargetId, status.Side, order, ref headQuarter.FactoryDatas);
+                    var map = headQuarter.FactoryDatas;
+                    SetSuperior(tgt.TargetInfo.TargetId, status.Side, order, ref map);
+                    headQuarter.FactoryDatas = map;
                 }
 
                 headQuarter.Orders.Clear();
@@ -96,31 +98,31 @@ namespace Playground
 
         void SetSuperior(EntityId id, UnitSide side, in OrganizeOrder order, ref FactoryMap map)
         {
-            if (map.Reserve.ContaisKey(id) == false)
-                map.Reserve.Add(id, new ReserveMap());
-            var reserve = map.Reserve[id];
+            if (map.Reserves.ContainsKey(id) == false)
+                map.Reserves.Add(id, new ReserveMap());
+            var reserve = map.Reserves[id];
 
             var rank = order.CustomerRank;
             if (reserve.Datas.ContainsKey(rank) == false)
-                reserve.Datas.Add(rank, new List<EntityId>());
-            var list = reserve.Datas[rank];
+                reserve.Datas.Add(rank, new FollowerInfo { Followers = new List<EntityId>() });
+            var info = reserve.Datas[rank];
 
-            list.Add(order.Customer);
-            if (list.Count < 3)
+            info.Followers.Add(order.Customer);
+            if (info.Followers.Count < 3)
             {
-                map.Reserve[id] = reserve;
+                map.Reserves[id] = reserve;
                 return;
             }
 
-            var request = new UnitFactory.AddSuperiorOrder.Request(id, new SuperiorOrder() { Followers = list.ToList(),
+            var request = new UnitFactory.AddSuperiorOrder.Request(id, new SuperiorOrder() { Followers = info.Followers.ToList(),
                                                                                              Side = side,
                                                                                              Rank = rank + 1 });
             Entity entity;
             if (TryGetEntity(id, out entity))
                 commandSystem.SendCommand(request, entity);
 
-            list.Clear();
-            map.Reserve[id] = reserve;
+            info.Followers.Clear();
+            map.Reserves[id] = reserve;
         }
     }
 }

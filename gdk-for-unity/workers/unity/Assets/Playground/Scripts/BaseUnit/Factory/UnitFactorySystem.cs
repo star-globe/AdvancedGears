@@ -79,16 +79,6 @@ namespace Playground
                 if (status.Order == OrderType.Idle)
                     continue;
 
-                if (factory.CurrentOrder.Type == UnitType.None && factory.Orders.Count == 0)
-                    continue;
-
-                var time = Time.realtimeSinceStartup;
-                var inter = factory.Interval;
-                if (inter.CheckTime(time) == false)
-                    continue;
-
-                factory.Interval = inter;
-
                 FollowerOrder? f_order = null;
                 SuperiorOrder? s_order = null;
 
@@ -99,15 +89,23 @@ namespace Playground
 
                 // calc time cost
                 float cost = 0.0f;
-                if (s_order == null && f_order == null) {
+                if (s_order == null && f_order == null)
+                {
                     factoryData[i] = factory;
                     continue;
                 }
 
+                var time = Time.realtimeSinceStartup;
+                var inter = factory.Interval;
+                if (inter.CheckTime(time) == false)
+                    continue;
+
+                factory.Interval = inter;
+
                 cost = timeCost;
-                if (factory.CurrenType == UnitType.None) {
+                if (factory.CurrentType == UnitType.None) {
                     factory.ProductInterval = new IntervalChecker(cost, time + cost);
-                    factory.CurrenType = s_order != null ? UnitType.Commander: f_order.Value.Type;
+                    factory.CurrentType = s_order != null ? UnitType.Commander: f_order.Value.Type;
                 }
 
                 inter = factory.ProductInterval;
@@ -115,14 +113,14 @@ namespace Playground
                     EntityTemplate template = null;
                     var coords = new Coordinates(pos.x, pos.y, pos.z);
 
-                    bool finished;
+                    bool finished = false;
                     if (s_order != null)
-                        template = null;
+                        template = CreateSuperior(factory.SuperiorOrders, coords, out finished);
                     else if (f_order != null)
                         template = CreateFollower(factory.FollowerOrders, coords, out finished);
 
                     if (finished)
-                        factory.CurrenType = UnitType.None;
+                        factory.CurrentType = UnitType.None;
 
                     var request = new WorldCommands.CreateEntity.Request
                     (
@@ -176,14 +174,13 @@ namespace Playground
             EntityTemplate template = BaseUnitTemplate.CreateCommanderUnitEntityTemplate(current.Side, coords, current.Rank);
             var snap = template.GetComponent<CommanderStatus.Snapshot>();
             if (snap != null) {
-                snap.FollowerInfo.Followers.AddRange(current.Followers);
+                var s = snap.Value;
+                s.FollowerInfo.Followers.AddRange(current.Followers);
+                template.SetComponent(s);
             }
 
-            current.Number--;
-            if (current.Number <= 0) {
-                orders.RemoveAt(0);
-                finished = true;
-            }
+            orders.RemoveAt(0);
+            finished = true;
 
             return template;
         }
@@ -206,7 +203,7 @@ namespace Playground
                 if (response.StatusCode != StatusCode.Success)
                     continue;
 
-                var order = resquestContext.order;
+                var order = requestContext;
                 if (order.f_order != null) {
                     var id = order.f_order.Value.Customer;
                     if (followerDic.ContainsKey(id) == false)
@@ -232,7 +229,7 @@ namespace Playground
             // SetSuperiors
             foreach(var kvp in superiorDic) {
                 foreach(var f in kvp.Value) {
-                    commandSystem.SendCommand(new CommandStatus.AddSuperior.Request(f, new SuperiorInfo { EntityId = kvp.Key }));
+                    commandSystem.SendCommand(new CommanderStatus.SetSuperior.Request(f, new SuperiorInfo { EntityId = kvp.Key }));
                 }
             }
         }

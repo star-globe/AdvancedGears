@@ -28,7 +28,7 @@ namespace Playground
 
         private void OnSetSuperiorRequest(CommanderStatus.SetSuperior.ReceivedRequest request)
         {
-            commandReceiver.SendAddFollowerResponse(new CommanderStatus.SetSuperior.Response(request.RequestId, new Empty()));
+            commandReceiver.SendSetSuperiorResponse(new CommanderStatus.SetSuperior.Response(request.RequestId, new Empty()));
 
             writer.SendUpdate(new CommanderStatus.Update()
             {

@@ -207,7 +207,7 @@ type FollowerOrder {
 }
 
 type SuperiorOrder {
-    List<EntityId> followers = 1;
+    list<EntityId> followers = 1;
     UnitSide side = 2;
     uint32 rank = 3;
 }
@@ -276,7 +276,7 @@ type OrganizeOrder {
 }
 
 type ReserveMap {
-    map<uint32,List<EntityId>> datas = 1;
+    map<uint32,FollowerInfo> datas = 1;
 }
 
 type FactoryMap {
