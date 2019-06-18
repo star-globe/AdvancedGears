@@ -20,9 +20,13 @@ namespace Playground
         {
             commandReceiver.SendAddFollowerResponse(new CommanderStatus.AddFollower.Response(request.RequestId, new Empty()));
 
+            var info = writer.Data.FollowerInfo;
+            info.Followers.AddRange(request.Payload.Followers);
+            info.UnderCommanders.AddRange(request.Payload.UnderCommanders);
+
             writer.SendUpdate(new CommanderStatus.Update()
             {
-                FollowerInfo = request.Payload,
+                FollowerInfo = info,
             });
         }
 

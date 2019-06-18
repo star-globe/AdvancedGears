@@ -71,6 +71,10 @@ namespace Playground
                 if (headQuarter.Orders.Count == 0)
                     continue;
 
+                // TODO:upper check 
+                if (HeadQuarterOrganizeSystem.UpperRank >= 5)
+                    continue;
+
                 var time = Time.realtimeSinceStartup;
                 var inter = headQuarter.Interval;
                 if (inter.CheckTime(time) == false)
@@ -87,8 +91,11 @@ namespace Playground
                         continue;
 
                     var map = headQuarter.FactoryDatas;
-                    SetSuperior(tgt.TargetInfo.TargetId, status.Side, order, ref map);
+                    uint u_rank;
+                    SetSuperior(tgt.TargetInfo.TargetId, status.Side, order, ref map, out u_rank);
                     headQuarter.FactoryDatas = map;
+                    if (headQuarter.UpperRank < u_rank)
+                        headQuarter.UpperRank = u_rank;
                 }
 
                 headQuarter.Orders.Clear();
@@ -96,24 +103,27 @@ namespace Playground
             }
         }
 
-        void SetSuperior(EntityId id, UnitSide side, in OrganizeOrder order, ref FactoryMap map)
+        void SetSuperior(EntityId id, UnitSide side, in OrganizeOrder order, ref FactoryMap map, out uint upper_rank)
         {
+            upper_rank = -1;
+
             if (map.Reserves.ContainsKey(id) == false)
                 map.Reserves.Add(id, new ReserveMap());
             var reserve = map.Reserves[id];
 
             var rank = order.CustomerRank;
             if (reserve.Datas.ContainsKey(rank) == false)
-                reserve.Datas.Add(rank, new FollowerInfo { Followers = new List<EntityId>() });
+                reserve.Datas.Add(rank, new ReserveInfo { Followers = new List<EntityId>() });
             var info = reserve.Datas[rank];
 
             info.Followers.Add(order.Customer);
-            if (info.Followers.Count < 3)
+            if (info.Followers.Count < 1)
             {
                 map.Reserves[id] = reserve;
                 return;
             }
 
+            upper_rank = rank + 1;
             var request = new UnitFactory.AddSuperiorOrder.Request(id, new SuperiorOrder() { Followers = info.Followers.ToList(),
                                                                                              Side = side,
                                                                                              Rank = rank + 1 });
@@ -122,6 +132,7 @@ namespace Playground
                 commandSystem.SendCommand(request, entity);
 
             info.Followers.Clear();
+            reserve.Datas[rank] = info;
             map.Reserves[id] = reserve;
         }
     }

@@ -160,6 +160,7 @@ component BaseUnitPosture {
 // commander:20020~
 type FollowerInfo {
     list<EntityId> followers = 1;
+    list<EntityId> under_commanders = 2;
 }
 
 type SuperiorInfo {
@@ -254,20 +255,6 @@ component UnitFactory {
 }
 
 // headquarters:20040~
-type CommanderInfo {
-    EntityId self_id = 1;
-    EntityId superior_id = 2;
-    UnitSide side = 3;
-    uint32 rank = 4;
-    uint32 group_id = 5;
-}
-
-type CommanderGroup {
-    map<EntityId,CommanderInfo> datas = 1;
-    uint32 rank = 2;
-    uint32 group_id = 3;
-}
-
 type OrganizeOrder {
     EntityId customer = 1;
     UnitSide side = 2;
@@ -275,8 +262,12 @@ type OrganizeOrder {
     improbable.Vector3f pos = 4;
 }
 
+type ReserveInfo {
+    list<EntityId> followers = 1;
+}
+
 type ReserveMap {
-    map<uint32,FollowerInfo> datas = 1;
+    map<uint32,ReserveInfo> datas = 1;
 }
 
 type FactoryMap {
@@ -288,7 +279,7 @@ component HeadQuarters {
 
     IntervalChecker interval = 1;
 
-    map<uint32, CommanderGroup> group_datas = 2;
+    uint upper_rank = 2;
     FactoryMap factory_datas = 3;
 
     transient list<OrganizeOrder> orders = 4;

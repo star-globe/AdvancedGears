@@ -105,6 +105,14 @@ namespace Playground
 
             return length;
         }
+
+        public static bool NeedsFollowers(this FollowerInfo info, int num)
+        {
+            bool tof = false;
+            tof |= info.Followers.Count < num;
+            tof |= info.UnderCommanders.Count < num;
+            return tof;
+        }
     }
 }
 

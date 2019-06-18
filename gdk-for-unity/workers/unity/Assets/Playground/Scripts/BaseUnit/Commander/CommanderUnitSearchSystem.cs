@@ -74,7 +74,8 @@ namespace Playground
                 sight.Interval = inter;
 
                 bool is_target;
-                if (commander.FollowerInfo.Followers.Count == 0)
+                int num = 5;
+                if (commander.FollowerInfo.NeedsFollowers(num))
                     is_target = escapeOrder(status, entityId, pos, ref sight, ref commander);
                 else if (commander.SuperiorInfo.EntityId.IsValid() == false)
                     is_target = organizeOrder(status.Side, pos, ref commander);

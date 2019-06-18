@@ -29,6 +29,7 @@ namespace Playground
         {
             public FollowerOrder? f_order;
             public SuperiorOrder? s_order;
+            public UnitType type;
         }
 
         protected override void OnCreateManager()
@@ -119,15 +120,15 @@ namespace Playground
                     else if (f_order != null)
                         template = CreateFollower(factory.FollowerOrders, coords, out finished);
 
-                    if (finished)
-                        factory.CurrentType = UnitType.None;
-
                     var request = new WorldCommands.CreateEntity.Request
                     (
                         template,
-                        context: new ProductOrderCotext() { f_order = f_order, s_order = s_order }
+                        context: new ProductOrderCotext() { f_order = f_order, s_order = s_order, type = factory.CurrentType }
                     );
                    commandSystem.SendCommand(request);
+
+                    if (finished)
+                        factory.CurrentType = UnitType.None;
                 }
 
                 factory.ProductInterval = inter;
@@ -187,7 +188,7 @@ namespace Playground
 
         void HandleProductResponse()
         {
-            var followerDic = new Dictionary<EntityId,List<EntityId>>();
+            var followerDic = new Dictionary<EntityId,FollowerInfo>();
             var superiorDic = new Dictionary<EntityId,List<EntityId>>();
 
             var responses = commandSystem.GetResponses<WorldCommands.CreateEntity.ReceivedResponse>();
@@ -207,9 +208,15 @@ namespace Playground
                 if (order.f_order != null) {
                     var id = order.f_order.Value.Customer;
                     if (followerDic.ContainsKey(id) == false)
-                        followerDic.Add(id, new List<EntityId>());
-                    var list = followerDic[id];
-                    list.Add(response.EntityId.Value);
+                        followerDic.Add(id, new FollowerInfo { Followers = new List<EntityId>(),
+                                                               UnderCommanders = new List<EntityId>() });
+                    var info = followerDic[id];
+                    var entityId = response.EntityId.Value;
+                    switch (order.type)
+                    {
+                        case UnitType.Soldier:      info.Followers.Add(entityId); break;
+                        case UnitType.Commander:    info.UnderCommanders.Add(entityId); break;
+                    }
                 }
 
                 if (order.s_order != null) {
@@ -223,7 +230,9 @@ namespace Playground
 
             // SetFollowers
             foreach(var kvp in followerDic) {
-                commandSystem.SendCommand(new CommanderStatus.AddFollower.Request(kvp.Key, new FollowerInfo { Followers = kvp.Value.ToList() }));
+                var info = kvp.Value;
+                commandSystem.SendCommand(new CommanderStatus.AddFollower.Request(kvp.Key, new FollowerInfo { Followers = info.Followers.ToList(),
+                                                                                                              UnderCommanders = info.UnderCommanders.ToList() }));
             }
 
             // SetSuperiors

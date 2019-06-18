@@ -78,11 +78,11 @@ namespace Playground
                 switch (status.Order)
                 {
                     case OrderType.Escape:
-                        ProductAlly(trans.position, status.Side, entityId, tgt, ref action);
+                        ProductAlly(trans.position, status.Side, commander, entityId, tgt, ref action);
                         break;
 
                     case OrderType.Organize:
-                        OrganizeAlly(trans.position, status.Side, commander.Rank, entityId, tgt, ref action);
+                        OrganizeAlly(trans.position, status.Side, commander, entityId, tgt, ref action);
                         break;
 
                     default:
@@ -94,7 +94,7 @@ namespace Playground
             }
         }
 
-        void ProductAlly(in Vector3 pos, UnitSide side, in SpatialEntityId entityId, in BaseUnitTarget.Component tgt, ref CommanderAction.Component action)
+        void ProductAlly(in Vector3 pos, UnitSide side, in CommanderStatus.Component commander, in SpatialEntityId entityId, in BaseUnitTarget.Component tgt, ref CommanderAction.Component action)
         {
             if (action.ActionType == CommandActionType.Product)
                 return;
@@ -102,44 +102,60 @@ namespace Playground
             var diff = tgt.TargetInfo.Position.ToUnityVector() - pos;
             float length = 10.0f;   // TODO from:master
             int num = 5;
-            if (diff.sqrMagnitude < diff.sqrMagnitude)
-            {
-                var id = tgt.TargetInfo.TargetId;
-                var request = new UnitFactory.AddFollowerOrder.Request(id, new FollowerOrder() { Customer = entityId.EntityId,
-                                                                                                 Number = num,
-                                                                                                 Type = UnitType.Soldier,
-                                                                                                 Side = side });
-                Entity entity;
-                if (TryGetEntity(id, out entity))
-                {
-                    commandSystem.SendCommand(request, entity);
-                    action.ActionType = CommandActionType.Product;
-                }
+            if (diff.sqrMagnitude > length * length)
+                return;
+
+            var id = tgt.TargetInfo.TargetId;
+            List<UnitFactory.AddFollowerOrder.Request> reqList = new List<UnitFactory.AddFollowerOrder.Request>();
+
+            var n_sol = num - commander.FollowerInfo.Followers.Count;
+            if (n_sol > 0) {
+                reqList.Add(new UnitFactory.AddFollowerOrder.Request(id, new FollowerOrder() { Customer = entityId.EntityId,
+                                                                                               Number = n_sol,
+                                                                                               Type = UnitType.Soldier,
+                                                                                               Side = side }));
             }
+
+            var n_com = num - commander.Followers.UnderCommanders.Count;
+            if (n_com > 0 && commander.Rank > 0) {
+                reqList.Add(new UnitFactory.AddFollowerOrder.Request(id, new FollowerOrder() { Customer = entityId.EntityId,
+                                                                                               Number = n_com,
+                                                                                               Type = UnitType.Commander,
+                                                                                               Side = side,
+                                                                                               Rank = commander.Rank - 1 }));
+            }
+
+            Entity entity;
+            if (TryGetEntity(id, out entity) == false)
+                return;
+
+            foreach(var r in reqList)
+                commandSystem.SendCommand(r, entity);
+            
+            action.ActionType = CommandActionType.Product;
         }
 
-        void OrganizeAlly(in Vector3 pos, UnitSide side, uint rank, in SpatialEntityId entityId, in BaseUnitTarget.Component tgt, ref CommanderAction.Component action)
+        void OrganizeAlly(in Vector3 pos, UnitSide side, in CommanderStatus.Component commander, in SpatialEntityId entityId, in BaseUnitTarget.Component tgt, ref CommanderAction.Component action)
         {
             if (action.ActionType == CommandActionType.Organize)
                 return;
 
             var diff = tgt.TargetInfo.Position.ToUnityVector() - pos;
             float length = 10.0f;   // TODO from:master
-            int num = 5;
-            if (diff.sqrMagnitude < diff.sqrMagnitude)
-            {
-                var id = tgt.TargetInfo.TargetId;
-                var request = new HeadQuarters.AddOrder.Request(id, new OrganizeOrder() { Customer = entityId.EntityId,
-                                                                                          CustomerRank = rank,
-                                                                                          Pos = pos.ToImprobableVector3(),
-                                                                                          Side = side });
-                Entity entity;
-                if (TryGetEntity(id, out entity))
-                {
-                    commandSystem.SendCommand(request, entity);
-                    action.ActionType = CommandActionType.Organize;
-                }
-            }
+            if (diff.sqrMagnitude > length * length)
+                return;
+
+            var id = tgt.TargetInfo.TargetId;
+            var request = new HeadQuarters.AddOrder.Request(id, new OrganizeOrder() { Customer = entityId.EntityId,
+                                                                                      CustomerRank = commander.Rank,
+                                                                                      Pos = pos.ToImprobableVector3(),
+                                                                                      Side = side });
+            Entity entity;
+            if (TryGetEntity(id, out entity) == false)
+                return;
+
+            commandSystem.SendCommand(request, entity);
+            action.ActionType = CommandActionType.Organize;
         }
     }
 }
