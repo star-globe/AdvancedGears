@@ -208,7 +208,7 @@ namespace Playground
             return info;
         }
 
-        protected List<UnitInfo> getUnits(UnitSide self_side, in Vector3 pos, float length, bool isEnemy, params UnitType[] types)
+        protected List<UnitInfo> getUnits(UnitSide self_side, in Vector3 pos, float length, bool isEnemy, bool allowDead, params UnitType[] types)
         {
             List<UnitInfo> unitList = new List<UnitInfo>();
 
@@ -223,7 +223,7 @@ namespace Playground
                 BaseUnitStatus.Component? unit;
                 if (TryGetComponent(comp.EntityId, out unit))
                 {
-                    if (unit.Value.State == UnitState.Dead)
+                    if (unit.Value.State == UnitState.Dead && allowDead == false)
                         continue;
 
                     if ((unit.Value.Side == self_side) == isEnemy)

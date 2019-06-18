@@ -17,7 +17,7 @@ using UnityEngine.Experimental.PlayerLoop;
 namespace Playground
 {
     [UpdateBefore(typeof(FixedUpdate.PhysicsFixedUpdate))]
-    public class FuelServerSystem : BaseSearchSystem
+    public class FuelSupplySystem : BaseSearchSystem
     {
         ComponentGroup group;
         CommandSystem commandSystem;
@@ -38,62 +38,72 @@ namespace Playground
             commandSystem = World.GetExistingManager<CommandSystem>();
             updateSystem = World.GetExistingManager<ComponentUpdateSystem>();
             group = GetComponentGroup(
-                ComponentType.Create<FuelServer.Component>(),
+                ComponentType.Create<FuelSupplyer.Component>(),
                 ComponentType.Create<FuelComponent.Component>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
+                ComponentType.ReadOnly<BaseUnitTarget.Component>(),
                 ComponentType.ReadOnly<Transform>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
 
-            group.SetFilter(FuelServer.ComponentAuthority.Authoritative);
+            group.SetFilter(FuelSupplyer.ComponentAuthority.Authoritative);
             group.SetFilter(FuelComponent.ComponentAuthority.Authoritative);
         }
 
         protected override void OnUpdate()
         {
-            var fuelServer = group.GetComponentDataArray<FuelServer.Component>();
+            var fuelSupplyer = group.GetComponentDataArray<FuelSupplyer.Component>();
             var fuelData = group.GetComponentDataArray<FuelComponent.Component>();
             var statusData = group.GetComponentDataArray<BaseUnitStatus.Component>();
+            var targetData = group.GetComponentDataArray<BaseUnitTargert.Component>();
             var transData = group.GetComponentArray<Transform>();
             var entityIdData = group.GetComponentDataArray<SpatialEntityId>();
 
-            for (var i = 0; i < fuelServer.Length; i++)
+            for (var i = 0; i < fuelSupplyer.Length; i++)
             {
-                var server = fuelServer[i];
+                var supply = fuelSupplyer[i];
                 var fuel = fuelData[i];
                 var status = statusData[i];
+                var tgt = targerData[i];
                 var pos = transData[i].position;
                 var entityId = entityIdData[i];
 
                 if (status.State != UnitState.Alive)
                     continue;
 
-                if (status.Type != UnitType.Stronghold)
+                if (status.Type != UnitType.Supply)
                     continue;
 
-                if (fuel.Fuel == 0)
-                    continue;
+                bool is_enemy,allow_dead;
+                switch(supply.Order.Type)
+                {
+                    case SupplyOrderType.Deliver:   is_enemy = false; allow_dead = true;    break;
+                    case SupplyOrderType.Accept:    is_enemy = false; allow_dead = false;   break;
+                    case SupplyOrderType.Occupy:    is_enemy = true; allow_dead = true;     break;
+
+                    default:
+                        continue;
+                }
 
                 var time = Time.realtimeSinceStartup;
-                var inter = server.Interval;
+                var inter = supply.Interval;
                 if (inter.CheckTime(time) == false)
                     continue;
 
-                server.Interval = inter;
+                supply.Interval = inter;
 
-                float range = server.Range;
-                int baseFeed = server.FeedRate;
+                float range = supply.Range;
                 int current = fuel.Fuel;
-                current += server.GainRate;
 
-                var list = getUnits(status.Side, pos, range, false, false, UnitType.Soldier, UnitType.Commander);
-                foreach(var unit in list)
-                {
+                var id = supply.Order.StrongholdId;
+                var unit = getUnits(status.Side, pos, range, is_enemy, allow_dead, UnitType.Strognhold).FirstOrDefault(u => u.id == id);
+                if (unit != null) {
                     FuelComponent.Component? comp = null;
                     if (TryGetComponent(unit.id, out comp))
                     {
                         var f = comp.Value.Fuel;
                         var max = comp.Value.MaxFuel;
+
                         if (f >= max)
                             continue;
 
@@ -119,8 +129,38 @@ namespace Playground
                     fuelData[i] = fuel;
                 }
                 
-                fuelServer[i] = server;
+                fuelSupply[i] = server;
             }
+        }
+
+        void DealOrder(UnitInfo unit, FuelModifyType type, int feed, ref int current)
+        {
+            FuelComponent.Component? comp = null;
+            if (TryGetComponent(unit.id, out comp) == false)
+                return;
+
+            var f = comp.Value.Fuel;
+            var max = comp.Value.MaxFuel;
+            if (f >= max)
+                return;
+
+            int num = 0;
+            switch(type) {
+                case FuelModifyType.Feed:       break;
+
+                default: return;
+            }
+            var num = Mathf.Clamp(max - f, 0, feed);
+            if (current < num)
+                return;
+            
+            current -= num;
+            var modify = new FuelModifier
+            {
+                Type = type,
+                Amount = num,
+            };
+            updateSystem.SendEvent(new FuelComponent.FuelModified.Event(modify), unit.id);
         }
     }
 }

@@ -11,7 +11,6 @@ namespace Playground
     public class GunConsumeTrigger : MonoBehaviour
     {
         [Require] GunComponentWriter gunWriter;
-        [Require] private World world;
 
         void OnEnable()
         {

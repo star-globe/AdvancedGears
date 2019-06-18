@@ -32,3 +32,43 @@ component FuelServer {
     int32 feed_rate = 3;
     int32 gain_rate = 4;
 }
+
+enum SupplyOrderType {
+    None = 0;
+    Deliver = 1;
+    Accept = 2;
+    Occupy = 3;
+}
+
+type SupplyOrder {
+    SupplyOrderType type = 1;
+    improbable.Vector3f pos = 2;
+    EntityId stronghold_id = 3;
+}
+
+type OrderResult {
+    bool result = 1;
+    EntityId self_id = 2;
+    SupplyOrder order = 3;
+}
+
+component FuelSupplyer {
+    id = 21102;
+
+    SupplyOrder order = 1;
+    float range = 2;
+    EntityId manager_id = 3;
+
+    IntervalChecker interval = 4;
+
+    command improbable.common.Empty set_order(SupplyOrder); 
+}
+
+component FuleSupplyManager {
+    id = 21103;
+
+    IntervalChecker interval = 1;
+    map<EntityId,SupplyOrder> supply_orders = 2;
+
+    command improbable.common.Emoty finish_order(OrderResult);
+}
