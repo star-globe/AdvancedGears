@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Unity.Entities;
 using Improbable.Gdk;
@@ -68,7 +69,7 @@ namespace Playground
             commander.SendUpdate(new CommanderStatus.Update
             {
                 AllyRange = allyRange,
-                FollowerInfo = new FollowerInfo(list),
+                FollowerInfo = new FollowerInfo { Followers = list.ToList(), UnderCommanders = new List<EntityId>() },
             });
         }
     }

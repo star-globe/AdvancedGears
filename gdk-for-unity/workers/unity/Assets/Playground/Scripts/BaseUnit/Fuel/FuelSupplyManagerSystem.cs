@@ -87,7 +87,7 @@ namespace Playground
                 int current = fuel.Fuel;
                 current += server.GainRate;
 
-                var list = getUnits(status.Side, pos, range, false, UnitType.Soldier, UnitType.Commander);
+                var list = getUnits(status.Side, pos, range, false, false, UnitType.Soldier, UnitType.Commander);
                 foreach(var unit in list)
                 {
                     FuelComponent.Component? comp = null;

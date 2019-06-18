@@ -116,7 +116,7 @@ namespace Playground
                                                                                                Side = side }));
             }
 
-            var n_com = num - commander.Followers.UnderCommanders.Count;
+            var n_com = num - commander.FollowerInfo.UnderCommanders.Count;
             if (n_com > 0 && commander.Rank > 0) {
                 reqList.Add(new UnitFactory.AddFollowerOrder.Request(id, new FollowerOrder() { Customer = entityId.EntityId,
                                                                                                Number = n_com,

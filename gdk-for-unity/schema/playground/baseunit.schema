@@ -279,7 +279,7 @@ component HeadQuarters {
 
     IntervalChecker interval = 1;
 
-    uint upper_rank = 2;
+    uint32 upper_rank = 2;
     FactoryMap factory_datas = 3;
 
     transient list<OrganizeOrder> orders = 4;

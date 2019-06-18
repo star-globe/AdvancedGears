@@ -1,6 +1,7 @@
 package playground;
 import "from_gdk_packages/com.improbable.gdk.core/common.schema";
 import "playground/common.schema";
+import "improbable/vector3.schema";
 
 // fuel:21100~21109
 enum FuelModifyType
@@ -70,5 +71,5 @@ component FuleSupplyManager {
     IntervalChecker interval = 1;
     map<EntityId,SupplyOrder> supply_orders = 2;
 
-    command improbable.common.Emoty finish_order(OrderResult);
+    command improbable.common.Empty finish_order(OrderResult);
 }

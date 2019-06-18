@@ -55,7 +55,7 @@ namespace Playground
             var fuelSupplyer = group.GetComponentDataArray<FuelSupplyer.Component>();
             var fuelData = group.GetComponentDataArray<FuelComponent.Component>();
             var statusData = group.GetComponentDataArray<BaseUnitStatus.Component>();
-            var targetData = group.GetComponentDataArray<BaseUnitTargert.Component>();
+            var targetData = group.GetComponentDataArray<BaseUnitTarget.Component>();
             var transData = group.GetComponentArray<Transform>();
             var entityIdData = group.GetComponentDataArray<SpatialEntityId>();
 
@@ -64,7 +64,7 @@ namespace Playground
                 var supply = fuelSupplyer[i];
                 var fuel = fuelData[i];
                 var status = statusData[i];
-                var tgt = targerData[i];
+                var tgt = targetData[i];
                 var pos = transData[i].position;
                 var entityId = entityIdData[i];
 
@@ -96,31 +96,10 @@ namespace Playground
                 int current = fuel.Fuel;
 
                 var id = supply.Order.StrongholdId;
-                var unit = getUnits(status.Side, pos, range, is_enemy, allow_dead, UnitType.Strognhold).FirstOrDefault(u => u.id == id);
+                var unit = getUnits(status.Side, pos, range, is_enemy, allow_dead, UnitType.Stronghold).FirstOrDefault(u => u.id == id);
                 if (unit != null) {
-                    FuelComponent.Component? comp = null;
-                    if (TryGetComponent(unit.id, out comp))
-                    {
-                        var f = comp.Value.Fuel;
-                        var max = comp.Value.MaxFuel;
-
-                        if (f >= max)
-                            continue;
-
-                        var num = Mathf.Clamp(max - f, 0, baseFeed);
-                        if (current < num)
-                            continue;
-                        
-                        current -= num;
-
-                        var modify = new FuelModifier
-                        {
-                            Type = FuelModifyType.Feed,
-                            Amount = num,
-                        };
-
-                        updateSystem.SendEvent(new FuelComponent.FuelModified.Event(modify), unit.id);
-                    }
+                    // todo
+                    DealOrder(unit, FuelModifyType.Feed, 100, ref current);
                 }
 
                 if (fuel.Fuel != current)
@@ -129,7 +108,7 @@ namespace Playground
                     fuelData[i] = fuel;
                 }
                 
-                fuelSupply[i] = server;
+                fuelSupplyer[i] = supply;
             }
         }
 
@@ -146,11 +125,11 @@ namespace Playground
 
             int num = 0;
             switch(type) {
-                case FuelModifyType.Feed:       break;
-
+                case FuelModifyType.Feed: num = Mathf.Clamp(max - f, 0, feed); break;
+                // todo
                 default: return;
             }
-            var num = Mathf.Clamp(max - f, 0, feed);
+
             if (current < num)
                 return;
             

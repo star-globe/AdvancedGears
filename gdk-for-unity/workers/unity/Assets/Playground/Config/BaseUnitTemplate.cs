@@ -66,9 +66,9 @@ namespace Playground
                     template.AddComponent(new UnitFactory.Snapshot { FollowerOrders = new List<FollowerOrder>(), SuperiorOrders = new List<SuperiorOrder>() }, writeAccess);
                     break;
 
-                case UnitType.HeadQuarters:
-                    template.AddComponent(new HeadQuarter.Snapshot { UpperRank = 0,
-                                                                     FactoryDatas = new FactoryMap { Reserves = new Dictionary<EntityId,ResrerveMap>() },
+                case UnitType.HeadQuarter:
+                    template.AddComponent(new HeadQuarters.Snapshot { UpperRank = 0,
+                                                                     FactoryDatas = new FactoryMap { Reserves = new Dictionary<EntityId,ReserveMap>() },
                                                                      Orders = new List<OrganizeOrder>() }, writeAccess);
                     break;
             }

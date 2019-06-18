@@ -72,7 +72,7 @@ namespace Playground
                     continue;
 
                 // TODO:upper check 
-                if (HeadQuarterOrganizeSystem.UpperRank >= 5)
+                if (headQuarter.UpperRank >= 5)
                     continue;
 
                 var time = Time.realtimeSinceStartup;
@@ -105,7 +105,7 @@ namespace Playground
 
         void SetSuperior(EntityId id, UnitSide side, in OrganizeOrder order, ref FactoryMap map, out uint upper_rank)
         {
-            upper_rank = -1;
+            upper_rank = 0;
 
             if (map.Reserves.ContainsKey(id) == false)
                 map.Reserves.Add(id, new ReserveMap());
