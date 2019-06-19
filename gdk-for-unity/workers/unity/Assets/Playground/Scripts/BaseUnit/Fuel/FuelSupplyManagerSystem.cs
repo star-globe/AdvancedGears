@@ -123,7 +123,7 @@ namespace Playground
 
                 while(emptyList.Count > 0) {
                     var entity = emptyList[0];
-                    if (MakeSupplyPlan(entity, absorbList, feedList, manager.SupplyPoints) == 0)
+                    if (MakeSupplyPlan(entity, absorbList, feedList, ref manager) == 0)
                         break;
                     emptyList.RemoveAt(0);
                 }
@@ -132,12 +132,13 @@ namespace Playground
             }
         }
 
-        int MakeSupplyPlan(EntityId entityId, List<EntityId> absorbList, List<EntityId> feedList, Dictionary<EntityId,SupplyPointsDetail> map)
+        int MakeSupplyPlan(EntityId entityId, List<SupplyReserve> absorbList, List<SupplyReserve> feedList, ref FuelSupplyManager.Component manager)
         {
             FuelComponent.Component? comp = null;
             if (TryGetComponent(entityId, out comp) == false)
                 return -1;
 
+            var map = manager.SupplyPoints;
             var plan = new SupplyPlan { Orders = new List<SupplyOrder>() };
 
             var rate = comp.Value.FuelRate();
@@ -154,7 +155,7 @@ namespace Playground
             var feed = getNearestSupplyReserve(entityId, feedList);
             if (feed != null && feed.Rate <= checkRateUpper) {
                 plan.Orders.Add(new SupplyOrder { Type = SupplyOrderType.Deliver, Point = feed.Point });
-                var change = comp.Value.FuelRate;
+                var change = comp.Value.Fuel;
                 feed.Fuel += change;
                 UpdateReserve(feed.Point.StrongholdId, change, map);
             }
@@ -162,19 +163,19 @@ namespace Playground
             if (plan.Orders.Count == 0)
                 return 0;
 
-            Entity entity;
+            Unity.Entities.Entity entity;
             if (TryGetEntity(entityId, out entity) == false)
                 return -1;
 
-            commandSystem.SendCommand(new FuelSupplyer.SetOrder.Request(entityId, plan[0]), entity);
+            commandSystem.SendCommand(new FuelSupplyer.SetOrder.Request(entityId, plan.Orders[0]), entity);
 
-            map.Add(entityId, plan);
+            manager.SupplyOrders.Add(entityId, plan);
             return 1;
         }
 
         SupplyReserve getNearestSupplyReserve(EntityId id, List<SupplyReserve> reserves)
         {
-            Position.Componet? comp = null;
+            Position.Component? comp = null;
             if (TryGetComponent(id, out comp) == false)
                 return null;
 
@@ -185,7 +186,7 @@ namespace Playground
             var length = float.MaxValue;
             SupplyReserve reserve = null;
             foreach(var r in reserves) {
-                var diff = pos - r.point.Pos;
+                var diff = pos - r.Point.Pos;
                 var l = diff.SqrMagnitude();
                 if (l >= length)
                     continue;
@@ -202,7 +203,8 @@ namespace Playground
             if (map.ContainsKey(id) == false) 
                 return;
 
-            map[id].Reserve += change;
+            var detail = map[id];
+            map[id] = new SupplyPointsDetail(detail.Point, detail.Reserve + change);
         }
     }
 }

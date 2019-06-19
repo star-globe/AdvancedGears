@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Improbable.Gdk.Subscriptions;
+using Improbable.Gdk.Core;
 using Improbable.Common;
 
 namespace Playground
@@ -23,7 +24,7 @@ namespace Playground
             writer.SendUpdate(new FuelSupplyer.Update()
             {
                 Order = request.Payload,
-                OrderFinished = false,
+                OrderFinished = new BlittableBool(false),
             });
         }
     }

@@ -59,7 +59,7 @@ type OrderResult {
 }
 
 type SupplyPlan {
-    list<SupplyOrder> orders;
+    list<SupplyOrder> orders = 1;
 }
 
 type SupplyPointsDetail {
@@ -80,7 +80,7 @@ component FuelSupplyer {
     command improbable.common.Empty set_order(SupplyOrder); 
 }
 
-component FuleSupplyManager {
+component FuelSupplyManager {
     id = 21103;
 
     IntervalChecker interval = 1;

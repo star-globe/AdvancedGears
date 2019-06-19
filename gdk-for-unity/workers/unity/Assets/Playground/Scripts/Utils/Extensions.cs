@@ -24,7 +24,7 @@ namespace Playground
 
         public static float SqrMagnitude (this Improbable.Vector3f vec)
         {
-            return (vec.x * vec.x) + (vec.y * vec.y) + (vec.z * vec.z);
+            return (vec.X * vec.X) + (vec.Y * vec.Y) + (vec.Z * vec.Z);
         }
 
         public static bool CheckTime(this ref IntervalChecker inter, float current)

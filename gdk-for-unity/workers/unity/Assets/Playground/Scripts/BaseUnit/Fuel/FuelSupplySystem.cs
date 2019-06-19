@@ -90,7 +90,7 @@ namespace Playground
                 supply.Interval = inter;
 
                 float range = supply.Range;
-                var f_comp = fuel.Fuel;
+                var f_comp = fuel;
 
                 var id = supply.Order.Point.StrongholdId;
                 var unit = getUnits(status.Side, pos, range, false, false, UnitType.Stronghold).FirstOrDefault(u => u.id == id);
@@ -102,7 +102,7 @@ namespace Playground
                     }
 
                     bool tof = DealOrder(unit, type, ref f_comp);
-                    SendResult(tof, supply.ManagerId, entityId, supply.Order);
+                    SendResult(tof, supply.ManagerId, entityId.EntityId, supply.Order);
                     supply.OrderFinished = true;
                 }
 
@@ -124,7 +124,7 @@ namespace Playground
                 }
 
                 var order = response.ResponsePayload;
-                if (order.Type == SupplyOrderType.None)
+                if (order.Value.Type == SupplyOrderType.None)
                     continue;
 
                 var entity = response.SendingEntity;
@@ -133,7 +133,7 @@ namespace Playground
                     continue;
                 
                 var supplyer = comp.Value;
-                supplyer.Order = order;
+                supplyer.Order = order.Value;
                 supplyer.OrderFinished = false;
 
                 SetComponent(entity, supplyer);
@@ -176,7 +176,7 @@ namespace Playground
 
         void SendResult(bool success, EntityId manager_id, EntityId self_id,  in SupplyOrder order)
         {
-            Entity entity;
+            Unity.Entities.Entity entity;
             if (TryGetEntity(manager_id, out entity) == false)
                 return;
 

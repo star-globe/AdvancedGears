@@ -16,25 +16,6 @@ namespace Playground
             commandReceiver.OnFinishOrderRequestReceived += OnFinishOrderRequest;
         }
 
-        void OnModified(FuelModifier modifier)
-        {
-            var current = writer.Data.Fuel;
-            var max = writer.Data.MaxFuel;
-            switch (modifier.Type)
-            {
-                case FuelModifyType.Consume:
-                case FuelModifyType.Absorb:     current -= modifier.Amount;  break;
-                case FuelModifyType.Feed:       current += modifier.Amount;  break;
-            }
-
-            current = Mathf.Clamp(current,0,max);
-
-            writer.SendUpdate(new FuelComponent.Update()
-            {
-                Fuel = current,
-            });
-        }
-
         private void OnFinishOrderRequest(FuelSupplyManager.FinishOrder.ReceivedRequest request)
         {
             var newOrder = new SupplyOrder { Type = SupplyOrderType.None };
@@ -49,7 +30,7 @@ namespace Playground
                 plan.Orders.RemoveAll(o => o.Equals(order));
 
                 if (plan.Orders.Count > 0) {
-                    newOrder.Type = plan.Orders[0];
+                    newOrder.Type = plan.Orders[0].Type;
                 }
                 else {
                     manager.SupplyOrders.Remove(order.SelfId);
