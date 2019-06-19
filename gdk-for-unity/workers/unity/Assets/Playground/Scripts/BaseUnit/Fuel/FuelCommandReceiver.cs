@@ -23,7 +23,8 @@ namespace Playground
             var max = writer.Data.MaxFuel;
             switch (modifier.Type)
             {
-                case FuelModifyType.Consume:    current -= modifier.Amount;  break;
+                case FuelModifyType.Consume:
+                case FuelModifyType.Absorb:     current -= modifier.Amount;  break;
                 case FuelModifyType.Feed:       current += modifier.Amount;  break;
             }
 

@@ -22,6 +22,11 @@ namespace Playground
             return new Improbable.Vector3f(vec.x, vec.y, vec.z);
         }
 
+        public static float SqrMagnitude (this Improbable.Vector3f vec)
+        {
+            return (vec.x * vec.x) + (vec.y * vec.y) + (vec.z * vec.z);
+        }
+
         public static bool CheckTime(this ref IntervalChecker inter, float current)
         {
             if (current - inter.LastChecked < inter.Interval)
@@ -112,6 +117,16 @@ namespace Playground
             tof |= info.Followers.Count < num;
             tof |= info.UnderCommanders.Count < num;
             return tof;
+        }
+
+        public static int EmptyCapacity(this FuelComponent.Component fuel)
+        {
+            return fuel.MaxFuel - fuel.Fuel;
+        }
+
+        public static float FuelRate(this FuelComponent.Component fuel)
+        {
+            return fuel.Fuel * 1.0f / fuel.MaxFuel;
         }
     }
 }

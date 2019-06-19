@@ -59,8 +59,7 @@ namespace Playground
             var transData = group.GetComponentArray<Transform>();
             var entityIdData = group.GetComponentDataArray<SpatialEntityId>();
 
-            for (var i = 0; i < fuelSupplyer.Length; i++)
-            {
+            for (var i = 0; i < fuelSupplyer.Length; i++) {
                 var supply = fuelSupplyer[i];
                 var fuel = fuelData[i];
                 var status = statusData[i];
@@ -74,17 +73,6 @@ namespace Playground
                 if (status.Type != UnitType.Supply)
                     continue;
 
-                bool is_enemy,allow_dead;
-                switch(supply.Order.Type)
-                {
-                    case SupplyOrderType.Deliver:   is_enemy = false; allow_dead = true;    break;
-                    case SupplyOrderType.Accept:    is_enemy = false; allow_dead = false;   break;
-                    case SupplyOrderType.Occupy:    is_enemy = true; allow_dead = true;     break;
-
-                    default:
-                        continue;
-                }
-
                 var time = Time.realtimeSinceStartup;
                 var inter = supply.Interval;
                 if (inter.CheckTime(time) == false)
@@ -93,53 +81,70 @@ namespace Playground
                 supply.Interval = inter;
 
                 float range = supply.Range;
-                int current = fuel.Fuel;
+                var f_comp = fuel.Fuel;
 
-                var id = supply.Order.StrongholdId;
-                var unit = getUnits(status.Side, pos, range, is_enemy, allow_dead, UnitType.Stronghold).FirstOrDefault(u => u.id == id);
+                var id = supply.Order.Point.StrongholdId;
+                var unit = getUnits(status.Side, pos, range, false, false, UnitType.Stronghold).FirstOrDefault(u => u.id == id);
                 if (unit != null) {
-                    // todo
-                    DealOrder(unit, FuelModifyType.Feed, 100, ref current);
+                    FuelModifyType type = FuelModifyType.None;
+                    switch (supply.Order.Type) {
+                        case SupplyOrderType.Deliver: type = FuelModifyType.Feed; break;
+                        case SupplyOrderType.Accept:  type = FuelModifyType.Absorb; break;
+                    }
+
+                    bool tof = DealOrder(unit, type, ref f_comp);
+                    SendResult(tof, supply.ManagerId, entityId, supply.Order);
                 }
 
-                if (fuel.Fuel != current)
-                {
-                    fuel.Fuel = current;
-                    fuelData[i] = fuel;
-                }
+                if (fuel.Fuel != f_comp.Fuel)
+                    fuelData[i] = f_comp;
                 
                 fuelSupplyer[i] = supply;
             }
         }
 
-        void DealOrder(UnitInfo unit, FuelModifyType type, int feed, ref int current)
+        bool DealOrder(UnitInfo unit, FuelModifyType type, ref FuelComponent.Component fuel)
         {
             FuelComponent.Component? comp = null;
             if (TryGetComponent(unit.id, out comp) == false)
-                return;
+                return false;
 
-            var f = comp.Value.Fuel;
-            var max = comp.Value.MaxFuel;
-            if (f >= max)
-                return;
+            var t_fuel = comp.Value;
 
             int num = 0;
             switch(type) {
-                case FuelModifyType.Feed: num = Mathf.Clamp(max - f, 0, feed); break;
-                // todo
-                default: return;
+                case FuelModifyType.Feed:
+                    num = Mathf.Clamp(t_fuel.EmptyCapacity(), 0, fuel.Fuel);
+                    fuel.Fuel -= num;
+                    break;
+
+                case FuelModifyType.Absorb:
+                    num = Mathf.Clamp(fuel.EmptyCapacity(), 0 , t_fuel.Fuel);
+                    fuel.Fuel += num;
+                    break;
+
+                default:
+                    return false;
             }
 
-            if (current < num)
-                return;
-            
-            current -= num;
-            var modify = new FuelModifier
-            {
+            var modify = new FuelModifier {
                 Type = type,
                 Amount = num,
             };
             updateSystem.SendEvent(new FuelComponent.FuelModified.Event(modify), unit.id);
+            return true;
+
+
+        }
+
+        void SendResult(bool success, EntityId manager_id, EntityId self_id,  in SupplyOrder order)
+        {
+            Entity entity;
+            if (TryGetEntity(manager_id, out entity) == false)
+                return;
+
+            var res = new OrderResult { Result = success, SelfId = self_id, Order = order};
+            commandSystem.SendCommand(new FuelSupplyManager.FinishOrder.Request(manager_id, res), entity);
         }
     }
 }

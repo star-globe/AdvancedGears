@@ -6,8 +6,10 @@ import "improbable/vector3.schema";
 // fuel:21100~21109
 enum FuelModifyType
 {
+    None = 0;
     Consume = 1;
     Feed = 2;
+    Absorb = 3;
 }
 
 type FuelModifier {
@@ -38,19 +40,31 @@ enum SupplyOrderType {
     None = 0;
     Deliver = 1;
     Accept = 2;
-    Occupy = 3;
+}
+
+type SupplyPoint {
+    improbable.Vector3f pos = 2;
+    EntityId stronghold_id = 3;
 }
 
 type SupplyOrder {
     SupplyOrderType type = 1;
-    improbable.Vector3f pos = 2;
-    EntityId stronghold_id = 3;
+    SupplyPoint point = 2;
 }
 
 type OrderResult {
     bool result = 1;
     EntityId self_id = 2;
     SupplyOrder order = 3;
+}
+
+type SupplyPlan {
+    list<SupplyOrder> orders;
+}
+
+type SupplyPointsDetail {
+    SupplyPoint point = 1;
+    int32 reserve = 2;
 }
 
 component FuelSupplyer {
@@ -69,7 +83,9 @@ component FuleSupplyManager {
     id = 21103;
 
     IntervalChecker interval = 1;
-    map<EntityId,SupplyOrder> supply_orders = 2;
+    map<EntityId,SupplyPointsDetail> supply_points = 2;
+    map<EntityId,SupplyPlan> supply_orders = 3;
+    list<EntityId> free_supplyers = 4;
 
     command improbable.common.Empty finish_order(OrderResult);
 }

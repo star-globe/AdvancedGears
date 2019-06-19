@@ -57,8 +57,7 @@ namespace Playground
             var transData = group.GetComponentArray<Transform>();
             var entityIdData = group.GetComponentDataArray<SpatialEntityId>();
 
-            for (var i = 0; i < fuelServer.Length; i++)
-            {
+            for (var i = 0; i < fuelServer.Length; i++) {
                 var server = fuelServer[i];
                 var fuel = fuelData[i];
                 var status = statusData[i];
@@ -87,8 +86,7 @@ namespace Playground
                 current += server.GainRate;
 
                 var list = getUnits(status.Side, pos, range, false, false, UnitType.Soldier, UnitType.Commander);
-                foreach(var unit in list)
-                {
+                foreach(var unit in list) {
                     FuelComponent.Component? comp = null;
                     if (TryGetComponent(unit.id, out comp))
                     {
@@ -103,22 +101,19 @@ namespace Playground
                         
                         current -= num;
 
-                        var modify = new FuelModifier
-                        {
+                        var modify = new FuelModifier {
                             Type = FuelModifyType.Feed,
                             Amount = num,
                         };
-
                         updateSystem.SendEvent(new FuelComponent.FuelModified.Event(modify), unit.id);
                     }
                 }
 
-                if (fuel.Fuel != current)
-                {
+                if (fuel.Fuel != current) {
                     fuel.Fuel = current;
                     fuelData[i] = fuel;
                 }
-                
+
                 fuelServer[i] = server;
             }
         }
