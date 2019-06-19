@@ -71,10 +71,11 @@ component FuelSupplyer {
     id = 21102;
 
     SupplyOrder order = 1;
-    float range = 2;
-    EntityId manager_id = 3;
+    bool order_finished = 2;
+    float range = 3;
+    EntityId manager_id = 4;
 
-    IntervalChecker interval = 4;
+    IntervalChecker interval = 5;
 
     command improbable.common.Empty set_order(SupplyOrder); 
 }
@@ -87,5 +88,6 @@ component FuleSupplyManager {
     map<EntityId,SupplyPlan> supply_orders = 3;
     list<EntityId> free_supplyers = 4;
 
-    command improbable.common.Empty finish_order(OrderResult);
+    command SupplyOrder finish_order(OrderResult);
+    command improbable.common.Empty add_supply_points(SupplyPoint);
 }

@@ -245,13 +245,9 @@ namespace Playground
             return unitList;
         }
 
-        protected bool TryGetComponent<T>(EntityId id, out T? comp) where T : struct, IComponentData
+        protected bool TryGetComponent<T>(in Entity entity, out T? comp) where T : struct, IComponentData
         {
             comp = null;
-            Entity entity;
-            if (!this.TryGetEntity(id, out entity))
-                return false;
-
             if (EntityManager.HasComponent<T>(entity))
             {
                 comp = EntityManager.GetComponentData<T>(entity);
@@ -261,14 +257,29 @@ namespace Playground
                 return false;
         }
 
+        protected bool TryGetComponent<T>(EntityId id, out T? comp) where T : struct, IComponentData
+        {
+            comp = null;
+            Entity entity;
+            if (!this.TryGetEntity(id, out entity))
+                return false;
+
+            return TryGetComponent(entity, out comp);
+        }
+
+        protected void SetComponent<T>(in Entity entity, T comp) where T : struct, IComponentData
+        {
+            if (EntityManager.HasComponent<T>(entity))
+                EntityManager.SetComponentData(entity, comp);
+        }
+
         protected void SetComponent<T>(EntityId id, T comp) where T : struct, IComponentData
         {
             Entity entity;
             if (!this.TryGetEntity(id, out entity))
                 return;
 
-            if (EntityManager.HasComponent<T>(entity))
-                EntityManager.SetComponentData(entity, comp);
+            SetComponent(entity, comp);
         }
 
         protected bool TryGetEntity(EntityId id, out Entity entity)

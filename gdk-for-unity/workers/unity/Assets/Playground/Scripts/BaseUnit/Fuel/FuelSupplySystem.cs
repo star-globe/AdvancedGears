@@ -52,6 +52,12 @@ namespace Playground
 
         protected override void OnUpdate()
         {
+            HandleRequest();
+            HandleResponse();
+        }
+
+        void HandleRequest()
+        {
             var fuelSupplyer = group.GetComponentDataArray<FuelSupplyer.Component>();
             var fuelData = group.GetComponentDataArray<FuelComponent.Component>();
             var statusData = group.GetComponentDataArray<BaseUnitStatus.Component>();
@@ -71,6 +77,9 @@ namespace Playground
                     continue;
 
                 if (status.Type != UnitType.Supply)
+                    continue;
+
+                if (supply.OrderFinished)
                     continue;
 
                 var time = Time.realtimeSinceStartup;
@@ -94,12 +103,40 @@ namespace Playground
 
                     bool tof = DealOrder(unit, type, ref f_comp);
                     SendResult(tof, supply.ManagerId, entityId, supply.Order);
+                    supply.OrderFinished = true;
                 }
 
                 if (fuel.Fuel != f_comp.Fuel)
                     fuelData[i] = f_comp;
                 
                 fuelSupplyer[i] = supply;
+            }
+        }
+
+        void HandleResponse()
+        {
+            var responses = commandSystem.GetResponses<FuelSupplyManager.FinishOrder.ReceivedResponse>();
+            for (var i = 0; i < responses.Count; i++) {
+                var response = responses[i];
+                if (response.StatusCode != StatusCode.Success) {
+                    // Handle command failure
+                    continue;
+                }
+
+                var order = response.ResponsePayload;
+                if (order.Type == SupplyOrderType.None)
+                    continue;
+
+                var entity = response.SendingEntity;
+                FuelSupplyer.Component? comp = null; 
+                if (TryGetComponent(entity, out comp) == false)
+                    continue;
+                
+                var supplyer = comp.Value;
+                supplyer.Order = order;
+                supplyer.OrderFinished = false;
+
+                SetComponent(entity, supplyer);
             }
         }
 

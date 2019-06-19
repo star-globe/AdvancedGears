@@ -192,8 +192,7 @@ namespace Playground
             var superiorDic = new Dictionary<EntityId,List<EntityId>>();
 
             var responses = commandSystem.GetResponses<WorldCommands.CreateEntity.ReceivedResponse>();
-            for (var i = 0; i < responses.Count; i++)
-            {
+            for (var i = 0; i < responses.Count; i++) {
                 ref readonly var response = ref responses[i];
                 if (!(response.Context is ProductOrderCotext requestContext))
                 {

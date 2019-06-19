@@ -128,6 +128,12 @@ namespace Playground
         {
             return fuel.Fuel * 1.0f / fuel.MaxFuel;
         }
+
+        public static bool Equals(this SupplyOrder self, SupplyOrder other)
+        {
+            return self.Type == other.Type &&
+                   self.Point.StrongholdId == other.Point.StrongholdId;
+        }
     }
 }
 
