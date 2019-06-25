@@ -6,13 +6,17 @@ import "playground/common.schema";
 
 enum UnitType {
     None = 0;
+    // moving
     Soldier = 1;
     Commander = 2;
-    Stronghold = 3;
-    Turret = 4;
-    Advanced = 5;
-    Supply = 6;
-    HeadQuarter = 7;
+    Advanced = 3;
+    Supply = 4;
+    Scout = 5;
+
+    // fixed
+    Stronghold = 101;
+    Turret = 102;
+    HeadQuarter = 103;
 }
 
 enum UnitSide {
