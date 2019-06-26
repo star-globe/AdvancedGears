@@ -52,7 +52,7 @@ type SupplyOrder {
     SupplyPoint point = 2;
 }
 
-type OrderResult {
+type SupplyOrderResult {
     bool result = 1;
     EntityId self_id = 2;
     SupplyOrder order = 3;
@@ -88,6 +88,61 @@ component FuelSupplyManager {
     map<EntityId,SupplyPlan> supply_orders = 3;
     list<EntityId> free_supplyers = 4;
 
-    command SupplyOrder finish_order(OrderResult);
+    command SupplyOrder finish_order(SupplyOrderResult);
     command improbable.common.Empty add_supply_points(SupplyPoint);
+}
+
+//---------------------------------
+// engineering:21110~21119
+enum EngineeringType {
+    None = 0;
+    Repair = 1;
+    Occupy = 2;
+    Build = 3;
+}
+
+type EngineeringPoint {
+    UnitType unit_type = 1;
+    improbable.Vector3f pos = 2;
+    EntityId unit_id = 3;
+}
+
+type EngineeringOrder {
+    EngineeringType type;
+    EngineeringPoint point;
+}
+
+type EngineeringPlan {
+    list<EngineeringOrder> orders = 1;
+}
+
+type EngineeringOrderResult {
+    bool result = 1;
+    EntityId self_id = 2;
+    EngineeringOrder order = 3;
+}
+
+component EngineeringComponent {
+    id = 21110;
+
+    EngineeringOrder order = 1;
+    bool order_finished = 2;
+    float range = 3;
+    EntityId manager_id = 4;
+
+    IntervalChecker interval = 5;
+
+    command improbable.common.Empty set_order(EngineeringOrder);
+}
+
+component EngineeringManager {
+    id = 21111;
+
+    IntervalChecker interval = 1;
+    map<EntityId,EngineeringPoint> engineering_points = 2;
+    map<EntityId,EngineeringPlan> engineering_orders = 3;
+    list<EntityId> free_engineers = 4;
+
+    command EngineeringOrder finish_order(EngineeringOrderResult);
+    command improbable.common.Empty add_engineering_points(EngineeringPoint);
 }

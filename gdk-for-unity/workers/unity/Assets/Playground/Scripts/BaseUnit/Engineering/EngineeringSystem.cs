@@ -17,7 +17,7 @@ using UnityEngine.Experimental.PlayerLoop;
 namespace Playground
 {
     [UpdateBefore(typeof(FixedUpdate.PhysicsFixedUpdate))]
-    public class FuelSupplySystem : BaseSearchSystem
+    public class EngineeringSystem : BaseSearchSystem
     {
         ComponentGroup group;
         CommandSystem commandSystem;

@@ -12,6 +12,7 @@ enum UnitType {
     Advanced = 3;
     Supply = 4;
     Scout = 5;
+    Engineer = 6;
 
     // fixed
     Stronghold = 101;
