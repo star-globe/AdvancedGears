@@ -1,6 +1,7 @@
 package playground;
 import "from_gdk_packages/com.improbable.gdk.core/common.schema";
 import "playground/common.schema";
+import "playground/baseunit.schema";
 import "improbable/vector3.schema";
 
 // fuel:21100~21109
@@ -108,8 +109,8 @@ type EngineeringPoint {
 }
 
 type EngineeringOrder {
-    EngineeringType type;
-    EngineeringPoint point;
+    EngineeringType type = 1;
+    EngineeringPoint point = 2;
 }
 
 type EngineeringPlan {
