@@ -149,6 +149,7 @@ namespace Playground
 
         bool attackOrder(in BaseUnitStatus.Component status, in SpatialEntityId entityId, in Vector3 pos, ref CommanderSight.Component sight, ref CommanderStatus.Component commander)
         {
+            // check rank
             var tgt = getNearestEnemey(status.Side, pos, sight.Range, UnitType.Stronghold, UnitType.Commander);
             TargetInfo targetInfo;
             commonTargeting(tgt, entityId, commander, ref sight, out targetInfo);
