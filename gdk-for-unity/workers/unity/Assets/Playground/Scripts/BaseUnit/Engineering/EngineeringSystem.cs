@@ -102,7 +102,7 @@ namespace Playground
 
                 var unit = getUnits(status.Side, pos, range, isEnemy, allowDead, UnitType.Stronghold).FirstOrDefault(u => u.id == id);
                 if (unit != null) {
-                    bool tof = DealOrder(unit, type, status.Side, ref f_comp);
+                    bool tof = DealOrder(unit, engineer.Order.Type, status.Side, ref f_comp);
                     SendResult(tof, engineer.ManagerId, entityId.EntityId, engineer.Order);
                     engineer.OrderFinished = true;
                 }
@@ -129,7 +129,7 @@ namespace Playground
                     continue;
 
                 var entity = response.SendingEntity;
-                Engineering.Component? comp = null; 
+                EngineeringComponent.Component? comp = null; 
                 if (TryGetComponent(entity, out comp) == false)
                     continue;
                 
@@ -158,7 +158,7 @@ namespace Playground
                     if (fuel.Fuel < repairCost)
                         return false;
 
-                    fuel.Fuel -= num;
+                    fuel.Fuel -= repairCost;
                     break;
 
                 default:
@@ -167,7 +167,7 @@ namespace Playground
 
             Unity.Entities.Entity entity;
             if (TryGetEntity(unit.id, out entity) == false)
-                return;
+                return false;
 
             var req = new ForceStateChange { Side = selfSide, State = UnitState.Alive };
             commandSystem.SendCommand(new BaseUnitStatus.ForceState.Request(unit.id, req), entity);

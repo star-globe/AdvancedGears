@@ -138,7 +138,7 @@ namespace Playground
                 IsTarget = true,
                 TargetId = order.Point.UnitId,
                 Position = order.Point.Pos,
-                Type = UnitType.UnitType,
+                Type = order.Point.UnitType,
                 Side = order.Point.Side,
                 CommanderId = new EntityId(-1),
                 AllyRange = 0.0f,

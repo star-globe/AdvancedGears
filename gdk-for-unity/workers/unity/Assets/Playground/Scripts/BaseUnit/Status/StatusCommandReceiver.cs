@@ -28,9 +28,9 @@ namespace Playground
             });
         }
 
-        private void OnForceStateRequest()
+        private void OnForceStateRequest(BaseUnitStatus.ForceState.ReceivedRequest request)
         {
-            statusCommandReceiver.SendForceStateResponse(new BaseUnitStatus.ForceState.Response(OnForceStateRequest.RequestId, new Empty()));
+            statusCommandReceiver.SendForceStateResponse(new BaseUnitStatus.ForceState.Response(request.RequestId, new Empty()));
 
             var change = request.Payload;
             statusWriter.SendUpdate(new BaseUnitStatus.Update()
@@ -45,7 +45,7 @@ namespace Playground
             var health = healthWriter.Data;
             healthWriter.SendUpdate(new BaseUnitHealth.Update()
             {
-                health = health.MaxHealth,
+                Health = health.MaxHealth,
             });
         }
     }
