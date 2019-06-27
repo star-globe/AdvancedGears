@@ -38,7 +38,7 @@ namespace Playground
             commandSystem = World.GetExistingManager<CommandSystem>();
             updateSystem = World.GetExistingManager<ComponentUpdateSystem>();
             group = GetComponentGroup(
-                ComponentType.Create<FuelSupplyer.Component>(),
+                ComponentType.Create<EngineeringComponent.Component>(),
                 ComponentType.Create<FuelComponent.Component>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<BaseUnitTarget.Component>(),
@@ -46,7 +46,7 @@ namespace Playground
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
 
-            group.SetFilter(FuelSupplyer.ComponentAuthority.Authoritative);
+            group.SetFilter(EngineeringComponent.ComponentAuthority.Authoritative);
             group.SetFilter(FuelComponent.ComponentAuthority.Authoritative);
         }
 
@@ -58,15 +58,15 @@ namespace Playground
 
         void HandleRequest()
         {
-            var fuelSupplyer = group.GetComponentDataArray<FuelSupplyer.Component>();
+            var engineeringData = group.GetComponentDataArray<EngineeringComponent.Component>();
             var fuelData = group.GetComponentDataArray<FuelComponent.Component>();
             var statusData = group.GetComponentDataArray<BaseUnitStatus.Component>();
             var targetData = group.GetComponentDataArray<BaseUnitTarget.Component>();
             var transData = group.GetComponentArray<Transform>();
             var entityIdData = group.GetComponentDataArray<SpatialEntityId>();
 
-            for (var i = 0; i < fuelSupplyer.Length; i++) {
-                var supply = fuelSupplyer[i];
+            for (var i = 0; i < engineeringData.Length; i++) {
+                var engineer = engineeringData[i];
                 var fuel = fuelData[i];
                 var status = statusData[i];
                 var tgt = targetData[i];
@@ -76,46 +76,47 @@ namespace Playground
                 if (status.State != UnitState.Alive)
                     continue;
 
-                if (status.Type != UnitType.Supply)
+                if (status.Type != UnitType.Engineer)
                     continue;
 
-                if (supply.OrderFinished)
+                if (engineer.OrderFinished)
                     continue;
 
                 var time = Time.realtimeSinceStartup;
-                var inter = supply.Interval;
+                var inter = engineer.Interval;
                 if (inter.CheckTime(time) == false)
                     continue;
 
-                supply.Interval = inter;
+                engineer.Interval = inter;
 
-                float range = supply.Range;
+                float range = engineer.Range;
                 var f_comp = fuel;
 
-                var id = supply.Order.Point.StrongholdId;
-                var unit = getUnits(status.Side, pos, range, false, false, UnitType.Stronghold).FirstOrDefault(u => u.id == id);
-                if (unit != null) {
-                    FuelModifyType type = FuelModifyType.None;
-                    switch (supply.Order.Type) {
-                        case SupplyOrderType.Deliver: type = FuelModifyType.Feed; break;
-                        case SupplyOrderType.Accept:  type = FuelModifyType.Absorb; break;
-                    }
+                var id = engineer.Order.Point.UnitId;
+                bool isEnemy = false;
+                bool allowDead = false;
+                switch (engineer.Order.Type) {
+                    case EngineeringType.Repair: isEnemy = false; allowDead = true; break;
+                    case EngineeringType.Occupy: isEnemy = true; allowDead = true; break;
+                }
 
-                    bool tof = DealOrder(unit, type, ref f_comp);
-                    SendResult(tof, supply.ManagerId, entityId.EntityId, supply.Order);
-                    supply.OrderFinished = true;
+                var unit = getUnits(status.Side, pos, range, isEnemy, allowDead, UnitType.Stronghold).FirstOrDefault(u => u.id == id);
+                if (unit != null) {
+                    bool tof = DealOrder(unit, type, status.Side, ref f_comp);
+                    SendResult(tof, engineer.ManagerId, entityId.EntityId, engineer.Order);
+                    engineer.OrderFinished = true;
                 }
 
                 if (fuel.Fuel != f_comp.Fuel)
                     fuelData[i] = f_comp;
                 
-                fuelSupplyer[i] = supply;
+                engineeringData[i] = engineer;
             }
         }
 
         void HandleResponse()
         {
-            var responses = commandSystem.GetResponses<FuelSupplyManager.FinishOrder.ReceivedResponse>();
+            var responses = commandSystem.GetResponses<EngineeringManager.FinishOrder.ReceivedResponse>();
             for (var i = 0; i < responses.Count; i++) {
                 var response = responses[i];
                 if (response.StatusCode != StatusCode.Success) {
@@ -124,64 +125,65 @@ namespace Playground
                 }
 
                 var order = response.ResponsePayload;
-                if (order.Value.Type == SupplyOrderType.None)
+                if (order.Value.Type == EngineeringType.None)
                     continue;
 
                 var entity = response.SendingEntity;
-                FuelSupplyer.Component? comp = null; 
+                Engineering.Component? comp = null; 
                 if (TryGetComponent(entity, out comp) == false)
                     continue;
                 
-                var supplyer = comp.Value;
-                supplyer.Order = order.Value;
-                supplyer.OrderFinished = false;
+                var engineer = comp.Value;
+                engineer.Order = order.Value;
+                engineer.OrderFinished = false;
 
-                SetComponent(entity, supplyer);
+                SetComponent(entity, engineer);
             }
         }
 
-        bool DealOrder(UnitInfo unit, FuelModifyType type, ref FuelComponent.Component fuel)
+        const int repairCost = 100;
+        bool DealOrder(UnitInfo unit, EngineeringType type, UnitSide selfSide, ref FuelComponent.Component fuel)
         {
-            FuelComponent.Component? comp = null;
+            BaseUnitStatus.Component? comp = null;
             if (TryGetComponent(unit.id, out comp) == false)
                 return false;
 
-            var t_fuel = comp.Value;
-
-            int num = 0;
+            var state = comp.Value.State;
             switch(type) {
-                case FuelModifyType.Feed:
-                    num = Mathf.Clamp(t_fuel.EmptyCapacity(), 0, fuel.Fuel);
-                    fuel.Fuel -= num;
-                    break;
+                case EngineeringType.Repair:
+                case EngineeringType.Occupy:
+                    if (state != UnitState.Dead)
+                        return false;
 
-                case FuelModifyType.Absorb:
-                    num = Mathf.Clamp(fuel.EmptyCapacity(), 0 , t_fuel.Fuel);
-                    fuel.Fuel += num;
+                    if (fuel.Fuel < repairCost)
+                        return false;
+
+                    fuel.Fuel -= num;
                     break;
 
                 default:
                     return false;
             }
 
-            var modify = new FuelModifier {
-                Type = type,
-                Amount = num,
-            };
-            updateSystem.SendEvent(new FuelComponent.FuelModified.Event(modify), unit.id);
+            Unity.Entities.Entity entity;
+            if (TryGetEntity(unit.id, out entity) == false)
+                return;
+
+            var req = new ForceStateChange { Side = selfSide, State = UnitState.Alive };
+            commandSystem.SendCommand(new BaseUnitStatus.ForceState.Request(unit.id, req), entity);
             return true;
 
 
         }
 
-        void SendResult(bool success, EntityId manager_id, EntityId self_id,  in SupplyOrder order)
+        void SendResult(bool success, EntityId manager_id, EntityId self_id,  in EngineeringOrder order)
         {
             Unity.Entities.Entity entity;
             if (TryGetEntity(manager_id, out entity) == false)
                 return;
 
-            var res = new SupplyOrderResult { Result = success, SelfId = self_id, Order = order};
-            commandSystem.SendCommand(new FuelSupplyManager.FinishOrder.Request(manager_id, res), entity);
+            var res = new EngineeringOrderResult { Result = success, SelfId = self_id, Order = order};
+            commandSystem.SendCommand(new EngineeringManager.FinishOrder.Request(manager_id, res), entity);
         }
     }
 }

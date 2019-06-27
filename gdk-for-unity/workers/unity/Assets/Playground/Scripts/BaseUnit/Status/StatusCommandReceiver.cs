@@ -10,10 +10,12 @@ namespace Playground
     {
         [Require] BaseUnitStatusCommandReceiver statusCommandReceiver;
         [Require] BaseUnitStatusWriter statusWriter;
+        [Require] BaseUnitHealthWriter healthWriter;
 
         public void OnEnable()
         {
             statusCommandReceiver.OnSetOrderRequestReceived += OnSetOrderRequest;
+            statusCommandReceiver.OnForceStateRequestReceived += OnForceStateRequest;
         }
 
         private void OnSetOrderRequest(BaseUnitStatus.SetOrder.ReceivedRequest request)
@@ -23,6 +25,27 @@ namespace Playground
             statusWriter.SendUpdate(new BaseUnitStatus.Update()
             {
                 Order = request.Payload.Order,
+            });
+        }
+
+        private void OnForceStateRequest()
+        {
+            statusCommandReceiver.SendForceStateResponse(new BaseUnitStatus.ForceState.Response(OnForceStateRequest.RequestId, new Empty()));
+
+            var change = request.Payload;
+            statusWriter.SendUpdate(new BaseUnitStatus.Update()
+            {
+                Side = change.Side,
+                State = change.State,
+            });
+
+            if (change.State != UnitState.Alive)
+                return;
+
+            var health = healthWriter.Data;
+            healthWriter.SendUpdate(new BaseUnitHealth.Update()
+            {
+                health = health.MaxHealth,
             });
         }
     }

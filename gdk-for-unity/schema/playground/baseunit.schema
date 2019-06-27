@@ -47,6 +47,11 @@ type OrderInfo {
     OrderType order = 1;
 }
 
+type ForceStateChange {
+    UnitSide side = 1;
+    UnitState state = 2;
+}
+
 // state:20000~20009
 component BaseUnitStatus {
     id = 20000;
@@ -56,6 +61,7 @@ component BaseUnitStatus {
     OrderType order = 4;
 
     command improbable.common.Empty set_order(OrderInfo);
+    command improbable.common.Empty force_state(ForceStateChange);
 }
 
 type HealthModifier {
