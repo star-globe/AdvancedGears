@@ -24,19 +24,19 @@ namespace Improbable.Gdk.ReactiveComponents
 
         private ComponentUpdateSystem updateSystem;
 
-        protected override void OnCreateManager()
+        protected override void OnCreate()
         {
-            base.OnCreateManager();
-            updateSystem = World.GetExistingManager<ComponentUpdateSystem>();
+            base.OnCreate();
+            updateSystem = World.GetExistingSystem<ComponentUpdateSystem>();
             GenerateComponentGroups();
             chunkArrayCache = new NativeArray<ArchetypeChunk>[authorityLossDetails.Count];
             gatheringJobs = new NativeArray<JobHandle>(authorityLossDetails.Count, Allocator.Persistent);
         }
 
-        protected override void OnDestroyManager()
+        protected override void OnDestroy()
         {
-            base.OnDestroyManager();
             gatheringJobs.Dispose();
+            base.OnDestroy();
         }
 
         private void GenerateComponentGroups()
@@ -48,7 +48,7 @@ namespace Improbable.Gdk.ReactiveComponents
                 authorityLossDetails.Add(new ComponentAuthorityLossDetails
                 {
                     Handler = authorityLossHandler,
-                    Group = GetComponentGroup(authorityLossHandler.Query)
+                    Group = GetEntityQuery(authorityLossHandler.Query)
                 });
             }
         }
@@ -84,7 +84,7 @@ namespace Improbable.Gdk.ReactiveComponents
         private struct ComponentAuthorityLossDetails
         {
             public AbstractAcknowledgeAuthorityLossHandler Handler;
-            public ComponentGroup Group;
+            public EntityQuery Group;
         }
     }
 }

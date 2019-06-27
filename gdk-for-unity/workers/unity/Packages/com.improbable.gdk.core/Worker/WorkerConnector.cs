@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Improbable.Worker.CInterop;
@@ -118,11 +117,16 @@ namespace Improbable.Gdk.Core
                 if (!Application.isPlaying)
                 {
                     Dispose();
+                    throw new ConnectionFailedException("Editor application stopped",
+                        ConnectionErrorReason.EditorApplicationStopped);
                 }
 
                 HandleWorkerConnectionEstablished();
                 World.Active = World.Active ?? Worker.World;
-                ScriptBehaviourUpdateOrder.UpdatePlayerLoop(World.AllWorlds.ToArray());
+
+                // Update PlayerLoop
+                PlayerLoopUtils.ResolveSystemGroups(Worker.World);
+                PlayerLoopUtils.AddToPlayerLoop(Worker.World);
             }
             catch (Exception e)
             {
@@ -251,16 +255,23 @@ namespace Improbable.Gdk.Core
         /// </summary>
         protected virtual string GetDevAuthToken()
         {
+            if (PlayerPrefs.HasKey(RuntimeConfigNames.DevAuthTokenKey))
+            {
+                return PlayerPrefs.GetString(RuntimeConfigNames.DevAuthTokenKey);
+            }
+
             var textAsset = Resources.Load<TextAsset>("DevAuthToken");
             if (textAsset != null)
             {
-                return textAsset.text.Trim();
+                PlayerPrefs.SetString(RuntimeConfigNames.DevAuthTokenKey, textAsset.text.Trim());
             }
             else
             {
                 throw new MissingReferenceException("Unable to find DevAuthToken.txt in the Resources folder. " +
                     "You can generate one via SpatialOS > Generate Dev Authentication Token.");
             }
+
+            return PlayerPrefs.GetString(RuntimeConfigNames.DevAuthTokenKey);
         }
 
         /// <summary>
@@ -368,6 +379,11 @@ namespace Improbable.Gdk.Core
                 }
                 catch (ConnectionFailedException e)
                 {
+                    if (e.Reason == ConnectionErrorReason.EditorApplicationStopped)
+                    {
+                        throw;
+                    }
+
                     --remainingAttempts;
                     logger.HandleLog(LogType.Error,
                         new LogEvent($"Failed attempt {maxAttempts - remainingAttempts} to create worker")
@@ -395,17 +411,30 @@ namespace Improbable.Gdk.Core
             StartCoroutine(DeferredDisposeWorker());
         }
 
-        private IEnumerator DeferredDisposeWorker()
+        protected IEnumerator DeferredDisposeWorker()
         {
+            // Remove the world from the loop early, to avoid errors during the delay frame
+            RemoveFromPlayerLoop();
             yield return null;
             Dispose();
         }
 
         public virtual void Dispose()
         {
+            RemoveFromPlayerLoop();
             Worker?.Dispose();
             Worker = null;
-            Destroy(this);
+            UnityObjectDestroyer.Destroy(this);
+        }
+
+        private void RemoveFromPlayerLoop()
+        {
+            if (Worker?.World != null)
+            {
+                // Remove root systems from the disposing world from the PlayerLoop
+                // This only affects the loop next frame
+                PlayerLoopUtils.RemoveFromPlayerLoop(Worker.World);
+            }
         }
     }
 }

@@ -17,13 +17,13 @@ namespace Improbable.Gdk.ReactiveComponents
         private ComponentUpdateSystem updateSystem;
         private WorkerSystem workerSystem;
 
-        protected override void OnCreateManager()
+        protected override void OnCreate()
         {
-            base.OnCreateManager();
+            base.OnCreate();
 
-            entityManager = World.GetExistingManager<EntityManager>();
-            updateSystem = World.GetExistingManager<ComponentUpdateSystem>();
-            workerSystem = World.GetExistingManager<WorkerSystem>();
+            entityManager = World.EntityManager;
+            updateSystem = World.GetExistingSystem<ComponentUpdateSystem>();
+            workerSystem = World.GetExistingSystem<WorkerSystem>();
 
             foreach (var type in ReflectionUtility.GetNonAbstractTypes(typeof(IReactiveComponentManager)))
             {
@@ -32,14 +32,14 @@ namespace Improbable.Gdk.ReactiveComponents
             }
         }
 
-        protected override void OnDestroyManager()
+        protected override void OnDestroy()
         {
             foreach (var manager in managers)
             {
                 manager.Clean(World);
             }
 
-            base.OnDestroyManager();
+            base.OnDestroy();
         }
 
         protected override void OnUpdate()

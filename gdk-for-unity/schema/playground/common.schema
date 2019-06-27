@@ -1,5 +1,5 @@
 package playground;
-import "from_gdk_packages/com.improbable.gdk.core/common.schema";
+import "improbable/gdk/core/common.schema";
 
 type IntervalChecker {
     float interval = 1;

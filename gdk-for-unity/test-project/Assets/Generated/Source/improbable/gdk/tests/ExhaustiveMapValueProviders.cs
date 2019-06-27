@@ -13,6 +13,7 @@ namespace Improbable.Gdk.Tests
     {
         internal static class ReferenceTypeProviders
         {
+#if !DISABLE_REACTIVE_COMPONENTS
             public static class UpdatesProvider 
             {
                 private static readonly Dictionary<uint, List<global::Improbable.Gdk.Tests.ExhaustiveMapValue.Update>> Storage = new Dictionary<uint, List<global::Improbable.Gdk.Tests.ExhaustiveMapValue.Update>>();
@@ -79,10 +80,11 @@ namespace Improbable.Gdk.Tests
                 }
             }
             
+#endif
 
             public static class Field1Provider 
             {
-                private static readonly Dictionary<uint, global::System.Collections.Generic.Dictionary<string,BlittableBool>> Storage = new Dictionary<uint, global::System.Collections.Generic.Dictionary<string,BlittableBool>>();
+                private static readonly Dictionary<uint, global::System.Collections.Generic.Dictionary<string,bool>> Storage = new Dictionary<uint, global::System.Collections.Generic.Dictionary<string,bool>>();
                 private static readonly Dictionary<uint, global::Unity.Entities.World> WorldMapping = new Dictionary<uint, Unity.Entities.World>();
             
                 private static uint nextHandle = 0;
@@ -91,13 +93,13 @@ namespace Improbable.Gdk.Tests
                 {
                     var handle = GetNextHandle();
             
-                    Storage.Add(handle, default(global::System.Collections.Generic.Dictionary<string,BlittableBool>));
+                    Storage.Add(handle, default(global::System.Collections.Generic.Dictionary<string,bool>));
                     WorldMapping.Add(handle, world);
             
                     return handle;
                 }
             
-                public static global::System.Collections.Generic.Dictionary<string,BlittableBool> Get(uint handle)
+                public static global::System.Collections.Generic.Dictionary<string,bool> Get(uint handle)
                 {
                     if (!Storage.TryGetValue(handle, out var value))
                     {
@@ -107,7 +109,7 @@ namespace Improbable.Gdk.Tests
                     return value;
                 }
             
-                public static void Set(uint handle, global::System.Collections.Generic.Dictionary<string,BlittableBool> value)
+                public static void Set(uint handle, global::System.Collections.Generic.Dictionary<string,bool> value)
                 {
                     if (!Storage.ContainsKey(handle))
                     {

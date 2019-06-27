@@ -7,7 +7,6 @@ namespace Playground.Editor.SnapshotGenerator
     internal class SnapshotEditorWindow : EditorWindow
     {
         private SnapshotGenerator.Arguments arguments;
-        private TerrainCollider ground;
 
         [MenuItem("SpatialOS/Generate snapshot", false, 200)]
         public static void GenerateMenuItem()
@@ -51,14 +50,13 @@ namespace Playground.Editor.SnapshotGenerator
 
                 arguments.NumberEntities = EditorGUILayout.IntField("Number of entities", arguments.NumberEntities);
                 arguments.OutputPath = EditorGUILayout.TextField("Snapshot path", arguments.OutputPath);
-                ground = (TerrainCollider)EditorGUILayout.ObjectField("Ground Collider", ground, typeof(TerrainCollider), true);
 
                 var shouldDisable = string.IsNullOrEmpty(arguments.OutputPath);
                 using (new EditorGUI.DisabledScope(shouldDisable))
                 {
                     if (GUILayout.Button("Generate snapshot"))
                     {
-                        SnapshotGenerator.Generate(arguments, ground);
+                        SnapshotGenerator.Generate(arguments);
                     }
                 }
             }

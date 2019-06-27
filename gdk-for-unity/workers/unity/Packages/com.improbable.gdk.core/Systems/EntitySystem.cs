@@ -5,6 +5,7 @@ namespace Improbable.Gdk.Core
 {
     [DisableAutoCreation]
     [AlwaysUpdateSystem]
+    [UpdateInGroup(typeof(SpatialOSReceiveGroup.InternalSpatialOSReceiveGroup))]
     [UpdateBefore(typeof(SpatialOSReceiveSystem))]
     public class EntitySystem : ComponentSystem
     {
@@ -45,11 +46,11 @@ namespace Improbable.Gdk.Core
             }
         }
 
-        protected override void OnCreateManager()
+        protected override void OnCreate()
         {
-            base.OnCreateManager();
+            base.OnCreate();
 
-            workerSystem = World.GetExistingManager<WorkerSystem>();
+            workerSystem = World.GetExistingSystem<WorkerSystem>();
         }
 
         protected override void OnUpdate()

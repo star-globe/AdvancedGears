@@ -1,5 +1,5 @@
 package playground;
-import "from_gdk_packages/com.improbable.gdk.core/common.schema";
+import "improbable/gdk/core/common.schema";
 import "playground/common.schema";
 import "playground/baseunit.schema";
 import "improbable/vector3.schema";

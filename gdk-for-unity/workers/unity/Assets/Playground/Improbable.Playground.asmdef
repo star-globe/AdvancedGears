@@ -6,7 +6,6 @@
         "Improbable.Gdk.PlayerLifecycle",
         "Improbable.Gdk.GameObjectCreation",
         "Improbable.Gdk.QueryBasedInterestHelper",
-        "Improbable.Gdk.ObjectPooling",
         "Unity.Entities",
         "Unity.Entities.Hybrid",
         "Unity.Mathematics",

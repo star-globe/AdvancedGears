@@ -50,11 +50,11 @@ namespace Improbable.Gdk.Core
             }
         }
 
-        protected override void OnCreateManager()
+        protected override void OnCreate()
         {
-            base.OnCreateManager();
+            base.OnCreate();
 
-            worker = World.GetExistingManager<WorkerSystem>();
+            worker = World.GetExistingSystem<WorkerSystem>();
 
             foreach (var type in ReflectionUtility.GetNonAbstractTypes(typeof(IEcsViewManager)))
             {
@@ -68,14 +68,14 @@ namespace Improbable.Gdk.Core
             Enabled = false;
         }
 
-        protected override void OnDestroyManager()
+        protected override void OnDestroy()
         {
             foreach (var manager in managers)
             {
                 manager.Clean(World);
             }
 
-            base.OnDestroyManager();
+            base.OnDestroy();
         }
 
         protected override void OnUpdate()
@@ -99,7 +99,7 @@ namespace Improbable.Gdk.Core
                 EntityId = entityId
             });
 
-            EntityManager.AddComponent(entity, ComponentType.Create<NewlyAddedSpatialOSEntity>());
+            EntityManager.AddComponent(entity, ComponentType.ReadWrite<NewlyAddedSpatialOSEntity>());
 
             worker.EntityIdToEntity.Add(entityId, entity);
             Profiler.EndSample();

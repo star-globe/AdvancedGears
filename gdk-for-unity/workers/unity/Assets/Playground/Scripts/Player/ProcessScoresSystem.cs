@@ -9,12 +9,12 @@ namespace Playground
         private CommandSystem commandSystem;
         private WorkerSystem workerSystem;
 
-        protected override void OnCreateManager()
+        protected override void OnCreate()
         {
-            base.OnCreateManager();
+            base.OnCreate();
 
-            commandSystem = World.GetExistingManager<CommandSystem>();
-            workerSystem = World.GetExistingManager<WorkerSystem>();
+            commandSystem = World.GetExistingSystem<CommandSystem>();
+            workerSystem = World.GetExistingSystem<WorkerSystem>();
         }
 
         protected override void OnUpdate()

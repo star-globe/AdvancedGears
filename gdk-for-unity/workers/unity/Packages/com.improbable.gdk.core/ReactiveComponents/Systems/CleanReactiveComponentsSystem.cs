@@ -13,25 +13,25 @@ namespace Improbable.Gdk.ReactiveComponents
     ///     Removes GDK reactive components from all entities
     /// </summary>
     [DisableAutoCreation]
-    [UpdateInGroup(typeof(SpatialOSSendGroup.InternalSpatialOSCleanGroup))]
+    [UpdateInGroup(typeof(InternalSpatialOSCleanGroup))]
     public class CleanReactiveComponentsSystem : ComponentSystem
     {
         private readonly List<ComponentCleanup> componentCleanups = new List<ComponentCleanup>();
         private NativeArray<ArchetypeChunk>[] chunkArrayCache;
         private NativeArray<JobHandle> gatheringJobs;
 
-        protected override void OnCreateManager()
+        protected override void OnCreate()
         {
-            base.OnCreateManager();
+            base.OnCreate();
             GenerateComponentGroups();
             chunkArrayCache = new NativeArray<ArchetypeChunk>[componentCleanups.Count];
             gatheringJobs = new NativeArray<JobHandle>(componentCleanups.Count, Allocator.Persistent);
         }
 
-        protected override void OnDestroyManager()
+        protected override void OnDestroy()
         {
-            base.OnDestroyManager();
             gatheringJobs.Dispose();
+            base.OnDestroy();
         }
 
         private void GenerateComponentGroups()
@@ -44,7 +44,7 @@ namespace Improbable.Gdk.ReactiveComponents
                 componentCleanups.Add(new ComponentCleanup
                 {
                     Handler = componentCleanupHandler,
-                    Group = GetComponentGroup(componentCleanupHandler.CleanupArchetypeQuery)
+                    Group = GetEntityQuery(componentCleanupHandler.CleanupArchetypeQuery)
                 });
             }
         }
@@ -79,7 +79,7 @@ namespace Improbable.Gdk.ReactiveComponents
         private struct ComponentCleanup
         {
             public ComponentCleanupHandler Handler;
-            public ComponentGroup Group;
+            public EntityQuery Group;
         }
     }
 }

@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using Improbable.Gdk.Core;
 using Improbable.Gdk.Core.Commands;
-using Improbable.PlayerLifecycle;
+using Improbable.Gdk.PlayerLifecycle;
 using Improbable.Worker.CInterop;
 using Improbable.Worker.CInterop.Query;
 using Unity.Entities;
 using UnityEngine;
+using EntityQuery = Improbable.Worker.CInterop.Query.EntityQuery;
 using Random = UnityEngine.Random;
 
 namespace Improbable.Gdk.PlayerLifecycle
@@ -38,12 +39,12 @@ namespace Improbable.Gdk.PlayerLifecycle
             ResultType = new SnapshotResultType()
         };
 
-        protected override void OnCreateManager()
+        protected override void OnCreate()
         {
-            base.OnCreateManager();
+            base.OnCreate();
 
-            workerSystem = World.GetExistingManager<WorkerSystem>();
-            commandSystem = World.GetExistingManager<CommandSystem>();
+            workerSystem = World.GetExistingSystem<WorkerSystem>();
+            commandSystem = World.GetExistingSystem<CommandSystem>();
             logDispatcher = workerSystem.LogDispatcher;
 
             SendPlayerCreatorEntityQuery();

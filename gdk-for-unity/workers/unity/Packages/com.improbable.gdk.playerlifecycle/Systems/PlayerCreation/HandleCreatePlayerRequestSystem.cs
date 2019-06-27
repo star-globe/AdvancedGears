@@ -1,7 +1,6 @@
 using System;
 using Improbable.Gdk.Core;
 using Improbable.Gdk.Core.Commands;
-using Improbable.PlayerLifecycle;
 using Improbable.Worker.CInterop;
 using Unity.Entities;
 
@@ -13,10 +12,10 @@ namespace Improbable.Gdk.PlayerLifecycle
     {
         private CommandSystem commandSystem;
 
-        protected override void OnCreateManager()
+        protected override void OnCreate()
         {
-            base.OnCreateManager();
-            commandSystem = World.GetExistingManager<CommandSystem>();
+            base.OnCreate();
+            commandSystem = World.GetExistingSystem<CommandSystem>();
         }
 
         private class PlayerCreationRequestContext

@@ -1,7 +1,7 @@
 package playground;
 import "improbable/vector3.schema";
-import "from_gdk_packages/com.improbable.gdk.core/common.schema";
-import "from_gdk_packages/com.improbable.gdk.transformsynchronization/transform_internal.schema";
+import "improbable/gdk/core/common.schema";
+import "improbable/gdk/transformsynchronization/transform_internal.schema";
 import "playground/common.schema";
 
 enum UnitType {

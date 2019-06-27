@@ -28,11 +28,11 @@ namespace Playground
 
         private static readonly Metrics WorkerMetrics = new Metrics();
 
-        protected override void OnCreateManager()
+        protected override void OnCreate()
         {
-            base.OnCreateManager();
+            base.OnCreate();
 
-            worker = World.GetExistingManager<WorkerSystem>();
+            worker = World.GetExistingSystem<WorkerSystem>();
 
             targetFps = Application.targetFrameRate == -1
                 ? DefaultTargetFrameRate
