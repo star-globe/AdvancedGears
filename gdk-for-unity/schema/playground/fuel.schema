@@ -44,6 +44,7 @@ enum SupplyOrderType {
 }
 
 type SupplyPoint {
+    UnitSide side = 1;
     improbable.Vector3f pos = 2;
     EntityId stronghold_id = 3;
 }
@@ -103,9 +104,10 @@ enum EngineeringType {
 }
 
 type EngineeringPoint {
-    UnitType unit_type = 1;
+    UnitSide side = 1;
     improbable.Vector3f pos = 2;
     EntityId unit_id = 3;
+    UnitType unit_type = 4;
 }
 
 type EngineeringOrder {

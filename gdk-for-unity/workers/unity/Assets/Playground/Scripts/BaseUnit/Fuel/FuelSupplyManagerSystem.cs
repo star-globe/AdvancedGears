@@ -169,8 +169,26 @@ namespace Playground
 
             commandSystem.SendCommand(new FuelSupplyer.SetOrder.Request(entityId, plan.Orders[0]), entity);
 
+            TargetInfo tgt;
+            MakeTarget(plan.Orders[0], out tgt);
+            commandSystem.SendCommand(new BaseUnitTarget.SetTarget.Request(entityId, tgt), entity);
+
             manager.SupplyOrders.Add(entityId, plan);
             return 1;
+        }
+
+        void MakeTarget(in SupplyOrder order, out TargetInfo targetInfo)
+        {
+            targetInfo = new TargetInfo 
+            {
+                IsTarget = true,
+                TargetId = order.Point.StrongholdId,
+                Position = order.Point.Pos,
+                Type = UnitType.Stronghold,
+                Side = order.Point.Side,
+                CommanderId = new EntityId(-1),
+                AllyRange = 0.0f,
+            };
         }
 
         SupplyReserve getNearestSupplyReserve(EntityId id, List<SupplyReserve> reserves)
