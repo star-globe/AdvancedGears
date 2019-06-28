@@ -22,6 +22,7 @@
 21001 = GunComponent
 
 21020 = EquipComponent
+21030 = DummyPlayer
 
 21100 = FuelComponent
 21101 = FuelServer

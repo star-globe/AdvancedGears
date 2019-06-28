@@ -60,9 +60,18 @@ type AttackTargetInfo {
     PosturePoint attached = 3;
 }
 
+type SupplyBulletInfo {
+    uint64 gun_id = 1;
+    uint32 gun_type_id = 2;
+
+    PosturePoint attached = 3;
+    int32 amount = 4;
+}
+
 component GunComponent {
     id = 21001;
 
     map<PosturePoint,GunInfo> guns_dic = 1;
     event AttackTargetInfo fire_triggered;
+    event SupplyBulletInfo bullet_supplied;
 }

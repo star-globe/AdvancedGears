@@ -55,3 +55,9 @@ component EquipComponent {
     command improbable.common.Empty set_equip(ChangeEquipInfo);
     command improbable.common.Empty change_form(ChangeFormInfo);
 }
+
+component DummyPlayer {
+    id = 21030;
+
+    IntervalChecker interval = 1;
+}

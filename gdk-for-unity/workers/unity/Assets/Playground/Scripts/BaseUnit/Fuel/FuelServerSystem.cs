@@ -49,6 +49,7 @@ namespace Playground
             group.SetFilter(FuelComponent.ComponentAuthority.Authoritative);
         }
 
+        const int rate = 2;
         protected override void OnUpdate()
         {
             var fuelServer = group.GetComponentDataArray<FuelServer.Component>();
@@ -88,8 +89,7 @@ namespace Playground
                 var list = getUnits(status.Side, pos, range, false, false, UnitType.Soldier, UnitType.Commander);
                 foreach(var unit in list) {
                     FuelComponent.Component? comp = null;
-                    if (TryGetComponent(unit.id, out comp))
-                    {
+                    if (TryGetComponent(unit.id, out comp)) {
                         var f = comp.Value.Fuel;
                         var max = comp.Value.MaxFuel;
                         if (f >= max)
@@ -106,6 +106,33 @@ namespace Playground
                             Amount = num,
                         };
                         updateSystem.SendEvent(new FuelComponent.FuelModified.Event(modify), unit.id);
+                    }
+
+                    GunComponent.Component? gun = null;
+                    if (TryGetComponent(unit.id, out gun)) {
+                        var dic = gun.Value.GunsDic;
+                        foreach(var kvp in dic) {
+                            var info = kvp.Value;
+                            var b = info.StockBullets;
+                            var max = info.StockMax;
+                            if (b >= max)
+                                continue;
+                            
+                            var feed = baseFeed / rate;
+                            var num = Mathf.Clamp(max - b, 0, feed);
+                            if (current < num * feed)
+                                continue;
+
+                            current -= num * feed;
+                            var supply = new SupplyBulletInfo {
+                                GunId = info.GunId,
+                                GunTypeId = info.GunTypeId,
+                                Attached = kvp.Key,
+                                Amount = num,
+                            };
+                            updateSystem.SendEvent(new GunComponent.BulletSupplied.Event(supply), unit.id);
+                            break;
+                        }
                     }
                 }
 
