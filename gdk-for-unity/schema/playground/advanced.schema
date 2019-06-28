@@ -1,0 +1,57 @@
+package playground;
+import "from_gdk_packages/com.improbable.gdk.core/common.schema";
+import "improbable/vector3.schema";
+import "playground/common.schema";
+
+// advanced:21020~21099
+enum EquipCategory {
+    None = 0;
+    Weapon = 1;
+    Armor = 2;
+    Insides = 3;
+    Other = 99;
+}
+
+type EquipData {
+    uint64 equip_id = 1;
+    uint32 equip_type_id = 2;
+    EquipCategory category = 3;
+    int32 tune = 4;
+}
+
+type ChangeEquipInfo {
+    PosturePoint point = 1;
+    EquipData equip = 2;
+}
+
+enum EquipForm {
+    None = 0;
+    Idle  = 1;
+    Aim = 2;
+    Firing = 3;
+}
+
+type ChangeFormInfo
+{
+    EquipForm form = 1;
+} 
+
+enum EquipStyle {
+    None = 0;
+    SingleArmed = 1;
+    DoubleTrigger = 2;
+    CQC = 3;
+    Seated = 4;
+}
+
+component EquipComponent {
+    id = 21020;
+
+    map<PosturePoint,EquipData> equip_map = 1;
+
+    EquipForm form = 2;
+    EquipStyle style = 3;
+
+    command improbable.common.Empty set_equip(ChangeEquipInfo);
+    command improbable.common.Empty change_form(ChangeFormInfo);
+}

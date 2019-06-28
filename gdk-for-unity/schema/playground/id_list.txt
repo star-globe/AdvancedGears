@@ -1,3 +1,32 @@
-20000 = baseUnit
-20001 = baseUnitSpawner
-21000 = bullet
+20000 = BaseUnitStatus
+20002 = BaseUnitHealth
+
+20010 = BaseUnitMovement
+20011 = BaseUnitSight
+20012 = BaseUnitAction
+20013 = BaseUnitTarget
+20014 = BaseUnitPosture
+
+20020 = CommanderStatus
+20021 = CommanderSight
+20022 = CommanderAction
+
+20030 = StrongholdUnitStatus
+20032 = UnitFactory
+
+20040 = HeadQuarters
+
+20099 = BaseUnitSpawner
+
+21000 = BulletComponent
+21001 = GunComponent
+
+21020 = EquipComponent
+
+21100 = FuelComponent
+21101 = FuelServer
+21102 = FuelSupplyer
+21103 = FuelSupplyManager
+
+21110 = EngineeringComponent
+21111 = EngineeringManager
