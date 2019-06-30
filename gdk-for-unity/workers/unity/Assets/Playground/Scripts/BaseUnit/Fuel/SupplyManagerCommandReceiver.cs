@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Improbable.Gdk.Subscriptions;
-using Improbable.Common;
 
 namespace Playground
 {

@@ -1,5 +1,4 @@
 ﻿using Improbable.Gdk.Core;
-using Improbable.Gdk.TransformSynchronization;
 using Improbable.Worker.CInterop;
 using Unity.Entities;
 using UnityEngine;
@@ -60,7 +59,7 @@ namespace Improbable.Gdk.TransformSynchronization
 
         private void UpdateAuthChangeGroup()
         {
-            Entities.With(newEntityGroup).ForEach(
+            Entities.With(authChangeGroup).ForEach(
                 (Rigidbody rigidbody, ref KinematicStateWhenAuth kinematicStateWhenAuth, ref SpatialEntityId spatialEntityId) =>
                 {
                     var changes = updateSystem.GetAuthorityChangesReceived(spatialEntityId.EntityId,

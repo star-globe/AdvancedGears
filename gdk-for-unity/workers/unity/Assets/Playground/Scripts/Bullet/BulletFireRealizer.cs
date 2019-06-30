@@ -43,7 +43,7 @@ namespace Playground
                 if (World == null)
                     return null;
 
-                bulletSystem = bulletSystem ?? World.GetExistingManager<BulletMovementSystem>();
+                bulletSystem = bulletSystem ?? World.GetExistingSystem<BulletMovementSystem>();
                 return bulletSystem;
             }
         }

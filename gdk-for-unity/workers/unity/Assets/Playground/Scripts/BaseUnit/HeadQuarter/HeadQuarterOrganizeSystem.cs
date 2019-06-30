@@ -16,7 +16,7 @@ namespace Playground
     internal class HeadQuarterOrganizeSystem : BaseSearchSystem
     {
         private CommandSystem commandSystem;
-        private ComponentGroup group;
+        private EntityQuery group;
 
         private Vector3 origin;
 
@@ -24,18 +24,17 @@ namespace Playground
         {
             base.OnCreateManager();
 
-            commandSystem = World.GetExistingManager<CommandSystem>();
+            commandSystem = World.GetExistingSystem<CommandSystem>();
 
             // ここで基準位置を取る
-            origin = World.GetExistingManager<WorkerSystem>().Origin;
+            origin = World.GetExistingSystem<WorkerSystem>().Origin;
 
-            group = GetComponentGroup(
-                ComponentType.Create<HeadQuarters.Component>(),
+            group = GetEntityQuery(
+                ComponentType.ReadWrite<HeadQuarters.Component>(),
                 ComponentType.ReadOnly<HeadQuarters.ComponentAuthority>(),
                 ComponentType.ReadOnly<CommanderStatus.Component>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<BaseUnitTarget.Component>(),
-                ComponentType.ReadOnly<Transform>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
             group.SetFilter(HeadQuarters.ComponentAuthority.Authoritative);
@@ -43,47 +42,38 @@ namespace Playground
 
         protected override void OnUpdate()
         {
-            var hqData = group.GetComponentDataArray<HeadQuarters.Component>();
-            var commanderData = group.GetComponentDataArray<CommanderStatus.Component>();
-            var statusData = group.GetComponentDataArray<BaseUnitStatus.Component>();
-            var tgtData = group.GetComponentDataArray<BaseUnitTarget.Component>();
-            var transData = group.GetComponentArray<Transform>();
-            var entityIdData = group.GetComponentDataArray<SpatialEntityId>();
-
-            for (var i = 0; i < hqData.Length; i++)
+            Entities.With(group).ForEach((Entity entity,
+                                          ref HeadQuarters.Component headQuarter,
+                                          ref CommanderStatus.Component commander,
+                                          ref BaseUnitStatus.Component status,
+                                          ref BaseUnitTarget.Component tgt,
+                                          ref SpatialEntityId entityId) =>
             {
-                var headQuarter = hqData[i];
-                var commander = commanderData[i];
-                var status = statusData[i];
-                var tgt = tgtData[i];
-                var trans = transData[i];
-                var entityId = entityIdData[i];
-
                 if (status.State != UnitState.Alive)
-                    continue;
+                    return;
 
                 if (status.Type == UnitType.HeadQuarter)
-                    continue;
+                    return;
 
                 if (status.Order == OrderType.Idle)
-                    continue;
+                    return;
 
                 if (headQuarter.Orders.Count == 0)
-                    continue;
+                    return;
 
                 // TODO:upper check 
                 if (headQuarter.UpperRank >= 5)
-                    continue;
+                    return;
 
                 var time = Time.realtimeSinceStartup;
                 var inter = headQuarter.Interval;
                 if (inter.CheckTime(time) == false)
-                    continue;
+                    return;
 
                 headQuarter.Interval = inter;
 
                 const float range = 500.0f;
-                foreach (var order in  headQuarter.Orders)
+                foreach (var order in headQuarter.Orders)
                 {
                     var pos = order.Pos.ToUnityVector();
                     var str = getNearestAlly(status.Side, pos, range, UnitType.Stronghold);
@@ -99,8 +89,7 @@ namespace Playground
                 }
 
                 headQuarter.Orders.Clear();
-                hqData[i] = headQuarter;
-            }
+            });
         }
 
         void SetSuperior(EntityId id, UnitSide side, in OrganizeOrder order, ref FactoryMap map, out uint upper_rank)

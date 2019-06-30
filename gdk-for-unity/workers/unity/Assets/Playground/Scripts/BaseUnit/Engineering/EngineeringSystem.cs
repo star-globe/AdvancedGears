@@ -19,7 +19,7 @@ namespace Playground
     [UpdateBefore(typeof(FixedUpdate.PhysicsFixedUpdate))]
     public class EngineeringSystem : BaseSearchSystem
     {
-        ComponentGroup group;
+        EntityQuery group;
         CommandSystem commandSystem;
         ComponentUpdateSystem updateSystem;
         ILogDispatcher logDispatcher;
@@ -31,15 +31,15 @@ namespace Playground
             base.OnCreateManager();
 
             // ここで基準位置を取る
-            var worker = World.GetExistingManager<WorkerSystem>();
+            var worker = World.GetExistingSystem<WorkerSystem>();
             origin = worker.Origin;
             logDispatcher = worker.LogDispatcher;
 
-            commandSystem = World.GetExistingManager<CommandSystem>();
-            updateSystem = World.GetExistingManager<ComponentUpdateSystem>();
-            group = GetComponentGroup(
-                ComponentType.Create<EngineeringComponent.Component>(),
-                ComponentType.Create<FuelComponent.Component>(),
+            commandSystem = World.GetExistingSystem<CommandSystem>();
+            updateSystem = World.GetExistingSystem<ComponentUpdateSystem>();
+            group = GetEntityQuery(
+                ComponentType.ReadWrite<EngineeringComponent.Component>(),
+                ComponentType.ReadWrite<FuelComponent.Component>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<BaseUnitTarget.Component>(),
                 ComponentType.ReadOnly<Transform>(),
@@ -58,34 +58,26 @@ namespace Playground
 
         void HandleRequest()
         {
-            var engineeringData = group.GetComponentDataArray<EngineeringComponent.Component>();
-            var fuelData = group.GetComponentDataArray<FuelComponent.Component>();
-            var statusData = group.GetComponentDataArray<BaseUnitStatus.Component>();
-            var targetData = group.GetComponentDataArray<BaseUnitTarget.Component>();
-            var transData = group.GetComponentArray<Transform>();
-            var entityIdData = group.GetComponentDataArray<SpatialEntityId>();
-
-            for (var i = 0; i < engineeringData.Length; i++) {
-                var engineer = engineeringData[i];
-                var fuel = fuelData[i];
-                var status = statusData[i];
-                var tgt = targetData[i];
-                var pos = transData[i].position;
-                var entityId = entityIdData[i];
-
+            Entities.With(group).ForEach((Unity.Entities.Entity entity,
+                                          ref EngineeringComponent.Component engineer,
+                                          ref FuelComponent.Component fuel,
+                                          ref BaseUnitStatus.Component status,
+                                          ref BaseUnitTarget.Component tgt,
+                                          ref SpatialEntityId entityId) =>
+            {
                 if (status.State != UnitState.Alive)
-                    continue;
+                    return;
 
                 if (status.Type != UnitType.Engineer)
-                    continue;
+                    return;
 
                 if (engineer.OrderFinished)
-                    continue;
+                    return;
 
                 var time = Time.realtimeSinceStartup;
                 var inter = engineer.Interval;
                 if (inter.CheckTime(time) == false)
-                    continue;
+                    return;
 
                 engineer.Interval = inter;
 
@@ -95,23 +87,25 @@ namespace Playground
                 var id = engineer.Order.Point.UnitId;
                 bool isEnemy = false;
                 bool allowDead = false;
-                switch (engineer.Order.Type) {
+                switch (engineer.Order.Type)
+                {
                     case EngineeringType.Repair: isEnemy = false; allowDead = true; break;
                     case EngineeringType.Occupy: isEnemy = true; allowDead = true; break;
                 }
 
+                var trans = EntityManager.GetComponentObject<Transform>(entity);
+                var pos = trans.position;
                 var unit = getUnits(status.Side, pos, range, isEnemy, allowDead, UnitType.Stronghold).FirstOrDefault(u => u.id == id);
-                if (unit != null) {
+                if (unit != null)
+                {
                     bool tof = DealOrder(unit, engineer.Order.Type, status.Side, ref f_comp);
                     SendResult(tof, engineer.ManagerId, entityId.EntityId, engineer.Order);
                     engineer.OrderFinished = true;
                 }
 
                 if (fuel.Fuel != f_comp.Fuel)
-                    fuelData[i] = f_comp;
-                
-                engineeringData[i] = engineer;
-            }
+                    fuel = f_comp;
+            });
         }
 
         void HandleResponse()

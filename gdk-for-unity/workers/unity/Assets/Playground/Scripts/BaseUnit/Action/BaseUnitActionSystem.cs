@@ -9,6 +9,7 @@ using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
 using UnityEngine.Experimental.PlayerLoop;
+using Ex = Extensions;
 
 namespace Playground
 {
@@ -16,7 +17,7 @@ namespace Playground
     internal class BaseUnitActionSystem : ComponentSystem
     {
         private ComponentUpdateSystem updateSystem;
-        private ComponentGroup group;
+        private EntityQuery group;
 
         private Vector3 origin;
 
@@ -24,18 +25,18 @@ namespace Playground
         {
             base.OnCreateManager();
 
-            updateSystem = World.GetExistingManager<ComponentUpdateSystem>();
+            updateSystem = World.GetExistingSystem<ComponentUpdateSystem>();
 
             // ここで基準位置を取る
-            origin = World.GetExistingManager<WorkerSystem>().Origin;
+            origin = World.GetExistingSystem<WorkerSystem>().Origin;
 
-            group = GetComponentGroup(
-                ComponentType.Create<BaseUnitAction.Component>(),
+            group = GetEntityQuery(
+                ComponentType.ReadWrite<BaseUnitAction.Component>(),
                 ComponentType.ReadOnly<BaseUnitAction.ComponentAuthority>(),
-                ComponentType.Create<BaseUnitPosture.Component>(),
+                ComponentType.ReadWrite<BaseUnitPosture.Component>(),
                 ComponentType.ReadOnly<BaseUnitPosture.ComponentAuthority>(),
-                ComponentType.Create<GunComponent.Component>(),
-                ComponentType.Create<UnitTransform>(),
+                ComponentType.ReadWrite<GunComponent.Component>(),
+                ComponentType.ReadOnly<UnitTransform>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
@@ -45,50 +46,40 @@ namespace Playground
 
         protected override void OnUpdate()
         {
-            var actionData = group.GetComponentDataArray<BaseUnitAction.Component>();
-            var postureData = group.GetComponentDataArray<BaseUnitPosture.Component>();
-            var gunData = group.GetComponentDataArray<GunComponent.Component>();
-            var unitData = group.GetComponentArray<UnitTransform>();
-            var statusData = group.GetComponentDataArray<BaseUnitStatus.Component>();
-            var entityIdData = group.GetComponentDataArray<SpatialEntityId>();
-
-            for (var i = 0; i < actionData.Length; i++)
+            Entities.With(group).ForEach((Entity entity,
+                                          ref BaseUnitAction.Component action,
+                                          ref BaseUnitPosture.Component posture,
+                                          ref GunComponent.Component gun,
+                                          ref BaseUnitStatus.Component status,
+                                          ref SpatialEntityId entityId) =>
             {
-                var action = actionData[i];
-                var posture = postureData[i];
-                var gun = gunData[i];
-                var status = statusData[i];
-                var unit = unitData[i];
-                var entityId = entityIdData[i];
-
                 if (status.State != UnitState.Alive)
-                    continue;
+                    return;
 
                 if (!action.IsTarget)
-                    continue;
+                    return;
 
                 var time = Time.realtimeSinceStartup;
                 var inter = action.Interval;
                 if (inter.CheckTime(time) == false)
-                    continue;
+                    return;
 
                 action.Interval = inter;
 
                 if (action.EnemyPositions.Count > 0)
                 {
                     var epos = action.EnemyPositions[0].ToUnityVector() + origin;
-                    bool updPosture,updGuns;
+                    bool updPosture, updGuns;
+                    var unit = EntityManager.GetComponentObject<UnitTransform>(entity);
                     Attack(unit, time, action.AngleSpeed, epos, entityId, ref posture, ref gun, out updPosture, out updGuns);
 
-                    if (updPosture)
-                        postureData[i] = posture;
+                    //if (updPosture)
+                    //    postureData[i] = posture;
 
-                    if (updGuns)
-                        gunData[i] = gun;
+                    //if (updGuns)
+                    //    gunData[i] = gun;
                 }
-
-                actionData[i] = action;
-            }
+            });
         }
 
         void Attack(UnitTransform unit, float time, float angleSpeed, in Vector3 epos, in SpatialEntityId entityId, ref BaseUnitPosture.Component posture, ref GunComponent.Component gun, out bool updPosture, out bool updGuns)
@@ -154,7 +145,7 @@ namespace Playground
             if (result == Result.Rotate)
             {
                 var rot = unit.transform.rotation;
-                var list = new List<Improbable.Transform.Quaternion>(postrans.GetQuaternions().Select(q => q.ToImprobableQuaternion()));
+                var list = new List<Ex.Quaternion>(postrans.GetQuaternions().Select(q => q.ToImprobableQuaternion()));
                 pdata = new PostureData(point, list);
             }
 

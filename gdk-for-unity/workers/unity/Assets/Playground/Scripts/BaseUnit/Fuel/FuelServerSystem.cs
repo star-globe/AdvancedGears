@@ -19,7 +19,7 @@ namespace Playground
     [UpdateBefore(typeof(FixedUpdate.PhysicsFixedUpdate))]
     public class FuelServerSystem : BaseSearchSystem
     {
-        ComponentGroup group;
+        EntityQuery group;
         CommandSystem commandSystem;
         ComponentUpdateSystem updateSystem;
         ILogDispatcher logDispatcher;
@@ -31,15 +31,15 @@ namespace Playground
             base.OnCreateManager();
 
             // ここで基準位置を取る
-            var worker = World.GetExistingManager<WorkerSystem>();
+            var worker = World.GetExistingSystem<WorkerSystem>();
             origin = worker.Origin;
             logDispatcher = worker.LogDispatcher;
 
-            commandSystem = World.GetExistingManager<CommandSystem>();
-            updateSystem = World.GetExistingManager<ComponentUpdateSystem>();
-            group = GetComponentGroup(
-                ComponentType.Create<FuelServer.Component>(),
-                ComponentType.Create<FuelComponent.Component>(),
+            commandSystem = World.GetExistingSystem<CommandSystem>();
+            updateSystem = World.GetExistingSystem<ComponentUpdateSystem>();
+            group = GetEntityQuery(
+                ComponentType.ReadWrite<FuelServer.Component>(),
+                ComponentType.ReadWrite<FuelComponent.Component>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<Transform>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
@@ -51,32 +51,25 @@ namespace Playground
 
         protected override void OnUpdate()
         {
-            var fuelServer = group.GetComponentDataArray<FuelServer.Component>();
-            var fuelData = group.GetComponentDataArray<FuelComponent.Component>();
-            var statusData = group.GetComponentDataArray<BaseUnitStatus.Component>();
-            var transData = group.GetComponentArray<Transform>();
-            var entityIdData = group.GetComponentDataArray<SpatialEntityId>();
-
-            for (var i = 0; i < fuelServer.Length; i++) {
-                var server = fuelServer[i];
-                var fuel = fuelData[i];
-                var status = statusData[i];
-                var pos = transData[i].position;
-                var entityId = entityIdData[i];
-
+            Entities.With(group).ForEach((Unity.Entities.Entity entity,
+                                          ref FuelServer.Component server,
+                                          ref FuelComponent.Component fuel,
+                                          ref BaseUnitStatus.Component status,
+                                          ref SpatialEntityId entityId) =>
+            {
                 if (status.State != UnitState.Alive)
-                    continue;
+                    return;
 
                 if (status.Type != UnitType.Stronghold)
-                    continue;
+                    return;
 
                 if (fuel.Fuel == 0)
-                    continue;
+                    return;
 
                 var time = Time.realtimeSinceStartup;
                 var inter = server.Interval;
                 if (inter.CheckTime(time) == false)
-                    continue;
+                    return;
 
                 server.Interval = inter;
 
@@ -85,8 +78,11 @@ namespace Playground
                 int current = fuel.Fuel;
                 current += server.GainRate;
 
+                var trans = EntityManager.GetComponentObject<Transform>(entity);
+                var pos = trans.position;
                 var list = getUnits(status.Side, pos, range, false, false, UnitType.Soldier, UnitType.Commander);
-                foreach(var unit in list) {
+                foreach (var unit in list)
+                {
                     FuelComponent.Component? comp = null;
                     if (TryGetComponent(unit.id, out comp))
                     {
@@ -98,10 +94,11 @@ namespace Playground
                         var num = Mathf.Clamp(max - f, 0, baseFeed);
                         if (current < num)
                             continue;
-                        
+
                         current -= num;
 
-                        var modify = new FuelModifier {
+                        var modify = new FuelModifier
+                        {
                             Type = FuelModifyType.Feed,
                             Amount = num,
                         };
@@ -109,13 +106,9 @@ namespace Playground
                     }
                 }
 
-                if (fuel.Fuel != current) {
+                if (fuel.Fuel != current)
                     fuel.Fuel = current;
-                    fuelData[i] = fuel;
-                }
-
-                fuelServer[i] = server;
-            }
+            });
         }
     }
 }

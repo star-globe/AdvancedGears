@@ -2,19 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Ex = Extensions;
 
 namespace Playground
 {
     static class Extensions
     {
-        public static Quaternion ToUnityQuaternion(this Improbable.Transform.Quaternion quo)
+        public static Quaternion ToUnityQuaternion(this Ex.Quaternion quo)
         {
             return new Quaternion(quo.X, quo.Y, quo.Z, quo.W);
         }
 
-        public static Improbable.Transform.Quaternion ToImprobableQuaternion(this Quaternion quo)
+        public static Ex.Quaternion ToImprobableQuaternion(this Quaternion quo)
         {
-            return new Improbable.Transform.Quaternion(quo.w, quo.x, quo.y, quo.z);
+            return new Ex.Quaternion(quo.w, quo.x, quo.y, quo.z);
         }
 
         public static Improbable.Vector3f ToImprobableVector3(this Vector3 vec)
@@ -80,10 +81,10 @@ namespace Playground
             return tgt - foward * length;
         }
 
-        public static List<Improbable.Transform.Quaternion> GetAllRotates(this UnitTransform unit, PosturePoint point)
+        public static List<Ex.Quaternion> GetAllRotates(this UnitTransform unit, PosturePoint point)
         {
             if (unit.PostureDic.ContainsKey(point) == false)
-                return new List<Improbable.Transform.Quaternion>();
+                return new List<Ex.Quaternion>();
 
             return unit.PostureDic[point].Connectors.Select(c => c.transform.rotation.ToImprobableQuaternion()).ToList();
         }

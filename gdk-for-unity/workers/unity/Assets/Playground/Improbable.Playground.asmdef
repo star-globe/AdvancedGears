@@ -3,9 +3,11 @@
     "references": [
         "Improbable.Gdk.Core",
         "Improbable.Gdk.TransformSynchronization",
+        "Improbable.Gdk.ObjectPooling",
         "Improbable.Gdk.PlayerLifecycle",
         "Improbable.Gdk.GameObjectCreation",
         "Improbable.Gdk.QueryBasedInterestHelper",
+        "Improbable.Gdk.StandardTypes",
         "Unity.Entities",
         "Unity.Entities.Hybrid",
         "Unity.Mathematics",

@@ -1,8 +1,9 @@
-using Improbable.Gdk.Core;
+using Improbable.Gdk;
 using Improbable.Gdk.GameObjectCreation;
 using Improbable.Gdk.PlayerLifecycle;
 using Improbable.Gdk.TransformSynchronization;
 using Unity.Entities;
+using System.Collections.Generic;
 
 namespace Playground
 {

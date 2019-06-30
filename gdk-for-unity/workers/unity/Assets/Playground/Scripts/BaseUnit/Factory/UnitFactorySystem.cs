@@ -19,7 +19,7 @@ namespace Playground
     [UpdateBefore(typeof(FixedUpdate.PhysicsFixedUpdate))]
     public class UnitFactorySystem : ComponentSystem
     {
-        ComponentGroup group;
+        EntityQuery group;
         CommandSystem commandSystem;
         ILogDispatcher logDispatcher;
 
@@ -37,13 +37,13 @@ namespace Playground
             base.OnCreateManager();
 
             // ここで基準位置を取る
-            var worker = World.GetExistingManager<WorkerSystem>();
+            var worker = World.GetExistingSystem<WorkerSystem>();
             origin = worker.Origin;
             logDispatcher = worker.LogDispatcher;
 
-            commandSystem = World.GetExistingManager<CommandSystem>();
-            group = GetComponentGroup(
-                ComponentType.Create<UnitFactory.Component>(),
+            commandSystem = World.GetExistingSystem<CommandSystem>();
+            group = GetEntityQuery(
+                ComponentType.ReadWrite<UnitFactory.Component>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<Transform>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
@@ -60,25 +60,19 @@ namespace Playground
         const float timeCost = 5;
         void HandleProductUnit()
         {
-            var factoryData = group.GetComponentDataArray<UnitFactory.Component>();
-            var statusData = group.GetComponentDataArray<BaseUnitStatus.Component>();
-            var transData = group.GetComponentArray<Transform>();
-            var entityIdData = group.GetComponentDataArray<SpatialEntityId>();
-
-            for (var i = 0; i < factoryData.Length; i++) {
-                var factory = factoryData[i];
-                var status = statusData[i];
-                var pos = transData[i].position;
-                var entityId = entityIdData[i];
-
+            Entities.With(group).ForEach((Unity.Entities.Entity entity,
+                                          ref UnitFactory.Component factory,
+                                          ref BaseUnitStatus.Component status,
+                                          ref SpatialEntityId entityId) =>
+            {
                 if (status.State != UnitState.Alive)
-                    continue;
+                    return;
 
                 if (status.Type != UnitType.Commander)
-                    continue;
+                    return;
 
                 if (status.Order == OrderType.Idle)
-                    continue;
+                    return;
 
                 FollowerOrder? f_order = null;
                 SuperiorOrder? s_order = null;
@@ -91,26 +85,27 @@ namespace Playground
                 // calc time cost
                 float cost = 0.0f;
                 if (s_order == null && f_order == null)
-                {
-                    factoryData[i] = factory;
-                    continue;
-                }
+                    return;
 
                 var time = Time.realtimeSinceStartup;
                 var inter = factory.Interval;
                 if (inter.CheckTime(time) == false)
-                    continue;
+                    return;
 
                 factory.Interval = inter;
 
                 cost = timeCost;
-                if (factory.CurrentType == UnitType.None) {
+                if (factory.CurrentType == UnitType.None)
+                {
                     factory.ProductInterval = new IntervalChecker(cost, time + cost);
-                    factory.CurrentType = s_order != null ? UnitType.Commander: f_order.Value.Type;
+                    factory.CurrentType = s_order != null ? UnitType.Commander : f_order.Value.Type;
                 }
 
                 inter = factory.ProductInterval;
-                if (inter.CheckTime(time)) {
+                if (inter.CheckTime(time))
+                {
+                    var trans = EntityManager.GetComponentObject<Transform>(entity);
+                    var pos = trans.position;
                     EntityTemplate template = null;
                     var coords = new Coordinates(pos.x, pos.y, pos.z);
 
@@ -125,15 +120,14 @@ namespace Playground
                         template,
                         context: new ProductOrderCotext() { f_order = f_order, s_order = s_order, type = factory.CurrentType }
                     );
-                   commandSystem.SendCommand(request);
+                    commandSystem.SendCommand(request);
 
                     if (finished)
                         factory.CurrentType = UnitType.None;
                 }
 
                 factory.ProductInterval = inter;
-                factoryData[i] = factory;
-            }
+            });
         }
 
         EntityTemplate CreateFollower(List<FollowerOrder> orders, in Coordinates coords, out bool finished)

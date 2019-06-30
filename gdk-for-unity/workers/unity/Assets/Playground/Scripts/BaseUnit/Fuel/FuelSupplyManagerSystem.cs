@@ -19,7 +19,7 @@ namespace Playground
     [UpdateBefore(typeof(FixedUpdate.PhysicsFixedUpdate))]
     public class FuelSupplyManagerSystem : BaseSearchSystem
     {
-        ComponentGroup group;
+        EntityQuery group;
         CommandSystem commandSystem;
         ComponentUpdateSystem updateSystem;
         ILogDispatcher logDispatcher;
@@ -31,16 +31,15 @@ namespace Playground
             base.OnCreateManager();
 
             // ここで基準位置を取る
-            var worker = World.GetExistingManager<WorkerSystem>();
+            var worker = World.GetExistingSystem<WorkerSystem>();
             origin = worker.Origin;
             logDispatcher = worker.LogDispatcher;
 
-            commandSystem = World.GetExistingManager<CommandSystem>();
-            updateSystem = World.GetExistingManager<ComponentUpdateSystem>();
-            group = GetComponentGroup(
-                ComponentType.Create<FuelSupplyManager.Component>(),
+            commandSystem = World.GetExistingSystem<CommandSystem>();
+            updateSystem = World.GetExistingSystem<ComponentUpdateSystem>();
+            group = GetEntityQuery(
+                ComponentType.ReadWrite<FuelSupplyManager.Component>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
-                ComponentType.ReadOnly<Transform>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
 
@@ -72,37 +71,31 @@ namespace Playground
 
         protected override void OnUpdate()
         {
-            var fuelManager = group.GetComponentDataArray<FuelSupplyManager.Component>();
-            var statusData = group.GetComponentDataArray<BaseUnitStatus.Component>();
-            var transData = group.GetComponentArray<Transform>();
-            var entityIdData = group.GetComponentDataArray<SpatialEntityId>();
-
-            for (var i = 0; i < fuelManager.Length; i++) {
-                var manager = fuelManager[i];
-                var status = statusData[i];
-                var pos = transData[i].position;
-                var entityId = entityIdData[i];
-
+            Entities.With(group).ForEach((ref FuelSupplyManager.Component manager,
+                                          ref BaseUnitStatus.Component status,
+                                          ref SpatialEntityId entityId) =>
+            {
                 if (status.State != UnitState.Alive)
-                    continue;
+                    return;
 
                 if (status.Type != UnitType.Stronghold)
-                    continue;
+                    return;
 
                 if (manager.FreeSupplyers.Count == 0)
-                    continue;
+                    return;
 
                 var time = Time.realtimeSinceStartup;
                 var inter = manager.Interval;
                 if (inter.CheckTime(time) == false)
-                    continue;
+                    return;
 
                 manager.Interval = inter;
 
                 var feedList = new List<SupplyReserve>();
                 var absorbList = new List<SupplyReserve>();
 
-                foreach(var kvp in manager.SupplyPoints) {
+                foreach (var kvp in manager.SupplyPoints)
+                {
                     FuelComponent.Component? comp = null;
                     if (TryGetComponent(kvp.Key, out comp) == false)
                         continue;
@@ -110,7 +103,7 @@ namespace Playground
                     var fuel = comp.Value;
                     fuel.Fuel += kvp.Value.Reserve;
 
-                    Func<SupplyReserve> func = ()=> new SupplyReserve(kvp.Value.Point, fuel.Fuel, fuel.MaxFuel);
+                    Func<SupplyReserve> func = () => new SupplyReserve(kvp.Value.Point, fuel.Fuel, fuel.MaxFuel);
 
                     var rate = fuel.FuelRate();
                     if (rate > checkRateUpper)
@@ -121,15 +114,14 @@ namespace Playground
 
                 var emptyList = manager.FreeSupplyers;
 
-                while(emptyList.Count > 0) {
+                while (emptyList.Count > 0)
+                {
                     var entity = emptyList[0];
                     if (MakeSupplyPlan(entity, absorbList, feedList, ref manager) == 0)
                         break;
                     emptyList.RemoveAt(0);
                 }
-
-                fuelManager[i] = manager;
-            }
+            });
         }
 
         int MakeSupplyPlan(EntityId entityId, List<SupplyReserve> absorbList, List<SupplyReserve> feedList, ref FuelSupplyManager.Component manager)

@@ -24,7 +24,7 @@ component FuelComponent {
     int32 fuel = 1;
     int32 max_fuel = 2;
 
-    command improbable.common.Empty modify_fuel(FuelModifier);
+    command improbable.gdk.core.Empty modify_fuel(FuelModifier);
     event FuelModifier fuel_modified;
 }
 
@@ -79,7 +79,7 @@ component FuelSupplyer {
 
     IntervalChecker interval = 5;
 
-    command improbable.common.Empty set_order(SupplyOrder); 
+    command improbable.gdk.core.Empty set_order(SupplyOrder); 
 }
 
 component FuelSupplyManager {
@@ -91,7 +91,7 @@ component FuelSupplyManager {
     list<EntityId> free_supplyers = 4;
 
     command SupplyOrder finish_order(SupplyOrderResult);
-    command improbable.common.Empty add_supply_points(SupplyPoint);
+    command improbable.gdk.core.Empty add_supply_points(SupplyPoint);
 }
 
 //---------------------------------
@@ -135,7 +135,7 @@ component EngineeringComponent {
 
     IntervalChecker interval = 5;
 
-    command improbable.common.Empty set_order(EngineeringOrder);
+    command improbable.gdk.core.Empty set_order(EngineeringOrder);
 }
 
 component EngineeringManager {
@@ -147,5 +147,5 @@ component EngineeringManager {
     list<EntityId> free_engineers = 4;
 
     command EngineeringOrder finish_order(EngineeringOrderResult);
-    command improbable.common.Empty add_engineering_points(EngineeringPoint);
+    command improbable.gdk.core.Empty add_engineering_points(EngineeringPoint);
 }
