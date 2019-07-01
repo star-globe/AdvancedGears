@@ -15,29 +15,35 @@ namespace Playground.Editor.SnapshotGenerator
             public string OutputPath;
         }
 
-        public static void Generate(Arguments arguments)
+        public static void Generate(Arguments arguments, TerrainCollider ground = null)
         {
             Debug.Log("Generating snapshot.");
-            var snapshot = CreateSnapshot(arguments.NumberEntities);
+            var snapshot = CreateSnapshot(arguments.NumberEntities, ground);
 
             Debug.Log($"Writing snapshot to: {arguments.OutputPath}");
             snapshot.WriteToFile(arguments.OutputPath);
         }
 
-        private static Snapshot CreateSnapshot(int cubeCount)
+        private static Snapshot CreateSnapshot(int cubeCount, TerrainCollider ground = null)
         {
             var snapshot = new Snapshot();
 
-            AddPlayerSpawner(snapshot, new Coordinates(200, 0, 200));
-            AddPlayerSpawner(snapshot, new Coordinates(200, 0, -200));
-            AddPlayerSpawner(snapshot, new Coordinates(-200, 0, -200));
-            AddPlayerSpawner(snapshot, new Coordinates(-200, 0, 200));
+            AddPlayerSpawner(snapshot, GroundCoordinates( 2000, 2000, ground));//new Coordinates(2000, 0, 2000));
+            AddPlayerSpawner(snapshot, GroundCoordinates( 2000,-2000, ground));//new Coordinates(2000, 0, -2000));
+            AddPlayerSpawner(snapshot, GroundCoordinates(-2000,-2000, ground));//new Coordinates(-2000, 0, -2000));
+            AddPlayerSpawner(snapshot, GroundCoordinates(-2000, 2000, ground));//new Coordinates(-2000, 0, 2000));
 
             AddCubeGrid(snapshot, cubeCount);
-            CreateSpinner(snapshot, new Coordinates { X = 5.5, Y = 0.5f, Z = 0.0 });
-            CreateSpinner(snapshot, new Coordinates { X = -5.5, Y = 0.5f, Z = 0.0 });
+            //CreateSpinner(snapshot, new Coordinates { X = 5.5, Y = 0.5f, Z = 0.0 });
+            //CreateSpinner(snapshot, new Coordinates { X = -5.5, Y = 0.5f, Z = 0.0 });
 
             return snapshot;
+        }
+
+        private static Coordinates GroundCoordinates(double x, double z, TerrainCollider ground)
+        {
+            double y = ground == null ?  0: (double)ground.GetHeight((float)x, (float)z);
+            return new Coordinates(x,y,z);
         }
 
         private static void AddPlayerSpawner(Snapshot snapshot, Coordinates playerSpawnerLocation)
@@ -54,10 +60,10 @@ namespace Playground.Editor.SnapshotGenerator
             snapshot.AddEntity(template);
         }
 
-        private static void AddCubeGrid(Snapshot snapshot, int cubeCount)
+        static readonly double scale = 4.0;
+        
+        private static void AddCubeGrid(Snapshot snapshot, int cubeCount, TerrainCollider ground = null)
         {
-            var cubeTemplate = CubeTemplate.CreateCubeEntityTemplate();
-
             // Calculate grid size
             var gridLength = (int) Math.Ceiling(Math.Sqrt(cubeCount));
             if (gridLength % 2 == 1) // To make sure nothing is in (0, 0)
@@ -83,15 +89,30 @@ namespace Playground.Editor.SnapshotGenerator
                         return;
                     }
 
-                    var location = new Vector3(x, 1, z);
-                    var positionSnapshot = new Position.Snapshot(location.ToCoordinates());
-                    var transformSnapshot = TransformUtils.CreateTransformSnapshot(location, Quaternion.identity);
+                    UnitSide side = x < 0 ? UnitSide.A : UnitSide.B;
+                    int nx;
+                    if (x < 0)
+                        nx = x-3;
+                    else
+                        nx = x+3;
 
-                    cubeTemplate.SetComponent(positionSnapshot);
-                    cubeTemplate.SetComponent(transformSnapshot);
-                    snapshot.AddEntity(cubeTemplate);
+                        double pos_x = nx * scale;
+                    double pos_z = z * scale;
+                    var entityTemplate = BaseUnitTemplate.CreateBaseUnitEntityTemplate(side, GroundCoordinates(pos_x, pos_z, ground), UnitType.Soldier);
+                    snapshot.AddEntity(entityTemplate);
                 }
             }
+
+            var len = gridLength * scale;
+            var templateA = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.A, GroundCoordinates(-len * 3, 0, ground),UnitType.Stronghold);
+            var templateB = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.B, GroundCoordinates( len * 3, 0, ground),UnitType.Stronghold);
+            snapshot.AddEntity(templateA);
+            snapshot.AddEntity(templateB);
+            
+            var templateCa = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.A, GroundCoordinates(-len * 2, 0, ground), UnitType.Commander);
+            var templateCb = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.B, GroundCoordinates( len * 2, 0, ground), UnitType.Commander);
+            snapshot.AddEntity(templateCa);
+            snapshot.AddEntity(templateCb);
         }
 
         private static void CreateSpinner(Snapshot snapshot, Coordinates coords)
@@ -113,6 +134,23 @@ namespace Playground.Editor.SnapshotGenerator
             template.SetComponentWriteAccess(EntityAcl.ComponentId, WorkerUtils.UnityGameLogic);
 
             snapshot.AddEntity(template);
+        }
+    }
+
+    static class EditorExtensions
+    {
+        public static float GetHeight(this TerrainCollider ground, float x, float z, float maxHeight = 1000.0f)
+        {
+            var ray = new Ray(new Vector3(x, maxHeight, z), Vector3.down);
+            RaycastHit hit;
+            if (ground.Raycast(ray, out hit, maxHeight))
+            {
+                return hit.point.y;
+            }
+            else
+            {
+                return 0;
+            }
         }
     }
 }
