@@ -10,7 +10,7 @@ using UnityEngine.Experimental.PlayerLoop;
 
 namespace Playground
 {
-    [UpdateBefore(typeof(FixedUpdate.PhysicsFixedUpdate))]
+    [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     internal class BaseUnitMovementSystem : ComponentSystem
     {
         EntityQuery group;
@@ -31,12 +31,13 @@ namespace Playground
                     ComponentType.ReadOnly<BaseUnitMovement.Component>(),
                     ComponentType.ReadOnly<BaseUnitTarget.Component>(),
                     ComponentType.ReadOnly<BaseUnitStatus.Component>(),
-                    ComponentType.ReadOnly<BaseUnitAction.Component>(),
-                    ComponentType.ReadWrite<FuelComponent.Component>()
+                    ComponentType.ReadOnly<BaseUnitAction.Component>()//,
+                    //ComponentType.ReadWrite<FuelComponent.Component>(),
+                    //ComponentType.ReadOnly<FuelComponent.ComponentAuthority>()
             );
 
             group.SetFilter(BaseUnitPosture.ComponentAuthority.Authoritative);
-            group.SetFilter(FuelComponent.ComponentAuthority.Authoritative);
+            //group.SetFilter(FuelComponent.ComponentAuthority.Authoritative);
         }
 
         protected override void OnUpdate()

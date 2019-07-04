@@ -13,7 +13,7 @@ using Ex = Extensions;
 
 namespace Playground
 {
-    [UpdateBefore(typeof(FixedUpdate.PhysicsFixedUpdate))]
+    [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     internal class BaseUnitActionSystem : ComponentSystem
     {
         private ComponentUpdateSystem updateSystem;

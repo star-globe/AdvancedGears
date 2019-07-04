@@ -28,21 +28,24 @@ namespace Playground.Editor.SnapshotGenerator
         {
             var snapshot = new Snapshot();
 
-            AddPlayerSpawner(snapshot, GroundCoordinates( 2000, 2000, ground));//new Coordinates(2000, 0, 2000));
-            AddPlayerSpawner(snapshot, GroundCoordinates( 2000,-2000, ground));//new Coordinates(2000, 0, -2000));
-            AddPlayerSpawner(snapshot, GroundCoordinates(-2000,-2000, ground));//new Coordinates(-2000, 0, -2000));
-            AddPlayerSpawner(snapshot, GroundCoordinates(-2000, 2000, ground));//new Coordinates(-2000, 0, 2000));
+            AddPlayerSpawner(snapshot, GroundCoordinates( 200, 200, ground));//new Coordinates(2000, 0, 2000));
+            AddPlayerSpawner(snapshot, GroundCoordinates( 200,-200, ground));//new Coordinates(2000, 0, -2000));
+            AddPlayerSpawner(snapshot, GroundCoordinates(-200,-200, ground));//new Coordinates(-2000, 0, -2000));
+            AddPlayerSpawner(snapshot, GroundCoordinates(-200, 200, ground));//new Coordinates(-2000, 0, 2000));
 
-            AddCubeGrid(snapshot, cubeCount);
+            AddCubeGrid(snapshot, cubeCount, ground);
             //CreateSpinner(snapshot, new Coordinates { X = 5.5, Y = 0.5f, Z = 0.0 });
             //CreateSpinner(snapshot, new Coordinates { X = -5.5, Y = 0.5f, Z = 0.0 });
 
             return snapshot;
         }
 
+        const float heightBuffer = 1.0f;
+
         private static Coordinates GroundCoordinates(double x, double z, TerrainCollider ground)
         {
             double y = ground == null ?  0: (double)ground.GetHeight((float)x, (float)z);
+            y += heightBuffer;
             return new Coordinates(x,y,z);
         }
 

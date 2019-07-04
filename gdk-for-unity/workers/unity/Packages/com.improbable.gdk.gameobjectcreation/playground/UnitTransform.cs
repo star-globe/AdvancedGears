@@ -40,7 +40,7 @@ namespace Playground
         }
         public PosturePoint[] GetKeys()
         {
-            return this.postureDic.Keys.ToArray();
+            return this.PostureDic.Keys.ToArray();
         }
 
         public PostureTransform GetPosture(PosturePoint point)

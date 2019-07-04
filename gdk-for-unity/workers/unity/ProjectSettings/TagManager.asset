@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - Cube
+  - Bullet
+  - ConnectionPanel
   layers:
   - Default
   - TransparentFX
@@ -17,10 +19,10 @@ TagManager:
   - PostProcessing
   - Player
   - Cube
-  - 
-  - 
-  - 
-  - 
+  - Unit
+  - Bullet
+  - UnitObject
+  - Ground
   - 
   - 
   - 
