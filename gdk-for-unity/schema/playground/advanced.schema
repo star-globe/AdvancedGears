@@ -1,5 +1,5 @@
 package playground;
-import "from_gdk_packages/com.improbable.gdk.core/common.schema";
+import "improbable/gdk/core/common.schema";
 import "improbable/vector3.schema";
 import "playground/common.schema";
 
@@ -52,8 +52,8 @@ component EquipComponent {
     EquipForm form = 2;
     EquipStyle style = 3;
 
-    command improbable.common.Empty set_equip(ChangeEquipInfo);
-    command improbable.common.Empty change_form(ChangeFormInfo);
+    command improbable.gdk.core.Empty set_equip(ChangeEquipInfo);
+    command improbable.gdk.core.Empty change_form(ChangeFormInfo);
 }
 
 component DummyPlayer {

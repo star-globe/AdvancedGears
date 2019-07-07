@@ -15,7 +15,7 @@ namespace Playground
         void OnEnable()
         {
             gunWriter.OnFireTriggeredEvent += OnTarget;
-            gunWriter.OnBulletSupplied += OnSupply;
+            gunWriter.OnBulletSuppliedEvent += OnSupply;
         }
 
         private void OnTarget(AttackTargetInfo info)
