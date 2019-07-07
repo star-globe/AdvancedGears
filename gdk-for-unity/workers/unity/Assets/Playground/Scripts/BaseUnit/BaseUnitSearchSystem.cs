@@ -13,10 +13,10 @@ using UnityEngine.Experimental.PlayerLoop;
 
 namespace Playground
 {
-    [UpdateBefore(typeof(FixedUpdate.PhysicsFixedUpdate))]
+    [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     public class BaseUnitSearchSystem : BaseSearchSystem
     {
-        ComponentGroup group;
+        EntityQuery group;
 
         private Vector3 origin;
 
@@ -25,13 +25,13 @@ namespace Playground
             base.OnCreateManager();
 
             // ここで基準位置を取る
-            origin = World.GetExistingManager<WorkerSystem>().Origin;
+            origin = World.GetExistingSystem<WorkerSystem>().Origin;
 
-            group = GetComponentGroup(
-                ComponentType.Create<BaseUnitMovement.Component>(),
-                ComponentType.Create<BaseUnitAction.Component>(),
+            group = GetEntityQuery(
+                ComponentType.ReadWrite<BaseUnitMovement.Component>(),
+                ComponentType.ReadWrite<BaseUnitAction.Component>(),
                 ComponentType.ReadOnly<BaseUnitAction.ComponentAuthority>(),
-                ComponentType.Create < BaseUnitSight.Component>(),
+                ComponentType.ReadWrite<BaseUnitSight.Component>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<BaseUnitTarget.Component>(),
                 ComponentType.ReadOnly<GunComponent.Component>(),
@@ -43,46 +43,38 @@ namespace Playground
 
         protected override void OnUpdate()
         {
-            var movementData = group.GetComponentDataArray<BaseUnitMovement.Component>();
-            var actionData = group.GetComponentDataArray<BaseUnitAction.Component>();
-            var sightData = group.GetComponentDataArray<BaseUnitSight.Component>();
-            var statusData = group.GetComponentDataArray<BaseUnitStatus.Component>();
-            var targetData = group.GetComponentDataArray<BaseUnitTarget.Component>();
-            var gunData = group.GetComponentDataArray<GunComponent.Component>();
-            var transData = group.GetComponentArray<Transform>();
-
-            for (var i = 0; i < movementData.Length; i++)
+            Entities.With(group).ForEach((Entity entity,
+                                          ref BaseUnitMovement.Component movement,
+                                          ref BaseUnitAction.Component action,
+                                          ref BaseUnitSight.Component sight,
+                                          ref BaseUnitStatus.Component status,
+                                          ref BaseUnitTarget.Component target,
+                                          ref GunComponent.Component gun) =>
             {
-                var movement = movementData[i];
-                var action = actionData[i];
-                var sight = sightData[i];
-                var status = statusData[i];
-                var target = targetData[i];
-                var gun = gunData[i];
-                var pos = transData[i].position;
-
                 if (status.State != UnitState.Alive)
-                    continue;
+                    return;
 
                 if (status.Order == OrderType.Idle)
-                    continue;
+                    return;
 
                 if (status.Type != UnitType.Soldier &&
                     status.Type != UnitType.Commander)
-                    continue;
+                    return;
 
                 var time = Time.realtimeSinceStartup;
                 var inter = sight.Interval;
                 if (inter.CheckTime(time) == false)
-                    continue;
+                    return;
 
                 sight.Interval = inter;
-                sightData[i] = sight;
 
                 // initial
                 movement.IsTarget = false;
                 action.IsTarget = false;
                 action.EnemyPositions.Clear();
+
+                var trans = EntityManager.GetComponentObject<Transform>(entity);
+                var pos = trans.position;
 
                 UnitInfo enemy = null;
                 if (status.Order != OrderType.Escape)
@@ -131,16 +123,11 @@ namespace Playground
                 switch (status.Order)
                 {
                     case OrderType.Move:
-                    case OrderType.Escape:  range = 0.2f; break;
-                    case OrderType.Attack:  range *= 0.8f; break;
-                    case OrderType.Keep:    range *= 1.0f; break;
+                    case OrderType.Escape: range = 0.2f; break;
+                    case OrderType.Attack: range *= 0.8f; break;
+                    case OrderType.Keep: range *= 1.0f; break;
                 }
-
-                movement.TargetRange = range;
-
-                movementData[i] = movement;
-                actionData[i] = action;
-            }
+            });
         }
     }
 
@@ -151,7 +138,7 @@ namespace Playground
         {
             get
             {
-                worker = worker ?? World.GetExistingManager<WorkerSystem>();
+                worker = worker ?? World.GetExistingSystem<WorkerSystem>();
                 return worker;
             }
         }

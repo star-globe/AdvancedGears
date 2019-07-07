@@ -4,7 +4,8 @@
         "../../schema"
     ],
     "CodegenOutputDir": "Assets/Generated/Source",
-    "RuntimeIp": "",
+    "DescriptorOutputDir": "../../build/assembly/schema",
     "DevAuthTokenDir": "Resources",
-    "DevAuthTokenLifetimeDays": 30
+    "DevAuthTokenLifetimeDays": 30,
+    "SaveDevAuthTokenToFile": false
 }

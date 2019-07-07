@@ -28,14 +28,14 @@ namespace Improbable.Gdk.Subscriptions
             behavioursToEnable.Remove(behaviour);
         }
 
-        protected override void OnCreateManager()
+        protected override void OnCreate()
         {
-            base.OnCreateManager();
+            base.OnCreate();
 
-            commandCallbackSystem = World.GetExistingManager<CommandCallbackSystem>();
-            componentCallbackSystem = World.GetExistingManager<ComponentCallbackSystem>();
-            componentConstraintsCallbackSystem = World.GetExistingManager<ComponentConstraintsCallbackSystem>();
-            workerFlagCallbackSystem = World.GetExistingManager<WorkerFlagCallbackSystem>();
+            commandCallbackSystem = World.GetExistingSystem<CommandCallbackSystem>();
+            componentCallbackSystem = World.GetExistingSystem<ComponentCallbackSystem>();
+            componentConstraintsCallbackSystem = World.GetExistingSystem<ComponentConstraintsCallbackSystem>();
+            workerFlagCallbackSystem = World.GetExistingSystem<WorkerFlagCallbackSystem>();
         }
 
         protected override void OnUpdate()

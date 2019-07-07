@@ -1,9 +1,8 @@
 using Improbable;
-using Improbable.Common;
 using Improbable.Gdk.Core;
 using Improbable.Gdk.Core.Commands;
 using Improbable.Gdk.Subscriptions;
-using Improbable.Transform;
+using Improbable.Gdk.TransformSynchronization;
 using Improbable.Worker;
 using Improbable.Worker.CInterop;
 using System.Collections.Generic;

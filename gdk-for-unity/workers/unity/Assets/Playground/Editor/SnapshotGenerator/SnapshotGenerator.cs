@@ -1,10 +1,9 @@
 using System;
 using Improbable;
 using Improbable.Gdk.Core;
-using Improbable.PlayerLifecycle;
-using Improbable.Transform;
+using Improbable.Gdk.PlayerLifecycle;
+using Improbable.Gdk.TransformSynchronization;
 using UnityEngine;
-using Quaternion = Improbable.Transform.Quaternion;
 
 namespace Playground.Editor.SnapshotGenerator
 {
@@ -29,21 +28,24 @@ namespace Playground.Editor.SnapshotGenerator
         {
             var snapshot = new Snapshot();
 
-            AddPlayerSpawner(snapshot, GroundCoordinates( 2000, 2000, ground));//new Coordinates(2000, 0, 2000));
-            AddPlayerSpawner(snapshot, GroundCoordinates( 2000,-2000, ground));//new Coordinates(2000, 0, -2000));
-            AddPlayerSpawner(snapshot, GroundCoordinates(-2000,-2000, ground));//new Coordinates(-2000, 0, -2000));
-            AddPlayerSpawner(snapshot, GroundCoordinates(-2000, 2000, ground));//new Coordinates(-2000, 0, 2000));
+            AddPlayerSpawner(snapshot, GroundCoordinates( 200, 200, ground));//new Coordinates(2000, 0, 2000));
+            AddPlayerSpawner(snapshot, GroundCoordinates( 200,-200, ground));//new Coordinates(2000, 0, -2000));
+            AddPlayerSpawner(snapshot, GroundCoordinates(-200,-200, ground));//new Coordinates(-2000, 0, -2000));
+            AddPlayerSpawner(snapshot, GroundCoordinates(-200, 200, ground));//new Coordinates(-2000, 0, 2000));
 
-            AddCubeGrid(snapshot, cubeCount);
+            AddCubeGrid(snapshot, cubeCount, ground);
             //CreateSpinner(snapshot, new Coordinates { X = 5.5, Y = 0.5f, Z = 0.0 });
             //CreateSpinner(snapshot, new Coordinates { X = -5.5, Y = 0.5f, Z = 0.0 });
 
             return snapshot;
         }
 
+        const float heightBuffer = 1.0f;
+
         private static Coordinates GroundCoordinates(double x, double z, TerrainCollider ground)
         {
             double y = ground == null ?  0: (double)ground.GetHeight((float)x, (float)z);
+            y += heightBuffer;
             return new Coordinates(x,y,z);
         }
 
@@ -120,25 +122,19 @@ namespace Playground.Editor.SnapshotGenerator
         {
             const string entityType = "Spinner";
 
-            var transform = new TransformInternal.Snapshot
-            {
-                Location = new Location((float) coords.X, (float) coords.Y, (float) coords.Z),
-                Rotation = new Quaternion(1, 0, 0, 0),
-                TicksPerSecond = 1f / Time.fixedDeltaTime
-            };
+            var transform = TransformUtils.CreateTransformSnapshot(coords, Quaternion.identity);
 
             var template = new EntityTemplate();
-            template.AddComponent(new Position.Snapshot { Coords = coords }, WorkerUtils.UnityGameLogic);
-            template.AddComponent(new Metadata.Snapshot { EntityType = entityType }, WorkerUtils.UnityGameLogic);
+            template.AddComponent(new Position.Snapshot(coords), WorkerUtils.UnityGameLogic);
+            template.AddComponent(new Metadata.Snapshot(entityType), WorkerUtils.UnityGameLogic);
             template.AddComponent(transform, WorkerUtils.UnityGameLogic);
             template.AddComponent(new Persistence.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new Collisions.Snapshot(), WorkerUtils.UnityGameLogic);
-            template.AddComponent(new SpinnerColor.Snapshot { Color = Color.BLUE }, WorkerUtils.UnityGameLogic);
+            template.AddComponent(new SpinnerColor.Snapshot(Color.BLUE), WorkerUtils.UnityGameLogic);
             template.AddComponent(new SpinnerRotation.Snapshot(), WorkerUtils.UnityGameLogic);
 
             template.SetReadAccess(WorkerUtils.UnityGameLogic, WorkerUtils.UnityClient, WorkerUtils.MobileClient);
             template.SetComponentWriteAccess(EntityAcl.ComponentId, WorkerUtils.UnityGameLogic);
-
 
             snapshot.AddEntity(template);
         }

@@ -11,11 +11,11 @@ using UnityEngine.Experimental.PlayerLoop;
 
 namespace Playground
 {
-    [UpdateBefore(typeof(FixedUpdate.PhysicsFixedUpdate))]
+    [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     public class CommanderUnitSearchSystem : BaseSearchSystem
     {
         private CommandSystem commandSystem;
-        private ComponentGroup group;
+        private EntityQuery group;
 
         private Vector3 origin;
 
@@ -23,14 +23,14 @@ namespace Playground
         {
             base.OnCreateManager();
 
-            commandSystem = World.GetExistingManager<CommandSystem>();
+            commandSystem = World.GetExistingSystem<CommandSystem>();
             // ここで基準位置を取る
-            origin = World.GetExistingManager<WorkerSystem>().Origin;
+            origin = World.GetExistingSystem<WorkerSystem>().Origin;
 
-            group = GetComponentGroup(
-                ComponentType.Create<CommanderSight.Component>(),
-                ComponentType.Create<CommanderStatus.Component>(),
-                ComponentType.Create<CommanderAction.Component>(),
+            group = GetEntityQuery(
+                ComponentType.ReadWrite<CommanderSight.Component>(),
+                ComponentType.ReadWrite<CommanderStatus.Component>(),
+                ComponentType.ReadWrite<CommanderAction.Component>(),
                 ComponentType.ReadOnly<CommanderAction.ComponentAuthority>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<Transform>(),
@@ -41,37 +41,31 @@ namespace Playground
 
         protected override void OnUpdate()
         {
-            var sightData = group.GetComponentDataArray<CommanderSight.Component>();
-            var commanderData = group.GetComponentDataArray<CommanderStatus.Component>();
-            var actionData = group.GetComponentDataArray<CommanderAction.Component>();
-            var statusData = group.GetComponentDataArray<BaseUnitStatus.Component>();
-            var transData = group.GetComponentArray<Transform>();
-            var entityIdData = group.GetComponentDataArray<SpatialEntityId>();
-
-            for (var i = 0; i < sightData.Length; i++)
+            Entities.With(group).ForEach((Entity entity,
+                              ref CommanderSight.Component sight,
+                              ref CommanderStatus.Component commander,
+                              ref CommanderAction.Component action,
+                              ref BaseUnitStatus.Component status,
+                              ref SpatialEntityId entityId) =>
             {
-                var sight = sightData[i];
-                var commander = commanderData[i];
-                var action = actionData[i];
-                var status = statusData[i];
-                var pos = transData[i].position;
-                var entityId = entityIdData[i];
-
                 if (status.State != UnitState.Alive)
-                    continue;
+                    return;
 
                 if (status.Type != UnitType.Commander)
-                    continue;
+                    return;
 
                 if (status.Order == OrderType.Idle)
-                    continue;
+                    return;
 
                 var time = Time.realtimeSinceStartup;
                 var inter = sight.Interval;
                 if (inter.CheckTime(time) == false)
-                    continue;
+                    return;
 
                 sight.Interval = inter;
+
+                var trans = EntityManager.GetComponentObject<Transform>(entity);
+                var pos = trans.position;
 
                 bool is_target;
                 int num = 5;
@@ -83,11 +77,7 @@ namespace Playground
                     is_target = attackOrder(status, entityId, pos, ref sight, ref commander);
 
                 action.IsTarget = is_target;
-
-                actionData[i] = action;
-                sightData[i] = sight;
-                commanderData[i] = commander;
-            }
+            });
         }
 
         void commonTargeting(UnitInfo tgt, in SpatialEntityId entityId, in CommanderStatus.Component commander,

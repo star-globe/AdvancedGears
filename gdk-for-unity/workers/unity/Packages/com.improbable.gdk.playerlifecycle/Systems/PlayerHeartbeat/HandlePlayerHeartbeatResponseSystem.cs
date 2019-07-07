@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Improbable.Gdk.Core;
 using Improbable.Gdk.Core.Commands;
-using Improbable.PlayerLifecycle;
+using Improbable.Gdk.PlayerLifecycle;
 using Improbable.Worker.CInterop;
 using Unity.Entities;
 using UnityEngine;
@@ -20,12 +20,12 @@ namespace Improbable.Gdk.PlayerLifecycle
         private readonly Dictionary<(EntityId, Entity), bool> respondedCache =
             new Dictionary<(EntityId, Entity), bool>();
 
-        protected override void OnCreateManager()
+        protected override void OnCreate()
         {
-            base.OnCreateManager();
+            base.OnCreate();
 
-            workerSystem = World.GetExistingManager<WorkerSystem>();
-            commandSystem = World.GetExistingManager<CommandSystem>();
+            workerSystem = World.GetExistingSystem<WorkerSystem>();
+            commandSystem = World.GetExistingSystem<CommandSystem>();
             logger = workerSystem.LogDispatcher;
         }
 

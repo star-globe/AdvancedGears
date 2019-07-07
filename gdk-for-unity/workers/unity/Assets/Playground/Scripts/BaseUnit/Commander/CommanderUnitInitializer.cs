@@ -37,7 +37,7 @@ namespace Playground
 
         void DelayMethod()
         {
-            var entityManager = world.GetExistingManager<EntityManager>();
+            var entityManager = world.GetExistingSystem<EntityManager>();
             if (entityManager == null)
                 return;
 

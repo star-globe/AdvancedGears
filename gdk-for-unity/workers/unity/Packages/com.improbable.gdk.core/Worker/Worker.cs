@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Improbable.Gdk.ReactiveComponents;
 using Improbable.Worker.CInterop;
@@ -73,7 +74,7 @@ namespace Improbable.Gdk.Core
             AddCoreSystems();
 
             // This isn't a core system, this is for an easy disconnect event
-            disconnectCallbackSystem = World.GetOrCreateManager<WorkerDisconnectCallbackSystem>();
+            disconnectCallbackSystem = World.GetOrCreateSystem<WorkerDisconnectCallbackSystem>();
         }
 
         /// <summary>
@@ -96,11 +97,13 @@ namespace Improbable.Gdk.Core
             ILogDispatcher logger,
             Vector3 origin)
         {
-            var connection = await Task.Run(() => connectionFuture.Get());
-            if (connection.GetConnectionStatusCode() != ConnectionStatusCode.Success)
+            Connection connection;
+            using (var tokenSource = new CancellationTokenSource())
             {
-                throw new ConnectionFailedException(GetConnectionFailureReason(connection),
-                    ConnectionErrorReason.CannotEstablishConnection);
+                Action cancelTask = delegate { tokenSource?.Cancel(); };
+                Application.quitting += cancelTask;
+                connection = await Task.Run(() => connectionFuture.Get()).WithCancellation(tokenSource.Token);
+                Application.quitting -= cancelTask;
             }
 
             // A check is needed for the case that play mode is exited before the connection can complete.
@@ -109,6 +112,12 @@ namespace Improbable.Gdk.Core
                 connection.Dispose();
                 throw new ConnectionFailedException("Editor application stopped",
                     ConnectionErrorReason.EditorApplicationStopped);
+            }
+
+            if (connection.GetConnectionStatusCode() != ConnectionStatusCode.Success)
+            {
+                throw new ConnectionFailedException(GetConnectionFailureReason(connection),
+                    ConnectionErrorReason.CannotEstablishConnection);
             }
 
             var worker = new Worker(workerType, connection, logger, origin);
@@ -121,7 +130,7 @@ namespace Improbable.Gdk.Core
         ///     Connects to the SpatialOS Runtime via the Receptionist service and creates a <see cref="Worker" /> object
         ///     asynchronously.
         /// </summary>
-        /// <param name="config">
+        /// <param name="parameters">
         ///     The <see cref="ReceptionistConfig" /> object stores the configuration needed to connect via the
         ///     Receptionist Service.
         /// </param>
@@ -133,12 +142,13 @@ namespace Improbable.Gdk.Core
         ///     <see cref="Worker" /> object upon connecting successfully.
         /// </returns>
         public static async Task<Worker> CreateWorkerAsync(
-            ReceptionistConfig config,
+            ReceptionistConfig parameters,
             ConnectionParameters connectionParameters,
-            ILogDispatcher logger, Vector3 origin)
+            ILogDispatcher logger,
+            Vector3 origin)
         {
             using (var connectionFuture =
-                Connection.ConnectAsync(config.ReceptionistHost, config.ReceptionistPort, config.WorkerId,
+                Connection.ConnectAsync(parameters.ReceptionistHost, parameters.ReceptionistPort, parameters.WorkerId,
                     connectionParameters))
             {
                 return await TryToConnectAsync(connectionFuture, connectionParameters.WorkerType, logger, origin);
@@ -149,7 +159,7 @@ namespace Improbable.Gdk.Core
         ///     Connects to the SpatialOS Runtime via the Locator service and creates a <see cref="Worker" /> object
         ///     asynchronously.
         /// </summary>
-        /// <param name="config">
+        /// <param name="parameters">
         ///     The <see cref="LocatorConfig" /> object stores the configuration needed to connect via the
         ///     Receptionist Service.
         /// </param>
@@ -163,7 +173,8 @@ namespace Improbable.Gdk.Core
         public static async Task<Worker> CreateWorkerAsync(
             LocatorConfig parameters,
             ConnectionParameters connectionParameters,
-            ILogDispatcher logger, Vector3 origin)
+            ILogDispatcher logger,
+            Vector3 origin)
         {
             using (var locator = new Locator(parameters.LocatorHost, parameters.LocatorParameters))
             {
@@ -187,7 +198,7 @@ namespace Improbable.Gdk.Core
         ///     Connects to the SpatialOS Runtime via the Alpha Locator service and creates a <see cref="Worker" /> object
         ///     asynchronously.
         /// </summary>
-        /// <param name="config">
+        /// <param name="parameters">
         ///     The <see cref="AlphaLocatorConfig" /> object stores the configuration needed to connect via the
         ///     Receptionist Service.
         /// </param>
@@ -201,7 +212,8 @@ namespace Improbable.Gdk.Core
         public static async Task<Worker> CreateWorkerAsync(
             AlphaLocatorConfig parameters,
             ConnectionParameters connectionParameters,
-            ILogDispatcher logger, Vector3 origin)
+            ILogDispatcher logger,
+            Vector3 origin)
         {
             using (var locator = new AlphaLocator(parameters.LocatorHost, parameters.LocatorParameters))
             {
@@ -242,23 +254,23 @@ namespace Improbable.Gdk.Core
         private void AddCoreSystems()
         {
             var connectionHandler = new SpatialOSConnectionHandler(Connection);
-            World.CreateManager<WorkerSystem>(connectionHandler, Connection, LogDispatcher, WorkerType, Origin);
-            World.GetOrCreateManager<CommandSystem>();
-            World.GetOrCreateManager<ComponentUpdateSystem>();
-            World.GetOrCreateManager<EntitySystem>();
-            World.GetOrCreateManager<ComponentSendSystem>();
-            World.GetOrCreateManager<SpatialOSReceiveSystem>();
-            World.GetOrCreateManager<SpatialOSSendSystem>();
-            World.GetOrCreateManager<EcsViewSystem>();
-            World.GetOrCreateManager<CleanTemporaryComponentsSystem>();
+            World.CreateSystem<WorkerSystem>(connectionHandler, Connection, LogDispatcher, WorkerType, Origin);
+            World.GetOrCreateSystem<CommandSystem>();
+            World.GetOrCreateSystem<ComponentUpdateSystem>();
+            World.GetOrCreateSystem<EntitySystem>();
+            World.GetOrCreateSystem<ComponentSendSystem>();
+            World.GetOrCreateSystem<SpatialOSReceiveSystem>();
+            World.GetOrCreateSystem<SpatialOSSendSystem>();
+            World.GetOrCreateSystem<EcsViewSystem>();
+            World.GetOrCreateSystem<CleanTemporaryComponentsSystem>();
 
             // Subscriptions systems
-            World.GetOrCreateManager<WorkerFlagCallbackSystem>();
-            World.GetOrCreateManager<CommandCallbackSystem>();
-            World.GetOrCreateManager<ComponentConstraintsCallbackSystem>();
-            World.GetOrCreateManager<ComponentCallbackSystem>();
-            World.GetOrCreateManager<RequireLifecycleSystem>();
-            World.GetOrCreateManager<SubscriptionSystem>();
+            World.GetOrCreateSystem<WorkerFlagCallbackSystem>();
+            World.GetOrCreateSystem<CommandCallbackSystem>();
+            World.GetOrCreateSystem<ComponentConstraintsCallbackSystem>();
+            World.GetOrCreateSystem<ComponentCallbackSystem>();
+            World.GetOrCreateSystem<RequireLifecycleSystem>();
+            World.GetOrCreateSystem<SubscriptionSystem>();
 
 #if !DISABLE_REACTIVE_COMPONENTS
             // Reactive components
@@ -268,10 +280,15 @@ namespace Improbable.Gdk.Core
 
         public void Dispose()
         {
-            World?.Dispose();
-            World = null;
             LogDispatcher?.Dispose();
             LogDispatcher = null;
+
+            if (World != null && World.IsCreated)
+            {
+                World.Dispose();
+                World = null;
+            }
+
             Connection?.Dispose();
             Connection = null;
         }

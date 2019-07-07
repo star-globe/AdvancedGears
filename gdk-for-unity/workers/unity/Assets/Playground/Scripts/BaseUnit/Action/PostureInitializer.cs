@@ -39,7 +39,7 @@ namespace Playground
 
                 update.Posture = new PostureInfo() { Datas = dic };
 
-                update.Initialized = new Option<BlittableBool>(true);
+                update.Initialized = true;
             }
 
             writer.SendUpdate(update);

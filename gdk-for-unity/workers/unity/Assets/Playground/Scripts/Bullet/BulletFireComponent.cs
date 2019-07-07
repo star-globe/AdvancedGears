@@ -5,7 +5,7 @@ using Unity.Entities;
 
 namespace Playground
 {
-    public class BulletFireComponent : ComponentDataWrapper<BulletInfo>
+    public class BulletFireComponent : ComponentDataProxy<BulletInfo>
     {
     }
 }

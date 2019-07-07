@@ -12,11 +12,11 @@ using UnityEngine.Experimental.PlayerLoop;
 
 namespace Playground
 {
-    [UpdateBefore(typeof(FixedUpdate.PhysicsFixedUpdate))]
+    [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     internal class CommanderActionSystem : BaseSearchSystem
     {
         private CommandSystem commandSystem;
-        private ComponentGroup group;
+        private EntityQuery group;
 
         private Vector3 origin;
 
@@ -24,13 +24,13 @@ namespace Playground
         {
             base.OnCreateManager();
 
-            commandSystem = World.GetExistingManager<CommandSystem>();
+            commandSystem = World.GetExistingSystem<CommandSystem>();
 
             // ここで基準位置を取る
-            origin = World.GetExistingManager<WorkerSystem>().Origin;
+            origin = World.GetExistingSystem<WorkerSystem>().Origin;
 
-            group = GetComponentGroup(
-                ComponentType.Create<CommanderAction.Component>(),
+            group = GetEntityQuery(
+                ComponentType.ReadWrite<CommanderAction.Component>(),
                 ComponentType.ReadOnly<CommanderAction.ComponentAuthority>(),
                 ComponentType.ReadOnly<CommanderStatus.Component>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
@@ -43,38 +43,30 @@ namespace Playground
 
         protected override void OnUpdate()
         {
-            var actionData = group.GetComponentDataArray<CommanderAction.Component>();
-            var commanderData = group.GetComponentDataArray<CommanderStatus.Component>();
-            var statusData = group.GetComponentDataArray<BaseUnitStatus.Component>();
-            var tgtData = group.GetComponentDataArray<BaseUnitTarget.Component>();
-            var transData = group.GetComponentArray<Transform>();
-            var entityIdData = group.GetComponentDataArray<SpatialEntityId>();
-
-            for (var i = 0; i < actionData.Length; i++)
+            Entities.With(group).ForEach((Entity entity,
+                                          ref CommanderAction.Component action,
+                                          ref CommanderStatus.Component commander,
+                                          ref BaseUnitStatus.Component status,
+                                          ref BaseUnitTarget.Component tgt,
+                                          ref SpatialEntityId entityId) =>
             {
-                var action = actionData[i];
-                var commander = commanderData[i];
-                var status = statusData[i];
-                var tgt = tgtData[i];
-                var trans = transData[i];
-                var entityId = entityIdData[i];
-
                 if (status.State != UnitState.Alive)
-                    continue;
+                    return;
 
-                if (status.Type == UnitType.Commander)
-                    continue;
+                if (status.Type != UnitType.Commander)
+                    return;
 
                 if (!action.IsTarget)
-                    continue;
+                    return;
 
                 var time = Time.realtimeSinceStartup;
                 var inter = action.Interval;
                 if (inter.CheckTime(time) == false)
-                    continue;
+                    return;
 
                 action.Interval = inter;
 
+                var trans = EntityManager.GetComponentObject<Transform>(entity);
                 switch (status.Order)
                 {
                     case OrderType.Escape:
@@ -89,9 +81,7 @@ namespace Playground
                         action.ActionType = CommandActionType.None;
                         break;
                 }
-
-                actionData[i] = action;
-            }
+            });
         }
 
         void ProductAlly(in Vector3 pos, UnitSide side, in CommanderStatus.Component commander, in SpatialEntityId entityId, in BaseUnitTarget.Component tgt, ref CommanderAction.Component action)

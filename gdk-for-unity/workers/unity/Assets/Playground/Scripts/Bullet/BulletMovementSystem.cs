@@ -10,10 +10,10 @@ using UnityEngine.Experimental.PlayerLoop;
 
 namespace Playground
 {
-    [UpdateBefore(typeof(FixedUpdate.PhysicsFixedUpdate))]
+    [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     internal class BulletMovementSystem : ComponentSystem
     {
-        ComponentGroup group;
+        EntityQuery group;
 
         private WorkerSystem worker;
 
@@ -21,30 +21,24 @@ namespace Playground
 
         protected override void OnCreateManager()
         {
-            worker = World.GetExistingManager<WorkerSystem>();
+            worker = World.GetExistingSystem<WorkerSystem>();
 
             var go = new GameObject("BulletCreator");
             BulletCreator = go.AddComponent<BulletCreator>();
             BulletCreator.Setup(this.EntityManager, worker.Origin);
 
-            group = GetComponentGroup(
-                ComponentType.Create<Rigidbody>(),
-                ComponentType.Create<BulletInfo>()
+            group = GetEntityQuery(
+                ComponentType.ReadWrite<Rigidbody>(),
+                ComponentType.ReadWrite<BulletInfo>()
            );
         }
 
         protected override void OnUpdate()
         {
-            var rigidData = group.GetComponentArray<Rigidbody>();
-            var bulletData = group.GetComponentDataArray<BulletInfo>();
-
-            for (var i = 0; i < rigidData.Length; i++)
+            Entities.With(group).ForEach((Rigidbody rigid, ref BulletInfo info) =>
             {
-                var rigid = rigidData[i];
-                var info = bulletData[i];
-
                 if (!info.IsActive)
-                    continue;
+                    return;
 
                 // time check
                 var diff = Time.realtimeSinceStartup - info.LaunchTime;
@@ -52,38 +46,9 @@ namespace Playground
                 {
                     info.IsActive = false;
                     rigid.gameObject.SetActive(false);
-                    bulletData[i] = info;
-                    continue;
+                    return;
                 }
-
-                //var vec = info.CurrentVelocity;
-                //var uVec = new Vector3(vec.X, vec.Y, vec.Z);
-
-                //var pos = rigid.position;
-                //rigid.MovePosition(pos + uVec * Time.fixedDeltaTime);
-
-                //// gravity
-                //uVec += Physics.gravity * Time.deltaTime;
-                //info.CurrentVelocity = new Vector3f(uVec.x, uVec.y, uVec.z);
-
-                //data.BulletInfo[i] = info;
-                //var enemy = getNearestEnemeyPosition(unitComponent.Side, pos, 10);
-                //if (enemy != null)
-                //{
-                //    var diff = enemy.Value - pos;
-                //    rotate(rigidbody.transform, diff, rotSpeed);
-                //    uVec = get_move_velocity(diff, moveSpeed * 3, moveSpeed) * rigidbody.transform.forward;
-                //}
-                //else
-                //{
-                //    uVec = Vector3.zero;
-                //}
-                //
-                //unitComponent.MoveVelocity = new Vector3f(uVec.x, uVec.y, uVec.z);
-                //data.BaseUnit[i] = unitComponent;
-                //
-                //rigidbody.MovePosition(pos + uVec * Time.fixedDeltaTime);
-            }
+            });
         }
     }
 

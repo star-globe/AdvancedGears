@@ -13,12 +13,12 @@ namespace Playground
         private CommandSystem commandSystem;
         private WorkerSystem workerSystem;
 
-        protected override void OnCreateManager()
+        protected override void OnCreate()
         {
-            base.OnCreateManager();
+            base.OnCreate();
 
-            commandSystem = World.GetExistingManager<CommandSystem>();
-            workerSystem = World.GetExistingManager<WorkerSystem>();
+            commandSystem = World.GetExistingSystem<CommandSystem>();
+            workerSystem = World.GetExistingSystem<WorkerSystem>();
         }
 
         protected override void OnUpdate()
@@ -98,8 +98,7 @@ namespace Playground
                 var info = request.Payload;
 
                 rigidbody.AddForceAtPosition(
-                    new Vector3(info.LaunchDirection.X, info.LaunchDirection.Y, info.LaunchDirection.Z) *
-                    info.LaunchEnergy * 100.0f,
+                    info.LaunchEnergy * 100.0f * new Vector3(info.LaunchDirection.X, info.LaunchDirection.Y, info.LaunchDirection.Z),
                     new Vector3(info.ImpactPoint.X, info.ImpactPoint.Y, info.ImpactPoint.Z)
                 );
 

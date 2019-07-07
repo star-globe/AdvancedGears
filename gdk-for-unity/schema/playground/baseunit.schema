@@ -1,8 +1,9 @@
 package playground;
 import "improbable/vector3.schema";
-import "from_gdk_packages/com.improbable.gdk.core/common.schema";
-import "from_gdk_packages/com.improbable.gdk.transformsynchronization/transform_internal.schema";
+import "improbable/gdk/core/common.schema";
+import "improbable/gdk/transform_synchronization/transform_internal.schema";
 import "playground/common.schema";
+import "extensions/quaternion.schema";
 
 enum UnitType {
     None = 0;
@@ -60,8 +61,8 @@ component BaseUnitStatus {
     UnitState state = 3;
     OrderType order = 4;
 
-    command improbable.common.Empty set_order(OrderInfo);
-    command improbable.common.Empty force_state(ForceStateChange);
+    command improbable.gdk.core.Empty set_order(OrderInfo);
+    command improbable.gdk.core.Empty force_state(ForceStateChange);
 }
 
 type HealthModifier {
@@ -82,7 +83,7 @@ component BaseUnitHealth {
 
     int32 defense = 3;
 
-    command improbable.common.Empty modify_health(HealthModifier);
+    command improbable.gdk.core.Empty modify_health(HealthModifier);
     event HealthModifiedInfo health_modified;
 }
 
@@ -144,12 +145,12 @@ component BaseUnitTarget {
 
     TargetInfo target_info = 1;
 
-    command improbable.common.Empty set_target(TargetInfo);
+    command improbable.gdk.core.Empty set_target(TargetInfo);
 }
 
 type PostureData {
     PosturePoint point = 1;
-    list<improbable.transform.Quaternion> rotations = 2;
+    list<extensions.Quaternion> rotations = 2;
 }
 
 type PostureInfo {
@@ -162,7 +163,7 @@ component BaseUnitPosture {
     bool initialized = 1;
     IntervalChecker interval = 2;
 
-    improbable.transform.Quaternion root = 3;
+    extensions.Quaternion root = 3;
     PostureInfo posture = 4;
 
     event PostureData posture_changed;
@@ -190,8 +191,8 @@ component CommanderStatus {
     FollowerInfo follower_info = 5;
     SuperiorInfo superior_info = 6;
 
-    command improbable.common.Empty add_follower(FollowerInfo);
-    command improbable.common.Empty set_superior(SuperiorInfo);
+    command improbable.gdk.core.Empty add_follower(FollowerInfo);
+    command improbable.gdk.core.Empty set_superior(SuperiorInfo);
 }
 
 type WarPower {
@@ -261,8 +262,8 @@ component UnitFactory {
 
     IntervalChecker product_interval = 7;
 
-    command improbable.common.Empty add_follower_order(FollowerOrder);
-    command improbable.common.Empty add_superior_order(SuperiorOrder);
+    command improbable.gdk.core.Empty add_follower_order(FollowerOrder);
+    command improbable.gdk.core.Empty add_superior_order(SuperiorOrder);
 }
 
 // headquarters:20040~
@@ -295,5 +296,5 @@ component HeadQuarters {
 
     transient list<OrganizeOrder> orders = 4;
 
-    command improbable.common.Empty add_order(OrganizeOrder);
+    command improbable.gdk.core.Empty add_order(OrganizeOrder);
 }

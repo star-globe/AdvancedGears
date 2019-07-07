@@ -92,11 +92,11 @@ namespace Improbable.Gdk.Core
             return worker.View.HasComponent(entityId, componentId);
         }
 
-        protected override void OnCreateManager()
+        protected override void OnCreate()
         {
-            base.OnCreateManager();
+            base.OnCreate();
 
-            worker = World.GetExistingManager<WorkerSystem>();
+            worker = World.GetExistingSystem<WorkerSystem>();
 
             Enabled = false;
         }

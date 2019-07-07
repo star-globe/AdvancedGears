@@ -26,21 +26,21 @@ namespace Improbable.Gdk.Core
 
         private IConnectionHandler connection;
 
-        protected override void OnCreateManager()
+        protected override void OnCreate()
         {
-            base.OnCreateManager();
+            base.OnCreate();
 
-            connection = World.GetExistingManager<WorkerSystem>().ConnectionHandler;
+            connection = World.GetExistingSystem<WorkerSystem>().ConnectionHandler;
 
             PopulateDefaultComponentReplicators();
             chunkArrayCache = new NativeArray<ArchetypeChunk>[componentReplicators.Count];
             gatheringJobs = new NativeArray<JobHandle>(componentReplicators.Count, Allocator.Persistent);
         }
 
-        protected override void OnDestroyManager()
+        protected override void OnDestroy()
         {
-            base.OnDestroyManager();
             gatheringJobs.Dispose();
+            base.OnDestroy();
         }
 
         public bool TryRegisterCustomReplicationSystem(uint componentId)
@@ -62,7 +62,7 @@ namespace Improbable.Gdk.Core
                 return;
             }
 
-            var componentUpdateSystem = World.GetExistingManager<ComponentUpdateSystem>();
+            var componentUpdateSystem = World.GetExistingSystem<ComponentUpdateSystem>();
 
             Profiler.BeginSample("GatherChunks");
             for (var i = 0; i < componentReplicators.Count; i++)
@@ -95,7 +95,7 @@ namespace Improbable.Gdk.Core
             {
                 ComponentId = componentReplicationHandler.ComponentId,
                 Handler = componentReplicationHandler,
-                Group = GetComponentGroup(componentReplicationHandler.ComponentUpdateQuery)
+                Group = GetEntityQuery(componentReplicationHandler.ComponentUpdateQuery)
             });
         }
 
@@ -120,7 +120,7 @@ namespace Improbable.Gdk.Core
         {
             public uint ComponentId;
             public IComponentReplicationHandler Handler;
-            public ComponentGroup Group;
+            public EntityQuery Group;
         }
     }
 }

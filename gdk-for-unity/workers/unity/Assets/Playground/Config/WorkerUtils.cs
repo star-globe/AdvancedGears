@@ -1,8 +1,9 @@
-using System.Collections.Generic;
+using Improbable.Gdk;
 using Improbable.Gdk.GameObjectCreation;
 using Improbable.Gdk.PlayerLifecycle;
 using Improbable.Gdk.TransformSynchronization;
 using Unity.Entities;
+using System.Collections.Generic;
 
 namespace Playground
 {
@@ -25,16 +26,16 @@ namespace Playground
             TransformSynchronizationHelper.AddClientSystems(world);
             PlayerLifecycleHelper.AddClientSystems(world);
             GameObjectCreationHelper.EnableStandardGameObjectCreation(world);
-            world.GetOrCreateManager<ProcessColorChangeSystem>();
-            world.GetOrCreateManager<LocalPlayerInputSync>();
-            world.GetOrCreateManager<MoveLocalPlayerSystem>();
-            world.GetOrCreateManager<InitCameraSystem>();
-            world.GetOrCreateManager<FollowCameraSystem>();
-            world.GetOrCreateManager<InitUISystem>();
-            world.GetOrCreateManager<UpdateUISystem>();
-            world.GetOrCreateManager<PlayerCommandsSystem>();
-            world.GetOrCreateManager<MetricSendSystem>();
-            world.GetOrCreateManager<BulletMovementSystem>();
+            world.GetOrCreateSystem<ProcessColorChangeSystem>();
+            world.GetOrCreateSystem<LocalPlayerInputSync>();
+            world.GetOrCreateSystem<MoveLocalPlayerSystem>();
+            world.GetOrCreateSystem<InitCameraSystem>();
+            world.GetOrCreateSystem<FollowCameraSystem>();
+            world.GetOrCreateSystem<InitUISystem>();
+            world.GetOrCreateSystem<UpdateUISystem>();
+            world.GetOrCreateSystem<PlayerCommandsSystem>();
+            world.GetOrCreateSystem<MetricSendSystem>();
+            world.GetOrCreateSystem<BulletMovementSystem>();
         }
 
         public static void AddGameLogicSystems(World world)
@@ -43,23 +44,24 @@ namespace Playground
             TransformSynchronizationHelper.AddServerSystems(world);
             PlayerLifecycleHelper.AddServerSystems(world);
             GameObjectCreationHelper.EnableStandardGameObjectCreation(world);
-            //world.GetOrCreateManager<CubeMovementSystem>();
-            //world.GetOrCreateManager<TriggerColorChangeSystem>();
-            world.GetOrCreateManager<ProcessLaunchCommandSystem>();
-            world.GetOrCreateManager<ProcessRechargeSystem>();
-            world.GetOrCreateManager<MetricSendSystem>();
-            world.GetOrCreateManager<ProcessScoresSystem>();
-            world.GetOrCreateManager<CollisionProcessSystem>();
-            world.GetOrCreateManager<BulletMovementSystem>();
-            world.GetOrCreateManager<BaseUnitMovementSystem>();
-            world.GetOrCreateManager<BaseUnitSearchSystem>();
-            world.GetOrCreateManager<BaseUnitActionSystem>();
-            world.GetOrCreateManager<CommanderUnitSearchSystem>();
+
+            world.GetOrCreateSystem<TriggerColorChangeSystem>();
+            world.GetOrCreateSystem<ProcessLaunchCommandSystem>();
+            world.GetOrCreateSystem<ProcessRechargeSystem>();
+            world.GetOrCreateSystem<MetricSendSystem>();
+            world.GetOrCreateSystem<ProcessScoresSystem>();
+            world.GetOrCreateSystem<CollisionProcessSystem>();
+            world.GetOrCreateSystem<CubeMovementSystem>();
+            world.GetOrCreateSystem<BaseUnitMovementSystem>();
+            world.GetOrCreateSystem<BaseUnitSearchSystem>();
+            world.GetOrCreateSystem<BaseUnitActionSystem>();
+            world.GetOrCreateSystem<CommanderUnitSearchSystem>();
+            world.GetOrCreateSystem<CommanderActionSystem>();
         }
 
         private static void AddLifecycleSystems(World world)
         {
-            world.GetOrCreateManager<DisconnectSystem>();
+            world.GetOrCreateSystem<DisconnectSystem>();
         }
     }
 }

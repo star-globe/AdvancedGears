@@ -13,12 +13,12 @@ namespace Playground
 
         private Dictionary<Color, MaterialPropertyBlock> materialPropertyBlocks;
 
-        protected override void OnCreateManager()
+        protected override void OnCreate()
         {
-            base.OnCreateManager();
+            base.OnCreate();
 
-            updateSystem = World.GetExistingManager<ComponentUpdateSystem>();
-            workerSystem = World.GetExistingManager<WorkerSystem>();
+            updateSystem = World.GetExistingSystem<ComponentUpdateSystem>();
+            workerSystem = World.GetExistingSystem<WorkerSystem>();
 
             ColorTranslationUtil.PopulateMaterialPropertyBlockMap(out materialPropertyBlocks);
         }

@@ -66,7 +66,7 @@ namespace Playground
 
         protected virtual void OnEnable()
         {
-            origin = World.GetExistingManager<WorkerSystem>().Origin;
+            origin = World.GetExistingSystem<WorkerSystem>().Origin;
         }
         
         private void OnDestroy()

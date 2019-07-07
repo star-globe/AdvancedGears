@@ -1,0 +1,20 @@
+package improbable.gdk.transform_synchronization;
+
+type FixedPointVector3 {
+    sint32 x = 1;
+    sint32 y = 2;
+    sint32 z = 3;
+}
+
+type CompressedQuaternion {
+    uint32 data = 1;
+}
+
+component TransformInternal {
+    id = 11000;
+    FixedPointVector3 location = 1;
+    CompressedQuaternion rotation = 2;
+    FixedPointVector3 velocity = 3;
+    uint32 physics_tick = 4;
+    float ticks_per_second = 5;
+}

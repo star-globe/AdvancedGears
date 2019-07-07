@@ -51,10 +51,11 @@ namespace Improbable.Gdk.Core
             return manager.GetResponse(requestId);
         }
 
-        protected override void OnCreateManager()
+        protected override void OnCreate()
         {
-            worker = World.GetExistingManager<WorkerSystem>();
+            base.OnCreate();
 
+            worker = World.GetExistingSystem<WorkerSystem>();
             Enabled = false;
         }
 

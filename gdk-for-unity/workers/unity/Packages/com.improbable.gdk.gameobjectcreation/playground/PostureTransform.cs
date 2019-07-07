@@ -5,7 +5,6 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Improbable.Gdk.Subscriptions;
-using Improbable.Common;
 
 namespace Playground
 {
@@ -62,14 +61,14 @@ namespace Playground
         }
         */
 
-        public Quaternion[] GetQuaternions()
+        public UnityEngine.Quaternion[] GetQuaternions()
         {
             if (IsSet == false)
-                return new Quaternion[0];
+                return new UnityEngine.Quaternion[0];
 
             return connectors.Select(c => c.transform.rotation).ToArray();
         }
-        public void SetQuaternion(int index, Quaternion quo)
+        public void SetQuaternion(int index, UnityEngine.Quaternion quo)
         {
             if (IsSet == false)
                 return;

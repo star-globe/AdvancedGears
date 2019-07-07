@@ -542,7 +542,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9e06809d4f4e9c4a99b51cc3808ba79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  turret: {fileID: 573158945730020982}
+  hingeVectorType: 0
   barell: {fileID: 3632280312333265636}
   muzzle: {fileID: 7398151165962928535}
 --- !u!1 &9077667431196485703
@@ -633,7 +633,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18155ca93b9434040b4d8cd7a194886c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  muzzleTransform: {fileID: 7398151165962928535}
+  unitTransform: {fileID: 795752793748883846}
   bulletSpeed: 15
   lifeTime: 5
   interval: 1.5
@@ -716,8 +716,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8dab67a942af885428668d3ba6952957, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cannon: {fileID: 3281907652293376725}
-  connector: {fileID: 4058671741963503363}
+  postures: []
   vehicle: {fileID: 1116886489364719905}
   groundDetect: {fileID: 5228398840156876227}
 --- !u!54 &1116886489364719905

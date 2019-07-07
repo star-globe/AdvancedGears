@@ -30,12 +30,12 @@ namespace Improbable.Gdk.Tests
         public ExhaustiveSingularReaderSubscriptionManager(World world)
         {
             this.world = world;
-            entityManager = world.GetOrCreateManager<EntityManager>();
+            entityManager = world.EntityManager;
 
             // todo Check that these are there
-            workerSystem = world.GetExistingManager<WorkerSystem>();
+            workerSystem = world.GetExistingSystem<WorkerSystem>();
 
-            var constraintCallbackSystem = world.GetExistingManager<ComponentConstraintsCallbackSystem>();
+            var constraintCallbackSystem = world.GetExistingSystem<ComponentConstraintsCallbackSystem>();
 
             constraintCallbackSystem.RegisterComponentAddedCallback(ExhaustiveSingular.ComponentId, entityId =>
             {
@@ -160,10 +160,10 @@ namespace Improbable.Gdk.Tests
             this.world = world;
 
             // todo Check that these are there
-            workerSystem = world.GetExistingManager<WorkerSystem>();
-            componentUpdateSystem = world.GetExistingManager<ComponentUpdateSystem>();
+            workerSystem = world.GetExistingSystem<WorkerSystem>();
+            componentUpdateSystem = world.GetExistingSystem<ComponentUpdateSystem>();
 
-            var constraintCallbackSystem = world.GetExistingManager<ComponentConstraintsCallbackSystem>();
+            var constraintCallbackSystem = world.GetExistingSystem<ComponentConstraintsCallbackSystem>();
 
             constraintCallbackSystem.RegisterAuthorityCallback(ExhaustiveSingular.ComponentId, authorityChange =>
             {
@@ -352,14 +352,14 @@ namespace Improbable.Gdk.Tests
             }
         }
 
-        private Dictionary<Action<BlittableBool>, ulong> field1UpdateCallbackToCallbackKey;
-        public event Action<BlittableBool> OnField1Update
+        private Dictionary<Action<bool>, ulong> field1UpdateCallbackToCallbackKey;
+        public event Action<bool> OnField1Update
         {
             add
             {
                 if (field1UpdateCallbackToCallbackKey == null)
                 {
-                    field1UpdateCallbackToCallbackKey = new Dictionary<Action<BlittableBool>, ulong>();
+                    field1UpdateCallbackToCallbackKey = new Dictionary<Action<bool>, ulong>();
                 }
 
                 var key = CallbackSystem.RegisterComponentUpdateCallback<ExhaustiveSingular.Update>(EntityId, update =>
@@ -918,9 +918,9 @@ namespace Improbable.Gdk.Tests
 
             IsValid = true;
 
-            ComponentUpdateSystem = world.GetExistingManager<ComponentUpdateSystem>();
-            CallbackSystem = world.GetExistingManager<ComponentCallbackSystem>();
-            EntityManager = world.GetExistingManager<EntityManager>();
+            ComponentUpdateSystem = world.GetExistingSystem<ComponentUpdateSystem>();
+            CallbackSystem = world.GetExistingSystem<ComponentCallbackSystem>();
+            EntityManager = world.EntityManager;
         }
 
         public void RemoveAllCallbacks()

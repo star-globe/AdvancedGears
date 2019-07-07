@@ -5,7 +5,6 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Improbable.Gdk.Subscriptions;
-using Improbable.Common;
 
 namespace Playground
 {
@@ -41,7 +40,7 @@ namespace Playground
         }
         public PosturePoint[] GetKeys()
         {
-            return this.postureDic.Keys.ToArray();
+            return this.PostureDic.Keys.ToArray();
         }
 
         public PostureTransform GetPosture(PosturePoint point)
@@ -86,7 +85,7 @@ namespace Playground
             return null;
         }
 
-        public void SetQuaternion(PosturePoint point, int index, Quaternion quo)
+        public void SetQuaternion(PosturePoint point, int index, UnityEngine.Quaternion quo)
         {
             if (this.PostureDic.ContainsKey(point) == false)
                 return;

@@ -474,23 +474,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stateRenderer: {fileID: 6520278578737531789}
-  stateColors:
-  - col: {r: 1, g: 1, b: 1, a: 1}
-    state: 0
-  - col: {r: 0, g: 1, b: 0.38457632, a: 1}
-    state: 1
-  - col: {r: 0, g: 0, b: 0, a: 1}
-    state: 2
   sideRenderer: {fileID: 2151743897899630068}
-  sideColors:
-  - col: {r: 1, g: 0, b: 0, a: 1}
-    side: 1
-  - col: {r: 0, g: 1, b: 0.14022207, a: 1}
-    side: 2
-  - col: {r: 0, g: 0.31886768, b: 1, a: 1}
-    side: 3
-  - col: {r: 0.73, g: 0.73, b: 0.73, a: 1}
-    side: 99
+  colorSettings: {fileID: 11400000, guid: e9653011b1bcf4847b2c0b2d702b450d, type: 2}
 --- !u!114 &8608431435383575143
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -503,8 +488,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8dab67a942af885428668d3ba6952957, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cannon: {fileID: 4477265152146080606}
-  connector: {fileID: 0}
+  postures: []
   vehicle: {fileID: 5426371286762123372}
   groundDetect: {fileID: 1660802064886688718}
 --- !u!114 &3699102927289134500
@@ -708,7 +692,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9e06809d4f4e9c4a99b51cc3808ba79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  turret: {fileID: 443152730317385729}
+  hingeVectorType: 0
   barell: {fileID: 2589321985771215483}
   muzzle: {fileID: 2102837161885774132}
 --- !u!1 &9077709467839374498

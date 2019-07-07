@@ -10,10 +10,10 @@ using UnityEngine.Experimental.PlayerLoop;
 
 namespace Playground
 {
-    [UpdateBefore(typeof(FixedUpdate.PhysicsFixedUpdate))]
+    [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     internal class BaseUnitMovementSystem : ComponentSystem
     {
-        ComponentGroup group;
+        EntityQuery group;
 
         private Vector3 origin;
 
@@ -22,17 +22,18 @@ namespace Playground
             base.OnCreateManager();
 
             // ここで基準位置を取る
-            origin = World.GetExistingManager<WorkerSystem>().Origin;
+            origin = World.GetExistingSystem<WorkerSystem>().Origin;
 
-            group = GetComponentGroup(
-                    ComponentType.Create<BaseUnitPosture.Component>(),
+            group = GetEntityQuery(
+                    ComponentType.ReadWrite<BaseUnitPosture.Component>(),
                     ComponentType.ReadOnly<BaseUnitPosture.ComponentAuthority>(),
                     ComponentType.ReadOnly<UnitTransform>(),
                     ComponentType.ReadOnly<BaseUnitMovement.Component>(),
                     ComponentType.ReadOnly<BaseUnitTarget.Component>(),
                     ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                     ComponentType.ReadOnly<BaseUnitAction.Component>(),
-                    ComponentType.Create<FuelComponent.Component>()
+                    ComponentType.ReadWrite<FuelComponent.Component>(),
+                    ComponentType.ReadOnly<FuelComponent.ComponentAuthority>()
             );
 
             group.SetFilter(BaseUnitPosture.ComponentAuthority.Authoritative);
@@ -41,42 +42,34 @@ namespace Playground
 
         protected override void OnUpdate()
         {
-            var postureData = group.GetComponentDataArray<BaseUnitPosture.Component>();
-            var unitData = group.GetComponentArray<UnitTransform>();
-            var movementData = group.GetComponentDataArray<BaseUnitMovement.Component>();
-            var targetData = group.GetComponentDataArray<BaseUnitTarget.Component>();
-            var statusData = group.GetComponentDataArray<BaseUnitStatus.Component>();
-            var actionData = group.GetComponentDataArray<BaseUnitAction.Component>();
-            var fuelData = group.GetComponentDataArray<FuelComponent.Component>();
-
-            for (var i = 0; i < postureData.Length; i++)
+            Entities.With(group).ForEach((Entity entity,
+                                          ref BaseUnitPosture.Component posture,
+                                          ref BaseUnitMovement.Component movement,
+                                          ref BaseUnitTarget.Component target,
+                                          ref BaseUnitStatus.Component status,
+                                          ref BaseUnitAction.Component action,
+                                          ref FuelComponent.Component fuel) =>
             {
-                var unit = unitData[i];
-                var rigidbody = unit.Vehicle;
-                var posture = postureData[i];
-                var movement = movementData[i];
-                var target = targetData[i];
-                var status = statusData[i];
-                var action = actionData[i];
-                var fuel = fuelData[i];
-
                 if (status.State != UnitState.Alive)
-                    continue;
+                    return;
 
                 if (status.Type != UnitType.Soldier &&
                     status.Type != UnitType.Commander)
-                    continue;
+                    return;
+
+                var unit = EntityManager.GetComponentObject<UnitTransform>(entity);
+                var rigidbody = unit.Vehicle;
 
                 if (!movement.IsTarget)
                 {
                     rigidbody.velocity = Vector3.zero;
                     rigidbody.angularVelocity = Vector3.zero;
-                    continue;
+                    return;
                 }
 
                 // check fueld
                 if (fuel.Fuel == 0)
-                    continue;
+                    return;
 
                 var pos = rigidbody.position;
 
@@ -84,14 +77,14 @@ namespace Playground
                 var bounds = unit.GroundDetect.bounds;
                 var up = unit.GroundDetect.transform.up;
                 if (!Physics.Raycast(new Ray(bounds.center, -up), bounds.extents.y * 1.1f, LayerMask.GetMask("Ground")))
-                    continue;
+                    return;
 
-                var tgt = movement.TargetPosition.ToUnityVector() - origin;
+                var tgt = movement.TargetPosition.ToUnityVector() + origin;
 
                 // modify target
                 if (action.IsTarget == false && target.TargetInfo.CommanderId.IsValid())
                 {
-                    var com = movement.CommanderPosition.ToUnityVector() - origin;
+                    var com = movement.CommanderPosition.ToUnityVector() + origin;
                     tgt = get_nearly_position(pos, tgt, com, target.TargetInfo.AllyRange);
                 }
 
@@ -114,7 +107,6 @@ namespace Playground
                     {
                         posture.Interval = inter;
                         posture.Root = rigidbody.transform.rotation.ToImprobableQuaternion();
-                        postureData[i] = posture;
                     }
                 }
 
@@ -126,9 +118,7 @@ namespace Playground
                 fuel.Fuel -= consume;
                 if (fuel.Fuel < 0)
                     fuel.Fuel = 0;
-
-                fuelData[i] = fuel;
-            }
+            });
         }
 
         bool in_range(Vector3 forward, Vector3 tgt, float range, out Vector3 rot)

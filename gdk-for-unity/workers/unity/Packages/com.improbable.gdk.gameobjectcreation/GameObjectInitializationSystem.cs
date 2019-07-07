@@ -29,12 +29,12 @@ namespace Improbable.Gdk.GameObjectCreation
             this.workerGameObject = workerGameObject;
         }
 
-        protected override void OnCreateManager()
+        protected override void OnCreate()
         {
-            base.OnCreateManager();
+            base.OnCreate();
 
-            entitySystem = World.GetExistingManager<EntitySystem>();
-            workerSystem = World.GetExistingManager<WorkerSystem>();
+            entitySystem = World.GetExistingSystem<EntitySystem>();
+            workerSystem = World.GetExistingSystem<WorkerSystem>();
 
             linker = new EntityGameObjectLinker(World);
 
@@ -44,7 +44,7 @@ namespace Improbable.Gdk.GameObjectCreation
             }
         }
 
-        protected override void OnDestroyManager()
+        protected override void OnDestroy()
         {
             linker.UnlinkAllGameObjects();
 
@@ -53,7 +53,7 @@ namespace Improbable.Gdk.GameObjectCreation
                 gameObjectCreator.OnEntityRemoved(entityId);
             }
 
-            base.OnDestroyManager();
+            base.OnDestroy();
         }
 
         protected override void OnUpdate()

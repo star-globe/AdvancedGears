@@ -16,10 +16,10 @@ using UnityEngine.Experimental.PlayerLoop;
 
 namespace Playground
 {
-    [UpdateBefore(typeof(FixedUpdate.PhysicsFixedUpdate))]
+    [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     public class FuelSupplySystem : BaseSearchSystem
     {
-        ComponentGroup group;
+        EntityQuery group;
         CommandSystem commandSystem;
         ComponentUpdateSystem updateSystem;
         ILogDispatcher logDispatcher;
@@ -31,15 +31,15 @@ namespace Playground
             base.OnCreateManager();
 
             // ここで基準位置を取る
-            var worker = World.GetExistingManager<WorkerSystem>();
+            var worker = World.GetExistingSystem<WorkerSystem>();
             origin = worker.Origin;
             logDispatcher = worker.LogDispatcher;
 
-            commandSystem = World.GetExistingManager<CommandSystem>();
-            updateSystem = World.GetExistingManager<ComponentUpdateSystem>();
-            group = GetComponentGroup(
-                ComponentType.Create<FuelSupplyer.Component>(),
-                ComponentType.Create<FuelComponent.Component>(),
+            commandSystem = World.GetExistingSystem<CommandSystem>();
+            updateSystem = World.GetExistingSystem<ComponentUpdateSystem>();
+            group = GetEntityQuery(
+                ComponentType.ReadWrite<FuelSupplyer.Component>(),
+                ComponentType.ReadWrite<FuelComponent.Component>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<BaseUnitTarget.Component>(),
                 ComponentType.ReadOnly<Transform>(),
@@ -58,47 +58,44 @@ namespace Playground
 
         void HandleRequest()
         {
-            var fuelSupplyer = group.GetComponentDataArray<FuelSupplyer.Component>();
-            var fuelData = group.GetComponentDataArray<FuelComponent.Component>();
-            var statusData = group.GetComponentDataArray<BaseUnitStatus.Component>();
-            var targetData = group.GetComponentDataArray<BaseUnitTarget.Component>();
-            var transData = group.GetComponentArray<Transform>();
-            var entityIdData = group.GetComponentDataArray<SpatialEntityId>();
-
-            for (var i = 0; i < fuelSupplyer.Length; i++) {
-                var supply = fuelSupplyer[i];
-                var fuel = fuelData[i];
-                var status = statusData[i];
-                var tgt = targetData[i];
-                var pos = transData[i].position;
-                var entityId = entityIdData[i];
-
+            Entities.With(group).ForEach((Unity.Entities.Entity entity,
+                                          ref FuelSupplyer.Component supply,
+                                          ref FuelComponent.Component fuel,
+                                          ref BaseUnitStatus.Component status,
+                                          ref BaseUnitTarget.Component tgt,
+                                          ref SpatialEntityId entityId) =>
+            {
                 if (status.State != UnitState.Alive)
-                    continue;
+                    return;
 
                 if (status.Type != UnitType.Supply)
-                    continue;
+                    return;
 
                 if (supply.OrderFinished)
-                    continue;
+                    return;
 
                 var time = Time.realtimeSinceStartup;
                 var inter = supply.Interval;
                 if (inter.CheckTime(time) == false)
-                    continue;
+                    return;
 
                 supply.Interval = inter;
 
                 float range = supply.Range;
                 var f_comp = fuel;
 
+                var trans = EntityManager.GetComponentObject<Transform>(entity);
+                var pos = trans.position;
+
                 var id = supply.Order.Point.StrongholdId;
                 var unit = getUnits(status.Side, pos, range, false, false, UnitType.Stronghold).FirstOrDefault(u => u.id == id);
-                if (unit != null) {
+                if (unit != null)
+                {
                     FuelModifyType type = FuelModifyType.None;
-                    switch (supply.Order.Type) {
+                    switch (supply.Order.Type)
+                    {
                         case SupplyOrderType.Deliver: type = FuelModifyType.Feed; break;
-                        case SupplyOrderType.Accept:  type = FuelModifyType.Absorb; break;
+                        case SupplyOrderType.Accept: type = FuelModifyType.Absorb; break;
                     }
 
                     bool tof = DealOrder(unit, type, ref f_comp);
@@ -107,10 +104,8 @@ namespace Playground
                 }
 
                 if (fuel.Fuel != f_comp.Fuel)
-                    fuelData[i] = f_comp;
-                
-                fuelSupplyer[i] = supply;
-            }
+                    fuel = f_comp;
+            });
         }
 
         void HandleResponse()

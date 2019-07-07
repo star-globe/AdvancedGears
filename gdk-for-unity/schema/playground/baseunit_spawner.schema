@@ -1,5 +1,5 @@
 package playground;
-import "from_gdk_packages/com.improbable.gdk.core/common.schema";
+import "improbable/gdk/core/common.schema";
 
 type DeleteBaseUnitRequest
 {
@@ -11,6 +11,6 @@ component BaseUnitSpawner
     id = 20099;
     list<EntityId> spawned_units = 1;
 
-    command improbable.common.Empty spawn_unit(improbable.common.Empty);
-    command improbable.common.Empty delete_spawned_cube(DeleteBaseUnitRequest);
+    command improbable.gdk.core.Empty spawn_unit(improbable.gdk.core.Empty);
+    command improbable.gdk.core.Empty delete_spawned_cube(DeleteBaseUnitRequest);
 }
