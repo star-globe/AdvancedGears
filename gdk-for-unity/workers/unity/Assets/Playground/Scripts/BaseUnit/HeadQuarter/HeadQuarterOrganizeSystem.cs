@@ -12,7 +12,7 @@ using UnityEngine.Experimental.PlayerLoop;
 
 namespace Playground
 {
-    [UpdateBefore(typeof(FixedUpdate.PhysicsFixedUpdate))]
+    [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     internal class HeadQuarterOrganizeSystem : BaseSearchSystem
     {
         private CommandSystem commandSystem;

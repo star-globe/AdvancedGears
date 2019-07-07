@@ -578,6 +578,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3637943505742419874}
   - component: {fileID: 8324906342268354672}
+  - component: {fileID: 9202294007379016158}
   m_Layer: 13
   m_Name: Turret
   m_TagString: Untagged
@@ -617,6 +618,21 @@ MonoBehaviour:
   hingeVectorType: 0
   barell: {fileID: 3268532178235258176}
   muzzle: {fileID: 5556187125544116455}
+--- !u!114 &9202294007379016158
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8097724053632036298}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bdcc663e3b9e944d96c5b8ec7c0e156, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  point: 1
+  connectors:
+  - {fileID: 8324906342268354672}
 --- !u!1 &8896567554115493925
 GameObject:
   m_ObjectHideFlags: 0

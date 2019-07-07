@@ -56,6 +56,7 @@ namespace Playground
             world.GetOrCreateSystem<BaseUnitSearchSystem>();
             world.GetOrCreateSystem<BaseUnitActionSystem>();
             world.GetOrCreateSystem<CommanderUnitSearchSystem>();
+            world.GetOrCreateSystem<CommanderActionSystem>();
         }
 
         private static void AddLifecycleSystems(World world)

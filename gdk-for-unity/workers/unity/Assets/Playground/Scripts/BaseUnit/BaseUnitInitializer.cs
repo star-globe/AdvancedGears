@@ -25,7 +25,7 @@ namespace Playground
             movement.SendUpdate(new BaseUnitMovement.Update
             {
                 MoveSpeed = settings.Speed,
-                RotSpeed = settings.Rot * Mathf.Deg2Rad,
+                RotSpeed = settings.Rot,
                 ConsumeRate = settings.ConsumeRate,
             });
 
@@ -38,7 +38,7 @@ namespace Playground
             action.SendUpdate(new BaseUnitAction.Update
             {
                 Interval = new IntervalChecker(settings.Inter,0),
-                AngleSpeed = settings.AngleSpeed * Mathf.Deg2Rad,
+                AngleSpeed = settings.AngleSpeed,
             });
 
             health.SendUpdate(new BaseUnitHealth.Update

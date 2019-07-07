@@ -12,7 +12,7 @@ using UnityEngine.Experimental.PlayerLoop;
 
 namespace Playground
 {
-    [UpdateBefore(typeof(FixedUpdate.PhysicsFixedUpdate))]
+    [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     internal class CommanderActionSystem : BaseSearchSystem
     {
         private CommandSystem commandSystem;
@@ -53,7 +53,7 @@ namespace Playground
                 if (status.State != UnitState.Alive)
                     return;
 
-                if (status.Type == UnitType.Commander)
+                if (status.Type != UnitType.Commander)
                     return;
 
                 if (!action.IsTarget)
