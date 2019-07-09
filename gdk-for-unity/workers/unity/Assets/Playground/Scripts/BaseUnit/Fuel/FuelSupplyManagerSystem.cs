@@ -84,7 +84,7 @@ namespace Playground
                 if (manager.FreeSupplyers.Count == 0)
                     return;
 
-                var time = Time.realtimeSinceStartup;
+                var time = Time.time;
                 var inter = manager.Interval;
                 if (inter.CheckTime(time) == false)
                     return;

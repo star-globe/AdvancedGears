@@ -59,7 +59,7 @@ namespace Playground
                 if (!action.IsTarget)
                     return;
 
-                var time = Time.realtimeSinceStartup;
+                var time = Time.time;
                 var inter = action.Interval;
                 if (inter.CheckTime(time) == false)
                     return;

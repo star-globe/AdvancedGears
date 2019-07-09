@@ -74,7 +74,7 @@ namespace Playground
                 if (supply.OrderFinished)
                     return;
 
-                var time = Time.realtimeSinceStartup;
+                var time = Time.time;
                 var inter = supply.Interval;
                 if (inter.CheckTime(time) == false)
                     return;

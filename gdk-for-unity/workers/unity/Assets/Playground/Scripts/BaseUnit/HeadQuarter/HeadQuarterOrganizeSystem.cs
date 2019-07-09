@@ -65,7 +65,7 @@ namespace Playground
                 if (headQuarter.UpperRank >= 5)
                     return;
 
-                var time = Time.realtimeSinceStartup;
+                var time = Time.time;
                 var inter = headQuarter.Interval;
                 if (inter.CheckTime(time) == false)
                     return;

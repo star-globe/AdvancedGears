@@ -79,7 +79,7 @@ namespace Playground
             if (this.SpatialComp == null || this.BulletWriter == null)
                 return;
 
-            var time = Time.realtimeSinceStartup;
+            var time = Time.time;
             if (time - fireTime <= interval)
                 return;
 
@@ -101,7 +101,7 @@ namespace Playground
                 Alignment = 3,
                 LaunchPosition = new Vector3f(pos.x, pos.y, pos.z),
                 InitialVelocity = new Vector3f(vec.x, vec.y, vec.z),
-                LaunchTime = Time.realtimeSinceStartup,
+                LaunchTime = Time.time,
                 LifeTime = lifeTime,
                 GunId = 0,
                 ShooterEntityId = SpatialComp.EntityId.Id,

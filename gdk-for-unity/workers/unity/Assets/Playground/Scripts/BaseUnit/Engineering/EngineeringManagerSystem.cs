@@ -65,7 +65,7 @@ namespace Playground
                 if (manager.FreeEngineers.Count == 0)
                     return;
 
-                var time = Time.realtimeSinceStartup;
+                var time = Time.time;
                 var inter = manager.Interval;
                 if (inter.CheckTime(time) == false)
                     return;

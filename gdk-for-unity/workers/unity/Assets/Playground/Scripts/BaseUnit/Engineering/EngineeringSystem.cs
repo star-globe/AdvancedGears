@@ -74,7 +74,7 @@ namespace Playground
                 if (engineer.OrderFinished)
                     return;
 
-                var time = Time.realtimeSinceStartup;
+                var time = Time.time;
                 var inter = engineer.Interval;
                 if (inter.CheckTime(time) == false)
                     return;

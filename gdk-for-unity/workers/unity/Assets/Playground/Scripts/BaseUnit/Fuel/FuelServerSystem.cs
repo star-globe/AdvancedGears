@@ -67,7 +67,7 @@ namespace Playground
                 if (fuel.Fuel == 0)
                     return;
 
-                var time = Time.realtimeSinceStartup;
+                var time = Time.time;
                 var inter = server.Interval;
                 if (inter.CheckTime(time) == false)
                     return;

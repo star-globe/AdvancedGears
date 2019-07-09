@@ -41,7 +41,7 @@ namespace Playground
                     return;
 
                 // time check
-                var diff = Time.realtimeSinceStartup - info.LaunchTime;
+                var diff = Time.time - info.LaunchTime;
                 if (diff >= info.LifeTime)
                 {
                     info.IsActive = false;

@@ -101,7 +101,7 @@ namespace Playground
 
                 if (rotate(rigidbody.transform, tgt - pos, movement.RotSpeed))
                 {
-                    var time = Time.realtimeSinceStartup;
+                    var time = Time.time;
                     var inter = posture.Interval;
                     if (posture.Initialized && inter.CheckTime(time))
                     {

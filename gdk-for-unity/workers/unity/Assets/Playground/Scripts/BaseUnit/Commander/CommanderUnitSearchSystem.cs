@@ -57,7 +57,7 @@ namespace Playground
                 if (status.Order == OrderType.Idle)
                     return;
 
-                var time = Time.realtimeSinceStartup;
+                var time = Time.time;
                 var inter = sight.Interval;
                 if (inter.CheckTime(time) == false)
                     return;

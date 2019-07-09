@@ -66,7 +66,7 @@ namespace Playground
 
         private void Update()
         {
-            if (Time.realtimeSinceStartup - checkTime < interval)
+            if (Time.time - checkTime < interval)
                 return;
 
             foreach (var dic in bulletsDic)

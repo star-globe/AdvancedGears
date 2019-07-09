@@ -87,7 +87,7 @@ namespace Playground
                 if (s_order == null && f_order == null)
                     return;
 
-                var time = Time.realtimeSinceStartup;
+                var time = Time.time;
                 var inter = factory.Interval;
                 if (inter.CheckTime(time) == false)
                     return;
