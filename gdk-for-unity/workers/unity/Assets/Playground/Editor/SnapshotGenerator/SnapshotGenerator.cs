@@ -33,9 +33,10 @@ namespace Playground.Editor.SnapshotGenerator
             AddPlayerSpawner(snapshot, GroundCoordinates(-200,-200, ground));//new Coordinates(-2000, 0, -2000));
             AddPlayerSpawner(snapshot, GroundCoordinates(-200, 200, ground));//new Coordinates(-2000, 0, 2000));
 
-            AddCubeGrid(snapshot, cubeCount, ground);
+            //AddCubeGrid(snapshot, cubeCount, ground);
             //CreateSpinner(snapshot, new Coordinates { X = 5.5, Y = 0.5f, Z = 0.0 });
             //CreateSpinner(snapshot, new Coordinates { X = -5.5, Y = 0.5f, Z = 0.0 });
+            AddDefaultUnits(snapshot, cubeCount, ground);
 
             return snapshot;
         }
@@ -106,14 +107,20 @@ namespace Playground.Editor.SnapshotGenerator
                 }
             }
 
+            AddDefaultUnits(snapshot, cubeCount, ground);
+        }
+
+        private static void AddDefaultUnits(Snapshot snapshot, int cubeCount, TerrainCollider ground = null)
+        {
+            var gridLength = (int)Math.Ceiling(Math.Sqrt(cubeCount));
             var len = gridLength * scale;
-            var templateA = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.A, GroundCoordinates(-len * 3, 0, ground),UnitType.Stronghold);
-            var templateB = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.B, GroundCoordinates( len * 3, 0, ground),UnitType.Stronghold);
+            var templateA = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.A, GroundCoordinates(-len * 3, 0, ground), UnitType.Stronghold);
+            var templateB = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.B, GroundCoordinates(len * 3, 0, ground), UnitType.Stronghold);
             snapshot.AddEntity(templateA);
             snapshot.AddEntity(templateB);
-            
+
             var templateCa = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.A, GroundCoordinates(-len * 2, 0, ground), UnitType.Commander);
-            var templateCb = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.B, GroundCoordinates( len * 2, 0, ground), UnitType.Commander);
+            var templateCb = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.B, GroundCoordinates(len * 2, 0, ground), UnitType.Commander);
             snapshot.AddEntity(templateCa);
             snapshot.AddEntity(templateCb);
         }
