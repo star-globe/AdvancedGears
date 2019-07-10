@@ -54,8 +54,8 @@ namespace Playground
 
         private static CameraInput UpdateCameraInput(CameraInput input)
         {
-            var x = input.X + Input.GetAxis("Mouse X");
-            var y = input.Y - Input.GetAxis("Mouse Y");
+            var x = input.X + Input.GetAxis("Horizontal");
+            var y = input.Y - Input.GetAxis("Vertical");
             var distance = input.Distance + Input.GetAxis("Mouse ScrollWheel") * ZoomScale;
 
             x %= 360;
