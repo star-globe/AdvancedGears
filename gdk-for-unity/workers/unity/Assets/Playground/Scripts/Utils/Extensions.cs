@@ -8,6 +8,11 @@ namespace Playground
 {
     static class Extensions
     {
+        public static Vector3 ToWorkerPosition(this Improbable.Vector3f pos, Vector3 origin)
+        {
+            return pos.ToUnityVector() + origin;
+        }
+
         public static Quaternion ToUnityQuaternion(this Ex.Quaternion quo)
         {
             return new Quaternion(quo.X, quo.Y, quo.Z, quo.W);

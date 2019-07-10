@@ -13,28 +13,36 @@ namespace Playground
     {
         [Require] CommanderSightWriter sight;
         [Require] CommanderStatusWriter commander;
+        [Require] CommanderActionWriter action;
         [Require] BaseUnitStatusReader status;
         [Require] World world;
 
-        float inter = 2.0f;
-
         [SerializeField]
-        float sightRange = 100.0f;
-
-        [SerializeField]
-        float allyRange = 50.0f;
+        CommanderUnitInitSettings settings;
 
         void Start()
         {
             sight.SendUpdate(new CommanderSight.Update
             {
-                Interval = new IntervalChecker(inter,0),
-                Range = sightRange
+                Interval = new IntervalChecker(settings.Inter,0),
+                Range = settings.SightRange,
             });
 
-            Invoke("DelayMethod", 3.5f);
+            commander.SendUpdate(new CommanderStatus.Update
+            {
+                Rank = settings.Rank,
+                AllyRange = settings.AllyRange,
+            });
+
+            action.SendUpdate(new CommanderAction.Update
+            {
+                Interval = new IntervalChecker(settings.Inter,0),
+            });
+
+            //Invoke("DelayMethod", 3.5f);
         }
 
+        #if false
         void DelayMethod()
         {
             var entityManager = world.GetExistingSystem<EntityManager>();
@@ -72,5 +80,6 @@ namespace Playground
                 FollowerInfo = new FollowerInfo { Followers = list.ToList(), UnderCommanders = new List<EntityId>() },
             });
         }
+        #endif
     }
 }

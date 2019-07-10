@@ -18,6 +18,7 @@ namespace Playground
         [SerializeField] int defense = 10;
         [SerializeField] int maxFuel = 50;
         [SerializeField] float consumeRate = 1.0f;
+        [SerializeField] uint[] gunIds = new uint[] { 1 };
 
         public float Speed => speed;
         public float Rot => rot;
@@ -30,5 +31,6 @@ namespace Playground
         public int Defense => defense;
         public int MaxFuel => maxFuel;
         public float ConsumeRate => consumeRate;
+        public uint[] GunIds => gunIds;
     }
 }

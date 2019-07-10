@@ -79,12 +79,12 @@ namespace Playground
                 if (!Physics.Raycast(new Ray(bounds.center, -up), bounds.extents.y * 1.1f, LayerMask.GetMask("Ground")))
                     return;
 
-                var tgt = movement.TargetPosition.ToUnityVector() + origin;
+                var tgt = movement.TargetPosition.ToWorkerPosition(origin);
 
                 // modify target
                 if (action.IsTarget == false && target.TargetInfo.CommanderId.IsValid())
                 {
-                    var com = movement.CommanderPosition.ToUnityVector() + origin;
+                    var com = movement.CommanderPosition.ToWorkerPosition(origin);
                     tgt = get_nearly_position(pos, tgt, com, target.TargetInfo.AllyRange);
                 }
 

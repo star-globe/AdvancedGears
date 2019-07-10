@@ -12,12 +12,10 @@ namespace Playground
     {
         [Require] GunComponentWriter gunWriter;
 
-        [SerializeField]
-        uint[] gunIds;
-
-        void Start()
+        public void SetGunIds(uint[] gunIds)
         {
-            Assert.IsNotNull(gunIds);
+            if (gunIds == null)
+                return;
 
             var gunsList = gunIds.Select(id => GunDictionary.GetGunSettings(id)).ToArray();
             Dictionary<PosturePoint,GunInfo> dic =  new Dictionary<PosturePoint,GunInfo>();

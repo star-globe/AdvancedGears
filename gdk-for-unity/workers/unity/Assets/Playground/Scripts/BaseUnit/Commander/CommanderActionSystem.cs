@@ -89,7 +89,7 @@ namespace Playground
             if (action.ActionType == CommandActionType.Product)
                 return;
 
-            var diff = tgt.TargetInfo.Position.ToUnityVector() - pos;
+            var diff = tgt.TargetInfo.Position.ToWorkerPosition(origin) - pos;
             float length = 10.0f;   // TODO from:master
             int num = 5;
             if (diff.sqrMagnitude > length * length)
@@ -130,7 +130,7 @@ namespace Playground
             if (action.ActionType == CommandActionType.Organize)
                 return;
 
-            var diff = tgt.TargetInfo.Position.ToUnityVector() - pos;
+            var diff = tgt.TargetInfo.Position.ToWorkerPosition(origin) - pos;
             float length = 10.0f;   // TODO from:master
             if (diff.sqrMagnitude > length * length)
                 return;

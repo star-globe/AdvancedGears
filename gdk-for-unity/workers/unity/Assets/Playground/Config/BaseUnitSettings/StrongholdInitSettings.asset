@@ -21,3 +21,6 @@ MonoBehaviour:
   angleSpeed: 90
   maxHp: 10
   defense: 10
+  maxFuel: 50
+  consumeRate: 1
+  gunIds: 

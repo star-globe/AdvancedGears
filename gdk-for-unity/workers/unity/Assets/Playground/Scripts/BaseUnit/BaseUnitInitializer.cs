@@ -18,6 +18,9 @@ namespace Playground
         [SerializeField]
         BaseUnitInitSettings settings;
 
+        [SerializeField]
+        GunComponentInitializer gunInitializer;
+
         void Start()
         {
             Assert.IsNotNull(settings);
@@ -53,6 +56,9 @@ namespace Playground
                 MaxFuel = settings.MaxFuel,
                 Fuel = settings.MaxFuel,
             });
+
+            if (gunInitializer != null)
+                gunInitializer.SetGunIds(settings.GunIds);
         }
     }
 }

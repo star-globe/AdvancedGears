@@ -4,11 +4,12 @@
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5b9470e089d50f944b699ab5ec8e8b06, type: 3}
+  m_Script: {fileID: 11500000, guid: ae3d6334d971ac34d99acdaf31453f88, type: 3}
   m_Name: GunDictionary
   m_EditorClassIdentifier: 
   gunsList:

@@ -568,6 +568,7 @@ GameObject:
   - component: {fileID: 4570731459711513934}
   - component: {fileID: 6791084287969681247}
   - component: {fileID: 5670403936832062146}
+  - component: {fileID: -2428112270548870933}
   m_Layer: 11
   m_Name: BaseUnit
   m_TagString: Untagged
@@ -761,6 +762,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   settings: {fileID: 11400000, guid: 6a0a53c2b739402478a473e8cf2593e3, type: 2}
+  gunInitializer: {fileID: -2428112270548870933}
 --- !u!114 &6791084287969681247
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -788,6 +790,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unit: {fileID: 795752793748883846}
   inter: 0.6
+--- !u!114 &-2428112270548870933
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9077667431196485703}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 903a5a9b2ff919b4c883caed76f7a399, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &9170438644409626020
 GameObject:
   m_ObjectHideFlags: 0

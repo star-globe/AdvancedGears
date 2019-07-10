@@ -57,3 +57,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bulletDictionary: {fileID: 11400000, guid: d64c33b406c295049973606f387a8cdb, type: 2}
+  gunDictionary: {fileID: 11400000, guid: 6fe9f201086daab40a16778beecdf589, type: 2}

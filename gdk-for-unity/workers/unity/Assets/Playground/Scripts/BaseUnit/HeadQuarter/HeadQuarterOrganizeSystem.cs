@@ -75,7 +75,7 @@ namespace Playground
                 const float range = 500.0f;
                 foreach (var order in headQuarter.Orders)
                 {
-                    var pos = order.Pos.ToUnityVector();
+                    var pos = order.Pos.ToWorkerPosition(origin);
                     var str = getNearestAlly(status.Side, pos, range, UnitType.Stronghold);
                     if (str == null)
                         continue;

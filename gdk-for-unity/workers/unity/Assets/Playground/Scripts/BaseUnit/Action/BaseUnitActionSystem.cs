@@ -68,7 +68,7 @@ namespace Playground
 
                 if (action.EnemyPositions.Count > 0)
                 {
-                    var epos = action.EnemyPositions[0].ToUnityVector() + origin;
+                    var epos = action.EnemyPositions[0].ToWorkerPosition(origin);
                     bool updPosture, updGuns;
                     var unit = EntityManager.GetComponentObject<UnitTransform>(entity);
                     Attack(unit, time, action.AngleSpeed, epos, entityId, ref posture, ref gun, out updPosture, out updGuns);

@@ -339,6 +339,7 @@ GameObject:
   - component: {fileID: 4005048915369244130}
   - component: {fileID: 630352288142829180}
   - component: {fileID: 9214823645137195810}
+  - component: {fileID: 7257654559995326483}
   m_Layer: 11
   m_Name: CommanderUnit
   m_TagString: Untagged
@@ -490,8 +491,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fecc409cd71f4774aace86d7ef1623c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sightRange: 100
-  allyRange: 50
+  settings: {fileID: 11400000, guid: 6f6c46c654e1a8c42aeeb35c61cb4fda, type: 2}
 --- !u!114 &5734337820356814987
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -546,6 +546,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   settings: {fileID: 11400000, guid: 6a0a53c2b739402478a473e8cf2593e3, type: 2}
+  gunInitializer: {fileID: 7257654559995326483}
 --- !u!114 &630352288142829180
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -573,6 +574,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unit: {fileID: 8608431435383575143}
   inter: 0.6
+--- !u!114 &7257654559995326483
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5181175297171742801}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 903a5a9b2ff919b4c883caed76f7a399, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5434689098519824318
 GameObject:
   m_ObjectHideFlags: 0
