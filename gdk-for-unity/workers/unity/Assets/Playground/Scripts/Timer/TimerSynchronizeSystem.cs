@@ -26,7 +26,7 @@ namespace Playground
 
             group = GetEntityQuery(
                     ComponentType.ReadWrite<WorldTimer.Component>(),
-                    ComponentType.ReadOnly<Transform>(),
+                    ComponentType.ReadOnly<Transform>()
             );
         }
 

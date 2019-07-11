@@ -31,7 +31,7 @@ namespace Playground
                 StockMax = stock,
                 AttackRange = atkRange,
                 AttackAngle = atkAngle,
-                Interval = IntervalChecker.InitializedChecker(inter),
+                Interval = IntervalCheckerInitializer.InitializedChecker(inter),
                 AttachedPosture = attached,
             };
 

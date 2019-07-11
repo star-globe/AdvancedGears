@@ -142,7 +142,7 @@ namespace Playground
         }
     }
 
-    public partial class IntervalChecker
+    public static class IntervalCheckerInitializer
     {
         public static IntervalChecker InitializedChecker(float inter)
         {

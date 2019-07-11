@@ -24,7 +24,7 @@ namespace Playground
         {
             sight.SendUpdate(new CommanderSight.Update
             {
-                Interval = IntervalChecker.InitializedChecker(settings.Inter),
+                Interval = IntervalCheckerInitializer.InitializedChecker(settings.Inter),
                 Range = settings.SightRange,
             });
 
@@ -36,7 +36,7 @@ namespace Playground
 
             action.SendUpdate(new CommanderAction.Update
             {
-                Interval = IntervalChecker.InitializedChecker(settings.Inter),
+                Interval = IntervalCheckerInitializer.InitializedChecker(settings.Inter),
             });
 
             //Invoke("DelayMethod", 3.5f);
