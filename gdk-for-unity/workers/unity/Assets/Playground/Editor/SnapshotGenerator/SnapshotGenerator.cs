@@ -33,6 +33,7 @@ namespace Playground.Editor.SnapshotGenerator
             AddPlayerSpawner(snapshot, GroundCoordinates(-200,-200, ground));//new Coordinates(-2000, 0, -2000));
             AddPlayerSpawner(snapshot, GroundCoordinates(-200, 200, ground));//new Coordinates(-2000, 0, 2000));
 
+            AddWorldTimer(snapshot, new Coordinates { X = 0.0, Y = 0.0, Z = 0.0 });
             //AddCubeGrid(snapshot, cubeCount, ground);
             //CreateSpinner(snapshot, new Coordinates { X = 5.5, Y = 0.5f, Z = 0.0 });
             //CreateSpinner(snapshot, new Coordinates { X = -5.5, Y = 0.5f, Z = 0.0 });
@@ -61,6 +62,19 @@ namespace Playground.Editor.SnapshotGenerator
             template.SetReadAccess(WorkerUtils.UnityGameLogic, WorkerUtils.UnityClient, WorkerUtils.MobileClient);
             template.SetComponentWriteAccess(EntityAcl.ComponentId, WorkerUtils.UnityGameLogic);
 
+            snapshot.AddEntity(template);
+        }
+
+        private static void AddWorldTimer(Snapshot snapshot, Coordinates location)
+        {
+            var template = new EntityTemplate();
+            template.AddComponent(new Position.Snapshot(location), WorkerUtils.UnityGameLogic);
+            template.AddComponent(new Metadata.Snapshot { EntityType = "WorldTimer"}, WorkerUtils.UnityGameLogic);
+            template.AddComponent(new Persistence.Snapshot(), WorkerUtils.UnityGameLogic);
+            template.AddComponent(new WorldTimer.Snapshot(), WorkerUtils.UnityGameLogic);
+
+            template.SetReadAccess(WorkerUtils.UnityGameLogic, WorkerUtils.UnityClient, WorkerUtils.MobileClient);
+            template.SetComponentWriteAccess(EntityAcl.ComponentId, WorkerUtils.UnityGameLogic);
             snapshot.AddEntity(template);
         }
 

@@ -31,3 +31,5 @@
 
 21110 = EngineeringComponent
 21111 = EngineeringManager
+
+30000 = WorldTimer

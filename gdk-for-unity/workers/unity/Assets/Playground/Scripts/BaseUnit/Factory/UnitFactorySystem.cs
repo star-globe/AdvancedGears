@@ -97,7 +97,7 @@ namespace Playground
                 cost = timeCost;
                 if (factory.CurrentType == UnitType.None)
                 {
-                    factory.ProductInterval = new IntervalChecker(cost, time + cost);
+                    factory.ProductInterval = new IntervalChecker(cost, time + cost);   // TODO modify
                     factory.CurrentType = s_order != null ? UnitType.Commander : f_order.Value.Type;
                 }
 

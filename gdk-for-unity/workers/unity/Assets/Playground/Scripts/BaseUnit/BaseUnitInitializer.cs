@@ -34,13 +34,13 @@ namespace Playground
 
             sight.SendUpdate(new BaseUnitSight.Update
             {
-                Interval = new IntervalChecker(settings.Inter,0),
+                Interval = IntervalChecker.InitializedChecker(settings.Inter),
                 Range = settings.SightRange
             });
 
             action.SendUpdate(new BaseUnitAction.Update
             {
-                Interval = new IntervalChecker(settings.Inter,0),
+                Interval = IntervalChecker.InitializedChecker(settings.Inter),
                 AngleSpeed = settings.AngleSpeed,
             });
 

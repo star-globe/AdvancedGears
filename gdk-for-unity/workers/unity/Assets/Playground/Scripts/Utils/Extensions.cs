@@ -141,5 +141,13 @@ namespace Playground
                    self.Point.StrongholdId == other.Point.StrongholdId;
         }
     }
+
+    public partial class IntervalChecker
+    {
+        public static IntervalChecker InitializedChecker(float inter)
+        {
+            return new IntervalChecker(inter,0,-1);
+        }
+    }
 }
 

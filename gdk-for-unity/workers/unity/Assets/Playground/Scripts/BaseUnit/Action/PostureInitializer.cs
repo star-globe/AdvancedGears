@@ -24,7 +24,7 @@ namespace Playground
             var data = writer.Data;
 
             var update = new BaseUnitPosture.Update();
-            update.Interval = new IntervalChecker(inter,0);
+            update.Interval = IntervalChecker.InitializedChecker(inter);
 
             if (!data.Initialized)
             {

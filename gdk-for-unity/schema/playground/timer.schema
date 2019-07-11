@@ -1,0 +1,16 @@
+package playground;
+import "improbable/vector3.schema";
+
+type TimeInfo
+{
+    float time = 1;
+    int32 day = 2;
+}
+
+component WorldTimer {
+    id = 30000;
+    uint64 unit_time = 1;
+    TimerInfo current_time = 2;
+
+    event TimeInfo update_event;
+}
