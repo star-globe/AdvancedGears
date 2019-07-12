@@ -3,14 +3,14 @@ import "improbable/vector3.schema";
 
 type TimerInfo
 {
-    float time = 1;
+    float second = 1;
     int32 day = 2;
 }
 
 component WorldTimer {
     id = 30000;
-    uint64 unit_time = 1;
+    int64 unit_time = 1;
     TimerInfo current_time = 2;
 
-    event TimerInfo update_event;
+    event TimerInfo updates;
 }

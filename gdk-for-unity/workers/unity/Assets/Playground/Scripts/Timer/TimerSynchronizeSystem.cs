@@ -15,28 +15,51 @@ namespace Playground
     {
         EntityQuery group;
 
-        private Vector3 origin;
+        private ComponentUpdateSystem updateSystem;
 
         protected override void OnCreateManager()
         {
             base.OnCreateManager();
+
+            updateSystem = World.GetExistingSystem<ComponentUpdateSystem>();
 
             // ここで基準位置を取る
             origin = World.GetExistingSystem<WorkerSystem>().Origin;
 
             group = GetEntityQuery(
                     ComponentType.ReadWrite<WorldTimer.Component>(),
-                    ComponentType.ReadOnly<Transform>()
+                    ComponentType.ReadOnly<SpatialEntityId>()
             );
         }
+
+        const int upInter = 300;
 
         protected override void OnUpdate()
         {
             Entities.With(group).ForEach((Entity entity,
                                           ref WorldTimer.Component timer,
-                                          Transform trans) =>
+                                          ref SpatialEntityId entityId) =>
             {
+                if (Random.Range(0,upInter) != 0)
+                    return;
 
+                var now = DateTime.UtcNow;
+                var span = now - DateTime.MinValue;
+                var start = new DateTime(now.Year, now.Month, now.Day, 0, 0);
+
+                var sec = (now - start).TotalSeconds;
+                var d = (int)span.TotalDays;
+
+                timer.UnitTime = span.Ticks;
+                var info = new TimerInfo
+                {
+                    Second = (float)sec,
+                    Day = d,
+                };
+
+                timer.CurrentTime = info;
+
+                updateSystem.SendEvent(new WorldTimer.Updates.Event(info), entityId.EntityId);
             });
         }
     }
