@@ -27,5 +27,10 @@ namespace Playground
         {
             // TODO Events
         }
+
+        public void SetTimer(TimerInfo info)
+        {
+            timer = info;
+        }
     }
 }
