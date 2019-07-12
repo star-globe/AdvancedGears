@@ -69,7 +69,7 @@ namespace Playground.Editor.SnapshotGenerator
         {
             var template = new EntityTemplate();
             template.AddComponent(new Position.Snapshot(location), WorkerUtils.UnityGameLogic);
-            template.AddComponent(new Metadata.Snapshot { EntityType = "WorldTimer"}, WorkerUtils.UnityGameLogic);
+            template.AddComponent(new Metadata.Snapshot("WorldTimer"), WorkerUtils.UnityGameLogic);
             template.AddComponent(new Persistence.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new WorldTimer.Snapshot(), WorkerUtils.UnityGameLogic);
 
