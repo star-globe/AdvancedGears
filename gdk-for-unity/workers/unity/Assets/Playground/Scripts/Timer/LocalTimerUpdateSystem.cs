@@ -35,7 +35,7 @@ namespace Playground
 
         protected override void OnUpdate()
         {
-            if (conntected)
+            if (connected)
                 return;
 
             // TODO Events
