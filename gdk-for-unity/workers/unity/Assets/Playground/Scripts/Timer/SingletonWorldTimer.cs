@@ -15,47 +15,20 @@ namespace Playground
         [Require] WorldTimerReader reader;
         [Require] World world;
 
-        WorkerSystem worker;
+        LocalTimerUpdateSystem system;
 
-        OnEnable()
+        void OnEnable()
         {
             reader.OnUpdatesEvent += TimerUpdated;
-            worker = World.GetExistingSystem<WorkerSystem>();
-            
+            system = world.GetExistingSystem<LocalTimerUpdateSystem>();
+
             TimerUpdated(reader.Data.CurrentTime);
         }
 
         private void TimerUpdated(TimerInfo info)
         {
-            if (worker == null)
-                return;
-
-            WorkerSingleton.Instance.SetTimer(worker.WorkerId, info);
-        }
-    }
-
-    public class WorkerSingleton
-    {
-        private static readonly WorkerSingleton instance = new WorkerSingleton();
-
-        public static WorkerSingleton Instance { get { return instance; } }
-
-        readonly Dictionary<string,TimerInfo> timerDic = new Dictionary<string,TimerInfo>();
-
-        public void SetTimer(string workerName, TimerInfo info)
-        {
-            if (timerDic.ContainsKey(workerName))
-                timerDic[workerName] = info;
-            else
-                timerDic.Add(workerName, info);
-        }
-
-        public TimerInfo? GetTimer(string workerName)
-        {
-            if (timerDic.ContainsKey(workerName))
-                return timerDic[workerName];
-
-            return null;
+            if (system != null)
+                system.SetTimer(info);
         }
     }
 }

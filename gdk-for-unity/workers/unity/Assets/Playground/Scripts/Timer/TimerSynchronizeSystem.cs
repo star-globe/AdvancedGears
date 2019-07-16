@@ -23,9 +23,6 @@ namespace Playground
 
             updateSystem = World.GetExistingSystem<ComponentUpdateSystem>();
 
-            // ここで基準位置を取る
-            origin = World.GetExistingSystem<WorkerSystem>().Origin;
-
             group = GetEntityQuery(
                     ComponentType.ReadWrite<WorldTimer.Component>(),
                     ComponentType.ReadOnly<SpatialEntityId>()
@@ -40,12 +37,12 @@ namespace Playground
                                           ref WorldTimer.Component timer,
                                           ref SpatialEntityId entityId) =>
             {
-                if (Random.Range(0,upInter) != 0)
+                if (UnityEngine.Random.Range(0,upInter) != 0)
                     return;
 
                 var now = DateTime.UtcNow;
                 var span = now - DateTime.MinValue;
-                var start = new DateTime(now.Year, now.Month, now.Day, 0, 0);
+                var start = new DateTime(now.Year, now.Month, now.Day, 0, 0, 0);
 
                 var sec = (now - start).TotalSeconds;
                 var d = (int)span.TotalDays;

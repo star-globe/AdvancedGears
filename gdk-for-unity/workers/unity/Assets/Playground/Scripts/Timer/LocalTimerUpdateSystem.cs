@@ -45,5 +45,10 @@ namespace Playground
                 //commandSystem.SendCommand();
             });
         }
+
+        public void SetTimer(TimerInfo info)
+        {
+            timer = info;
+        }
     }
 }
