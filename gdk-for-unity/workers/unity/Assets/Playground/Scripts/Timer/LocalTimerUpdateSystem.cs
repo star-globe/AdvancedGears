@@ -1,11 +1,15 @@
 using System;
+using System.Collections.Generic;
 using Improbable;
 using Improbable.Gdk.Core;
-using Improbable.Gdk.ReactiveComponents;
-using Improbable.Gdk.Subscriptions;
+
+using Improbable.Gdk.Core.Commands;
+using Improbable.Worker.CInterop;
+using Improbable.Worker.CInterop.Query;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
+using EntityQuery = Improbable.Worker.CInterop.Query.EntityQuery;
 using UnityEngine.Experimental.PlayerLoop;
 
 namespace Playground
