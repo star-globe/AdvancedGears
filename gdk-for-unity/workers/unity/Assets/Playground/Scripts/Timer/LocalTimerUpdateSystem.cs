@@ -6,6 +6,7 @@ using Improbable.Gdk.Core;
 using Improbable.Gdk.Core.Commands;
 using Improbable.Worker.CInterop;
 using Improbable.Worker.CInterop.Query;
+using Improbable.Gdk.QueryBasedInterest;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
@@ -26,11 +27,27 @@ namespace Playground
 
         private long? timerEntityQueryId;
         private readonly List<EntityId> timerEntityIds = new List<EntityId>();
-        private readonly EntityQuery timerQuery = new EntityQuery
+        //private readonly InterestQuery timerQuery;
+        private readonly EntityQuery timerQuery;
+        //InterestTemplate template;
+
+        public LocalTimerUpdateSystem(double radius = 300, Vector3? pos = null)
         {
-            Constraint = new ComponentConstraint(WorldTimer.ComponentId),
-            ResultType = new SnapshotResultType()
-        };
+            pos = pos ?? Vector3.zero;
+
+            var list = new IConstraint[]
+            {
+                new ComponentConstraint(WorldTimer.ComponentId),
+                new SphereConstraint(pos.Value.x, pos.Value.y, pos.Value.z, radius),
+            };
+
+            timerQuery = new EntityQuery()
+            {
+                Constraint = new AndConstraint(list),
+                ResultType = new SnapshotResultType()
+            };
+        }
+
 
         private void SendTimerEntityQuery()
         {
