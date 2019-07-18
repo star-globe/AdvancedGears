@@ -16,14 +16,12 @@ using UnityEngine.Experimental.PlayerLoop;
 namespace Playground
 {
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
-    internal class LocalTimerUpdateSystem : ComponentSystem
+    internal class LocalTimerUpdateSystem : BaseEntitySearchSystem
     {
-        WorkerSystem workerSystem;
-        CommandSystem commandSystem;
         private ILogDispatcher logDispatcher;
 
-        private TimerInfo? timer;
-        public TimerInfo? Timer { get { return timer;} }
+        private TimerInfo? timerInfo;
+        public TimerInfo? Timer { get { return timerInfo;} }
 
         private long? timerEntityQueryId;
         private readonly List<EntityId> timerEntityIds = new List<EntityId>();
@@ -51,7 +49,7 @@ namespace Playground
 
         private void SendTimerEntityQuery()
         {
-            timerEntityQueryId = commandSystem.SendCommand(new WorldCommands.EntityQuery.Request
+            timerEntityQueryId = Command.SendCommand(new WorldCommands.EntityQuery.Request
             {
                 EntityQuery = timerQuery
             });
@@ -61,16 +59,9 @@ namespace Playground
         {
             base.OnCreateManager();
 
-            workerSystem = World.GetExistingSystem<WorkerSystem>();
-            commandSystem = World.GetExistingSystem<CommandSystem>();
-            logDispatcher = workerSystem.LogDispatcher;
+            logDispatcher = base.WorkerSystem.LogDispatcher;
 
             SendTimerEntityQuery();
-        }
-
-        public void SetTimer(TimerInfo info)
-        {
-            timer = info;
         }
 
         protected override void OnUpdate()
@@ -87,13 +78,18 @@ namespace Playground
 
         void HandleSetTimer()
         {
+            var id = timerEntityIds[Random.Range(0, timerEntityIds.Count)];
+            WorldTimer.Component? timer = null;
+            if (TryGetComponent(id, out timer) == false)
+                return;
 
+            this.timerInfo = timer.CurrentTime;
         }
 
         int retries = 0;
         void HandleEntityQueryResponses()
         {
-            var entityQueryResponses = commandSystem.GetResponses<WorldCommands.EntityQuery.ReceivedResponse>();
+            var entityQueryResponses = Command.GetResponses<WorldCommands.EntityQuery.ReceivedResponse>();
             for (var i = 0; i < entityQueryResponses.Count; i++)
             {
                 ref readonly var response = ref entityQueryResponses[i];

@@ -133,18 +133,8 @@ namespace Playground
         }
     }
 
-    public abstract class BaseSearchSystem : ComponentSystem
+    public abstract class BaseSearchSystem : BaseEntitySearchSystem
     {
-        WorkerSystem worker = null;
-        WorkerSystem Worker
-        {
-            get
-            {
-                worker = worker ?? World.GetExistingSystem<WorkerSystem>();
-                return worker;
-            }
-        }
-
         protected UnitInfo getNearestEnemey(UnitSide self_side, in Vector3 pos, float length, params UnitType[] types)
         {
             return getNearestUnit(self_side, pos, length, true, types);
@@ -232,6 +222,29 @@ namespace Playground
             }
 
             return unitList;
+        }
+    }
+
+    public abstract class BaseEntitySearchSystem : ComponentSystem
+    {
+        WorkerSystem worker = null;
+        protected WorkerSystem Worker
+        {
+            get
+            {
+                worker = worker ?? World.GetExistingSystem<WorkerSystem>();
+                return worker;
+            }
+        }
+
+        CommandSystem command = null;
+        protected CommandSystem Command
+        {
+            get
+            {
+                command = command ?? World.GetExistingSystem<CommandSystem>();
+                return command;
+            }
         }
 
         protected bool TryGetComponent<T>(in Entity entity, out T? comp) where T : struct, IComponentData
