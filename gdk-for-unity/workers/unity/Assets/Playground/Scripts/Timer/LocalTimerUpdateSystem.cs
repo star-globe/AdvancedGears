@@ -59,7 +59,7 @@ namespace Playground
         {
             base.OnCreateManager();
 
-            logDispatcher = base.WorkerSystem.LogDispatcher;
+            logDispatcher = base.Worker.LogDispatcher;
 
             SendTimerEntityQuery();
         }
@@ -78,12 +78,17 @@ namespace Playground
 
         void HandleSetTimer()
         {
-            var id = timerEntityIds[Random.Range(0, timerEntityIds.Count)];
+            var id = timerEntityIds[UnityEngine.Random.Range(0, timerEntityIds.Count)];
             WorldTimer.Component? timer = null;
             if (TryGetComponent(id, out timer) == false)
                 return;
 
-            this.timerInfo = timer.CurrentTime;
+            SetTimer(timer.Value.CurrentTime);
+        }
+
+        public void SetTimer(TimerInfo info)
+        {
+            this.timerInfo = info;
         }
 
         int retries = 0;
