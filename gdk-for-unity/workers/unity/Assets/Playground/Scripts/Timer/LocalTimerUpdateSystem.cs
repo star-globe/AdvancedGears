@@ -25,6 +25,7 @@ namespace Playground
 
         private long? timerEntityQueryId;
         private readonly List<EntityId> timerEntityIds = new List<EntityId>();
+        private readonly Dictionary<EntityId,EntityQuerySnapshot> timerEntityDic = new Dictionary<EntityId, EntityQuerySnapshot>();
         //private readonly InterestQuery timerQuery;
         private readonly EntityQuery timerQuery;
         //InterestTemplate template;
