@@ -1,0 +1,77 @@
+package advanced_gears;
+import "improbable/gdk/core/common.schema";
+import "improbable/vector3.schema";
+import "advanced_gears/common.schema";
+
+// bullet/gun:21000~21009
+
+type BulletFireInfo {
+    int32 power = 1;
+    uint32 type = 2;
+    uint32 alignment = 3;
+    improbable.Vector3f launch_position = 4;
+    improbable.Vector3f initial_velocity = 5;
+    float launch_time = 6;
+    float life_time = 7;
+    uint32 gun_id = 8;
+    int64 shooter_entity_id = 9;
+    uint64 bullet_id = 10;
+}
+
+type BulletVanishInfo {
+    int64 shooter_entity_id = 1;
+    uint64 bullet_id = 10;
+}
+
+component BulletComponent {
+    id = 21000;
+    uint64 current_id = 1;
+
+    event BulletFireInfo fires;
+    event BulletVanishInfo vanishes;
+}
+
+enum BulletChangeType
+{
+    Consume = 1;
+    Charge = 2;
+}
+
+type BulletChangeInfo {
+    uint64 gun_id = 1;
+    BulletChangeType type = 2;
+    int32 amount = 3;
+}
+
+type GunInfo {
+    uint64 gun_id = 1;
+    uint32 gun_type_id = 2;
+    int32 stock_bullets = 3;
+    int32 stock_max = 4;
+    float attack_range = 5;
+    float attack_angle = 6;
+    IntervalChecker interval = 7;
+    PosturePoint attached_posture = 8;
+}
+
+type AttackTargetInfo {
+    uint32 type = 1;
+    improbable.Vector3f target_position = 2;
+    PosturePoint attached = 3;
+}
+
+type SupplyBulletInfo {
+    uint64 gun_id = 1;
+    uint32 gun_type_id = 2;
+
+    PosturePoint attached = 3;
+    int32 amount = 4;
+}
+
+component GunComponent {
+    id = 21001;
+
+    map<PosturePoint,GunInfo> guns_dic = 1;
+    event AttackTargetInfo fire_triggered;
+    event SupplyBulletInfo bullet_supplied;
+}

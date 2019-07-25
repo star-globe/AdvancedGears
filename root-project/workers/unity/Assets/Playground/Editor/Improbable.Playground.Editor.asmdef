@@ -1,0 +1,21 @@
+{
+    "name": "Improbable.Playground.Editor",
+    "references": [
+        "Improbable.Playground",
+        "Improbable.Gdk.Core",
+        "Improbable.Gdk.Generated",
+        "Improbable.Gdk.GameObjectCreation",
+        "Improbable.Gdk.TransformSynchronization"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}

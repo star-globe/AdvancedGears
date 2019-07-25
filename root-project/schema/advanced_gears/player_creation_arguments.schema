@@ -1,0 +1,6 @@
+package advanced_gears;
+
+type PlayerCreationArguments
+{
+    string player_name = 1;
+}
