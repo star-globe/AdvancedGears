@@ -1,9 +1,0 @@
-package playground;
-
-import "improbable/gdk/core/common.schema";
-
-component SpinnerRotation
-{
-    id = 12002;
-    command improbable.gdk.core.Empty spinner_toggle_rotation(improbable.gdk.core.Empty);
-}
