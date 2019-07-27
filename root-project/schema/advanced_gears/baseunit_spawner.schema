@@ -1,0 +1,16 @@
+package advanced_gears;
+import "improbable/gdk/core/common.schema";
+
+type DeleteBaseUnitRequest
+{
+    EntityId baseunit_entity_id = 1;
+}
+
+component BaseUnitSpawner
+{
+    id = 20099;
+    list<EntityId> spawned_units = 1;
+
+    command improbable.gdk.core.Empty spawn_unit(improbable.gdk.core.Empty);
+    command improbable.gdk.core.Empty delete_spawned_cube(DeleteBaseUnitRequest);
+}

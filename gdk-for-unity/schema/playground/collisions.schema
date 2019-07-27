@@ -1,9 +1,0 @@
-package playground;
-
-import "improbable/gdk/core/common.schema";
-
-component Collisions
-{
-	id = 12009;
-	event improbable.gdk.core.Empty player_collided;
-}
