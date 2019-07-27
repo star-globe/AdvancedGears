@@ -3,6 +3,7 @@ using Unity.Entities;
 
 namespace AdvancedGears
 {
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(SpatialOSUpdateGroup))]
     internal class ProcessScoresSystem : ComponentSystem
     {

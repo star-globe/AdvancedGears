@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace AdvancedGears
 {
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(SpatialOSUpdateGroup))]
     public class InitCameraSystem : ComponentSystem
     {

@@ -4,8 +4,7 @@ using Improbable.Gdk.Core;
 using Improbable.Gdk.PlayerLifecycle;
 using Improbable.Gdk.TransformSynchronization;
 
-#if false
-namespace Playground
+namespace AdvancedGears
 {
     public static class PlayerTemplate
     {
@@ -33,5 +32,4 @@ namespace Playground
         }
     }
 }
-#endif
 

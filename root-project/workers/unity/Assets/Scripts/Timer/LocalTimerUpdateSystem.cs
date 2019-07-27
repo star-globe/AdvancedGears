@@ -15,6 +15,7 @@ using UnityEngine.Experimental.PlayerLoop;
 
 namespace AdvancedGears
 {
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     internal class LocalTimerUpdateSystem : BaseEntitySearchSystem
     {
@@ -27,12 +28,13 @@ namespace AdvancedGears
         private readonly List<EntityId> timerEntityIds = new List<EntityId>();
         private readonly Dictionary<EntityId,EntityQuerySnapshot> timerEntityDic = new Dictionary<EntityId, EntityQuerySnapshot>();
         //private readonly InterestQuery timerQuery;
-        private readonly EntityQuery timerQuery;
+        private EntityQuery timerQuery;
         //InterestTemplate template;
 
-        public LocalTimerUpdateSystem(double radius = 300, Vector3? pos = null)
+        void Initialize()
         {
-            pos = pos ?? Vector3.zero;
+            Vector3? pos = Vector3.zero;
+            double radius = 300;
 
             var list = new IConstraint[]
             {
@@ -47,7 +49,6 @@ namespace AdvancedGears
             };
         }
 
-
         private void SendTimerEntityQuery()
         {
             timerEntityQueryId = Command.SendCommand(new WorldCommands.EntityQuery.Request
@@ -61,6 +62,8 @@ namespace AdvancedGears
             base.OnCreateManager();
 
             logDispatcher = base.Worker.LogDispatcher;
+
+            Initialize();
 
             SendTimerEntityQuery();
         }

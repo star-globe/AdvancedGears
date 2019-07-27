@@ -13,6 +13,7 @@ using UnityEngine.Experimental.PlayerLoop;
 
 namespace AdvancedGears
 {
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     public class BaseUnitSearchSystem : BaseSearchSystem
     {

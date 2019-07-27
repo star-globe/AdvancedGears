@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace AdvancedGears
 {
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(SpatialOSUpdateGroup))]
     [UpdateAfter(typeof(LocalPlayerInputSync))]
     internal class MoveLocalPlayerSystem : ComponentSystem

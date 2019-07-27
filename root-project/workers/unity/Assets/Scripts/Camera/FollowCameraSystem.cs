@@ -54,8 +54,8 @@ namespace AdvancedGears
 
         private static CameraInput UpdateCameraInput(CameraInput input)
         {
-            var x = input.X + (Input.GetKeyDown(KeyCode.C) ? Input.GetAxis("Horizontal") : 0.0f);
-            var y = input.Y - (Input.GetKeyDown(KeyCode.C) ? Input.GetAxis("Vertical"): 0.0f);
+            var x = input.X + InputUtils.CameraX;
+            var y = input.Y - InputUtils.CameraY;
             var distance = input.Distance + Input.GetAxis("Mouse ScrollWheel") * ZoomScale;
 
             x %= 360;

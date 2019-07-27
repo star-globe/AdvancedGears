@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace AdvancedGears
 {
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(SpatialOSUpdateGroup))]
     internal class LocalPlayerInputSync : ComponentSystem
     {
@@ -31,7 +32,7 @@ namespace AdvancedGears
                 {
                     var forward = cameraTransform.Rotation * Vector3.up;
                     var right = cameraTransform.Rotation * Vector3.right;
-                    var input = Input.GetAxisRaw("Horizontal") * right + Input.GetAxisRaw("Vertical") * forward;
+                    var input = InputUtils.GetMove(right, forward);
                     var isShiftDown = Input.GetKey(KeyCode.LeftShift);
 
                     var oldPlayerInput = playerInput;

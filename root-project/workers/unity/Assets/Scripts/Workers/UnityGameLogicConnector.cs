@@ -40,8 +40,7 @@ namespace AdvancedGears
 
         protected override void HandleWorkerConnectionEstablished()
         {
-            Worker.World.GetOrCreateSystem<MetricSendSystem>();
-            PlayerLifecycleHelper.AddServerSystems(Worker.World);
+            WorkerUtils.AddGameLogicSystems(Worker.World);
         }
 
         private static EntityTemplate CreatePlayerEntityTemplate(string workerId, byte[] serializedArguments)
@@ -52,6 +51,9 @@ namespace AdvancedGears
             var template = new EntityTemplate();
             template.AddComponent(new Position.Snapshot(), clientAttribute);
             template.AddComponent(new Metadata.Snapshot("Player"), serverAttribute);
+            template.AddComponent(new BulletComponent.Snapshot(), clientAttribute);
+            template.AddComponent(new PlayerInput.Snapshot(), clientAttribute);
+
             TransformSynchronizationHelper.AddTransformSynchronizationComponents(template, clientAttribute);
             PlayerLifecycleHelper.AddPlayerLifecycleComponents(template, workerId, serverAttribute);
 

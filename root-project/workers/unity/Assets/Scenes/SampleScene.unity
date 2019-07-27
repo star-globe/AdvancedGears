@@ -268,18 +268,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 69f676c91e85e0e40949769fac64cca5, type: 3}
---- !u!114 &941066298 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 114402379897910436, guid: 6f6583327528be14686cd6a0990d11c3,
-    type: 3}
-  m_PrefabInstance: {fileID: 984009055}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 75375c8be8a244a4596ad19e2798eadf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &984009055
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -448,12 +436,12 @@ PrefabInstance:
         type: 3}
       propertyPath: DependsOnWorker
       value: 
-      objectReference: {fileID: 941066298}
+      objectReference: {fileID: 0}
     - target: {fileID: 114958075083198408, guid: 5857884d058555d4282a1beb501099b9,
         type: 3}
       propertyPath: RequiredWorkerConnection
       value: 
-      objectReference: {fileID: 941066298}
+      objectReference: {fileID: 0}
     - target: {fileID: 114958075083198408, guid: 5857884d058555d4282a1beb501099b9,
         type: 3}
       propertyPath: level

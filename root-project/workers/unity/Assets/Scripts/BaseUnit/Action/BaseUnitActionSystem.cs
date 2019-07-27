@@ -13,6 +13,7 @@ using Ex = Extensions;
 
 namespace AdvancedGears
 {
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     internal class BaseUnitActionSystem : ComponentSystem
     {

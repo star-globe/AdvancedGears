@@ -8,6 +8,7 @@ namespace AdvancedGears
     {
     }
 
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(SpatialOSUpdateGroup))]
     public class ProcessRechargeSystem : ComponentSystem
     {

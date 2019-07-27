@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace AdvancedGears
 {
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     internal class CubeMovementSystem : ComponentSystem
     {

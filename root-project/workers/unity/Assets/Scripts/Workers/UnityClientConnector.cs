@@ -46,7 +46,7 @@ namespace AdvancedGears
 
         protected override void HandleWorkerConnectionEstablished()
         {
-            PlayerLifecycleHelper.AddClientSystems(Worker.World);
+            WorkerUtils.AddClientSystems(Worker.World);
         }
     }
 }

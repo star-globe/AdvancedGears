@@ -272,9 +272,10 @@ GameObject:
   - component: {fileID: 5327119983822093462}
   - component: {fileID: 4553853671512242097}
   - component: {fileID: 6127926227217788756}
-  - component: {fileID: 2735756936766173333}
-  - component: {fileID: 3702280155031341494}
-  - component: {fileID: 3796158935573116772}
+  - component: {fileID: 2625626303846736135}
+  - component: {fileID: 4033494450723109892}
+  - component: {fileID: 4113599230267995910}
+  - component: {fileID: 2634503670959294738}
   m_Layer: 11
   m_Name: StrongholdUnit
   m_TagString: Untagged
@@ -357,10 +358,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ReceiveStrategies:
-  - {fileID: 11400000, guid: 7e00873dd53438245919187ebd00e937, type: 2}
-  - {fileID: 11400000, guid: d3eeea3be1ea96949b63c46a6353d4d1, type: 2}
-  SendStrategies: []
-  SetKinematicWhenNotAuthoritative: 0
+  - {fileID: 11400000, guid: 3d4e3c9d4646410429b49892bdf0b52c, type: 2}
+  SendStrategies:
+  - {fileID: 11400000, guid: c214826e4a2dee44d961e287ec697350, type: 2}
+  SetKinematicWhenNotAuthoritative: 1
 --- !u!114 &6127926227217788756
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -374,34 +375,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   notifiers: []
---- !u!114 &2735756936766173333
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7117998853217099108}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0b0b65a8ea1d7244e87a8d905d6f3ebf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  stateRenderer: {fileID: 5327119983822093462}
-  sideRenderer: {fileID: 6111495360319142165}
-  colorSettings: {fileID: 11400000, guid: e9653011b1bcf4847b2c0b2d702b450d, type: 2}
---- !u!114 &3702280155031341494
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7117998853217099108}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b231b4d344e57d747a7f4d5c9147de0d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!54 &3796158935573116772
+--- !u!54 &2625626303846736135
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -417,3 +391,45 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!135 &4033494450723109892
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7117998853217099108}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 1.5
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &4113599230267995910
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7117998853217099108}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1685dacbc8e8e54489690623b488e50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  settings: {fileID: 11400000, guid: 971b658c8c07e374e8ca0d961b335be0, type: 2}
+  gunInitializer: {fileID: 0}
+--- !u!114 &2634503670959294738
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7117998853217099108}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 188486822372df949b07eb0ce4f95599, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stateRenderer: {fileID: 5327119983822093462}
+  sideRenderer: {fileID: 6111495360319142165}
+  colorSettings: {fileID: 11400000, guid: e9653011b1bcf4847b2c0b2d702b450d, type: 2}

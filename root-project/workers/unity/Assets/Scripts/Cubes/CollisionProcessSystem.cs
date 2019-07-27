@@ -10,6 +10,7 @@ namespace AdvancedGears
         public Entity OtherEntity;
     }
 
+    [DisableAutoCreation]
     [UpdateInGroup(typeof(SpatialOSUpdateGroup))]
     internal class CollisionProcessSystem : ComponentSystem
     {
