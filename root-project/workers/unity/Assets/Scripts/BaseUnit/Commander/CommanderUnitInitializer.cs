@@ -30,7 +30,6 @@ namespace AdvancedGears
 
             commander.SendUpdate(new CommanderStatus.Update
             {
-                Rank = settings.Rank,
                 AllyRange = settings.AllyRange,
             });
 

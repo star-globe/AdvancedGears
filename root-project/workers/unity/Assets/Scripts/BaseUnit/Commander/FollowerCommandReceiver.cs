@@ -21,8 +21,7 @@ namespace AdvancedGears
             commandReceiver.SendAddFollowerResponse(new CommanderStatus.AddFollower.Response(request.RequestId, new Empty()));
 
             var info = writer.Data.FollowerInfo;
-            info.Followers.AddRange(request.Payload.Followers);
-            info.UnderCommanders.AddRange(request.Payload.UnderCommanders);
+            info.SetFollowers(request.Payload.Followers, request.Payload.UnderCommanders);
 
             writer.SendUpdate(new CommanderStatus.Update()
             {

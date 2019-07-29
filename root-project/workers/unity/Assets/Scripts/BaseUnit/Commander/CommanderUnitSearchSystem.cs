@@ -70,10 +70,10 @@ namespace AdvancedGears
 
                 bool is_target;
                 int num = 5;
-                if (commander.FollowerInfo.NeedsFollowers(num))
+                if (commander.NeedsFollowers(num))
                     is_target = escapeOrder(status, entityId, pos, ref sight, ref commander);
-                else if (commander.SuperiorInfo.EntityId.IsValid() == false)
-                    is_target = organizeOrder(status.Side, pos, ref commander);
+                //else if (commander.SuperiorInfo.EntityId.IsValid() == false)
+                //    is_target = organizeOrder(status.Side, pos, ref commander);
                 else
                     is_target = attackOrder(status, entityId, pos, ref sight, ref commander);
 

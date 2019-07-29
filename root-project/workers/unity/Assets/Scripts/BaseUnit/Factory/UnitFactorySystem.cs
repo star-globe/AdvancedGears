@@ -59,6 +59,7 @@ namespace AdvancedGears
 
         // TODO:getFromSettings;
         const float timeCost = 5;
+        const float range = 10.0f;
         void HandleProductUnit()
         {
             Entities.With(group).ForEach((Unity.Entities.Entity entity,
@@ -106,9 +107,11 @@ namespace AdvancedGears
                 if (inter.CheckTime(time))
                 {
                     var trans = EntityManager.GetComponentObject<Transform>(entity);
-                    var pos = trans.position;
+                    var p = trans.position + RandomLogic.XZRandomCirclePos(range);
+
+                    var pos = p.ToWorldPosition(origin);
                     EntityTemplate template = null;
-                    var coords = new Coordinates(pos.x, pos.y, pos.z);
+                    var coords = new Coordinates(pos.X, pos.Y, pos.Z);
 
                     bool finished = false;
                     if (s_order != null)
@@ -154,6 +157,10 @@ namespace AdvancedGears
             if (current.Number <= 0) {
                 orders.RemoveAt(0);
                 finished = true;
+            }
+            else
+            {
+                orders[0] = current;
             }
 
             return template;

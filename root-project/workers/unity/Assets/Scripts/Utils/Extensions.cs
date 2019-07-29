@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Improbable.Gdk.Core;
 using Ex = Extensions;
 
 namespace AdvancedGears
@@ -11,6 +12,11 @@ namespace AdvancedGears
         public static Vector3 ToWorkerPosition(this Improbable.Vector3f pos, Vector3 origin)
         {
             return pos.ToUnityVector() + origin;
+        }
+
+        public static Improbable.Vector3f ToWorldPosition(this Vector3 pos, Vector3 origin)
+        {
+            return pos.ToImprobableVector3() - origin.ToImprobableVector3();
         }
 
         public static Quaternion ToUnityQuaternion(this Ex.Quaternion quo)
@@ -117,12 +123,26 @@ namespace AdvancedGears
             return length;
         }
 
-        public static bool NeedsFollowers(this FollowerInfo info, int num)
+        public static bool NeedsFollowers(this CommanderStatus.Component commander, int num)
         {
             bool tof = false;
-            tof |= info.Followers.Count < num;
-            tof |= info.UnderCommanders.Count < num;
+            tof |= commander.FollowerInfo.Followers.Count < num;
+            tof |= commander.Rank > 0 && commander.FollowerInfo.UnderCommanders.Count < num;
             return tof;
+        }
+
+        public static void SetFollowers(this FollowerInfo info, List<EntityId> followers, List<EntityId> commanders)
+        {
+            foreach (var f in followers) {
+                if (info.Followers.Contains(f) == false)
+                    info.Followers.Add(f);
+            }
+
+            foreach (var c in commanders)
+            {
+                if (info.UnderCommanders.Contains(c) == false)
+                    info.UnderCommanders.Add(c);
+            }
         }
 
         public static int EmptyCapacity(this FuelComponent.Component fuel)
