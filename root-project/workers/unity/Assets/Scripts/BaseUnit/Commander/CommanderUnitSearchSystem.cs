@@ -122,9 +122,9 @@ namespace AdvancedGears
             TargetInfo targetInfo;
             commonTargeting(tgt, entityId, commander, ref sight, out targetInfo);
 
-            commander.SelfOrder = OrderType.Escape;
+            commander.Order.Self(OrderType.Escape);
 
-            SetCommand(targetInfo.CommanderId, targetInfo, commander.SelfOrder);
+            SetCommand(targetInfo.CommanderId, targetInfo, commander.Order.Self);
 
             return tgt != null;
         }
@@ -134,7 +134,7 @@ namespace AdvancedGears
         {
             var tgt = getNearestAlly(side, pos, radioRange, UnitType.HeadQuarter);
 
-            commander.SelfOrder = OrderType.Organize;
+            commander.Order.Self(OrderType.Organize);
             return tgt != null;
         }
 
@@ -147,7 +147,7 @@ namespace AdvancedGears
 
             // check power
             OrderType current = GetOrder(status.Side, pos, sight.Range);
-            commander.SelfOrder = current;
+            commander.Order.Self(current);
 
             SetFollowers(commander.FollowerInfo.Followers, targetInfo, current);
 

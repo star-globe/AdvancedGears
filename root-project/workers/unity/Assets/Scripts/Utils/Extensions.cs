@@ -48,6 +48,16 @@ namespace AdvancedGears
             return true;
         }
 
+        public static void Self(this OrderPair pair, OrderType self)
+        {
+            pair.Self = self;
+        }
+
+        public static void Upper(this OrderPair pair, OrderType upper)
+        {
+            pair.Upper = upper;
+        }
+
         public static void SetData(this ref PostureInfo info, PostureData data)
         {
             if (info.Datas.ContainsKey(data.Point))

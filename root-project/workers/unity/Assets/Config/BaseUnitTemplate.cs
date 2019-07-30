@@ -57,7 +57,7 @@ namespace AdvancedGears
                 case UnitType.Commander:
                     template.AddComponent(new BulletComponent.Snapshot(), writeAccess);
                     template.AddComponent(new CommanderStatus.Snapshot { FollowerInfo = new FollowerInfo { Followers = new List<EntityId>(), UnderCommanders = new List<EntityId>() },
-                                                                         SelfOrder = OrderType.Idle,
+                                                                         Order = new OrderPair { Self = OrderType.Idle, Upper = OrderType.Idle },
                                                                          Rank = 0, }, writeAccess);
                     template.AddComponent(new CommanderSight.Snapshot { WarPowers = new List<WarPower>() }, writeAccess);
                     template.AddComponent(new CommanderAction.Snapshot { ActionType = CommandActionType.None }, writeAccess);
