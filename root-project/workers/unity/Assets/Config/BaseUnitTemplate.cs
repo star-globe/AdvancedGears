@@ -20,6 +20,7 @@ namespace AdvancedGears
             { UnitType.Soldier, OrderType.Idle },
             { UnitType.Commander, OrderType.Attack },
             { UnitType.Stronghold, OrderType.Organize },
+            { UnitType.HeadQuarter, OrderType.Organize },
         };
 
         public static EntityTemplate CreateBaseUnitEntityTemplate(UnitSide side, Coordinates coords, UnitType type)
@@ -57,6 +58,7 @@ namespace AdvancedGears
                 case UnitType.Commander:
                     template.AddComponent(new BulletComponent.Snapshot(), writeAccess);
                     template.AddComponent(new CommanderStatus.Snapshot { FollowerInfo = new FollowerInfo { Followers = new List<EntityId>(), UnderCommanders = new List<EntityId>() },
+                                                                         SuperiorInfo = new SuperiorInfo { IsOrdered = false },
                                                                          Order = new OrderPair { Self = OrderType.Idle, Upper = OrderType.Idle },
                                                                          Rank = 0, }, writeAccess);
                     template.AddComponent(new CommanderSight.Snapshot { WarPowers = new List<WarPower>() }, writeAccess);

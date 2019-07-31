@@ -58,7 +58,7 @@ namespace AdvancedGears
         }
 
         // TODO:getFromSettings;
-        const float timeCost = 5;
+        const float timeCost = 2;
         const float range = 10.0f;
         void HandleProductUnit()
         {

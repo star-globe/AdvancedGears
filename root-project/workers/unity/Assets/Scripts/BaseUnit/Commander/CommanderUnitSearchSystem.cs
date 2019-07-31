@@ -72,8 +72,8 @@ namespace AdvancedGears
                 int num = 5;
                 if (commander.NeedsFollowers(num))
                     is_target = escapeOrder(status, entityId, pos, ref sight, ref commander);
-                //else if (commander.SuperiorInfo.EntityId.IsValid() == false)
-                //    is_target = organizeOrder(status.Side, pos, ref commander);
+                else if (commander.SuperiorInfo.IsNeedToOrder())
+                    is_target = organizeOrder(status.Side, pos, ref commander);
                 else
                     is_target = attackOrder(status, entityId, pos, ref sight, ref commander);
 
@@ -122,7 +122,7 @@ namespace AdvancedGears
             TargetInfo targetInfo;
             commonTargeting(tgt, entityId, commander, ref sight, out targetInfo);
 
-            commander.Order.Self(OrderType.Escape);
+            commander.Order = commander.Order.Self(OrderType.Escape);
 
             SetCommand(targetInfo.CommanderId, targetInfo, commander.Order.Self);
 
@@ -134,7 +134,9 @@ namespace AdvancedGears
         {
             var tgt = getNearestAlly(side, pos, radioRange, UnitType.HeadQuarter);
 
-            commander.Order.Self(OrderType.Organize);
+            commander.Order = commander.Order.Self(OrderType.Organize);
+            commander.SuperiorInfo = commander.SuperiorInfo.SetIsOrder(true);
+
             return tgt != null;
         }
 

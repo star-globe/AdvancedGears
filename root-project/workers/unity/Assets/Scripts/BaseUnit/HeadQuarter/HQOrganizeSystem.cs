@@ -14,7 +14,7 @@ namespace AdvancedGears
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
-    internal class HeadQuarterOrganizeSystem : BaseSearchSystem
+    internal class HQOrganizeSystem : BaseSearchSystem
     {
         private CommandSystem commandSystem;
         private EntityQuery group;

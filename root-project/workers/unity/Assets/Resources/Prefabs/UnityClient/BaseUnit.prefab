@@ -174,7 +174,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8dab67a942af885428668d3ba6952957, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  postures: []
+  postures:
+  - {fileID: 9202294007379016158}
   vehicle: {fileID: 7292917634982622309}
   groundDetect: {fileID: 5423149259494560123}
 --- !u!54 &7292917634982622309

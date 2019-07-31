@@ -48,14 +48,27 @@ namespace AdvancedGears
             return true;
         }
 
-        public static void Self(this OrderPair pair, OrderType self)
+        public static OrderPair Self(this OrderPair pair, OrderType self)
         {
             pair.Self = self;
+            return pair;
         }
 
-        public static void Upper(this OrderPair pair, OrderType upper)
+        public static OrderPair Upper(this OrderPair pair, OrderType upper)
         {
             pair.Upper = upper;
+            return pair;
+        }
+
+        public static bool IsNeedToOrder(this SuperiorInfo superior)
+        {
+            return superior.IsOrdered == false && superior.EntityId.IsValid() == false;
+        }
+
+        public static SuperiorInfo SetIsOrder(this SuperiorInfo superior, bool isOrdered)
+        {
+            superior.IsOrdered = isOrdered;
+            return superior;
         }
 
         public static void SetData(this ref PostureInfo info, PostureData data)

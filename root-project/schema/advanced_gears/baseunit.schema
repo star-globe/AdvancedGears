@@ -182,6 +182,7 @@ type FollowerInfo {
 
 type SuperiorInfo {
     EntityId entity_id = 1;
+    bool is_ordered = 2;
 }
 
 component CommanderStatus {
