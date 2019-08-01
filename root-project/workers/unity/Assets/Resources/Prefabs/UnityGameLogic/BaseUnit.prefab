@@ -506,6 +506,7 @@ GameObject:
   m_Component:
   - component: {fileID: 573158945730020982}
   - component: {fileID: 3281907652293376725}
+  - component: {fileID: 6654477141868338734}
   m_Layer: 13
   m_Name: Turret
   m_TagString: Untagged
@@ -545,6 +546,21 @@ MonoBehaviour:
   hingeVectorType: 0
   barell: {fileID: 3632280312333265636}
   muzzle: {fileID: 7398151165962928535}
+--- !u!114 &6654477141868338734
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8791869786106734914}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bdcc663e3b9e944d96c5b8ec7c0e156, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  point: 1
+  connectors:
+  - {fileID: 3281907652293376725}
 --- !u!1 &9077667431196485703
 GameObject:
   m_ObjectHideFlags: 0
@@ -564,7 +580,6 @@ GameObject:
   - component: {fileID: -2428112270548870933}
   - component: {fileID: 7218540853208352848}
   - component: {fileID: 4342676100120716153}
-  - component: {fileID: 2135121529763172820}
   - component: {fileID: 1427610268442122002}
   - component: {fileID: 6182656088854544015}
   - component: {fileID: 8948276811002962415}
@@ -667,7 +682,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8dab67a942af885428668d3ba6952957, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  postures: []
+  postures:
+  - {fileID: 6654477141868338734}
   vehicle: {fileID: 1116886489364719905}
   groundDetect: {fileID: 5228398840156876227}
 --- !u!54 &1116886489364719905
@@ -740,18 +756,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   settings: {fileID: 11400000, guid: 6a0a53c2b739402478a473e8cf2593e3, type: 2}
   gunInitializer: {fileID: -2428112270548870933}
---- !u!114 &2135121529763172820
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9077667431196485703}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 903a5a9b2ff919b4c883caed76f7a399, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1427610268442122002
 MonoBehaviour:
   m_ObjectHideFlags: 0

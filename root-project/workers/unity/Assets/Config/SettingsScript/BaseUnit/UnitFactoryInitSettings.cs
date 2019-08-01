@@ -8,11 +8,11 @@ namespace AdvancedGears
     public class UnitFactoryInitSettings : ScriptableObject
     {
         [SerializeField] float sightRange = 100.0f;
-        [SerializeField] float allyRange = 50.0f;
+        [SerializeField] int resourceMax = 100;
         [SerializeField] float inter = 3.0f;
 
         public float SightRange => sightRange;
-        public float AllyRange => allyRange;
+        public int ResourceMax => resourceMax;
         public float Inter => inter;
     }
 }

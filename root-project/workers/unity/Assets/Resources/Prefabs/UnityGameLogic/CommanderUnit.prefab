@@ -421,7 +421,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8dab67a942af885428668d3ba6952957, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  postures: []
+  postures:
+  - {fileID: 5281662079772733081}
   vehicle: {fileID: 172552952301854353}
   groundDetect: {fileID: 1660802064886688718}
 --- !u!114 &3699102927289134500
@@ -706,6 +707,7 @@ GameObject:
   m_Component:
   - component: {fileID: 443152730317385729}
   - component: {fileID: 4477265152146080606}
+  - component: {fileID: 5281662079772733081}
   m_Layer: 13
   m_Name: Turret
   m_TagString: Untagged
@@ -746,6 +748,21 @@ MonoBehaviour:
   hingeVectorType: 0
   barell: {fileID: 2589321985771215483}
   muzzle: {fileID: 2102837161885774132}
+--- !u!114 &5281662079772733081
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8769917115464090068}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bdcc663e3b9e944d96c5b8ec7c0e156, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  point: 1
+  connectors:
+  - {fileID: 4477265152146080606}
 --- !u!1 &9077709467839374498
 GameObject:
   m_ObjectHideFlags: 0
