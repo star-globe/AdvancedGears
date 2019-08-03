@@ -66,7 +66,7 @@ namespace AdvancedGears
             if (IsSet == false)
                 return new UnityEngine.Quaternion[0];
 
-            return connectors.Select(c => c.transform.rotation).ToArray();
+            return connectors.Select(c => c.transform.localRotation).ToArray();
         }
         public void SetQuaternion(int index, UnityEngine.Quaternion quo)
         {
@@ -76,7 +76,7 @@ namespace AdvancedGears
             if (index < 0 || index >= connectors.Length)
                 return;
 
-            connectors[index].transform.rotation = quo;
+            connectors[index].transform.localRotation = quo;
         }
 
         static void CheckChildren<T>(T tgt, List<T> list) where T : Component

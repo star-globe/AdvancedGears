@@ -340,6 +340,7 @@ GameObject:
   - component: {fileID: 5541346502727184675}
   - component: {fileID: -4954360525522843846}
   - component: {fileID: -7330836916391294851}
+  - component: {fileID: 6697827725542492386}
   m_Layer: 11
   m_Name: CommanderUnit
   m_TagString: Untagged
@@ -468,8 +469,8 @@ SphereCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 1.2
-  m_Center: {x: 0, y: -0.8, z: 0}
+  m_Radius: 2
+  m_Center: {x: 0, y: -1, z: 0}
 --- !u!114 &7257654559995326483
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -586,6 +587,18 @@ MonoBehaviour:
   m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 108655c186537e64bb118e9ac43b13ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6697827725542492386
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5181175297171742801}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b6a34ca4400c7946bcf0baee835f6fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &5434689098519824318

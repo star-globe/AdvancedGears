@@ -120,7 +120,7 @@ namespace AdvancedGears
             if (unit.PostureDic.ContainsKey(point) == false)
                 return new List<Ex.Quaternion>();
 
-            return unit.PostureDic[point].Connectors.Select(c => c.transform.rotation.ToImprobableQuaternion()).ToList();
+            return unit.PostureDic[point].Connectors.Select(c => c.transform.localRotation.ToImprobableQuaternion()).ToList();
         }
 
         public static T[] GetComponentsInChildrenWithoutSelf<T>(this GameObject self) where T : Component
@@ -146,24 +146,16 @@ namespace AdvancedGears
             return length;
         }
 
-        public static bool NeedsFollowers(this CommanderStatus.Component commander, int num)
-        {
-            bool tof = false;
-            tof |= commander.FollowerInfo.Followers.Count < num;
-            tof |= commander.Rank > 0 && commander.FollowerInfo.UnderCommanders.Count < num;
-            return tof;
-        }
-
         public static void SetFollowers(this FollowerInfo info, List<EntityId> followers, List<EntityId> commanders)
         {
             foreach (var f in followers) {
-                if (info.Followers.Contains(f) == false)
+                if (info.Followers.Exists(en => en.Id ==f.Id) == false)
                     info.Followers.Add(f);
             }
 
             foreach (var c in commanders)
             {
-                if (info.UnderCommanders.Contains(c) == false)
+                if (info.UnderCommanders.Exists(en => en.Id == c.Id) == false)
                     info.UnderCommanders.Add(c);
             }
         }

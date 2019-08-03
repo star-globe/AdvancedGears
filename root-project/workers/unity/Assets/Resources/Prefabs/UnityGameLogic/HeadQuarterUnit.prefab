@@ -186,6 +186,7 @@ GameObject:
   - component: {fileID: 1019395314181219347}
   - component: {fileID: 7448665792378991312}
   - component: {fileID: 8555894712812637063}
+  - component: {fileID: 3420274220037036189}
   m_Layer: 11
   m_Name: HeadQuarterUnit
   m_TagString: Untagged
@@ -335,6 +336,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   settings: {fileID: 11400000, guid: e01a411e2a0c8354daaa8293ffa44f5a, type: 2}
+--- !u!114 &3420274220037036189
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7541166145706494584}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b6a34ca4400c7946bcf0baee835f6fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7653244005488235515
 GameObject:
   m_ObjectHideFlags: 0

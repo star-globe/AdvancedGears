@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Improbable.Gdk.Core;
 using Improbable.Gdk.ReactiveComponents;
 using Improbable.Gdk.Subscriptions;
@@ -20,6 +21,7 @@ namespace AdvancedGears
 
         private Vector3 origin;
 
+        #region ComponentSystem
         protected override void OnCreateManager()
         {
             base.OnCreateManager();
@@ -70,7 +72,7 @@ namespace AdvancedGears
 
                 bool is_target;
                 int num = 5;
-                if (commander.NeedsFollowers(num))
+                if (CheckNeedsFollowers(commander, num))
                     is_target = escapeOrder(status, entityId, pos, ref sight, ref commander);
                 else if (commander.SuperiorInfo.IsNeedToOrder())
                     is_target = organizeOrder(status.Side, pos, ref commander);
@@ -80,6 +82,7 @@ namespace AdvancedGears
                 action.IsTarget = is_target;
             });
         }
+        #endregion
 
         void commonTargeting(UnitInfo tgt, in SpatialEntityId entityId, in CommanderStatus.Component commander,
                             ref CommanderSight.Component sight, out TargetInfo targetInfo)
@@ -116,6 +119,7 @@ namespace AdvancedGears
                                         commander.AllyRange);
         }
 
+        #region OrderMethod
         bool escapeOrder(in BaseUnitStatus.Component status, in SpatialEntityId entityId, in Vector3 pos, ref CommanderSight.Component sight, ref CommanderStatus.Component commander)
         {
             var tgt = getNearestAlly(status.Side, pos, sight.Range, UnitType.Stronghold);
@@ -185,13 +189,38 @@ namespace AdvancedGears
             float rate = 1.3f;
             if (ally > enemy * rate)
                 return OrderType.Attack;
-            
+
             if (ally * rate * rate < enemy)
                 return OrderType.Escape;
 
             return OrderType.Keep;
         }
+        #endregion
 
+        #region CheckMethod
+        private bool CheckNeedsFollowers(in CommanderStatus.Component commander, int num)
+        {
+            if (commander.FollowerInfo.Followers.Count(f => CheckAlive(f.Id)) <= num)
+                return true;
+
+            if (commander.Rank > 0 &&
+                commander.FollowerInfo.UnderCommanders.Count(f => CheckAlive(f.Id)) <= num)
+                return true;
+
+            return false;
+        }
+
+        private bool CheckAlive(long entityId)
+        {
+            BaseUnitStatus.Component? status;
+            if (TryGetComponent(new EntityId(entityId), out status) == false)
+                return false;
+
+            return status.Value.State == UnitState.Alive;
+        }
+        #endregion
+
+        #region SetMethod
         private void SetFollowers(List<EntityId> followers, in TargetInfo targetInfo, OrderType order)
         {
             foreach (var id in followers)
@@ -217,8 +246,9 @@ namespace AdvancedGears
             if (status.Value.Order == order)
                 return false;
 
-            commandSystem.SendCommand(new BaseUnitStatus.SetOrder.Request(id, new OrderInfo(){ Order = order }), entity);
+            commandSystem.SendCommand(new BaseUnitStatus.SetOrder.Request(id, new OrderInfo() { Order = order }), entity);
             return true;
         }
+        #endregion
     }
 }
