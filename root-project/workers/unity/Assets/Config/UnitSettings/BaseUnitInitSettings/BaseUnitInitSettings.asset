@@ -23,3 +23,4 @@ MonoBehaviour:
   defense: 10
   maxFuel: 50
   consumeRate: 1
+  gunIds: 01000000

@@ -6,7 +6,11 @@ using UnityEngine.Assertions;
 
 namespace AdvancedGears
 {
-    public abstract class AttachedTransform : MonoBehaviour
+    public abstract class AttachedTransform : ConnectorInfoObject
+    {
+    }
+
+    public abstract class ConnectorInfoObject : MonoBehaviour
     {
         public enum VectorType
         {

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace AdvancedGears
 {
-    public class ConnectorConstrain : AttachedTransform
+    public class ConnectorConstrain : ConnectorInfoObject
     {
         [SerializeField] VectorType orderVectorType;
 

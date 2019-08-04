@@ -17,4 +17,4 @@ MonoBehaviour:
   atkRange: 15
   atkAngle: 1
   inter: 0.5
-  attached: 2
+  attached: 1

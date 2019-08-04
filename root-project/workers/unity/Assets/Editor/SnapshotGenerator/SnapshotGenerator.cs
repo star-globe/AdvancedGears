@@ -138,6 +138,11 @@ namespace AdvancedGears.Editor
             var templateCb = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.B, GroundCoordinates(len * 2, 0, ground), UnitType.Commander);
             snapshot.AddEntity(templateCa);
             snapshot.AddEntity(templateCb);
+
+            var templateHa = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.A, GroundCoordinates(-len * 3.5, 0, ground), UnitType.HeadQuarter);
+            var templateHb = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.B, GroundCoordinates(len * 3.5, 0, ground), UnitType.HeadQuarter);
+            snapshot.AddEntity(templateHa);
+            snapshot.AddEntity(templateHb);
         }
 
         private static void CreateSpinner(Snapshot snapshot, Coordinates coords)
