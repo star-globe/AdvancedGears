@@ -285,6 +285,21 @@ namespace AdvancedGears
             SetComponent(entity, comp);
         }
 
+        protected void RemoveComponent(in Entity entity, ComponentType compType)
+        {
+            if (EntityManager.HasComponent(entity, compType))
+                EntityManager.RemoveComponentData(entity, compType);
+        }
+
+        protected void RemoveComponent(EntityId id,  ComponentType compType)
+        {
+            Entity entity;
+            if (!this.TryGetEntity(id, out entity))
+                return;
+
+            RemoveComponent(entity, compType);
+        }
+
         protected bool TryGetEntity(EntityId id, out Entity entity)
         {
             if (!this.Worker.TryGetEntity(id, out entity))
