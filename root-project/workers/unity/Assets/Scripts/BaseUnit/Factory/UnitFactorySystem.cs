@@ -26,7 +26,7 @@ namespace AdvancedGears
 
         private Vector3 origin;
 
-        private class ProductOrderCotext
+        private class ProductOrderContext
         {
             public FollowerOrder? f_order;
             public SuperiorOrder? s_order;
@@ -122,7 +122,7 @@ namespace AdvancedGears
                     var request = new WorldCommands.CreateEntity.Request
                     (
                         template,
-                        context: new ProductOrderCotext() { f_order = f_order, s_order = s_order, type = factory.CurrentType }
+                        context: new ProductOrderContext() { f_order = f_order, s_order = s_order, type = factory.CurrentType }
                     );
                     commandSystem.SendCommand(request);
 
@@ -196,8 +196,7 @@ namespace AdvancedGears
             var responses = commandSystem.GetResponses<WorldCommands.CreateEntity.ReceivedResponse>();
             for (var i = 0; i < responses.Count; i++) {
                 ref readonly var response = ref responses[i];
-                if (!(response.Context is ProductOrderCotext requestContext))
-                {
+                if (!(response.Context is ProductOrderContext requestContext)) {
                     // Ignore non-player entity creation requests
                     continue;
                 }
