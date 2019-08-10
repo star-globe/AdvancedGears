@@ -223,6 +223,15 @@ namespace AdvancedGears
 
             return unitList;
         }
+
+        protected bool CheckAlive(long entityId)
+        {
+            BaseUnitStatus.Component? status;
+            if (TryGetComponent(new EntityId(entityId), out status) == false)
+                return false;
+
+            return status.Value.State == UnitState.Alive;
+        }
     }
 
     public abstract class BaseEntitySearchSystem : ComponentSystem

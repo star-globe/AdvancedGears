@@ -58,7 +58,7 @@ namespace AdvancedGears
                     return;
 
                 var unit = EntityManager.GetComponentObject<UnitTransform>(entity);
-                var rigidbody = unit.Vehicle;
+                var rigidbody = EntityManager.GetComponentObject<Rigidbody>(entity);
 
                 if (!movement.IsTarget)
                 {

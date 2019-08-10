@@ -13,7 +13,7 @@ namespace AdvancedGears
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
-    internal class CommanderActionSystem : BaseSearchSystem
+    internal class CommanderActionSystem : BaseCommanderSearch
     {
         private CommandSystem commandSystem;
         private EntityQuery group;
@@ -98,7 +98,7 @@ namespace AdvancedGears
             var id = tgt.TargetInfo.TargetId;
             List<UnitFactory.AddFollowerOrder.Request> reqList = new List<UnitFactory.AddFollowerOrder.Request>();
 
-            var n_sol = num - commander.FollowerInfo.Followers.Count;
+            var n_sol = num - GetFollowerCount(commander, false);
             if (n_sol > 0) {
                 reqList.Add(new UnitFactory.AddFollowerOrder.Request(id, new FollowerOrder() { Customer = entityId.EntityId,
                                                                                                Number = n_sol,
@@ -106,7 +106,7 @@ namespace AdvancedGears
                                                                                                Side = side }));
             }
 
-            var n_com = num - commander.FollowerInfo.UnderCommanders.Count;
+            var n_com = num - GetFollowerCount(commander,true);
             if (n_com > 0 && commander.Rank > 0) {
                 reqList.Add(new UnitFactory.AddFollowerOrder.Request(id, new FollowerOrder() { Customer = entityId.EntityId,
                                                                                                Number = n_com,

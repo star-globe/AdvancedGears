@@ -13,6 +13,7 @@ namespace AdvancedGears
             { UnitType.Soldier, "BaseUnit"},
             { UnitType.Commander, "CommanderUnit"},
             { UnitType.Stronghold, "StrongholdUnit"},
+            { UnitType.HeadQuarter, "HeadQuarterUnit"},
         };
 
         static readonly Dictionary<UnitType, OrderType> orderDic = new Dictionary<UnitType, OrderType>()

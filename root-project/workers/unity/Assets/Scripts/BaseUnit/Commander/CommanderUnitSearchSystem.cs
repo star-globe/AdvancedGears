@@ -13,7 +13,7 @@ namespace AdvancedGears
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
-    public class CommanderUnitSearchSystem : BaseSearchSystem
+    public class CommanderUnitSearchSystem : BaseCommanderSearch
     {
         private CommandSystem commandSystem;
         private EntityQuery group;
@@ -70,7 +70,7 @@ namespace AdvancedGears
                 var pos = trans.position;
 
                 bool is_target;
-                int num = 5;
+                int num = 5/2;
                 if (CheckNeedsFollowers(commander, num))
                     is_target = escapeOrder(status, entityId, pos, ref sight, ref commander);
                 else if (commander.SuperiorInfo.IsNeedToOrder())
@@ -196,29 +196,6 @@ namespace AdvancedGears
         }
         #endregion
 
-        #region CheckMethod
-        private bool CheckNeedsFollowers(in CommanderStatus.Component commander, int num)
-        {
-            if (commander.FollowerInfo.Followers.Count(f => CheckAlive(f.Id)) <= num)
-                return true;
-
-            if (commander.Rank > 0 &&
-                commander.FollowerInfo.UnderCommanders.Count(f => CheckAlive(f.Id)) <= num)
-                return true;
-
-            return false;
-        }
-
-        private bool CheckAlive(long entityId)
-        {
-            BaseUnitStatus.Component? status;
-            if (TryGetComponent(new EntityId(entityId), out status) == false)
-                return false;
-
-            return status.Value.State == UnitState.Alive;
-        }
-        #endregion
-
         #region SetMethod
         private void SetFollowers(List<EntityId> followers, in TargetInfo targetInfo, OrderType order)
         {
@@ -247,6 +224,31 @@ namespace AdvancedGears
 
             commandSystem.SendCommand(new BaseUnitStatus.SetOrder.Request(id, new OrderInfo() { Order = order }), entity);
             return true;
+        }
+        #endregion
+    }
+
+    public abstract class BaseCommanderSearch : BaseSearchSystem
+    {
+        #region CheckMethod
+        protected bool CheckNeedsFollowers(in CommanderStatus.Component commander, int num)
+        {
+            if (GetFollowerCount(commander,false) < num)
+                return true;
+
+            if (commander.Rank > 0 &&
+                GetFollowerCount(commander, true) <= num)
+                return true;
+
+            return false;
+        }
+
+        protected int GetFollowerCount(in CommanderStatus.Component commander, bool isUnderCommander)
+        {
+            if (isUnderCommander)
+                return commander.FollowerInfo.UnderCommanders.Count(f => CheckAlive(f.Id));
+            else
+                return commander.FollowerInfo.Followers.Count(f => CheckAlive(f.Id));
         }
         #endregion
     }
