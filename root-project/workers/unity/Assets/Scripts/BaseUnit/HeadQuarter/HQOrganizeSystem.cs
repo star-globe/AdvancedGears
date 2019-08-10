@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Improbable.Gdk.Core;
-using Improbable.Gdk.ReactiveComponents;
 using Improbable.Gdk.Subscriptions;
 using Unity.Collections;
 using Unity.Entities;

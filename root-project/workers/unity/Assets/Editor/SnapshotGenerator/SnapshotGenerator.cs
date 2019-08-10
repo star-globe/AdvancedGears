@@ -149,7 +149,7 @@ namespace AdvancedGears.Editor
         {
             const string entityType = "Spinner";
 
-            var transform = TransformUtils.CreateTransformSnapshot(coords, Quaternion.identity);
+            var transform = TransformUtils.CreateTransformSnapshot(coords.ToUnityVector(), Quaternion.identity);
 
             var template = new EntityTemplate();
             template.AddComponent(new Position.Snapshot(coords), WorkerUtils.UnityGameLogic);

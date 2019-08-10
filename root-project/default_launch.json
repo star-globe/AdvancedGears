@@ -1,7 +1,7 @@
 {
   "template": "w2_r0500_e5",
   "world": {
-    "chunkEdgeLengthMeters": 5,
+    "chunkEdgeLengthMeters": 50,
     "snapshots": {
       "snapshotWritePeriodSeconds": 0
     },
@@ -36,24 +36,13 @@
         {
           "all": {}
         }
-      ],
-      "flags": [
-        {
-          "name": "my_flag",
-          "value": "has_a_value"
-        }
       ]
     },
     {
       "worker_type": "UnityClient",
       "permissions": [
         {
-          "entity_query": {
-            "allow": true,
-            "components": [
-              "*"
-            ]
-          }
+          "all": {}
         }
       ]
     },
@@ -61,12 +50,7 @@
       "worker_type": "MobileClient",
       "permissions": [
         {
-          "entity_query": {
-            "allow": true,
-            "components": [
-              "*"
-            ]
-          }
+          "all": {}
         }
       ]
     }

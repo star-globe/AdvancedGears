@@ -5,7 +5,6 @@ using System.Linq;
 using Improbable;
 using Improbable.Gdk.Core;
 using Improbable.Gdk.Core.Commands;
-using Improbable.Gdk.ReactiveComponents;
 using Improbable.Gdk.Subscriptions;
 using Improbable.Gdk.Standardtypes;
 using Improbable.Worker.CInterop;
