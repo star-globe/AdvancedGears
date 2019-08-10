@@ -33,12 +33,7 @@
       "worker_type": "UnityClient",
       "permissions": [
         {
-          "entity_query": {
-            "allow": true,
-            "components": [
-              "*"
-            ]
-          }
+          "all": {}
         }
       ]
     },
@@ -46,12 +41,7 @@
       "worker_type": "MobileClient",
       "permissions": [
         {
-          "entity_query": {
-            "allow": true,
-            "components": [
-              "*"
-            ]
-          }
+          "all": {}
         }
       ]
     }

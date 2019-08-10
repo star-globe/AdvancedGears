@@ -74,8 +74,8 @@ component BaseUnitStatus {
 component BaseUnitReviveTimer {
     id = 20001;
 
-    float initial_time;
-    float rest_time;
+    float initial_time = 1;
+    float rest_time = 2;
 }
 
 type HealthModifier {

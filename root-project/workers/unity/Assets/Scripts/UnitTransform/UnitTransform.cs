@@ -12,9 +12,6 @@ namespace AdvancedGears
     {
         [SerializeField] PostureTransform[] postures;
 
-        [SerializeField] Rigidbody vehicle;
-        public Rigidbody Vehicle { get { return vehicle; }}
-
         [SerializeField] BoxCollider groundDetect;
         public BoxCollider GroundDetect { get { return groundDetect; } }
 
@@ -70,11 +67,6 @@ namespace AdvancedGears
         {
             postureDic?.Clear();
             cannonDic?.Clear();
-        }
-
-        void Start()
-        {
-            Assert.IsNotNull(vehicle);
         }
 
         public T GetTerminal<T>(PosturePoint point) where T : AttachedTransform

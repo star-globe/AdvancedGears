@@ -6,7 +6,6 @@ using Improbable.Gdk.Core;
 using Improbable.Gdk.Core.Commands;
 using Improbable.Worker.CInterop;
 using Improbable.Worker.CInterop.Query;
-//using Improbable.Gdk.QueryBasedInterest;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
@@ -26,7 +25,7 @@ namespace AdvancedGears
 
         private long? timerEntityQueryId;
         private readonly List<EntityId> timerEntityIds = new List<EntityId>();
-        private readonly Dictionary<EntityId,EntityQuerySnapshot> timerEntityDic = new Dictionary<EntityId, EntityQuerySnapshot>();
+        private readonly Dictionary<EntityId,EntitySnapshot> timerEntityDic = new Dictionary<EntityId, EntitySnapshot>();
         //private readonly InterestQuery timerQuery;
         private EntityQuery timerQuery;
         //InterestTemplate template;

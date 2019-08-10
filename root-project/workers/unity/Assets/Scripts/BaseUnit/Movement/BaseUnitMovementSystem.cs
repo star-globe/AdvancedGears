@@ -1,7 +1,6 @@
 using System;
 using Improbable;
 using Improbable.Gdk.Core;
-using Improbable.Gdk.ReactiveComponents;
 using Improbable.Gdk.Subscriptions;
 using Unity.Collections;
 using Unity.Entities;
@@ -59,7 +58,7 @@ namespace AdvancedGears
                     return;
 
                 var unit = EntityManager.GetComponentObject<UnitTransform>(entity);
-                var rigidbody = unit.Vehicle;
+                var rigidbody = EntityManager.GetComponentObject<Rigidbody>(entity);
 
                 if (!movement.IsTarget)
                 {

@@ -1,7 +1,6 @@
 using System;
 using Improbable;
 using Improbable.Gdk.Core;
-using Improbable.Gdk.ReactiveComponents;
 using Improbable.Gdk.Subscriptions;
 using Unity.Collections;
 using Unity.Entities;

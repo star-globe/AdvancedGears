@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Improbable;
 using Improbable.Gdk.Core;
-using Improbable.Gdk.ReactiveComponents;
+using Improbable.Gdk.Core.Commands;
 using Improbable.Gdk.Subscriptions;
 using Unity.Collections;
 using Unity.Entities;
@@ -62,7 +62,7 @@ namespace AdvancedGears
                         return;
 
                     case UnitState.Alive:
-                        base.RemoveComponent(entity, ComponentType.Readonly<BaseUnitReviveTimer.Component>());
+                        base.RemoveComponent(entity, ComponentType.ReadOnly<BaseUnitReviveTimer.Component>());
                         return;
                 }
 
@@ -77,7 +77,7 @@ namespace AdvancedGears
                         id,
                         context: new DeleteUnitContext() { entityId = id }
                     );
-                    commandSystem.SendCommand(request);
+                    this.Command.SendCommand(request);
                     deletedIds.Add(id.Id);
                 }
             });
@@ -85,7 +85,7 @@ namespace AdvancedGears
 
         void HandleDeleteResponses()
         {
-            var responses = commandSystem.GetResponses<WorldCommands.DeleteEntity.ReceivedResponse>();
+            var responses = this.Command.GetResponses<WorldCommands.DeleteEntity.ReceivedResponse>();
             for (var i = 0; i < responses.Count; i++) {
                 ref readonly var response = ref responses[i];
                 if (!(response.Context is DeleteUnitContext requestContext)) {

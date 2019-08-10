@@ -17,6 +17,8 @@ GameObject:
   - component: {fileID: 309114750155174671}
   - component: {fileID: 6022152672297403369}
   - component: {fileID: -2529005582107269055}
+  - component: {fileID: 6513623476166926668}
+  - component: {fileID: 5539662744652403619}
   m_Layer: 11
   m_Name: StrongholdUnit
   m_TagString: Untagged
@@ -149,6 +151,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b6a34ca4400c7946bcf0baee835f6fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!54 &6513623476166926668
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7117998853217099108}
+  serializedVersion: 2
+  m_Mass: 10
+  m_Drag: 0.1
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!114 &5539662744652403619
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7117998853217099108}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 246a7301f4c758e4b85f14af88ecc60f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rigidBody: {fileID: 6513623476166926668}
+  configRef: {fileID: 3185150595974839569}
 --- !u!1001 &4419458866152112006
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -224,6 +256,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 4419458866152112006}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &3185150595974839569 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1253970999993844375, guid: c0f2863b65d61cc4ba5df322a50a9ec9,
+    type: 3}
+  m_PrefabInstance: {fileID: 4419458866152112006}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a2959c9a26e9f047b6c34169e67ca7f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!23 &7603614155944707731 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 6111495360319142165, guid: c0f2863b65d61cc4ba5df322a50a9ec9,

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Improbable;
 using Improbable.Gdk.Core;
-using Improbable.Gdk.ReactiveComponents;
 using Improbable.Gdk.Subscriptions;
 using Unity.Collections;
 using Unity.Entities;
@@ -224,6 +223,15 @@ namespace AdvancedGears
 
             return unitList;
         }
+
+        protected bool CheckAlive(long entityId)
+        {
+            BaseUnitStatus.Component? status;
+            if (TryGetComponent(new EntityId(entityId), out status) == false)
+                return false;
+
+            return status.Value.State == UnitState.Alive;
+        }
     }
 
     public abstract class BaseEntitySearchSystem : ComponentSystem
@@ -288,7 +296,7 @@ namespace AdvancedGears
         protected void RemoveComponent(in Entity entity, ComponentType compType)
         {
             if (EntityManager.HasComponent(entity, compType))
-                EntityManager.RemoveComponentData(entity, compType);
+                EntityManager.RemoveComponent(entity, compType);
         }
 
         protected void RemoveComponent(EntityId id,  ComponentType compType)
