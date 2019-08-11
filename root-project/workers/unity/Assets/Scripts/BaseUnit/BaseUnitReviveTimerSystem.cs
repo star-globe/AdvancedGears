@@ -26,7 +26,9 @@ namespace AdvancedGears
             public EntityId entityId;
         }
 
-        private readonly HashSet<long> deletedIds = new HashSet<long>();
+        private readonly HashSet<EntityId> deadUnitIds = new HashSet<EntityId>();
+        private readonly HashSet<EntityId> deletedIds = new HashSet<EntityId>();
+
         protected override void OnCreateManager()
         {
             base.OnCreateManager();
@@ -36,6 +38,7 @@ namespace AdvancedGears
 
             group = GetEntityQuery(
                 ComponentType.ReadWrite<BaseUnitReviveTimer.Component>(),
+                ComponentType.ReadOnly<BaseUnitReviveTimer.ComponentAuthority>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
@@ -45,9 +48,27 @@ namespace AdvancedGears
 
         protected override void OnUpdate()
         {
+            HandleDeadUnits();
             HandleCleanUnits();
             HandleDeleteResponses();
         }
+
+        const float time = 3.0f;
+
+        void HandleDeadUnits()
+        {
+            foreach (var id in deadUnitIds) {
+                var comp = new BaseUnitReviveTimer.Component()
+                {
+                    IsStart = true,
+                    RestTime = time,
+                };
+                base.SetComponent(id, comp);
+            }
+
+            deadUnitIds.Clear();
+        }
+
 
         void HandleCleanUnits()
         {
@@ -56,13 +77,17 @@ namespace AdvancedGears
                                           ref BaseUnitStatus.Component status,
                                           ref SpatialEntityId entityId) =>
             {
+                if (revive.IsStart == false)
+                    return;
+
                 switch (status.State)
                 {
                     case UnitState.None:
                         return;
 
                     case UnitState.Alive:
-                        base.RemoveComponent(entity, ComponentType.ReadOnly<BaseUnitReviveTimer.Component>());
+                        revive.IsStart = false;
+                        revive.RestTime = 0.0f;
                         return;
                 }
 
@@ -70,15 +95,14 @@ namespace AdvancedGears
                     revive.RestTime -= Time.deltaTime;
                 
                 var id = entityId.EntityId;
-                if (revive.RestTime < 0 && deletedIds.Contains(id.Id) == false)
-                {
+                if (revive.RestTime < 0 && deletedIds.Contains(id) == false) {
                     var request = new WorldCommands.DeleteEntity.Request
                     (
                         id,
                         context: new DeleteUnitContext() { entityId = id }
                     );
                     this.Command.SendCommand(request);
-                    deletedIds.Add(id.Id);
+                    deletedIds.Add(id);
                 }
             });
         }
@@ -93,8 +117,16 @@ namespace AdvancedGears
                     continue;
                 }
 
-                deletedIds.Remove(requestContext.entityId.Id);
+                deletedIds.Remove(requestContext.entityId);
             }
+        }
+
+        public void AddDeadUnit(EntityId id)
+        {
+            if (deletedIds.Contains(id))
+                return;
+
+            deadUnitIds.Add(id);
         }
     }
 }

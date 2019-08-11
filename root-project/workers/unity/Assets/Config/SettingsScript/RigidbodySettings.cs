@@ -17,14 +17,15 @@ namespace AdvancedGears
         //[SerializeField] private float bulletRenderLength;
         //[SerializeField] private float shotRenderTime;
         //[SerializeField] private byte alignment;
-        [SerializeField] private bool isBuilding;
+        [SerializeField] private float drag;
+        [SerializeField] private float angularDrag;
 
         public void SetRigid(Rigidbody rigid)
         {
             rigid.mass = mass;
 
-            if (isBuilding)
-                rigid.constraints = RigidbodyConstraints.FreezeAll;
+            rigid.drag = drag;
+            rigid.angularDrag = angularDrag;
 
             rigid.useGravity = true;
         }

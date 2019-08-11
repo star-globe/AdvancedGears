@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: BaseUnitSettings
   m_EditorClassIdentifier: 
   mass: 10
-  isBuilding: 0
+  drag: 0.1
+  angularDrag: 0.05

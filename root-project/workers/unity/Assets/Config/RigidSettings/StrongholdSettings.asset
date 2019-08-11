@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0547997c03cd05a4682fc9dda2a65506, type: 3}
   m_Name: StrongholdSettings
   m_EditorClassIdentifier: 
-  mass: 100
-  isBuilding: 1
+  mass: 1000
+  drag: 1
+  angularDrag: 1

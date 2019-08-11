@@ -56,6 +56,7 @@ namespace AdvancedGears
             world.GetOrCreateSystem<CommanderActionSystem>();
             world.GetOrCreateSystem<UnitFactorySystem>();
             world.GetOrCreateSystem<BulletMovementSystem>();
+            world.GetOrCreateSystem<BaseUnitReviveTimerSystem>();
         }
     }
 }

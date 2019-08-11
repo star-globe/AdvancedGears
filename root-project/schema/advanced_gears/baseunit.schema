@@ -70,11 +70,10 @@ component BaseUnitStatus {
     command improbable.gdk.core.Empty force_state(ForceStateChange);
 }
 
-// not persistant
 component BaseUnitReviveTimer {
-    id = 20001;
+    id = 20003;
 
-    float initial_time = 1;
+    bool is_start = 1;
     float rest_time = 2;
 }
 

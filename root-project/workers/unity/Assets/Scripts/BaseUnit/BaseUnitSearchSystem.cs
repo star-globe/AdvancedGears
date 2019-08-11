@@ -278,6 +278,32 @@ namespace AdvancedGears
             return TryGetComponent(entity, out comp);
         }
 
+        protected bool HasComponent<T>(in EntityId id) where T : struct, IComponentData
+        {
+            Entity entity;
+            if (!this.TryGetEntity(id, out entity))
+                return false;
+
+            return EntityManager.HasComponent<T>(entity);
+        }
+
+        protected void AddComponent<T>(in Entity entity, T comp) where T : struct, IComponentData
+        {
+            if (EntityManager.HasComponent<T>(entity))
+                EntityManager.SetComponentData(entity, comp);
+            else
+                EntityManager.AddComponentData(entity, comp);
+        }
+
+        protected void AddComponent<T>(EntityId id, T comp) where T : struct, IComponentData
+        {
+            Entity entity;
+            if (!this.TryGetEntity(id, out entity))
+                return;
+
+            AddComponent(entity, comp);
+        }
+
         protected void SetComponent<T>(in Entity entity, T comp) where T : struct, IComponentData
         {
             if (EntityManager.HasComponent<T>(entity))
@@ -299,7 +325,7 @@ namespace AdvancedGears
                 EntityManager.RemoveComponent(entity, compType);
         }
 
-        protected void RemoveComponent(EntityId id,  ComponentType compType)
+        protected void RemoveComponent(EntityId id, ComponentType compType)
         {
             Entity entity;
             if (!this.TryGetEntity(id, out entity))
@@ -311,12 +337,14 @@ namespace AdvancedGears
         protected bool TryGetEntity(EntityId id, out Entity entity)
         {
             if (!this.Worker.TryGetEntity(id, out entity))
-            {
-                Debug.LogError($"Entity with SpatialOS Entity ID {id} is not in this worker's view");
                 return false;
-            }
 
             return true;
+        }
+
+        protected bool HasEntity(EntityId id)
+        {
+            return this.Worker.HasEntity(id);
         }
     }
 

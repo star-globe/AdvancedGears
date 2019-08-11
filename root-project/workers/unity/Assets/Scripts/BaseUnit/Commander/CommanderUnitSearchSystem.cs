@@ -71,7 +71,7 @@ namespace AdvancedGears
 
                 bool is_target;
                 int num = 5/2;
-                if (CheckNeedsFollowers(commander, num))
+                if (CheckNeedsFollowers(ref commander, num))
                     is_target = escapeOrder(status, entityId, pos, ref sight, ref commander);
                 else if (commander.SuperiorInfo.IsNeedToOrder())
                     is_target = organizeOrder(status.Side, pos, ref commander);
@@ -231,24 +231,46 @@ namespace AdvancedGears
     public abstract class BaseCommanderSearch : BaseSearchSystem
     {
         #region CheckMethod
-        protected bool CheckNeedsFollowers(in CommanderStatus.Component commander, int num)
+        protected bool CheckNeedsFollowers(ref CommanderStatus.Component commander, int num)
         {
-            if (GetFollowerCount(commander,false) < num)
+            if (GetFollowerCount(ref commander,false) < num)
                 return true;
 
             if (commander.Rank > 0 &&
-                GetFollowerCount(commander, true) <= num)
+                GetFollowerCount(ref commander, true) <= num)
                 return true;
 
             return false;
         }
 
-        protected int GetFollowerCount(in CommanderStatus.Component commander, bool isUnderCommander)
+        protected int GetFollowerCount(CommanderStatus.Component commander, bool isUnderCommander)
         {
             if (isUnderCommander)
                 return commander.FollowerInfo.UnderCommanders.Count(f => CheckAlive(f.Id));
             else
                 return commander.FollowerInfo.Followers.Count(f => CheckAlive(f.Id));
+        }
+
+        protected int GetFollowerCount(ref CommanderStatus.Component commander, bool isUnderCommander)
+        {
+            var info = commander.FollowerInfo;
+            List<EntityId> followers;
+
+            if (isUnderCommander)
+                followers = info.UnderCommanders;
+            else
+                followers = info.Followers;
+
+            var list = followers.Where(f => HasEntity(f)).ToList();
+
+            if (isUnderCommander)
+                info.UnderCommanders = list;
+            else
+                info.Followers = list;
+
+            commander.FollowerInfo = info;
+
+            return list.Count(f => CheckAlive(f.Id));
         }
         #endregion
     }
