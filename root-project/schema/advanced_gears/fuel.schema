@@ -96,6 +96,7 @@ component FuelSupplyManager {
 
 //---------------------------------
 // engineering:21110~21119
+// *****disuse*****
 enum EngineeringType {
     None = 0;
     Repair = 1;
@@ -148,4 +149,28 @@ component EngineeringManager {
 
     command EngineeringOrder finish_order(EngineeringOrderResult);
     command improbable.gdk.core.Empty add_engineering_points(EngineeringPoint);
+}
+
+//---------------------------------
+// domination:21120~21129
+enum DominationDeviceType {
+    None = 0;
+    Capturing = 1;
+    Jamming = 2;
+}
+
+component DominationDevice {
+    id = 21120;
+
+    DominationDeviceType type = 1;
+    float speed = 2;
+}
+
+component DominationStamina {
+    id = 21121;
+
+    IntervalChecker interval = 1;
+    float max_stamina = 2;
+
+    map<UnitSide,float> side_staminas = 3;
 }
