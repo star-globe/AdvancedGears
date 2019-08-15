@@ -289,6 +289,7 @@ type ReserveInfo {
     list<EntityId> followers = 1;
 }
 
+// rank:reserves
 type ReserveMap {
     map<uint32,ReserveInfo> datas = 1;
 }

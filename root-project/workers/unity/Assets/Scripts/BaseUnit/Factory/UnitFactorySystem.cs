@@ -98,7 +98,7 @@ namespace AdvancedGears
                 cost = timeCost;
                 if (factory.CurrentType == UnitType.None)
                 {
-                    factory.ProductInterval = new IntervalChecker(cost, time + cost, -1);   // TODO modify
+                    factory.ProductInterval = new IntervalChecker(cost, time + cost, 0, -1);   // TODO modify
                     factory.CurrentType = s_order != null ? UnitType.Commander : f_order.Value.Type;
                 }
 

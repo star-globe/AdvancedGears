@@ -188,7 +188,7 @@ namespace AdvancedGears
     {
         public static IntervalChecker InitializedChecker(float inter)
         {
-            return new IntervalChecker(inter,0,-1);
+            return new IntervalChecker(inter,0,0,-1);
         }
     }
 }

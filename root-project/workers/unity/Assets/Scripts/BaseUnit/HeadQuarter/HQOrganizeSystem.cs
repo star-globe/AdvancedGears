@@ -32,9 +32,7 @@ namespace AdvancedGears
             group = GetEntityQuery(
                 ComponentType.ReadWrite<HeadQuarters.Component>(),
                 ComponentType.ReadOnly<HeadQuarters.ComponentAuthority>(),
-                ComponentType.ReadOnly<CommanderStatus.Component>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
-                ComponentType.ReadOnly<BaseUnitTarget.Component>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
             group.SetFilter(HeadQuarters.ComponentAuthority.Authoritative);
@@ -44,15 +42,13 @@ namespace AdvancedGears
         {
             Entities.With(group).ForEach((Entity entity,
                                           ref HeadQuarters.Component headQuarter,
-                                          ref CommanderStatus.Component commander,
                                           ref BaseUnitStatus.Component status,
-                                          ref BaseUnitTarget.Component tgt,
                                           ref SpatialEntityId entityId) =>
             {
                 if (status.State != UnitState.Alive)
                     return;
 
-                if (status.Type == UnitType.HeadQuarter)
+                if (status.Type != UnitType.HeadQuarter)
                     return;
 
                 if (status.Order == OrderType.Idle)
@@ -82,7 +78,7 @@ namespace AdvancedGears
 
                     var map = headQuarter.FactoryDatas;
                     uint u_rank;
-                    SetSuperior(tgt.TargetInfo.TargetId, status.Side, order, ref map, out u_rank);
+                    SetSuperior(str.id, status.Side, order, ref map, out u_rank);
                     headQuarter.FactoryDatas = map;
                     if (headQuarter.UpperRank < u_rank)
                         headQuarter.UpperRank = u_rank;

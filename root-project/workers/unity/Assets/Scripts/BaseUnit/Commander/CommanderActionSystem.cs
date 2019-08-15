@@ -125,13 +125,14 @@ namespace AdvancedGears
             action.ActionType = CommandActionType.Product;
         }
 
+        const float radioRange = 1000.0f;
         void OrganizeAlly(in Vector3 pos, UnitSide side, in CommanderStatus.Component commander, in SpatialEntityId entityId, in BaseUnitTarget.Component tgt, ref CommanderAction.Component action)
         {
             if (action.ActionType == CommandActionType.Organize)
                 return;
 
             var diff = tgt.TargetInfo.Position.ToWorkerPosition(origin) - pos;
-            float length = 10.0f;   // TODO from:master
+            float length = radioRange;
             if (diff.sqrMagnitude > length * length)
                 return;
 
