@@ -170,7 +170,8 @@ component DominationStamina {
     id = 21121;
 
     IntervalChecker interval = 1;
-    float max_stamina = 2;
+    float range = 2;
+    float max_stamina = 3;
 
-    map<UnitSide,float> side_staminas = 3;
+    map<UnitSide,float> side_staminas = 4;
 }

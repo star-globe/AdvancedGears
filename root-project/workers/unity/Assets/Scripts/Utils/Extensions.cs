@@ -39,12 +39,19 @@ namespace AdvancedGears
             return (vec.X * vec.X) + (vec.Y * vec.Y) + (vec.Z * vec.Z);
         }
 
+        public static bool CheckTime(this ref IntervalChecker inter, float current, out float diff)
+        {
+            diff = inter.Buffer + inter.Interval;
+            return CheckTime(ref inter, current);
+        }
+
         public static bool CheckTime(this ref IntervalChecker inter, float current)
         {
-            if (current - inter.LastChecked < inter.Interval)
+            if (current - (inter.LastChecked + inter.Buffer) < inter.Interval)
                 return false;
 
-            inter.LastChecked = current + RandomInterval.GetRandom(inter.Interval);
+            inter.LastChecked = current;
+            inter.Buffer = RandomInterval.GetRandom(inter.Interval);
             return true;
         }
 
