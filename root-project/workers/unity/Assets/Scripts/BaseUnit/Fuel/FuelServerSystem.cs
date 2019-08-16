@@ -20,8 +20,6 @@ namespace AdvancedGears
     public class FuelServerSystem : BaseSearchSystem
     {
         EntityQuery group;
-        CommandSystem commandSystem;
-        ComponentUpdateSystem updateSystem;
         ILogDispatcher logDispatcher;
 
         private Vector3 origin;
@@ -31,12 +29,9 @@ namespace AdvancedGears
             base.OnCreateManager();
 
             // ここで基準位置を取る
-            var worker = World.GetExistingSystem<WorkerSystem>();
-            origin = worker.Origin;
-            logDispatcher = worker.LogDispatcher;
+            origin = this.Worker.Origin;
+            logDispatcher = this.Worker.LogDispatcher;
 
-            commandSystem = World.GetExistingSystem<CommandSystem>();
-            updateSystem = World.GetExistingSystem<ComponentUpdateSystem>();
             group = GetEntityQuery(
                 ComponentType.ReadWrite<FuelServer.Component>(),
                 ComponentType.ReadWrite<FuelComponent.Component>(),

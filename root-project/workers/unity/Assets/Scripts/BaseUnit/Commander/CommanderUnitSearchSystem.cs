@@ -15,7 +15,6 @@ namespace AdvancedGears
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     public class CommanderUnitSearchSystem : BaseCommanderSearch
     {
-        private CommandSystem commandSystem;
         private EntityQuery group;
 
         private Vector3 origin;
@@ -25,7 +24,6 @@ namespace AdvancedGears
         {
             base.OnCreateManager();
 
-            commandSystem = World.GetExistingSystem<CommandSystem>();
             // ここで基準位置を取る
             origin = World.GetExistingSystem<WorkerSystem>().Origin;
 
@@ -213,7 +211,7 @@ namespace AdvancedGears
             if (!base.TryGetEntity(id, out entity))
                 return false;
 
-            commandSystem.SendCommand(new BaseUnitTarget.SetTarget.Request(id, targetInfo), entity);
+            this.Command.SendCommand(new BaseUnitTarget.SetTarget.Request(id, targetInfo), entity);
 
             BaseUnitStatus.Component? status;
             if (base.TryGetComponent(id, out status) == false)
@@ -222,7 +220,7 @@ namespace AdvancedGears
             if (status.Value.Order == order)
                 return false;
 
-            commandSystem.SendCommand(new BaseUnitStatus.SetOrder.Request(id, new OrderInfo() { Order = order }), entity);
+            this.Command.SendCommand(new BaseUnitStatus.SetOrder.Request(id, new OrderInfo() { Order = order }), entity);
             return true;
         }
         #endregion

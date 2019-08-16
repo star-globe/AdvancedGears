@@ -14,21 +14,13 @@ namespace AdvancedGears
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
-    internal class BaseUnitActionSystem : ComponentSystem
+    internal class BaseUnitActionSystem : SpatialComponentSystem
     {
-        private ComponentUpdateSystem updateSystem;
         private EntityQuery group;
-
-        private Vector3 origin;
 
         protected override void OnCreateManager()
         {
             base.OnCreateManager();
-
-            updateSystem = World.GetExistingSystem<ComponentUpdateSystem>();
-
-            // ここで基準位置を取る
-            origin = World.GetExistingSystem<WorkerSystem>().Origin;
 
             group = GetEntityQuery(
                 ComponentType.ReadWrite<BaseUnitAction.Component>(),

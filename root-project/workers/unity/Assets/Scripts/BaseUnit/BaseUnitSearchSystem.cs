@@ -25,7 +25,7 @@ namespace AdvancedGears
             base.OnCreateManager();
 
             // ここで基準位置を取る
-            origin = World.GetExistingSystem<WorkerSystem>().Origin;
+            origin = this.Origin;
 
             group = GetEntityQuery(
                 ComponentType.ReadWrite<BaseUnitMovement.Component>(),
@@ -187,7 +187,7 @@ namespace AdvancedGears
             return info;
         }
 
-        protected List<UnitInfo> getUnits(UnitSide self_side, in Vector3 pos, float length, bool isEnemy, bool allowDead, params UnitType[] types)
+        protected List<UnitInfo> getUnits(UnitSide self_side, in Vector3 pos, float length, bool? isEnemy, bool allowDead, params UnitType[] types)
         {
             List<UnitInfo> unitList = new List<UnitInfo>();
 
@@ -205,7 +205,7 @@ namespace AdvancedGears
                     if (unit.Value.State == UnitState.Dead && allowDead == false)
                         continue;
 
-                    if ((unit.Value.Side == self_side) == isEnemy)
+                    if (isEnemy != null && (unit.Value.Side == self_side) == isEnemy.Value)
                         continue;
 
                     if (types.Length != 0 && types.Contains(unit.Value.Type) == false)
@@ -231,120 +231,6 @@ namespace AdvancedGears
                 return false;
 
             return status.Value.State == UnitState.Alive;
-        }
-    }
-
-    public abstract class BaseEntitySearchSystem : ComponentSystem
-    {
-        WorkerSystem worker = null;
-        protected WorkerSystem Worker
-        {
-            get
-            {
-                worker = worker ?? World.GetExistingSystem<WorkerSystem>();
-                return worker;
-            }
-        }
-
-        CommandSystem command = null;
-        protected CommandSystem Command
-        {
-            get
-            {
-                command = command ?? World.GetExistingSystem<CommandSystem>();
-                return command;
-            }
-        }
-
-        protected bool TryGetComponent<T>(in Entity entity, out T? comp) where T : struct, IComponentData
-        {
-            comp = null;
-            if (EntityManager.HasComponent<T>(entity))
-            {
-                comp = EntityManager.GetComponentData<T>(entity);
-                return true;
-            }
-            else
-                return false;
-        }
-
-        protected bool TryGetComponent<T>(EntityId id, out T? comp) where T : struct, IComponentData
-        {
-            comp = null;
-            Entity entity;
-            if (!this.TryGetEntity(id, out entity))
-                return false;
-
-            return TryGetComponent(entity, out comp);
-        }
-
-        protected bool HasComponent<T>(in EntityId id) where T : struct, IComponentData
-        {
-            Entity entity;
-            if (!this.TryGetEntity(id, out entity))
-                return false;
-
-            return EntityManager.HasComponent<T>(entity);
-        }
-
-        protected void AddComponent<T>(in Entity entity, T comp) where T : struct, IComponentData
-        {
-            if (EntityManager.HasComponent<T>(entity))
-                EntityManager.SetComponentData(entity, comp);
-            else
-                EntityManager.AddComponentData(entity, comp);
-        }
-
-        protected void AddComponent<T>(EntityId id, T comp) where T : struct, IComponentData
-        {
-            Entity entity;
-            if (!this.TryGetEntity(id, out entity))
-                return;
-
-            AddComponent(entity, comp);
-        }
-
-        protected void SetComponent<T>(in Entity entity, T comp) where T : struct, IComponentData
-        {
-            if (EntityManager.HasComponent<T>(entity))
-                EntityManager.SetComponentData(entity, comp);
-        }
-
-        protected void SetComponent<T>(EntityId id, T comp) where T : struct, IComponentData
-        {
-            Entity entity;
-            if (!this.TryGetEntity(id, out entity))
-                return;
-
-            SetComponent(entity, comp);
-        }
-
-        protected void RemoveComponent(in Entity entity, ComponentType compType)
-        {
-            if (EntityManager.HasComponent(entity, compType))
-                EntityManager.RemoveComponent(entity, compType);
-        }
-
-        protected void RemoveComponent(EntityId id, ComponentType compType)
-        {
-            Entity entity;
-            if (!this.TryGetEntity(id, out entity))
-                return;
-
-            RemoveComponent(entity, compType);
-        }
-
-        protected bool TryGetEntity(EntityId id, out Entity entity)
-        {
-            if (!this.Worker.TryGetEntity(id, out entity))
-                return false;
-
-            return true;
-        }
-
-        protected bool HasEntity(EntityId id)
-        {
-            return this.Worker.HasEntity(id);
         }
     }
 

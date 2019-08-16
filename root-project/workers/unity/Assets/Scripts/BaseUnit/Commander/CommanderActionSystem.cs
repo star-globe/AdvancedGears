@@ -15,7 +15,6 @@ namespace AdvancedGears
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     internal class CommanderActionSystem : BaseCommanderSearch
     {
-        private CommandSystem commandSystem;
         private EntityQuery group;
 
         private Vector3 origin;
@@ -120,7 +119,7 @@ namespace AdvancedGears
                 return;
 
             foreach(var r in reqList)
-                commandSystem.SendCommand(r, entity);
+                this.Command.SendCommand(r, entity);
             
             action.ActionType = CommandActionType.Product;
         }
@@ -145,7 +144,7 @@ namespace AdvancedGears
             if (TryGetEntity(id, out entity) == false)
                 return;
 
-            commandSystem.SendCommand(request, entity);
+            this.Command.SendCommand(request, entity);
             action.ActionType = CommandActionType.Organize;
         }
     }

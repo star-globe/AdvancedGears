@@ -34,7 +34,7 @@ namespace AdvancedGears
             base.OnCreateManager();
 
             // ここで基準位置を取る
-            origin = World.GetExistingSystem<WorkerSystem>().Origin;
+            origin = this.Origin;
 
             group = GetEntityQuery(
                 ComponentType.ReadWrite<BaseUnitReviveTimer.Component>(),

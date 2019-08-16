@@ -17,10 +17,9 @@ namespace AdvancedGears
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
-    public class UnitFactorySystem : ComponentSystem
+    public class UnitFactorySystem : SpatialComponentSystem
     {
         EntityQuery group;
-        CommandSystem commandSystem;
         ILogDispatcher logDispatcher;
 
         private Vector3 origin;
@@ -37,9 +36,8 @@ namespace AdvancedGears
             base.OnCreateManager();
 
             // ここで基準位置を取る
-            var worker = World.GetExistingSystem<WorkerSystem>();
-            origin = worker.Origin;
-            logDispatcher = worker.LogDispatcher;
+            origin = this.Origin;
+            logDispatcher = this.LogDispatcher;
 
             commandSystem = World.GetExistingSystem<CommandSystem>();
             group = GetEntityQuery(
