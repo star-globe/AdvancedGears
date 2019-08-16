@@ -17,10 +17,14 @@ namespace AdvancedGears
     internal class BaseUnitActionSystem : SpatialComponentSystem
     {
         private EntityQuery group;
+        Vector3 origin;
 
         protected override void OnCreateManager()
         {
             base.OnCreateManager();
+
+            // ここで基準位置を取る
+            origin = this.Origin;
 
             group = GetEntityQuery(
                 ComponentType.ReadWrite<BaseUnitAction.Component>(),

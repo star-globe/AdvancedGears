@@ -29,8 +29,8 @@ namespace AdvancedGears
             base.OnCreateManager();
 
             // ここで基準位置を取る
-            origin = this.Worker.Origin;
-            logDispatcher = this.Worker.LogDispatcher;
+            origin = this.WorkerSystem.Origin;
+            logDispatcher = this.WorkerSystem.LogDispatcher;
 
             group = GetEntityQuery(
                 ComponentType.ReadWrite<FuelServer.Component>(),

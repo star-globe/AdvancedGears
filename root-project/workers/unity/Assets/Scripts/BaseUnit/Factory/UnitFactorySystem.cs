@@ -39,7 +39,6 @@ namespace AdvancedGears
             origin = this.Origin;
             logDispatcher = this.LogDispatcher;
 
-            commandSystem = World.GetExistingSystem<CommandSystem>();
             group = GetEntityQuery(
                 ComponentType.ReadWrite<UnitFactory.Component>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),

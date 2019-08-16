@@ -152,7 +152,7 @@ namespace AdvancedGears
 
         protected bool TryGetEntity(EntityId id, out Entity entity)
         {
-            if (!this.Worker.TryGetEntity(id, out entity))
+            if (!this.WorkerSystem.TryGetEntity(id, out entity))
                 return false;
 
             return true;
@@ -160,7 +160,7 @@ namespace AdvancedGears
 
         protected bool HasEntity(EntityId id)
         {
-            return this.Worker.HasEntity(id);
+            return this.WorkerSystem.HasEntity(id);
         }
     }
 }

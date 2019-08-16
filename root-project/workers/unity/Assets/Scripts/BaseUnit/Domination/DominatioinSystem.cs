@@ -93,7 +93,7 @@ namespace AdvancedGears
                 }
 
                 // check over
-                var max = staminas.Max(kvp => kvp.Value);
+                var max = staminas.OrderByDescending(kvp => kvp.Value).First();
                 if (max.Value >= domination.MaxStamina) {
                     this.CommandSystem.SendCommand(new BaseUnitStatus.ForceState.Request(
                         entityId.EntityId,
@@ -123,7 +123,7 @@ namespace AdvancedGears
 
         private void AffectJamming(UnitSide side, float speed, Dictionary<UnitSide,float> staminas)
         {
-            var keys = staminas.keys;
+            var keys = staminas.Keys;
             foreach(var k in keys)
             {
                 if (k == side)

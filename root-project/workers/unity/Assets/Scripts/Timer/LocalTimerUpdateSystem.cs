@@ -50,7 +50,7 @@ namespace AdvancedGears
 
         private void SendTimerEntityQuery()
         {
-            timerEntityQueryId = Command.SendCommand(new WorldCommands.EntityQuery.Request
+            timerEntityQueryId = this.CommandSystem.SendCommand(new WorldCommands.EntityQuery.Request
             {
                 EntityQuery = timerQuery
             });
@@ -60,7 +60,7 @@ namespace AdvancedGears
         {
             base.OnCreateManager();
 
-            logDispatcher = base.Worker.LogDispatcher;
+            logDispatcher = this.LogDispatcher;
 
             Initialize();
 
@@ -97,7 +97,7 @@ namespace AdvancedGears
         int retries = 0;
         void HandleEntityQueryResponses()
         {
-            var entityQueryResponses = Command.GetResponses<WorldCommands.EntityQuery.ReceivedResponse>();
+            var entityQueryResponses = this.CommandSystem.GetResponses<WorldCommands.EntityQuery.ReceivedResponse>();
             for (var i = 0; i < entityQueryResponses.Count; i++)
             {
                 ref readonly var response = ref entityQueryResponses[i];
