@@ -154,11 +154,11 @@ namespace AdvancedGears
             if (TryGetEntity(entityId, out entity) == false)
                 return -1;
 
-            this.Command.SendCommand(new FuelSupplyer.SetOrder.Request(entityId, plan.Orders[0]), entity);
+            this.CommandSystem.SendCommand(new FuelSupplyer.SetOrder.Request(entityId, plan.Orders[0]), entity);
 
             TargetInfo tgt;
             MakeTarget(plan.Orders[0], out tgt);
-            this.Command.SendCommand(new BaseUnitTarget.SetTarget.Request(entityId, tgt), entity);
+            this.CommandSystem.SendCommand(new BaseUnitTarget.SetTarget.Request(entityId, tgt), entity);
 
             manager.SupplyOrders.Add(entityId, plan);
             return 1;

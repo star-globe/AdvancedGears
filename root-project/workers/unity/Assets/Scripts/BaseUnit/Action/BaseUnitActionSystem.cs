@@ -103,12 +103,12 @@ namespace AdvancedGears
                             Attached = point,
                         };
                         updGuns |= true;
-                        updateSystem.SendEvent(new GunComponent.FireTriggered.Event(atk), entityId.EntityId);
+                        this.UpdateSystem.SendEvent(new GunComponent.FireTriggered.Event(atk), entityId.EntityId);
                         break;
                     case Result.Rotate:
                         pos.SetData(pdata);
                         updPosture |= true;
-                        updateSystem.SendEvent(new BaseUnitPosture.PostureChanged.Event(pdata), entityId.EntityId);
+                        this.UpdateSystem.SendEvent(new BaseUnitPosture.PostureChanged.Event(pdata), entityId.EntityId);
                         break;
                 }
             }

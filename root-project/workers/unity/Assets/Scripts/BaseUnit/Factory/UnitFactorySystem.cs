@@ -121,7 +121,7 @@ namespace AdvancedGears
                         template,
                         context: new ProductOrderContext() { f_order = f_order, s_order = s_order, type = factory.CurrentType }
                     );
-                    commandSystem.SendCommand(request);
+                    this.CommandSystem.SendCommand(request);
 
                     if (finished)
                         factory.CurrentType = UnitType.None;
@@ -190,7 +190,7 @@ namespace AdvancedGears
             var followerDic = new Dictionary<EntityId,FollowerInfo>();
             var superiorDic = new Dictionary<EntityId,List<EntityId>>();
 
-            var responses = commandSystem.GetResponses<WorldCommands.CreateEntity.ReceivedResponse>();
+            var responses = this.CommandSystem.GetResponses<WorldCommands.CreateEntity.ReceivedResponse>();
             for (var i = 0; i < responses.Count; i++) {
                 ref readonly var response = ref responses[i];
                 if (!(response.Context is ProductOrderContext requestContext)) {
@@ -228,14 +228,14 @@ namespace AdvancedGears
             // SetFollowers
             foreach(var kvp in followerDic) {
                 var info = kvp.Value;
-                commandSystem.SendCommand(new CommanderStatus.AddFollower.Request(kvp.Key, new FollowerInfo { Followers = info.Followers.ToList(),
+                this.CommandSystem.SendCommand(new CommanderStatus.AddFollower.Request(kvp.Key, new FollowerInfo { Followers = info.Followers.ToList(),
                                                                                                               UnderCommanders = info.UnderCommanders.ToList() }));
             }
 
             // SetSuperiors
             foreach(var kvp in superiorDic) {
                 foreach(var f in kvp.Value) {
-                    commandSystem.SendCommand(new CommanderStatus.SetSuperior.Request(f, new SuperiorInfo { EntityId = kvp.Key }));
+                    this.CommandSystem.SendCommand(new CommanderStatus.SetSuperior.Request(f, new SuperiorInfo { EntityId = kvp.Key }));
                 }
             }
         }

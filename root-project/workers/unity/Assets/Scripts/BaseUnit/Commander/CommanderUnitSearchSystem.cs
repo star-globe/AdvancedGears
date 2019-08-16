@@ -211,7 +211,7 @@ namespace AdvancedGears
             if (!base.TryGetEntity(id, out entity))
                 return false;
 
-            this.Command.SendCommand(new BaseUnitTarget.SetTarget.Request(id, targetInfo), entity);
+            this.CommandSystem.SendCommand(new BaseUnitTarget.SetTarget.Request(id, targetInfo), entity);
 
             BaseUnitStatus.Component? status;
             if (base.TryGetComponent(id, out status) == false)
@@ -220,7 +220,7 @@ namespace AdvancedGears
             if (status.Value.Order == order)
                 return false;
 
-            this.Command.SendCommand(new BaseUnitStatus.SetOrder.Request(id, new OrderInfo() { Order = order }), entity);
+            this.CommandSystem.SendCommand(new BaseUnitStatus.SetOrder.Request(id, new OrderInfo() { Order = order }), entity);
             return true;
         }
         #endregion

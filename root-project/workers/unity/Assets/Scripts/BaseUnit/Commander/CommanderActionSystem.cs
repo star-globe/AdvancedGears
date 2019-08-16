@@ -117,7 +117,7 @@ namespace AdvancedGears
                 return;
 
             foreach(var r in reqList)
-                this.Command.SendCommand(r, entity);
+                this.CommandSystem.SendCommand(r, entity);
             
             action.ActionType = CommandActionType.Product;
         }
@@ -142,7 +142,7 @@ namespace AdvancedGears
             if (TryGetEntity(id, out entity) == false)
                 return;
 
-            this.Command.SendCommand(request, entity);
+            this.CommandSystem.SendCommand(request, entity);
             action.ActionType = CommandActionType.Organize;
         }
     }

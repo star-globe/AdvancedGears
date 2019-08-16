@@ -104,7 +104,7 @@ namespace AdvancedGears
 
         void HandleResponse()
         {
-            var responses = this.Command.GetResponses<FuelSupplyManager.FinishOrder.ReceivedResponse>();
+            var responses = this.CommandSystem.GetResponses<FuelSupplyManager.FinishOrder.ReceivedResponse>();
             for (var i = 0; i < responses.Count; i++) {
                 var response = responses[i];
                 if (response.StatusCode != StatusCode.Success) {
@@ -170,7 +170,7 @@ namespace AdvancedGears
                 return;
 
             var res = new SupplyOrderResult { Result = success, SelfId = self_id, Order = order};
-            this.Command.SendCommand(new FuelSupplyManager.FinishOrder.Request(manager_id, res), entity);
+            this.CommandSystem.SendCommand(new FuelSupplyManager.FinishOrder.Request(manager_id, res), entity);
         }
     }
 }

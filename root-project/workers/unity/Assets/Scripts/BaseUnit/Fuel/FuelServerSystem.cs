@@ -97,7 +97,7 @@ namespace AdvancedGears
                             Type = FuelModifyType.Feed,
                             Amount = num,
                         };
-                        updateSystem.SendEvent(new FuelComponent.FuelModified.Event(modify), unit.id);
+                        this.UpdateSystem.SendEvent(new FuelComponent.FuelModified.Event(modify), unit.id);
                     }
 
                     GunComponent.Component? gun = null;
@@ -122,7 +122,7 @@ namespace AdvancedGears
                                 Attached = kvp.Key,
                                 Amount = num,
                             };
-                            updateSystem.SendEvent(new GunComponent.BulletSupplied.Event(supply), unit.id);
+                            this.UpdateSystem.SendEvent(new GunComponent.BulletSupplied.Event(supply), unit.id);
                             break;
                         }
                     }

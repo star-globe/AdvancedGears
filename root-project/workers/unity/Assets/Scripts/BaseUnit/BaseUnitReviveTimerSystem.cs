@@ -101,7 +101,7 @@ namespace AdvancedGears
                         id,
                         context: new DeleteUnitContext() { entityId = id }
                     );
-                    this.Command.SendCommand(request);
+                    this.CommandSystem.SendCommand(request);
                     deletedIds.Add(id);
                 }
             });
@@ -109,7 +109,7 @@ namespace AdvancedGears
 
         void HandleDeleteResponses()
         {
-            var responses = this.Command.GetResponses<WorldCommands.DeleteEntity.ReceivedResponse>();
+            var responses = this.CommandSystem.GetResponses<WorldCommands.DeleteEntity.ReceivedResponse>();
             for (var i = 0; i < responses.Count; i++) {
                 ref readonly var response = ref responses[i];
                 if (!(response.Context is DeleteUnitContext requestContext)) {

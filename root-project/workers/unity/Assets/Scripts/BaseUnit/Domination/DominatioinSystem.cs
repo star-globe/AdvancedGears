@@ -95,7 +95,7 @@ namespace AdvancedGears
                 // check over
                 var max = staminas.Max(kvp => kvp.Value);
                 if (max.Value >= domination.MaxStamina) {
-                    this.Command.SendCommand(new BaseUnitStatus.ForceState.Request(
+                    this.CommandSystem.SendCommand(new BaseUnitStatus.ForceState.Request(
                         entityId.EntityId,
                         new ForceStateChange(max.Key, UnitState.Alive))
                     );
