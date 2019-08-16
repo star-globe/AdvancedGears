@@ -23,10 +23,8 @@ namespace AdvancedGears
         {
             base.OnCreateManager();
 
-            commandSystem = World.GetExistingSystem<CommandSystem>();
-
             // ここで基準位置を取る
-            origin = World.GetExistingSystem<WorkerSystem>().Origin;
+            origin = this.Origin;
 
             group = GetEntityQuery(
                 ComponentType.ReadWrite<CommanderAction.Component>(),

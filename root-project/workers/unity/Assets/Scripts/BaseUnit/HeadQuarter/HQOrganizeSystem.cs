@@ -15,7 +15,6 @@ namespace AdvancedGears
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     internal class HQOrganizeSystem : BaseSearchSystem
     {
-        private CommandSystem commandSystem;
         private EntityQuery group;
 
         private Vector3 origin;
@@ -24,10 +23,8 @@ namespace AdvancedGears
         {
             base.OnCreateManager();
 
-            commandSystem = World.GetExistingSystem<CommandSystem>();
-
             // ここで基準位置を取る
-            origin = World.GetExistingSystem<WorkerSystem>().Origin;
+            origin = this.Origin;
 
             group = GetEntityQuery(
                 ComponentType.ReadWrite<HeadQuarters.Component>(),
@@ -114,7 +111,7 @@ namespace AdvancedGears
                                                                                              Rank = rank + 1 });
             Entity entity;
             if (TryGetEntity(id, out entity))
-                commandSystem.SendCommand(request, entity);
+                this.CommandSystem.SendCommand(request, entity);
 
             info.Followers.Clear();
             reserve.Datas[rank] = info;

@@ -20,10 +20,7 @@ namespace AdvancedGears
     public class FuelSupplySystem : BaseSearchSystem
     {
         EntityQuery group;
-        CommandSystem commandSystem;
-        ComponentUpdateSystem updateSystem;
         ILogDispatcher logDispatcher;
-
         private Vector3 origin;
 
         protected override void OnCreateManager()
@@ -31,12 +28,9 @@ namespace AdvancedGears
             base.OnCreateManager();
 
             // ここで基準位置を取る
-            var worker = World.GetExistingSystem<WorkerSystem>();
-            origin = worker.Origin;
-            logDispatcher = worker.LogDispatcher;
+            origin = this.Origin;
+            logDispatcher = this.LogDispatcher;
 
-            commandSystem = World.GetExistingSystem<CommandSystem>();
-            updateSystem = World.GetExistingSystem<ComponentUpdateSystem>();
             group = GetEntityQuery(
                 ComponentType.ReadWrite<FuelSupplyer.Component>(),
                 ComponentType.ReadWrite<FuelComponent.Component>(),
@@ -110,7 +104,7 @@ namespace AdvancedGears
 
         void HandleResponse()
         {
-            var responses = commandSystem.GetResponses<FuelSupplyManager.FinishOrder.ReceivedResponse>();
+            var responses = this.Command.GetResponses<FuelSupplyManager.FinishOrder.ReceivedResponse>();
             for (var i = 0; i < responses.Count; i++) {
                 var response = responses[i];
                 if (response.StatusCode != StatusCode.Success) {
@@ -163,7 +157,7 @@ namespace AdvancedGears
                 Type = type,
                 Amount = num,
             };
-            updateSystem.SendEvent(new FuelComponent.FuelModified.Event(modify), unit.id);
+            this.UpdateSystem.SendEvent(new FuelComponent.FuelModified.Event(modify), unit.id);
             return true;
 
 
@@ -176,7 +170,7 @@ namespace AdvancedGears
                 return;
 
             var res = new SupplyOrderResult { Result = success, SelfId = self_id, Order = order};
-            commandSystem.SendCommand(new FuelSupplyManager.FinishOrder.Request(manager_id, res), entity);
+            this.Command.SendCommand(new FuelSupplyManager.FinishOrder.Request(manager_id, res), entity);
         }
     }
 }

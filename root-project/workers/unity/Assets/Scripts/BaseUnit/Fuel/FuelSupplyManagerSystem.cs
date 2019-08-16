@@ -20,10 +20,8 @@ namespace AdvancedGears
     public class FuelSupplyManagerSystem : BaseSearchSystem
     {
         EntityQuery group;
-        CommandSystem commandSystem;
-        ComponentUpdateSystem updateSystem;
-        ILogDispatcher logDispatcher;
 
+       ILogDispatcher logDispatcher;
         private Vector3 origin;
 
         protected override void OnCreateManager()
@@ -31,12 +29,9 @@ namespace AdvancedGears
             base.OnCreateManager();
 
             // ここで基準位置を取る
-            var worker = World.GetExistingSystem<WorkerSystem>();
-            origin = worker.Origin;
-            logDispatcher = worker.LogDispatcher;
+            origin = this.Origin;
+            logDispatcher = this.LogDispatcher;
 
-            commandSystem = World.GetExistingSystem<CommandSystem>();
-            updateSystem = World.GetExistingSystem<ComponentUpdateSystem>();
             group = GetEntityQuery(
                 ComponentType.ReadWrite<FuelSupplyManager.Component>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
@@ -159,11 +154,11 @@ namespace AdvancedGears
             if (TryGetEntity(entityId, out entity) == false)
                 return -1;
 
-            commandSystem.SendCommand(new FuelSupplyer.SetOrder.Request(entityId, plan.Orders[0]), entity);
+            this.Command.SendCommand(new FuelSupplyer.SetOrder.Request(entityId, plan.Orders[0]), entity);
 
             TargetInfo tgt;
             MakeTarget(plan.Orders[0], out tgt);
-            commandSystem.SendCommand(new BaseUnitTarget.SetTarget.Request(entityId, tgt), entity);
+            this.Command.SendCommand(new BaseUnitTarget.SetTarget.Request(entityId, tgt), entity);
 
             manager.SupplyOrders.Add(entityId, plan);
             return 1;

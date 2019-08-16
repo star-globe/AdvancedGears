@@ -20,23 +20,11 @@ namespace AdvancedGears
     public class DominationSystem : BaseSearchSystem
     {
         EntityQuery group;
-        CommandSystem commandSystem;
-        ComponentUpdateSystem updateSystem;
-        ILogDispatcher logDispatcher;
-
-        private Vector3 origin;
-
+ 
         protected override void OnCreateManager()
         {
             base.OnCreateManager();
 
-            // ここで基準位置を取る
-            var worker = World.GetExistingSystem<WorkerSystem>();
-            origin = worker.Origin;
-            logDispatcher = worker.LogDispatcher;
-
-            commandSystem = World.GetExistingSystem<CommandSystem>();
-            updateSystem = World.GetExistingSystem<ComponentUpdateSystem>();
             group = GetEntityQuery(
                 ComponentType.ReadWrite<DominationStamina.Component>(),
                 ComponentType.ReadOnly<DominationStamina.ComponentAuthority>(),

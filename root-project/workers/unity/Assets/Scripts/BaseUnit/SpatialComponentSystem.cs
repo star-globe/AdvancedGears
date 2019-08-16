@@ -14,7 +14,7 @@ namespace AdvancedGears
     public abstract class SpatialComponentSystem : ComponentSystem
     {
         WorkerSystem worker = null;
-        protected WorkerSystem Worker
+        protected WorkerSystem WorkerSystem
         {
             get
             {
@@ -24,7 +24,7 @@ namespace AdvancedGears
         }
 
         CommandSystem command = null;
-        protected CommandSystem Command
+        protected CommandSystem CommandSystem
         {
             get
             {
@@ -48,10 +48,10 @@ namespace AdvancedGears
         {
             get
             {
-                if (this.Worker == null)
+                if (this.WorkerSystem == null)
                     return Vector3.zero;
 
-                origin = origin ?? this.Worker.Origin;
+                origin = origin ?? this.WorkerSystem.Origin;
                 return origin.Value;
             }
         }
@@ -61,10 +61,10 @@ namespace AdvancedGears
         {
             get
             {
-                if (this.Worker == null)
+                if (this.WorkerSystem == null)
                     return null;
 
-                logDispatcher = logDispatcher ?? this.Worker.LogDispatcher;
+                logDispatcher = logDispatcher ?? this.WorkerSystem.LogDispatcher;
                 return logDispatcher;
             }
         }
