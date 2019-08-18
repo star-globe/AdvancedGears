@@ -20,11 +20,11 @@ namespace AdvancedGears
                 MobileClient
             };
 
-        public static void AddClientSystems(World world)
+        public static void AddClientSystems(World world, UnityEngine.GameObject gameObject)
         {
             TransformSynchronizationHelper.AddClientSystems(world);
             PlayerLifecycleHelper.AddClientSystems(world);
-            GameObjectCreationHelper.EnableStandardGameObjectCreation(world);
+            GameObjectCreationHelper.EnableStandardGameObjectCreation(world, gameObject);
             world.GetOrCreateSystem<ProcessColorChangeSystem>();
             world.GetOrCreateSystem<LocalPlayerInputSync>();
             world.GetOrCreateSystem<MoveLocalPlayerSystem>();
@@ -37,11 +37,11 @@ namespace AdvancedGears
             world.GetOrCreateSystem<BulletMovementSystem>();
         }
 
-        public static void AddGameLogicSystems(World world)
+        public static void AddGameLogicSystems(World world, UnityEngine.GameObject gameObject)
         {
             TransformSynchronizationHelper.AddServerSystems(world);
             PlayerLifecycleHelper.AddServerSystems(world);
-            GameObjectCreationHelper.EnableStandardGameObjectCreation(world);
+            GameObjectCreationHelper.EnableStandardGameObjectCreation(world, gameObject);
 
             world.GetOrCreateSystem<TriggerColorChangeSystem>();
             world.GetOrCreateSystem<ProcessLaunchCommandSystem>();
@@ -56,6 +56,7 @@ namespace AdvancedGears
             world.GetOrCreateSystem<CommanderActionSystem>();
             world.GetOrCreateSystem<UnitFactorySystem>();
             world.GetOrCreateSystem<HQOrganizeSystem>();
+            world.GetOrCreateSystem<UnitArmyObserveSystem>();
             world.GetOrCreateSystem<BulletMovementSystem>();
             world.GetOrCreateSystem<BaseUnitReviveTimerSystem>();
         }

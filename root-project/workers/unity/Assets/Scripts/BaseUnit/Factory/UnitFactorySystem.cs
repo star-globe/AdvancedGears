@@ -55,7 +55,8 @@ namespace AdvancedGears
 
         // TODO:getFromSettings;
         const float timeCost = 2;
-        const float range = 10.0f;
+        const float range = 12.0f;
+        const float height_buffer = 5.0f;
         void HandleProductUnit()
         {
             Entities.With(group).ForEach((Unity.Entities.Entity entity,
@@ -107,13 +108,13 @@ namespace AdvancedGears
 
                     var pos = p.ToWorldPosition(origin);
                     EntityTemplate template = null;
-                    var coords = new Coordinates(pos.X, pos.Y, pos.Z);
+                    var coords = new Coordinates(pos.X, pos.Y + height_buffer, pos.Z);
 
                     bool finished = false;
                     if (s_order != null)
                         template = CreateSuperior(factory.SuperiorOrders, coords, out finished);
                     else if (f_order != null)
-                        template = CreateFollower(factory.FollowerOrders, coords, out finished);
+                        template = CreateFollower(factory.FollowerOrders, coords, f_order.Value.Customer, out finished);
 
                     var request = new WorldCommands.CreateEntity.Request
                     (
@@ -130,7 +131,7 @@ namespace AdvancedGears
             });
         }
 
-        EntityTemplate CreateFollower(List<FollowerOrder> orders, in Coordinates coords, out bool finished)
+        EntityTemplate CreateFollower(List<FollowerOrder> orders, in Coordinates coords, in EntityId superiorId, out bool finished)
         {
             finished = false;
             if (orders.Count == 0)
@@ -142,7 +143,7 @@ namespace AdvancedGears
             switch (current.Type)
             {
                 case UnitType.Commander:
-                    template = BaseUnitTemplate.CreateCommanderUnitEntityTemplate(current.Side, coords, current.Rank);
+                    template = BaseUnitTemplate.CreateCommanderUnitEntityTemplate(current.Side, coords, current.Rank, superiorId);
                     break;
                 default:
                     template = BaseUnitTemplate.CreateBaseUnitEntityTemplate(current.Side, coords, current.Type);
@@ -170,7 +171,7 @@ namespace AdvancedGears
 
             var current = orders[0];
             // create unit
-            EntityTemplate template = BaseUnitTemplate.CreateCommanderUnitEntityTemplate(current.Side, coords, current.Rank);
+            EntityTemplate template = BaseUnitTemplate.CreateCommanderUnitEntityTemplate(current.Side, coords, current.Rank, null);
             var snap = template.GetComponent<CommanderStatus.Snapshot>();
             if (snap != null) {
                 var s = snap.Value;
@@ -213,6 +214,8 @@ namespace AdvancedGears
                         case UnitType.Soldier:      info.Followers.Add(entityId); break;
                         case UnitType.Commander:    info.UnderCommanders.Add(entityId); break;
                     }
+
+                    followerDic[id] = info;
                 }
 
                 if (order.s_order != null) {

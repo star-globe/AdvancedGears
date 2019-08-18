@@ -5,7 +5,7 @@ using UnityEngine;
 namespace AdvancedGears
 {
     [CreateAssetMenu(menuName = "AdvancedGears/Gun Config/Gun Dictionary", order = 0)]
-    public class GunDictionary : ScriptableObject
+    public class GunDictionary : DictionarySettings
     {
         public static GunDictionary Instance { private get; set; }
 
@@ -28,6 +28,11 @@ namespace AdvancedGears
 
                 return dic;
             }
+        }
+
+        public override void Initialize()
+        {
+            Instance = this;
         }
 
         public static GunSettings GetGunSettings(uint gunId)

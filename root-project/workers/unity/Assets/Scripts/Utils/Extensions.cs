@@ -67,17 +67,6 @@ namespace AdvancedGears
             return pair;
         }
 
-        public static bool IsNeedToOrder(this SuperiorInfo superior)
-        {
-            return superior.IsOrdered == false && superior.EntityId.IsValid() == false;
-        }
-
-        public static SuperiorInfo SetIsOrder(this SuperiorInfo superior, bool isOrdered)
-        {
-            superior.IsOrdered = isOrdered;
-            return superior;
-        }
-
         public static void SetData(this ref PostureInfo info, PostureData data)
         {
             if (info.Datas.ContainsKey(data.Point))
@@ -97,16 +86,12 @@ namespace AdvancedGears
                 return;
 
             Vector3 dmy = position;
-            System.Action<AttachedTransform> rotate = (connector) =>
-            {
-                RotateAndMoveEffector(connector, position, effector, angleSpeed);
-            };
 
             foreach (var c in connectors.Reverse())
-                rotate(c);
+                RotateAndMoveEffector(c, position, effector, angleSpeed);
 
             foreach (var c in connectors)
-                rotate(c);
+                RotateAndMoveEffector(c, position, effector, angleSpeed);
         }
 
         internal static Vector3 RotateAndMoveEffector(AttachedTransform attached, Vector3 tgt, Transform effector, float angleSpeed = float.MaxValue)

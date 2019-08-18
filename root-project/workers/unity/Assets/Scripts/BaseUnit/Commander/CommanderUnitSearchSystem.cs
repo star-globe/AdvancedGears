@@ -68,11 +68,10 @@ namespace AdvancedGears
                 var pos = trans.position;
 
                 bool is_target;
-                int num = 5/2;
-                if (CheckNeedsFollowers(ref commander, num))
+                uint sol = commander.TeamConfig.Soldiers/2;
+                uint com = commander.TeamConfig.Commanders / 2;
+                if (CheckNeedsFollowers(ref commander, sol, com))
                     is_target = escapeOrder(status, entityId, pos, ref sight, ref commander);
-                else if (commander.SuperiorInfo.IsNeedToOrder())
-                    is_target = organizeOrder(status.Side, pos, ref commander);
                 else
                     is_target = attackOrder(status, entityId, pos, ref sight, ref commander);
 
@@ -126,17 +125,6 @@ namespace AdvancedGears
             commander.Order = commander.Order.Self(OrderType.Escape);
 
             SetCommand(targetInfo.CommanderId, targetInfo, commander.Order.Self);
-
-            return tgt != null;
-        }
-
-        const float radioRange = 1000.0f;
-        bool organizeOrder(UnitSide side, in Vector3 pos, ref CommanderStatus.Component commander)
-        {
-            var tgt = getNearestAlly(side, pos, radioRange, UnitType.HeadQuarter);
-
-            commander.Order = commander.Order.Self(OrderType.Organize);
-            commander.SuperiorInfo = commander.SuperiorInfo.SetIsOrder(true);
 
             return tgt != null;
         }
@@ -229,13 +217,13 @@ namespace AdvancedGears
     public abstract class BaseCommanderSearch : BaseSearchSystem
     {
         #region CheckMethod
-        protected bool CheckNeedsFollowers(ref CommanderStatus.Component commander, int num)
+        protected bool CheckNeedsFollowers(ref CommanderStatus.Component commander, uint soldiers, uint commanders)
         {
-            if (GetFollowerCount(ref commander,false) < num)
+            if (GetFollowerCount(ref commander,false) < soldiers)
                 return true;
 
             if (commander.Rank > 0 &&
-                GetFollowerCount(ref commander, true) <= num)
+                GetFollowerCount(ref commander, true) <= commanders)
                 return true;
 
             return false;

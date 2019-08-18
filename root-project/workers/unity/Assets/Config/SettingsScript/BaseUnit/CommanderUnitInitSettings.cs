@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,8 +12,24 @@ namespace AdvancedGears
         [SerializeField] float allyRange = 50.0f;
         [SerializeField] float inter = 3.0f;
 
+        [SerializeField] TeamInfo team;
+
         public float SightRange => sightRange;
         public float AllyRange => allyRange;
         public float Inter => inter;
+
+        public TeamConfig TeamConfig => team.GetConfig();
+
+        [Serializable]
+        class TeamInfo
+        {
+            public uint soldiers;
+            public uint commanders;
+
+            public TeamConfig GetConfig()
+            {
+                return new TeamConfig(soldiers,commanders);
+            }
+        }
     }
 }

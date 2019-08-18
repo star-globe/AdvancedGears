@@ -54,7 +54,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 7e00873dd53438245919187ebd00e937, type: 2}
   - {fileID: 11400000, guid: d3eeea3be1ea96949b63c46a6353d4d1, type: 2}
   SendStrategies: []
-  SetKinematicWhenNotAuthoritative: 0
+  SetKinematicWhenNotAuthoritative: 1
 --- !u!114 &5479360239472582714
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -148,6 +148,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 747717006727055777}
     m_Modifications:
+    - target: {fileID: 5181175297171742801, guid: 6ea95b1a84b80ce4099490fd478bd3a9,
+        type: 3}
+      propertyPath: m_Name
+      value: CommanderUnit_Object
+      objectReference: {fileID: 0}
     - target: {fileID: 747717006727055777, guid: 6ea95b1a84b80ce4099490fd478bd3a9,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -202,11 +207,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5181175297171742801, guid: 6ea95b1a84b80ce4099490fd478bd3a9,
-        type: 3}
-      propertyPath: m_Name
-      value: CommanderUnit_Object
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 965182219674110058, guid: 6ea95b1a84b80ce4099490fd478bd3a9, type: 3}

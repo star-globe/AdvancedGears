@@ -2,6 +2,8 @@ using System;
 using Improbable.Gdk.Core;
 using Improbable.Gdk.PlayerLifecycle;
 using Improbable.Worker.CInterop;
+using Improbable.Gdk.GameObjectCreation;
+using Improbable.Gdk.Subscriptions;
 using UnityEngine;
 
 namespace AdvancedGears
@@ -46,7 +48,7 @@ namespace AdvancedGears
 
         protected override void HandleWorkerConnectionEstablished()
         {
-            WorkerUtils.AddClientSystems(Worker.World);
+            WorkerUtils.AddClientSystems(Worker.World, this.gameObject);
         }
     }
 }

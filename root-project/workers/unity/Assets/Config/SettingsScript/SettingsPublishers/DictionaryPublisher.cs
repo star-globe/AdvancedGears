@@ -6,15 +6,19 @@ namespace AdvancedGears
 {
     public class DictionaryPublisher : MonoBehaviour, ISettingsPublisher
     {
-        [SerializeField] private BulletDictionary bulletDictionary;
-        [SerializeField] private GunDictionary gunDictionary;
-
+        [SerializeField]
+        List<DictionarySettings> dictionaries;
 
         public void Publish()
         {
-            BulletDictionary.Instance = bulletDictionary;
-            GunDictionary.Instance = gunDictionary;
+            foreach (var dic in dictionaries)
+                dic.Initialize();
         }
+    }
+
+    public abstract class DictionarySettings : ScriptableObject
+    {
+        public abstract void Initialize();
     }
 }
 

@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: HeadQuarterInitSettings
   m_EditorClassIdentifier: 
   sightRange: 100
-  allyRange: 50
+  maxRank: 0
   inter: 3

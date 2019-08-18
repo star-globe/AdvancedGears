@@ -40,7 +40,7 @@ namespace AdvancedGears
 
         protected override void HandleWorkerConnectionEstablished()
         {
-            WorkerUtils.AddGameLogicSystems(Worker.World);
+            WorkerUtils.AddGameLogicSystems(Worker.World, this.gameObject);
         }
 
         private static EntityTemplate CreatePlayerEntityTemplate(string workerId, byte[] serializedArguments)

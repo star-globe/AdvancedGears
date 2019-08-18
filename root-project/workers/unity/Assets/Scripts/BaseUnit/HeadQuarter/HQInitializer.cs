@@ -20,7 +20,7 @@ namespace AdvancedGears
             writer.SendUpdate(new HeadQuarters.Update
             {
                 Interval = IntervalCheckerInitializer.InitializedChecker(settings.Inter),
-                UpperRank = settings.UpperRank,
+                MaxRank = settings.MaxRank,
             });
         }
     }

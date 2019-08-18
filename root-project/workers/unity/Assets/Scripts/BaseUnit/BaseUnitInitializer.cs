@@ -28,7 +28,7 @@ namespace AdvancedGears
             movement.SendUpdate(new BaseUnitMovement.Update
             {
                 MoveSpeed = settings.Speed,
-                RotSpeed = settings.Rot,
+                RotSpeed = settings.RotSpeed,
                 ConsumeRate = settings.ConsumeRate,
             });
 

@@ -14,3 +14,17 @@ enum PosturePoint {
     Arm1 = 2;
     Arm2 = 3;
 }
+
+enum FixedRangeType
+{
+    None = 0;
+    BaseRange = 1;
+    RadioRange = 2;
+}
+
+/*
+type Som
+{
+    float k = 1;
+}
+*/

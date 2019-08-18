@@ -76,7 +76,7 @@ namespace AdvancedGears
 
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
                 var pos = trans.position;
-                var list = getUnits(status.Side, pos, range, false, false, UnitType.Soldier, UnitType.Commander);
+                var list = getAllyUnits(status.Side, pos, range, UnitType.Soldier, UnitType.Commander);
                 foreach (var unit in list)
                 {
                     FuelComponent.Component? comp = null;

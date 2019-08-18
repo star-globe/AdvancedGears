@@ -8,7 +8,7 @@ namespace AdvancedGears
     public class BaseUnitInitSettings : ScriptableObject
     {
         [SerializeField] float speed = 1.0f;
-        [SerializeField] float rot = 3.0f;
+        [SerializeField] float rotSpeed = 3.0f;
         [SerializeField] float inter = 0.5f;
         [SerializeField] float sightRange = 30.0f;
         [SerializeField] float atkRange = 15.0f;
@@ -21,7 +21,7 @@ namespace AdvancedGears
         [SerializeField] uint[] gunIds = new uint[] { 1 };
 
         public float Speed => speed;
-        public float Rot => rot;
+        public float RotSpeed => rotSpeed;
         public float Inter => inter;
         public float SightRange => sightRange;
         public float AtkRange => atkRange;

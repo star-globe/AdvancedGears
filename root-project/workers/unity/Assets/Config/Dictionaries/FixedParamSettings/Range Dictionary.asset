@@ -9,12 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 37cb6d2bdd35aee42b301ab1cf3b20a3, type: 3}
-  m_Name: CommanderUnitInitSettings
+  m_Script: {fileID: 11500000, guid: bcc967a78dd42244ca038a87d61806f0, type: 3}
+  m_Name: Range Dictionary
   m_EditorClassIdentifier: 
-  sightRange: 100
-  allyRange: 50
-  inter: 3
-  team:
-    soldiers: 5
-    commanders: 3
+  rangeSettings:
+  - type: 1
+    range: 200
+  - type: 2
+    range: 1000

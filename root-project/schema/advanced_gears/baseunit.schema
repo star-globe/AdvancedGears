@@ -189,13 +189,18 @@ type FollowerInfo {
 
 type SuperiorInfo {
     EntityId entity_id = 1;
-    bool is_ordered = 2;
+}
+
+type TeamConfig {
+    uint32 soldiers = 1;
+    uint32 commanders = 2;
 }
 
 component CommanderStatus {
     id = 20020;
 
     OrderPair order = 1;
+    TeamConfig team_config = 2; 
     uint32 rank = 3;
 
     float ally_range = 4;
@@ -240,7 +245,7 @@ enum CommandActionType
 {
     None = 0;
     Product = 1;
-    Organize = 2;
+    Capturing = 2;
 }
 
 component CommanderAction {
@@ -277,6 +282,12 @@ component UnitFactory {
     command improbable.gdk.core.Empty add_superior_order(SuperiorOrder);
 }
 
+component UnitArmyObserver {
+    id = 20033;
+
+    IntervalChecker interval = 1;
+}
+
 // headquarters:20040~
 type OrganizeOrder {
     EntityId customer = 1;
@@ -304,9 +315,11 @@ component HeadQuarters {
     IntervalChecker interval = 1;
 
     uint32 upper_rank = 2;
-    FactoryMap factory_datas = 3;
+    uint32 max_rank = 3;
 
-    transient list<OrganizeOrder> orders = 4;
+    FactoryMap factory_datas = 4;
+
+    transient list<OrganizeOrder> orders = 5;
 
     command improbable.gdk.core.Empty add_order(OrganizeOrder);
 }

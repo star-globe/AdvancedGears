@@ -40,6 +40,9 @@ namespace AdvancedGears
             group.SetFilter(FuelComponent.ComponentAuthority.Authoritative);
         }
 
+        Ray vertical = new Ray();
+        readonly int layer = LayerMask.GetMask("Ground");
+
         protected override void OnUpdate()
         {
             Entities.With(group).ForEach((Entity entity,
@@ -57,7 +60,19 @@ namespace AdvancedGears
                     status.Type != UnitType.Commander)
                     return;
 
+                // check fueld
+                if (fuel.Fuel == 0)
+                    return;
+
                 var unit = EntityManager.GetComponentObject<UnitTransform>(entity);
+
+                // check ground
+                var bounds = unit.GroundDetect.bounds;
+                vertical.direction = -unit.GroundDetect.transform.up;
+                vertical.origin = bounds.center;
+                if (!Physics.Raycast(vertical, bounds.extents.y * 1.1f, layer))
+                    return;
+
                 var rigidbody = EntityManager.GetComponentObject<Rigidbody>(entity);
 
                 if (!movement.IsTarget)
@@ -67,17 +82,7 @@ namespace AdvancedGears
                     return;
                 }
 
-                // check fueld
-                if (fuel.Fuel == 0)
-                    return;
-
                 var pos = rigidbody.position;
-
-                // check ground
-                var bounds = unit.GroundDetect.bounds;
-                var up = unit.GroundDetect.transform.up;
-                if (!Physics.Raycast(new Ray(bounds.center, -up), bounds.extents.y * 1.1f, LayerMask.GetMask("Ground")))
-                    return;
 
                 var tgt = movement.TargetPosition.ToWorkerPosition(origin);
 

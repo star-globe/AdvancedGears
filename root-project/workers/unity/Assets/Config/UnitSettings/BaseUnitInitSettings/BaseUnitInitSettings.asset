@@ -18,7 +18,7 @@ MonoBehaviour:
   sightRange: 30
   atkRange: 15
   atkAngle: 1
-  angleSpeed: 90
+  angleSpeed: 1
   maxHp: 10
   defense: 10
   maxFuel: 50

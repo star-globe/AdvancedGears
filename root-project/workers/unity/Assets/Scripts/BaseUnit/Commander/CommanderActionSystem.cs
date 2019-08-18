@@ -71,7 +71,7 @@ namespace AdvancedGears
                         break;
 
                     case OrderType.Organize:
-                        OrganizeAlly(trans.position, status.Side, commander, entityId, tgt, ref action);
+                        //
                         break;
 
                     default:
@@ -120,30 +120,6 @@ namespace AdvancedGears
                 this.CommandSystem.SendCommand(r, entity);
             
             action.ActionType = CommandActionType.Product;
-        }
-
-        const float radioRange = 1000.0f;
-        void OrganizeAlly(in Vector3 pos, UnitSide side, in CommanderStatus.Component commander, in SpatialEntityId entityId, in BaseUnitTarget.Component tgt, ref CommanderAction.Component action)
-        {
-            if (action.ActionType == CommandActionType.Organize)
-                return;
-
-            var diff = tgt.TargetInfo.Position.ToWorkerPosition(origin) - pos;
-            float length = radioRange;
-            if (diff.sqrMagnitude > length * length)
-                return;
-
-            var id = tgt.TargetInfo.TargetId;
-            var request = new HeadQuarters.AddOrder.Request(id, new OrganizeOrder() { Customer = entityId.EntityId,
-                                                                                      CustomerRank = commander.Rank,
-                                                                                      Pos = pos.ToImprobableVector3(),
-                                                                                      Side = side });
-            Entity entity;
-            if (TryGetEntity(id, out entity) == false)
-                return;
-
-            this.CommandSystem.SendCommand(request, entity);
-            action.ActionType = CommandActionType.Organize;
         }
     }
 }

@@ -187,6 +187,11 @@ namespace AdvancedGears
             return info;
         }
 
+        protected List<UnitInfo> getAllyUnits(UnitSide self_side, in Vector3 pos, float length, params UnitType[] types)
+        {
+            return getUnits(self_side, pos, length, false, false, types);
+        }
+
         protected List<UnitInfo> getUnits(UnitSide self_side, in Vector3 pos, float length, bool? isEnemy, bool allowDead, params UnitType[] types)
         {
             List<UnitInfo> unitList = new List<UnitInfo>();

@@ -5,11 +5,16 @@ using UnityEngine;
 namespace AdvancedGears
 {
     [CreateAssetMenu(menuName = "AdvancedGears/Bullet Config/Bullet Dictionary", order = 0)]
-    public class BulletDictionary : ScriptableObject
+    public class BulletDictionary : DictionarySettings
     {
         public static BulletDictionary Instance { private get; set; }
 
         [SerializeField] private BulletSettings[] bulletsList;
+
+        public override void Initialize()
+        {
+            Instance = this;
+        }
 
         public static BulletSettings Get(int index)
         {

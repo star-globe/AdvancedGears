@@ -56,5 +56,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e22fff5fecbc6148a547595b18394fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bulletDictionary: {fileID: 11400000, guid: d64c33b406c295049973606f387a8cdb, type: 2}
-  gunDictionary: {fileID: 11400000, guid: 6fe9f201086daab40a16778beecdf589, type: 2}
+  dictionaries:
+  - {fileID: 11400000, guid: d64c33b406c295049973606f387a8cdb, type: 2}
+  - {fileID: 11400000, guid: 6fe9f201086daab40a16778beecdf589, type: 2}
+  - {fileID: 11400000, guid: af64405cc3a0a9f41979f991e1905219, type: 2}

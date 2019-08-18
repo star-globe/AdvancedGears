@@ -60,7 +60,7 @@ namespace AdvancedGears
                 case UnitType.Commander:
                     template.AddComponent(new BulletComponent.Snapshot(), writeAccess);
                     template.AddComponent(new CommanderStatus.Snapshot { FollowerInfo = new FollowerInfo { Followers = new List<EntityId>(), UnderCommanders = new List<EntityId>() },
-                                                                         SuperiorInfo = new SuperiorInfo { IsOrdered = false },
+                                                                         SuperiorInfo = new SuperiorInfo(),
                                                                          Order = new OrderPair { Self = OrderType.Idle, Upper = OrderType.Idle },
                                                                          Rank = 0, }, writeAccess);
                     template.AddComponent(new CommanderSight.Snapshot { WarPowers = new List<WarPower>() }, writeAccess);
@@ -70,6 +70,7 @@ namespace AdvancedGears
 
                 case UnitType.Stronghold:
                     template.AddComponent(new UnitFactory.Snapshot { FollowerOrders = new List<FollowerOrder>(), SuperiorOrders = new List<SuperiorOrder>() }, writeAccess);
+                    template.AddComponent(new UnitArmyObserver.Snapshot(), writeAccess);
                     break;
 
                 case UnitType.HeadQuarter:
@@ -80,13 +81,17 @@ namespace AdvancedGears
             }
         }
 
-        public static EntityTemplate CreateCommanderUnitEntityTemplate(UnitSide side, Coordinates coords, uint rank)
+        public static EntityTemplate CreateCommanderUnitEntityTemplate(UnitSide side, Coordinates coords, uint rank, EntityId? superiorId)
         {
             var template = CreateBaseUnitEntityTemplate(side, coords, UnitType.Commander);
             var snap = template.GetComponent<CommanderStatus.Snapshot>();
             if (snap != null) {
                 var s = snap.Value;
                 s.Rank = rank;
+
+                if (superiorId != null)
+                    s.SuperiorInfo.EntityId = superiorId.Value;
+
                 template.SetComponent(s);
             }
 

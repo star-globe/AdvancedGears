@@ -54,8 +54,7 @@ namespace AdvancedGears
                 if (headQuarter.Orders.Count == 0)
                     return;
 
-                // TODO:upper check 
-                if (headQuarter.UpperRank >= 5)
+                if (headQuarter.UpperRank >= headQuarter.MaxRank)
                     return;
 
                 var time = Time.time;
@@ -65,11 +64,9 @@ namespace AdvancedGears
 
                 headQuarter.Interval = inter;
 
-                const float range = 500.0f;
-                foreach (var order in headQuarter.Orders)
-                {
+                foreach (var order in headQuarter.Orders) {
                     var pos = order.Pos.ToWorkerPosition(origin);
-                    var str = getNearestAlly(status.Side, pos, range, UnitType.Stronghold);
+                    var str = getNearestAlly(status.Side, pos, RangeDictionary.Get(FixedRangeType.RadioRange), UnitType.Stronghold);
                     if (str == null)
                         continue;
 
@@ -90,7 +87,7 @@ namespace AdvancedGears
             upper_rank = 0;
 
             if (map.Reserves.ContainsKey(id) == false)
-                map.Reserves.Add(id, new ReserveMap());
+                map.Reserves.Add(id, new ReserveMap() { Datas = new Dictionary<uint, ReserveInfo>() });
             var reserve = map.Reserves[id];
 
             var rank = order.CustomerRank;

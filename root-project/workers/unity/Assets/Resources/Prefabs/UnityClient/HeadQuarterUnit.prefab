@@ -52,7 +52,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 7e00873dd53438245919187ebd00e937, type: 2}
   - {fileID: 11400000, guid: d3eeea3be1ea96949b63c46a6353d4d1, type: 2}
   SendStrategies: []
-  SetKinematicWhenNotAuthoritative: 0
+  SetKinematicWhenNotAuthoritative: 1
 --- !u!114 &6874015814734886984
 MonoBehaviour:
   m_ObjectHideFlags: 0
