@@ -68,8 +68,8 @@ namespace AdvancedGears
                 var pos = trans.position;
 
                 bool is_target;
-                uint sol = commander.TeamConfig.Soldiers/2;
-                uint com = commander.TeamConfig.Commanders / 2;
+                int sol = commander.TeamConfig.Soldiers / 2;
+                int com = commander.TeamConfig.Commanders / 2;
                 if (CheckNeedsFollowers(ref commander, sol, com))
                     is_target = escapeOrder(status, entityId, pos, ref sight, ref commander);
                 else
@@ -171,7 +171,7 @@ namespace AdvancedGears
                 }
             }
 
-            float rate = 1.3f;
+            float rate = 1.1f;
             if (ally > enemy * rate)
                 return OrderType.Attack;
 
@@ -217,7 +217,7 @@ namespace AdvancedGears
     public abstract class BaseCommanderSearch : BaseSearchSystem
     {
         #region CheckMethod
-        protected bool CheckNeedsFollowers(ref CommanderStatus.Component commander, uint soldiers, uint commanders)
+        protected bool CheckNeedsFollowers(ref CommanderStatus.Component commander, int soldiers, int commanders)
         {
             if (GetFollowerCount(ref commander,false) < soldiers)
                 return true;

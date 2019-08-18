@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: BaseUnitInitSettings
   m_EditorClassIdentifier: 
   speed: 1
-  rot: 30
+  rotSpeed: 10
   inter: 0.5
   sightRange: 30
   atkRange: 15
-  atkAngle: 1
-  angleSpeed: 1
+  atkAngle: 0.5
+  angleSpeed: 30
   maxHp: 10
   defense: 10
   maxFuel: 50

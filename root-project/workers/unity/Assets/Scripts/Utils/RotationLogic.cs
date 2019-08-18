@@ -8,9 +8,9 @@ namespace AdvancedGears
 {
     public static class RotateLogic
     {
-        public static void Rotate(Transform trans, Vector3 foward, float max = float.MaxValue)
+        public static void Rotate(Transform trans, Vector3 foward, float angleSpeed)
         {
-            Rotate(trans, trans.forward, trans.up, foward, max: max);
+            Rotate(trans, trans.forward, trans.up, foward, angleSpeed:angleSpeed);
         }
 
         public static void Rotate(Transform trans, Vector3 front, Vector3 upAxis, Vector3 tgtFoward, ConnectorConstrain constrain, float angleSpeed = float.MaxValue)
@@ -74,7 +74,7 @@ namespace AdvancedGears
                 ang = Mathf.Clamp(ang, min, max);
             }
 
-            trans.Rotate(upAxis, ang, Space.World);
+            trans.Rotate(upAxis, ang, Space.Self);
         }
 
         public static bool CheckRotate(Vector3 front, Vector3 up, Vector3 tgtFoward, float angle)

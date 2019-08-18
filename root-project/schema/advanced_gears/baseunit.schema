@@ -192,8 +192,8 @@ type SuperiorInfo {
 }
 
 type TeamConfig {
-    uint32 soldiers = 1;
-    uint32 commanders = 2;
+    int32 soldiers = 1;
+    int32 commanders = 2;
 }
 
 component CommanderStatus {

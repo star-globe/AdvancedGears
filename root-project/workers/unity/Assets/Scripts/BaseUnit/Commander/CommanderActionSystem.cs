@@ -88,14 +88,13 @@ namespace AdvancedGears
 
             var diff = tgt.TargetInfo.Position.ToWorkerPosition(origin) - pos;
             float length = 10.0f;   // TODO from:master
-            int num = 5;
             if (diff.sqrMagnitude > length * length)
                 return;
 
             var id = tgt.TargetInfo.TargetId;
             List<UnitFactory.AddFollowerOrder.Request> reqList = new List<UnitFactory.AddFollowerOrder.Request>();
 
-            var n_sol = num - GetFollowerCount(commander, false);
+            var n_sol = commander.TeamConfig.Soldiers - GetFollowerCount(commander, false);
             if (n_sol > 0) {
                 reqList.Add(new UnitFactory.AddFollowerOrder.Request(id, new FollowerOrder() { Customer = entityId.EntityId,
                                                                                                Number = n_sol,
@@ -103,7 +102,7 @@ namespace AdvancedGears
                                                                                                Side = side }));
             }
 
-            var n_com = num - GetFollowerCount(commander,true);
+            var n_com = commander.TeamConfig.Commanders - GetFollowerCount(commander,true);
             if (n_com > 0 && commander.Rank > 0) {
                 reqList.Add(new UnitFactory.AddFollowerOrder.Request(id, new FollowerOrder() { Customer = entityId.EntityId,
                                                                                                Number = n_com,

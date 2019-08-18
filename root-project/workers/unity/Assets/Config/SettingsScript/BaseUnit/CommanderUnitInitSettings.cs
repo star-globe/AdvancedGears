@@ -23,8 +23,8 @@ namespace AdvancedGears
         [Serializable]
         class TeamInfo
         {
-            public uint soldiers;
-            public uint commanders;
+            public int soldiers;
+            public int commanders;
 
             public TeamConfig GetConfig()
             {

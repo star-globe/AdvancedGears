@@ -125,7 +125,7 @@ namespace AdvancedGears
                     case OrderType.Move:
                     case OrderType.Escape: range *= 0.4f; break;
                     case OrderType.Attack: range *= 0.8f; break;
-                    case OrderType.Keep: range *= 1.0f; break;
+                    case OrderType.Keep: range *= 1.5f; break;
                 }
 
                 movement.TargetRange = range;
