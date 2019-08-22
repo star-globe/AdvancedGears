@@ -56,8 +56,32 @@ component EquipComponent {
     command improbable.gdk.core.Empty change_form(ChangeFormInfo);
 }
 
-component DummyPlayer {
+type ControllerInfo {
+    float horizontal = 1;
+    float vertical = 2;
+    bool running = 3;
+}
+
+component AdvancedUnitController {
     id = 21030;
 
-    IntervalChecker interval = 1;
+    ControllerInfo controller = 1;
+
+    event ControllerInfo controller_changed;
+}
+
+enum InputType {
+    Player = 0;
+    Unmanned = 1; 
+}
+
+component AdvancedInput {
+    id = 21040;
+
+    InputType type = 1;
+
+    Interval inter = 2;
+
+    int32 logic_pattern = 3;
+
 }
