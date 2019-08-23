@@ -70,15 +70,12 @@ component AdvancedUnitController {
     event ControllerInfo controller_changed;
 }
 
-enum InputType {
-    Player = 0;
-    Unmanned = 1; 
+component AdvancedPlayerInput {
+    id = 21040;
 }
 
-component AdvancedInput {
-    id = 21040;
-
-    InputType type = 1;
+component AdvancedAnmannedInput {
+    id = 21041;
 
     Interval inter = 2;
 
