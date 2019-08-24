@@ -77,7 +77,7 @@ component AdvancedPlayerInput {
 component AdvancedAnmannedInput {
     id = 21041;
 
-    Interval inter = 2;
+    IntervalChecker inter = 2;
 
     int32 logic_pattern = 3;
 
