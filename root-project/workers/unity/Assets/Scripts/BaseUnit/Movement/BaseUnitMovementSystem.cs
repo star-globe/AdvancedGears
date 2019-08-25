@@ -41,7 +41,7 @@ namespace AdvancedGears
         }
 
         Ray vertical = new Ray();
-        readonly int layer = LayerMask.GetMask("Ground");
+        //readonly int layer = //LayerMask.//LayerMask.GetMask("Ground");
 
         protected override void OnUpdate()
         {
@@ -67,10 +67,7 @@ namespace AdvancedGears
                 var unit = EntityManager.GetComponentObject<UnitTransform>(entity);
 
                 // check ground
-                var bounds = unit.GroundDetect.bounds;
-                vertical.direction = -unit.GroundDetect.transform.up;
-                vertical.origin = bounds.center;
-                if (!Physics.Raycast(vertical, bounds.extents.y * 1.1f, layer))
+                if (unit.GetGrounded() == false)
                     return;
 
                 var rigidbody = EntityManager.GetComponentObject<Rigidbody>(entity);

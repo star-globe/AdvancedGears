@@ -126,14 +126,14 @@ namespace AdvancedGears
             bullet.IsActive = true;
             bullet.Rigid.useGravity = true;
             bullet.Rigid.isKinematic = false;
-            bullet.Rigid.detectCollisions = entityDic.ContainsKey(info.ShooterEntityId); 
+            bullet.Rigid.detectCollisions = entityDic.ContainsKey(info.ShooterEntityId);
 
-            var pos = new Vector3(info.LaunchPosition.X, info.LaunchPosition.Y, info.LaunchPosition.Z);
+            var pos = info.LaunchPosition.ToUnityVector();
             pos += Origin;
             bullet.Rigid.position = pos;
             bullet.Rigid.transform.position = pos;
 
-            var vec = new Vector3(info.InitialVelocity.X, info.InitialVelocity.Y, info.InitialVelocity.Z);
+            var vec = info.InitialVelocity.ToUnityVector();;
             bullet.Rigid.transform.forward = vec.normalized;
             bullet.Rigid.velocity = vec;
             bullet.Rigid.angularVelocity = Vector3.zero;

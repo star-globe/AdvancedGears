@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7557874807969014891}
   - component: {fileID: 7557874807969014890}
+  - component: {fileID: 4639143133895456960}
   m_Layer: 0
   m_Name: ClientWorker
   m_TagString: Untagged
@@ -44,3 +45,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MaxConnectionAttempts: 3
+--- !u!114 &4639143133895456960
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7557874807969014889}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 728683d1cc163174bbe9d465aab1b538, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  level: {fileID: 1172325314478634, guid: 2c296922cd82f43cda9a859d58e81bc9, type: 3}
