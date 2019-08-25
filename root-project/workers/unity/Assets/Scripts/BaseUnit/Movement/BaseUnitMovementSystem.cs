@@ -1,7 +1,7 @@
 using System;
 using Improbable;
 using Improbable.Gdk.Core;
-using Improbable.Gdk.Subscriptions;
+using Improbable.Gdk.TransformSynchronization;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
@@ -111,7 +111,7 @@ namespace AdvancedGears
                     if (posture.Initialized && inter.CheckTime(time))
                     {
                         posture.Interval = inter;
-                        posture.Root = rigidbody.transform.rotation.ToImprobableQuaternion();
+                        posture.Root = rigidbody.transform.rotation.ToCompressedQuaternion();
                     }
                 }
 

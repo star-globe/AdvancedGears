@@ -1,12 +1,12 @@
 using Improbable;
 using Improbable.Gdk.Core;
+using Improbable.Gdk.TransformSynchronization;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Entities;
 using Unity.Collections;
-using UnityEngine.Experimental.PlayerLoop;
 
 namespace AdvancedGears
 {
@@ -59,9 +59,9 @@ namespace AdvancedGears
         public int Power;
         public uint Type;
         public uint Alignment;
-        public Improbable.Vector3f LaunchPosition;
-        public Improbable.Vector3f InitialVelocity;
-        public Improbable.Vector3f CurrentVelocity;
+        public FixedPointVector3 LaunchPosition;
+        public FixedPointVector3 InitialVelocity;
+        public FixedPointVector3 CurrentVelocity;
         public float LaunchTime;
         public float LifeTime;
         public uint GunId;

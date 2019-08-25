@@ -1,5 +1,4 @@
 package advanced_gears;
-import "improbable/vector3.schema";
 
 type TimerInfo
 {

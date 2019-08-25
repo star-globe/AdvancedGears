@@ -3,12 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Improbable.Gdk.Core;
-using Improbable.Gdk.Subscriptions;
+using Improbable.Gdk.TransformSynchronization;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
-using UnityEngine.Experimental.PlayerLoop;
-using Ex = Extensions;
 
 namespace AdvancedGears
 {
@@ -103,7 +101,7 @@ namespace AdvancedGears
                         var atk = new AttackTargetInfo
                         {
                             Type = 1,
-                            TargetPosition = epos.ToImprobableVector3(),
+                            TargetPosition = epos.ToFixedPointVector3(),
                             Attached = point,
                         };
                         updGuns |= true;
@@ -141,7 +139,7 @@ namespace AdvancedGears
             if (result == Result.Rotate)
             {
                 var rot = unit.transform.rotation;
-                var list = new List<Ex.Quaternion>(postrans.GetQuaternions().Select(q => q.ToImprobableQuaternion()));
+                var list = new List<CompressedQuaternion>(postrans.GetQuaternions().Select(q => q.ToCompressedQuaternion()));
                 pdata = new PostureData(point, list);
             }
 

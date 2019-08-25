@@ -2,7 +2,7 @@ package advanced_gears;
 import "improbable/gdk/core/common.schema";
 import "advanced_gears/common.schema";
 import "advanced_gears/baseunit.schema";
-import "improbable/vector3.schema";
+import "improbable/gdk/transform_synchronization/transform_internal.schema";
 
 // fuel:21100~21109
 enum FuelModifyType
@@ -45,7 +45,7 @@ enum SupplyOrderType {
 
 type SupplyPoint {
     UnitSide side = 1;
-    improbable.Vector3f pos = 2;
+    improbable.gdk.transform_synchronization.FixedPointVector3 pos = 2;
     EntityId stronghold_id = 3;
 }
 
@@ -106,7 +106,7 @@ enum EngineeringType {
 
 type EngineeringPoint {
     UnitSide side = 1;
-    improbable.Vector3f pos = 2;
+    improbable.gdk.transform_synchronization.FixedPointVector3 pos = 2;
     EntityId unit_id = 3;
     UnitType unit_type = 4;
 }
