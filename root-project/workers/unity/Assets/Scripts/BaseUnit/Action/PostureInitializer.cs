@@ -1,9 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Improbable.Gdk.Subscriptions;
 using UnityEngine.Assertions;
 using Improbable.Gdk.Core;
+using Improbable.Gdk.Subscriptions;
+using Improbable.Gdk.TransformSynchronization;
 
 namespace AdvancedGears
 {
@@ -28,7 +29,7 @@ namespace AdvancedGears
 
             if (!data.Initialized)
             {
-                update.Root = this.transform.rotation.ToImprobableQuaternion();
+                update.Root = this.transform.rotation.ToCompressedQuaternion();
 
                 var dic = new Dictionary<PosturePoint, PostureData>();
                 foreach (var k in unit.GetKeys())

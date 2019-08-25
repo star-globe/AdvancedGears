@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Improbable;
 using Improbable.Gdk.Core;
+using Improbable.Gdk.TransformSynchronization;
 using Improbable.Gdk.Core.Commands;
 using Improbable.Gdk.Subscriptions;
 using Improbable.Gdk.Standardtypes;
-//using Improbable.Worker.CInterop;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
@@ -95,7 +95,7 @@ namespace AdvancedGears
                     {
                         Customer = unit.id,
                         CustomerRank = comp.Value.Rank,
-                        Pos = pos.ToImprobableVector3(),
+                        Pos = pos.ToFixedPointVector3(),
                         Side = status.Side
                     });
 

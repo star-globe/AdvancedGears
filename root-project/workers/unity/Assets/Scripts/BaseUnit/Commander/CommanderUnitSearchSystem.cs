@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Improbable.Gdk.Core;
 using Improbable.Gdk.Subscriptions;
+using Improbable.Gdk.TransformSynchronization;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
-using UnityEngine.Experimental.PlayerLoop;
 
 namespace AdvancedGears
 {
@@ -85,16 +85,14 @@ namespace AdvancedGears
         {
             TargetBaseInfo baseInfo; 
             baseInfo.IsTarget = tgt != null;
-            var tpos = Improbable.Vector3f.Zero;
+            var tpos = FixedPointVector3.Zero;
             var type = UnitType.None;
             var side = UnitSide.None;
             var id = new EntityId();
             if (baseInfo.IsTarget)
             {
                 id = tgt.id;
-                tpos = new Improbable.Vector3f(tgt.pos.x - origin.x,
-                                               tgt.pos.y - origin.y,
-                                               tgt.pos.z - origin.z);
+                tpos = tgt.pos.ToWorldPosition(origin);
                 type = tgt.type;
                 side = tgt.side;
             }

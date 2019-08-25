@@ -4,8 +4,8 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using Unity.Entities;
 using Improbable.Gdk.Subscriptions;
-using Improbable;
 using Improbable.Gdk.Core;
+using Improbable.Gdk.TransformSynchronization;
 
 namespace AdvancedGears
 {
@@ -99,8 +99,8 @@ namespace AdvancedGears
                 Power = 1,
                 Type = 1,
                 Alignment = 3,
-                LaunchPosition = new Vector3f(pos.x, pos.y, pos.z),
-                InitialVelocity = new Vector3f(vec.x, vec.y, vec.z),
+                LaunchPosition = pos.ToFixedPointVector3(),
+                InitialVelocity = vec.ToFixedPointVector3(),
                 LaunchTime = Time.time,
                 LifeTime = lifeTime,
                 GunId = 0,

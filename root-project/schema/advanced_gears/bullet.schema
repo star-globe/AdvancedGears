@@ -1,6 +1,6 @@
 package advanced_gears;
 import "improbable/gdk/core/common.schema";
-import "improbable/vector3.schema";
+import "improbable/gdk/transform_synchronization/transform_internal.schema";
 import "advanced_gears/common.schema";
 
 // bullet/gun:21000~21009
@@ -9,8 +9,8 @@ type BulletFireInfo {
     int32 power = 1;
     uint32 type = 2;
     uint32 alignment = 3;
-    improbable.Vector3f launch_position = 4;
-    improbable.Vector3f initial_velocity = 5;
+    improbable.gdk.transform_synchronization.FixedPointVector3 launch_position = 4;
+    improbable.gdk.transform_synchronization.FixedPointVector3 initial_velocity = 5;
     float launch_time = 6;
     float life_time = 7;
     uint32 gun_id = 8;
@@ -56,7 +56,7 @@ type GunInfo {
 
 type AttackTargetInfo {
     uint32 type = 1;
-    improbable.Vector3f target_position = 2;
+    improbable.gdk.transform_synchronization.FixedPointVector3 target_position = 2;
     PosturePoint attached = 3;
 }
 

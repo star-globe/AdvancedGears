@@ -1,8 +1,10 @@
 using System;
+using System.IO;
 using Improbable;
 using Improbable.Gdk.Core;
 using Improbable.Gdk.PlayerLifecycle;
 using Improbable.Gdk.TransformSynchronization;
+using UnityEditor;
 using UnityEngine;
 using Snapshot = Improbable.Gdk.Core.Snapshot;
 
@@ -10,13 +12,23 @@ namespace AdvancedGears.Editor
 {
     internal static class SnapshotGenerator
     {
-        public struct Arguments
+    	public struct Arguments
         {
             public int NumberEntities;
             public string OutputPath;
         }
 
-        public static void Generate(Arguments arguments, TerrainCollider ground = null)
+        private static string DefaultSnapshotPath = Path.GetFullPath(
+            Path.Combine(
+                Application.dataPath,
+                "..",
+                "..",
+                "..",
+                "snapshots",
+                "default.snapshot"));
+
+        [MenuItem("SpatialOS/Generate snapshot")]
+		public static void Generate(Arguments arguments, TerrainCollider ground = null)
         {
             Debug.Log("Generating snapshot.");
             var snapshot = CreateSnapshot(arguments.NumberEntities, ground);
@@ -149,7 +161,7 @@ namespace AdvancedGears.Editor
         {
             const string entityType = "Spinner";
 
-            var transform = TransformUtils.CreateTransformSnapshot(coords.ToUnityVector(), Quaternion.identity);
+            var transform = Improbable.Gdk.TransformSynchronization.TransformUtils.CreateTransformSnapshot(coords.ToUnityVector(), Quaternion.identity);
 
             var template = new EntityTemplate();
             template.AddComponent(new Position.Snapshot(coords), WorkerUtils.UnityGameLogic);

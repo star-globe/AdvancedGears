@@ -19,7 +19,6 @@ namespace AdvancedGears
             template.AddComponent(new PlayerInput.Snapshot(), clientAttribute);
             template.AddComponent(new Launcher.Snapshot(100, 0), WorkerUtils.UnityGameLogic);
             template.AddComponent(new Score.Snapshot(), WorkerUtils.UnityGameLogic);
-            template.AddComponent(new CubeSpawner.Snapshot(new List<EntityId>()), WorkerUtils.UnityGameLogic);
             template.AddComponent(new BulletComponent.Snapshot(), clientAttribute);
 
             TransformSynchronizationHelper.AddTransformSynchronizationComponents(template, clientAttribute);

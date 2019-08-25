@@ -106,9 +106,9 @@ namespace AdvancedGears
                     var trans = EntityManager.GetComponentObject<Transform>(entity);
                     var p = trans.position + RandomLogic.XZRandomCirclePos(range);
 
-                    var pos = p.ToWorldPosition(origin);
+                    var pos = p - origin;
                     EntityTemplate template = null;
-                    var coords = new Coordinates(pos.X, pos.Y + height_buffer, pos.Z);
+                    var coords = new Coordinates(pos.x, pos.y + height_buffer, pos.z);
 
                     bool finished = false;
                     if (s_order != null)

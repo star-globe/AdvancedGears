@@ -1,6 +1,7 @@
 using System;
 using Improbable;
 using Improbable.Gdk.Core;
+using Improbable.Gdk.TransformSynchronization;
 using AdvancedGears.Scripts.UI;
 using Unity.Collections;
 using Unity.Entities;
@@ -79,8 +80,8 @@ namespace AdvancedGears
                     return;
                 }
 
-                var impactPoint = Vector3f.FromUnityVector(info.point);
-                var launchDirection = Vector3f.FromUnityVector(ray.direction);
+                var impactPoint = info.point.ToFixedPointVector3();
+                var launchDirection = ray.direction.ToFixedPointVector3();
 
                 var request = new Launcher.LaunchEntity.Request(playerId,
                     new LaunchCommandRequest(component.EntityId, impactPoint, launchDirection,

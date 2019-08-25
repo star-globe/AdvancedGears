@@ -1,7 +1,7 @@
 using System;
 using Improbable;
 using Improbable.Gdk.Core;
-using Improbable.Gdk.Subscriptions;
+using Improbable.Gdk.TransformSynchronization;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
@@ -41,7 +41,7 @@ namespace AdvancedGears
         }
 
         Ray vertical = new Ray();
-        readonly int layer = LayerMask.GetMask("Ground");
+        //readonly int layer = //LayerMask.//LayerMask.GetMask("Ground");
 
         protected override void OnUpdate()
         {
@@ -67,10 +67,7 @@ namespace AdvancedGears
                 var unit = EntityManager.GetComponentObject<UnitTransform>(entity);
 
                 // check ground
-                var bounds = unit.GroundDetect.bounds;
-                vertical.direction = -unit.GroundDetect.transform.up;
-                vertical.origin = bounds.center;
-                if (!Physics.Raycast(vertical, bounds.extents.y * 1.1f, layer))
+                if (unit.GetGrounded() == false)
                     return;
 
                 var rigidbody = EntityManager.GetComponentObject<Rigidbody>(entity);
@@ -111,7 +108,7 @@ namespace AdvancedGears
                     if (posture.Initialized && inter.CheckTime(time))
                     {
                         posture.Interval = inter;
-                        posture.Root = rigidbody.transform.rotation.ToImprobableQuaternion();
+                        posture.Root = rigidbody.transform.rotation.ToCompressedQuaternion();
                     }
                 }
 

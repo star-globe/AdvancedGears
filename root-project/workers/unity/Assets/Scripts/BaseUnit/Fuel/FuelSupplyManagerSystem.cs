@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Improbable;
 using Improbable.Gdk.Core;
-using Improbable.Gdk.Core.Commands;
+using Improbable.Gdk.TransformSynchronization;
 using Improbable.Gdk.Subscriptions;
 using Improbable.Gdk.Standardtypes;
 using Improbable.Worker.CInterop;
@@ -184,15 +184,13 @@ namespace AdvancedGears
             if (TryGetComponent(id, out comp) == false)
                 return null;
 
-            var pos = new Vector3f( (float)comp.Value.Coords.X,
-                                    (float)comp.Value.Coords.Y,
-                                    (float)comp.Value.Coords.Z);
+            var pos = comp.Value.Coords.ToUnityVector();
 
             var length = float.MaxValue;
             SupplyReserve reserve = null;
             foreach(var r in reserves) {
-                var diff = pos - r.Point.Pos;
-                var l = diff.SqrMagnitude();
+                var diff = pos - r.Point.Pos.ToUnityVector();
+                var l = diff.sqrMagnitude;
                 if (l >= length)
                     continue;
 

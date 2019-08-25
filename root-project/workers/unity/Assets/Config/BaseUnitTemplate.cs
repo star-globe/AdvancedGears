@@ -31,7 +31,7 @@ namespace AdvancedGears
             template.AddComponent(new Metadata.Snapshot(metaDic[type]), WorkerUtils.UnityGameLogic);
             template.AddComponent(new Persistence.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new BaseUnitMovement.Snapshot(), WorkerUtils.UnityGameLogic);
-            template.AddComponent(new BaseUnitAction.Snapshot { EnemyPositions = new List<Vector3f>() }, WorkerUtils.UnityGameLogic);
+            template.AddComponent(new BaseUnitAction.Snapshot { EnemyPositions = new List<FixedPointVector3>() }, WorkerUtils.UnityGameLogic);
             template.AddComponent(new BaseUnitStatus.Snapshot(side, type, UnitState.Alive, orderDic[type]), WorkerUtils.UnityGameLogic);
             template.AddComponent(new BaseUnitSight.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new BaseUnitTarget.Snapshot(), WorkerUtils.UnityGameLogic);

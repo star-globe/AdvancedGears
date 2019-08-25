@@ -2,39 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Improbable;
 using Improbable.Gdk.Core;
-using Ex = Extensions;
+using Improbable.Gdk.TransformSynchronization;
 
 namespace AdvancedGears
 {
     static class Extensions
     {
-        public static Vector3 ToWorkerPosition(this Improbable.Vector3f pos, Vector3 origin)
+        public static Vector3 ToWorkerPosition(this FixedPointVector3 pos, Vector3 origin)
         {
             return pos.ToUnityVector() + origin;
         }
 
-        public static Improbable.Vector3f ToWorldPosition(this Vector3 pos, Vector3 origin)
+        public static FixedPointVector3 ToWorldPosition(this Vector3 pos, Vector3 origin)
         {
-            return pos.ToImprobableVector3() - origin.ToImprobableVector3();
+            return (pos - origin).ToFixedPointVector3();
         }
 
-        public static Quaternion ToUnityQuaternion(this Ex.Quaternion quo)
-        {
-            return new Quaternion(quo.X, quo.Y, quo.Z, quo.W);
-        }
-
-        public static Ex.Quaternion ToImprobableQuaternion(this Quaternion quo)
-        {
-            return new Ex.Quaternion(quo.w, quo.x, quo.y, quo.z);
-        }
-
-        public static Improbable.Vector3f ToImprobableVector3(this Vector3 vec)
-        {
-            return new Improbable.Vector3f(vec.x, vec.y, vec.z);
-        }
-
-        public static float SqrMagnitude (this Improbable.Vector3f vec)
+        public static float SqrMagnitude (this FixedPointVector3 vec)
         {
             return (vec.X * vec.X) + (vec.Y * vec.Y) + (vec.Z * vec.Z);
         }
@@ -107,12 +93,12 @@ namespace AdvancedGears
             return tgt - foward * length;
         }
 
-        public static List<Ex.Quaternion> GetAllRotates(this UnitTransform unit, PosturePoint point)
+        public static List<CompressedQuaternion> GetAllRotates(this UnitTransform unit, PosturePoint point)
         {
             if (unit.PostureDic.ContainsKey(point) == false)
-                return new List<Ex.Quaternion>();
+                return new List<CompressedQuaternion>();
 
-            return unit.PostureDic[point].Connectors.Select(c => c.transform.localRotation.ToImprobableQuaternion()).ToList();
+            return unit.PostureDic[point].Connectors.Select(c => c.transform.localRotation.ToCompressedQuaternion()).ToList();
         }
 
         public static T[] GetComponentsInChildrenWithoutSelf<T>(this GameObject self) where T : Component

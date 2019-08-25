@@ -35,6 +35,7 @@ namespace AdvancedGears
                 return postureDic;
             }
         }
+
         public PosturePoint[] GetKeys()
         {
             return this.PostureDic.Keys.ToArray();
@@ -84,5 +85,59 @@ namespace AdvancedGears
 
             this.PostureDic[point].SetQuaternion(index, quo);
         }
+
+        public bool IsGrounded { get; private set; }
+
+        Ray vertical = new Ray();
+        int? layer = null;
+        int Layer
+        {
+            get
+            {
+                layer = layer ?? LayerMask.GetMask("Ground", "UnitObject");
+                return layer.Value;
+            }
+        }
+        
+
+        private void Start()
+        {
+            //var bounds = groundDetect.bounds;
+            //vertical.direction = -groundDetect.transform.up;
+            //vertical.origin = bounds.center;
+            //
+            //IsGrounded = Physics.Raycast(vertical, bounds.extents.y * 1.1f, this.Layer);
+        }
+
+        public bool GetGrounded()
+        {
+            var bounds = groundDetect.bounds;
+            vertical.direction = -groundDetect.transform.up;
+            vertical.origin = bounds.center;
+            return Physics.Raycast(vertical, bounds.extents.y * 1.1f, this.Layer);
+        }
+
+#if false
+        private void OnCollisionStay(Collision collision)
+        {
+            CheckConstacts(collision.contacts, true);
+        }
+
+        private void OnCollisionExit(Collision collision)
+        {
+            CheckConstacts(collision.contacts, false);
+        }
+
+        private void CheckConstacts(ContactPoint[] points, bool inOut)
+        {
+            foreach (var p in points)
+            {
+                if (Vector3.Dot(p.normal, groundDetect.transform.up) <= 0)
+                    continue;
+
+                IsGrounded = inOut;
+            }
+        }
+   #endif
     }
 }

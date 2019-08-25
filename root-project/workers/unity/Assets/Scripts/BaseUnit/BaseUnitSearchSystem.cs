@@ -5,6 +5,7 @@ using System.Linq;
 using Improbable;
 using Improbable.Gdk.Core;
 using Improbable.Gdk.Subscriptions;
+using Improbable.Gdk.TransformSynchronization;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
@@ -92,9 +93,8 @@ namespace AdvancedGears
                 {
                     movement.IsTarget = true;
                     action.IsTarget = true;
-                    var epos = new Improbable.Vector3f(enemy.pos.x - origin.x,
-                                                       enemy.pos.y - origin.y,
-                                                       enemy.pos.z - origin.z);
+                    var epos = enemy.pos.ToWorldPosition(origin);
+
                     movement.TargetPosition = epos;
                     action.EnemyPositions.Add(epos);
                 }
@@ -103,12 +103,10 @@ namespace AdvancedGears
                 Position.Component? comp = null;
                 if (entityId.IsValid() && base.TryGetComponent<Position.Component>(entityId, out comp))
                 {
-                    movement.CommanderPosition = new Vector3f((float)comp.Value.Coords.X,
-                                                              (float)comp.Value.Coords.Y,
-                                                              (float)comp.Value.Coords.Z);
+                    movement.CommanderPosition = comp.Value.Coords.ToUnityVector().ToFixedPointVector3();
                 }
                 else
-                    movement.CommanderPosition = Vector3f.Zero;
+                    movement.CommanderPosition = FixedPointVector3.Zero;
 
                 var range = gun.GetAttackRange();
                 if (status.Type == UnitType.Commander && target.TargetInfo.Side != status.Side)
