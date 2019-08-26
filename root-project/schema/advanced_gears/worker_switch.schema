@@ -1,0 +1,13 @@
+package advanced_gears;
+
+type WorkerSwitchEvent {
+    bool is_working = 1;
+}
+
+component WorkerSwitch {
+    id = 40000;
+
+    bool is_working = 1;
+
+    event WorkerSwitchEvent updates;
+}

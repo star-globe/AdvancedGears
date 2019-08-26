@@ -1,0 +1,28 @@
+package advanced_gears;
+import "improbable/gdk/core/common.schema";
+import "improbable/gdk/transform_synchronization/transform_internal.schema";
+import "advanced_gears/common.schema";
+
+type ArmyRealizeInfo {
+    bool is_realized = 1;
+}
+
+type RealizedFollowersInfo {
+    list<EntityId> all_followers = 1;
+}
+
+component ArmyCloud {
+    id = 50000;
+
+    bool is_realized = 1;
+    IntervalChecker inter = 2;
+
+    list<EntityId> all_followers = 3;
+    int32 total_hp = 4;
+    int32 total_fuel = 5;
+
+    improbable.gdk.transform_synchronization.FixedPointVector3 move_velocity = 10;
+
+    command improbable.gdk.core.Empty set_realize(ArmyRealizeInfo);
+    command improbable.gdk.core.Empty set_followers(RealizedFollowerInfo);
+}

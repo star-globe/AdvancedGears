@@ -1,6 +1,5 @@
 package advanced_gears;
 import "improbable/gdk/core/common.schema";
-//import "improbable/vector3.schema";
 import "advanced_gears/common.schema";
 
 // advanced:21020~21099
