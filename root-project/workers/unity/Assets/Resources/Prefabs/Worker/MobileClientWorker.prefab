@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4681889097778771631}
   - component: {fileID: 4681889097778771628}
+  - component: {fileID: 4011381938737919751}
   m_Layer: 0
   m_Name: MobileClientWorker
   m_TagString: Untagged
@@ -45,3 +46,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxConnectionAttempts: 3
   ipAddress: 
+--- !u!114 &4011381938737919751
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4681889097778771629}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 728683d1cc163174bbe9d465aab1b538, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  level: {fileID: 1652884293046250, guid: 849b7fe21c599e842ae89f79f70c0f6d, type: 3}

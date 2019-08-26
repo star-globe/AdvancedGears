@@ -27,8 +27,7 @@ namespace AdvancedGears.Editor
                 "snapshots",
                 "default.snapshot"));
 
-        [MenuItem("SpatialOS/Generate snapshot")]
-		public static void Generate(Arguments arguments, TerrainCollider ground = null)
+        public static void Generate(Arguments arguments, TerrainCollider ground = null)
         {
             Debug.Log("Generating snapshot.");
             var snapshot = CreateSnapshot(arguments.NumberEntities, ground);

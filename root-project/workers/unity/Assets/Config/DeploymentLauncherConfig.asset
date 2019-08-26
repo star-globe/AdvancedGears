@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: DeploymentLauncherConfig
   m_EditorClassIdentifier: 
   AssemblyConfig:
-    ProjectName: unity_gdk
-    AssemblyName: blank_assembly
+    ProjectName: beta_eighteen_pluto_911
+    AssemblyName: unity_advanced_gears_0826_0338
     ShouldForceUpload: 0
   DeploymentConfigs:
-  - ProjectName: unity_gdk
-    AssemblyName: blank_assembly
+  - ProjectName: beta_eighteen_pluto_911
+    AssemblyName: unity_advanced_gears_0826_0338
     Deployment:
       Name: blank_deployment
       SnapshotPath: snapshots/default.snapshot
