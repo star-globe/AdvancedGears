@@ -10,6 +10,9 @@ namespace AdvancedGears
 {
     public class UnityClientConnector : WorkerConnector
     {
+        [SerializeField]
+        UnitSide side;
+
         public const string WorkerType = WorkerUtils.UnityClient;
 
         private async void Start()
@@ -46,6 +49,12 @@ namespace AdvancedGears
         protected override void HandleWorkerConnectionEstablished()
         {
             WorkerUtils.AddClientSystems(Worker.World, this.gameObject);
+
+            var system = Worker.World.GetExistingSystem<SendCreatePlayerRequestSystem>();
+            if (system != null)
+            {
+                system.RequestPlayerCreation();
+            }
         }
     }
 }

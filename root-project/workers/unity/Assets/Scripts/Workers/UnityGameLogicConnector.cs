@@ -14,6 +14,7 @@ namespace AdvancedGears
         private async void Start()
         {
             PlayerLifecycleConfig.CreatePlayerEntityTemplate = CreatePlayerEntityTemplate;
+            PlayerLifecycleConfig.AutoRequestPlayerCreation = false;
 
             IConnectionFlow flow;
             ConnectionParameters connectionParameters;

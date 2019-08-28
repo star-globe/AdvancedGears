@@ -95,63 +95,6 @@ component FuelSupplyManager {
 }
 
 //---------------------------------
-// engineering:21110~21119
-// *****disuse*****
-enum EngineeringType {
-    None = 0;
-    Repair = 1;
-    Occupy = 2;
-    Build = 3;
-}
-
-type EngineeringPoint {
-    UnitSide side = 1;
-    improbable.gdk.transform_synchronization.FixedPointVector3 pos = 2;
-    EntityId unit_id = 3;
-    UnitType unit_type = 4;
-}
-
-type EngineeringOrder {
-    EngineeringType type = 1;
-    EngineeringPoint point = 2;
-}
-
-type EngineeringPlan {
-    list<EngineeringOrder> orders = 1;
-}
-
-type EngineeringOrderResult {
-    bool result = 1;
-    EntityId self_id = 2;
-    EngineeringOrder order = 3;
-}
-
-component EngineeringComponent {
-    id = 21110;
-
-    EngineeringOrder order = 1;
-    bool order_finished = 2;
-    float range = 3;
-    EntityId manager_id = 4;
-
-    IntervalChecker interval = 5;
-
-    command improbable.gdk.core.Empty set_order(EngineeringOrder);
-}
-
-component EngineeringManager {
-    id = 21111;
-
-    IntervalChecker interval = 1;
-    map<EntityId,EngineeringPoint> engineering_points = 2;
-    map<EntityId,EngineeringPlan> engineering_orders = 3;
-    list<EntityId> free_engineers = 4;
-
-    command EngineeringOrder finish_order(EngineeringOrderResult);
-    command improbable.gdk.core.Empty add_engineering_points(EngineeringPoint);
-}
-
-//---------------------------------
 // domination:21120~21129
 enum DominationDeviceType {
     None = 0;
