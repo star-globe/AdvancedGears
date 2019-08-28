@@ -153,6 +153,26 @@ namespace AdvancedGears
             return self.Type == other.Type &&
                    self.Point.StrongholdId == other.Point.StrongholdId;
         }
+
+        public static UnitBaseType BaseType(this UnitType self)
+        {
+            switch(self)
+            {
+                case UnitType.Soldier:
+                case UnitType.Commander:
+                case UnitType.Advanced:
+                case UnitType.Supply:
+                case UnitType.Recon: 
+                    return UnitBaseType.Moving;
+
+                case UnitType.Stronghold:
+                case UnitType.Turret:
+                case UnitType.HeadQuarter:
+                    return UnitBaseType.Fixed;
+            }
+
+            return UnitBaseType.None;
+        } 
     }
 
     public static class IntervalCheckerInitializer

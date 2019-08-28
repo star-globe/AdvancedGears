@@ -10,13 +10,19 @@ enum UnitType {
     Commander = 2;
     Advanced = 3;
     Supply = 4;
-    Scout = 5;
-    Engineer = 6;
+    Recon = 5;
 
     // fixed
     Stronghold = 101;
     Turret = 102;
     HeadQuarter = 103;
+}
+
+enum UnitBaseType
+{
+    None = 0;
+    Moving = 1;
+    Fixed = 2; 
 }
 
 enum UnitSide {

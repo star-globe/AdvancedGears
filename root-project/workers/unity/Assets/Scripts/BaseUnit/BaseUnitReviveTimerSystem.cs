@@ -80,6 +80,9 @@ namespace AdvancedGears
                 if (revive.IsStart == false)
                     return;
 
+                if (status.Type.BaseType() == UnitBaseType.Fixed)
+                    return;
+
                 switch (status.State)
                 {
                     case UnitState.None:
