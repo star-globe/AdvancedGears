@@ -24,7 +24,7 @@ namespace AdvancedGears
             { UnitType.HeadQuarter, OrderType.Organize },
         };
 
-        public static EntityTemplate CreateBaseUnitEntityTemplate(UnitSide side, Coordinates coords, UnitType type)
+        public static EntityTemplate CreateBaseUnitEntityTemplate(UnitSide side, Coordinates coords, UnitType type, OrderType? order = null)
         {
             var template = new EntityTemplate();
             template.AddComponent(new Position.Snapshot(coords), WorkerUtils.UnityGameLogic);
@@ -32,14 +32,15 @@ namespace AdvancedGears
             template.AddComponent(new Persistence.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new BaseUnitMovement.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new BaseUnitAction.Snapshot { EnemyPositions = new List<FixedPointVector3>() }, WorkerUtils.UnityGameLogic);
-            template.AddComponent(new BaseUnitStatus.Snapshot(side, type, UnitState.Alive, orderDic[type]), WorkerUtils.UnityGameLogic);
+            template.AddComponent(new BaseUnitStatus.Snapshot(side, type, UnitState.Alive, order == null ? orderDic[type]: order.Value), WorkerUtils.UnityGameLogic);
             template.AddComponent(new BaseUnitSight.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new BaseUnitTarget.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new Launchable.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new BaseUnitHealth.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new GunComponent.Snapshot { GunsDic = new Dictionary<PosturePoint, GunInfo>() }, WorkerUtils.UnityGameLogic);
             template.AddComponent(new FuelComponent.Snapshot(), WorkerUtils.UnityGameLogic);
-            template.AddComponent(new BaseUnitReviveTimer.Snapshot { IsStart = false, RestTime = 0.0f }, WorkerUtils.UnityGameLogic);
+            if (type.BaseType() == UnitBaseType.Moving)
+                template.AddComponent(new BaseUnitReviveTimer.Snapshot { IsStart = false, RestTime = 0.0f }, WorkerUtils.UnityGameLogic);
             SwitchType(template, type, WorkerUtils.UnityGameLogic);
             TransformSynchronizationHelper.AddTransformSynchronizationComponents(template, WorkerUtils.UnityGameLogic);
 
@@ -66,11 +67,13 @@ namespace AdvancedGears
                     template.AddComponent(new CommanderSight.Snapshot { WarPowers = new List<WarPower>() }, writeAccess);
                     template.AddComponent(new CommanderAction.Snapshot { ActionType = CommandActionType.None }, writeAccess);
                     template.AddComponent(new BaseUnitPosture.Snapshot { Posture = new PostureInfo { Datas = new Dictionary<PosturePoint, PostureData>() } }, writeAccess);
+                    template.AddComponent(new DominationDevice.Snapshot { Type = DominationDeviceType.Capturing, Speed = 0.0f, }, writeAccess);
                     break;
 
                 case UnitType.Stronghold:
                     template.AddComponent(new UnitFactory.Snapshot { FollowerOrders = new List<FollowerOrder>(), SuperiorOrders = new List<SuperiorOrder>() }, writeAccess);
                     template.AddComponent(new UnitArmyObserver.Snapshot(), writeAccess);
+                    template.AddComponent(new DominationStamina.Snapshot { SideStaminas = new Dictionary<UnitSide,float>() }, writeAccess);
                     break;
 
                 case UnitType.HeadQuarter:
