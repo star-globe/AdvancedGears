@@ -11,7 +11,7 @@ namespace AdvancedGears
     public class UnityClientConnector : WorkerConnector
     {
         [SerializeField]
-        UnitSide side;
+        PlayerInitInfo playerInitInfo;
 
         public const string WorkerType = WorkerUtils.UnityClient;
 
@@ -53,8 +53,15 @@ namespace AdvancedGears
             var system = Worker.World.GetExistingSystem<SendCreatePlayerRequestSystem>();
             if (system != null)
             {
-                system.RequestPlayerCreation();
+                system.RequestPlayerCreation(SerializeUtils.SerializeArguments(playerInitInfo));
             }
         }
+    }
+
+    [Serializable]
+    public class PlayerInitInfo
+    {
+        public UnitSide side;
+        public Vector3 pos;
     }
 }
