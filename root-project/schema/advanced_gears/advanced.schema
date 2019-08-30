@@ -30,8 +30,7 @@ enum EquipForm {
     Firing = 3;
 }
 
-type ChangeFormInfo
-{
+type ChangeFormInfo {
     EquipForm form = 1;
 } 
 
@@ -71,12 +70,16 @@ component AdvancedUnitController {
 
 component AdvancedPlayerInput {
     id = 21040;
+
+    ControllerInfo local_controller = 1;
 }
 
-component AdvancedAnmannedInput {
+component AdvancedUnmannedInput {
     id = 21041;
 
-    IntervalChecker inter = 2;
+    ControllerInfo local_controller = 1;
+
+    IntervalChecker interval = 2;
 
     int32 logic_pattern = 3;
 

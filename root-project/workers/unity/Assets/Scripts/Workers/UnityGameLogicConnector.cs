@@ -50,21 +50,21 @@ namespace AdvancedGears
             var serverAttribute = WorkerType;
 
             var initInfo = SerializeUtils.DeserializeArguments<PlayerInitInfo>(serializedArguments);
+            return BaseUnitTemplate.CreateAdvancedUnitEntityTemplate(workerId, initInfo.pos.ToCoordinates(), initInfo.side);
+            //var template = new EntityTemplate();
+            //template.AddComponent(new Position.Snapshot { Coords = initInfo.pos.ToCoordinates() }, clientAttribute);
+            //template.AddComponent(new Metadata.Snapshot("Player"), serverAttribute);
+            //template.AddComponent(new BulletComponent.Snapshot(), clientAttribute);
+            //template.AddComponent(new PlayerInput.Snapshot(), clientAttribute);
+            //template.AddComponent(new BaseUnitStatus.Snapshot { Side = initInfo.side }, serverAttribute);
 
-            var template = new EntityTemplate();
-            template.AddComponent(new Position.Snapshot { Coords = initInfo.pos.ToCoordinates() }, clientAttribute);
-            template.AddComponent(new Metadata.Snapshot("Player"), serverAttribute);
-            template.AddComponent(new BulletComponent.Snapshot(), clientAttribute);
-            template.AddComponent(new PlayerInput.Snapshot(), clientAttribute);
-            template.AddComponent(new BaseUnitStatus.Snapshot { Side = initInfo.side }, serverAttribute);
+            //TransformSynchronizationHelper.AddTransformSynchronizationComponents(template, clientAttribute);
+            //PlayerLifecycleHelper.AddPlayerLifecycleComponents(template, workerId, serverAttribute);
 
-            TransformSynchronizationHelper.AddTransformSynchronizationComponents(template, clientAttribute);
-            PlayerLifecycleHelper.AddPlayerLifecycleComponents(template, workerId, serverAttribute);
+            //template.SetReadAccess(UnityClientConnector.WorkerType, MobileClientWorkerConnector.WorkerType, serverAttribute);
+            //template.SetComponentWriteAccess(EntityAcl.ComponentId, serverAttribute);
 
-            template.SetReadAccess(UnityClientConnector.WorkerType, MobileClientWorkerConnector.WorkerType, serverAttribute);
-            template.SetComponentWriteAccess(EntityAcl.ComponentId, serverAttribute);
-
-            return template;
+            //return template;
         }
     }
 }

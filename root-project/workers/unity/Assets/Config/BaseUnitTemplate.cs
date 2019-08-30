@@ -39,8 +39,10 @@ namespace AdvancedGears
             template.AddComponent(new BaseUnitHealth.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new GunComponent.Snapshot { GunsDic = new Dictionary<PosturePoint, GunInfo>() }, WorkerUtils.UnityGameLogic);
             template.AddComponent(new FuelComponent.Snapshot(), WorkerUtils.UnityGameLogic);
+
             if (type.BaseType() == UnitBaseType.Moving)
                 template.AddComponent(new BaseUnitReviveTimer.Snapshot { IsStart = false, RestTime = 0.0f }, WorkerUtils.UnityGameLogic);
+            
             SwitchType(template, type, WorkerUtils.UnityGameLogic);
             TransformSynchronizationHelper.AddTransformSynchronizationComponents(template, WorkerUtils.UnityGameLogic);
 
@@ -97,6 +99,40 @@ namespace AdvancedGears
 
                 template.SetComponent(s);
             }
+
+            return template;
+        }
+
+        public static EntityTemplate CreateAdvancedUnitEntityTemplate(string workerId, Coordinates coords, UnitSide side)
+        {
+            bool isPlayer = workerId != null;
+            string controllAttribute;
+            if (isPlayer)
+                controllAttribute = EntityTemplate.GetWorkerAccessAttribute(workerId);
+            else
+                controllAttribute = WorkerUtils.UnityGameLogic;
+
+            var template = new EntityTemplate();
+            template.AddComponent(new Position.Snapshot { Coords = coords }, controllAttribute);
+            template.AddComponent(new Metadata.Snapshot(isPlayer ? "Player": "AdvancedUnit"), WorkerUtils.UnityGameLogic);
+            template.AddComponent(new BulletComponent.Snapshot(), controllAttribute);
+            template.AddComponent(new AdvancedUnitController.Snapshot(), WorkerUtils.UnityGameLogic);
+            template.AddComponent(new BaseUnitHealth.Snapshot(), WorkerUtils.UnityGameLogic);
+            template.AddComponent(new GunComponent.Snapshot { GunsDic = new Dictionary<PosturePoint, GunInfo>() }, WorkerUtils.UnityGameLogic);
+            template.AddComponent(new FuelComponent.Snapshot(), WorkerUtils.UnityGameLogic);
+
+            if (isPlayer)
+                template.AddComponent(new AdvancedPlayerInput.Snapshot(), controllAttribute);
+            else
+                template.AddComponent(new AdvancedAnmannedInput.Snapshot(), controllAttribute);
+
+            template.AddComponent(new BaseUnitStatus.Snapshot { UnitType.Advanced, Side = side, State = UnitState.Alive }, WorkerUtils.UnityGameLogic);
+
+            TransformSynchronizationHelper.AddTransformSynchronizationComponents(template, controllAttribute);
+            PlayerLifecycleHelper.AddPlayerLifecycleComponents(template, workerId, WorkerUtils.UnityGameLogic);
+
+            template.SetReadAccess(UnityClientConnector.WorkerType, MobileClientWorkerConnector.WorkerType, WorkerUtils.UnityGameLogic);
+            template.SetComponentWriteAccess(EntityAcl.ComponentId, WorkerUtils.UnityGameLogic);
 
             return template;
         }
