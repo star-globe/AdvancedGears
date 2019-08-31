@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 using Improbable.Gdk.Subscriptions;
-using TMPro;
 
 namespace AdvancedGears
 {
@@ -15,7 +15,7 @@ namespace AdvancedGears
         [Require] GunComponentReader gunReader;
 
         [SerializeField]
-        TextMeshProUGUI resourceInfoText;
+        Text resourceInfoText;
 
         ValueTuple<char,int,int> healthTuple;
         ValueTuple<char,int,int> fuelTuple;
@@ -24,20 +24,21 @@ namespace AdvancedGears
 
         private void OnEnable()
         {
-            healthReader.OnUpdateHealth += UpdateHealth;
+            healthReader.OnHealthUpdate += UpdateHealth;
             healthTuple.Item1 = 'H';
-            healthTuple.Item2 = healthReader.Data.health;
+            healthTuple.Item2 = healthReader.Data.Health;
             healthTuple.Item3 = healthReader.Data.MaxHealth;
 
-            fuelReader.OnUpdateFuel += UpdateFuel;
+            fuelReader.OnFuelUpdate += UpdateFuel;
             fuelTuple.Item1 = 'F';
-            fuelTuple.Item2 = fuelReader.Data.health;
-            fuelTuple.Item3 = fuelReader.Data.MaxHealth;
+            fuelTuple.Item2 = fuelReader.Data.Fuel;
+            fuelTuple.Item3 = fuelReader.Data.MaxFuel;
             
-            gunReader.OnUpdateGunsDic += UpdateGuns;
+            gunReader.OnGunsDicUpdate += UpdateGuns;
 
-            UpdateState(reader.Data.State);
-            UpdateSide(reader.Data.Side);
+            UpdateHealth(healthReader.Data.Health);
+            UpdateFuel(fuelReader.Data.Fuel);
+            UpdateGuns(gunReader.Data.GunsDic);
         }
 
         void UpdateHealth(int health)
@@ -54,11 +55,7 @@ namespace AdvancedGears
         void UpdateGuns(Dictionary<PosturePoint,GunInfo> gunsDic)
         {
             foreach(var kvp in gunsDic) {
-                if (gunTupleDic.ContainsKey(kvp.Key))
-                    gunTupleDic[kvp.Key].Item1 = kvp.Value.StockBullets;
-                else {
-                    gunTupleDic.Add(kvp.Key, (kvp.Value.StockBullets, kvp.Value.StockMax));
-                }
+                gunTupleDic[kvp.Key] = (kvp.Value.StockBullets, kvp.Value.StockMax);
             }
 
             UpdateInfo();
@@ -69,13 +66,13 @@ namespace AdvancedGears
         {
             string content = string.Empty;
             content += string.Format(fmt, healthTuple.Item1, healthTuple.Item2, healthTuple.Item3);
-            content += string.Format(fmt, fuelTuple.Item1, fuelTuple.Item2, fueldTuple.Item3);
+            content += string.Format(fmt, fuelTuple.Item1, fuelTuple.Item2, fuelTuple.Item3);
 
             foreach(var kvp in gunTupleDic) {
                 content += header + string.Format(fmt, kvp.Key, kvp.Value.Item1, kvp.Value.Item2);
             }
 
-           resourceInfoText.SetText(content);
+           resourceInfoText.text = content;
         }
     }
 }

@@ -95,7 +95,7 @@ namespace AdvancedGears
                         rigidbody.transform.eulerAngles.y, targetRotation,
                         ref turnSmoothVelocity, TurnSmoothTime);
                 }
-                var targetSpeed = (playerInput.Running ? RunSpeed : WalkSpeed) * inputDir.magnitude;
+                var targetSpeed = (unitController.Controller.Running ? RunSpeed : WalkSpeed) * inputDir.magnitude;
                 var currentSpeed = speed.CurrentSpeed;
                 var speedSmoothVelocity = speed.SpeedSmoothVelocity;
                 currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref speedSmoothVelocity, SpeedSmoothTime, MaxSpeed, Time.deltaTime);
@@ -120,7 +120,7 @@ namespace AdvancedGears
                 AdvancedUnitController.Component? comp = null;
                 if (TryGetComponent(ctrlEvent.EntityId, out comp)) {
                     var value = comp.Value;
-                    value.Controller = ctrlEvent.Payload;
+                    value.Controller = ctrlEvent.Event.Payload;
                     SetComponent(ctrlEvent.EntityId, value);
                 }
             }

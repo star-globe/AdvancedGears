@@ -53,28 +53,32 @@ namespace AdvancedGears
                 var right = cameraTransform.Rotation * Vector3.right;
                 var input = InputUtils.GetMove(right, forward);
                 var isShiftDown = Input.GetKey(KeyCode.LeftShift);
-                CommonUpdate(input, isShiftDown, entityId, ref playerInput.LocalController);
+                var controller = playerInput.LocalController;
+                CommonUpdate(input, isShiftDown, entityId, ref controller);
+                playerInput.LocalController = controller;
             });
         }
 
         private void HandleUnmannedInput()
         {
             Entities.With(inputLocalGroup).ForEach((ref BaseUnitStatus.Component status,
-                                                    ref AdvancedUnmannedInput.Component unamannedInput,
+                                                    ref AdvancedUnmannedInput.Component unMannedInput,
                                                     ref SpatialEntityId entityId) =>
             {
                 if (status.State != UnitState.Alive)
                     return;
 
                 var time = Time.time;
-                var inter = unmannedInput.Interval;
+                var inter = unMannedInput.Interval;
                 if (inter.CheckTime(time) == false)
                     return;
 
                 var x = UnityEngine.Random.Range(-1.0f, 1.0f);
                 var z = UnityEngine.Random.Range(-1.0f, 1.0f);
                 var isShiftDown = false;//Input.GetKey(KeyCode.LeftShift);
-                CommonUpdate(new Vector3(x,0,z), isShiftDown, entityId, ref unamannedInput.LocalController);
+                var controller = unMannedInput.LocalController;
+                CommonUpdate(new Vector3(x,0,z), isShiftDown, entityId, ref controller);
+                unMannedInput.LocalController = controller;
             });
         }
 
@@ -84,7 +88,7 @@ namespace AdvancedGears
                 || Math.Abs(oldController.Vertical - input.z) > MinInputChange
                 || oldController.Running != isShiftDown)
             {
-                var newContoroller = new ContorollerInfo
+                var newController = new ControllerInfo
                 {
                     Horizontal = input.x,
                     Vertical = input.z,

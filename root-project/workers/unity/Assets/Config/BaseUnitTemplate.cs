@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Improbable;
 using Improbable.Gdk.Core;
 using Improbable.Gdk.TransformSynchronization;
+using Improbable.Gdk.PlayerLifecycle;
 using Improbable.Worker;
 
 namespace AdvancedGears
@@ -124,9 +125,9 @@ namespace AdvancedGears
             if (isPlayer)
                 template.AddComponent(new AdvancedPlayerInput.Snapshot(), controllAttribute);
             else
-                template.AddComponent(new AdvancedAnmannedInput.Snapshot(), controllAttribute);
+                template.AddComponent(new AdvancedUnmannedInput.Snapshot(), controllAttribute);
 
-            template.AddComponent(new BaseUnitStatus.Snapshot { UnitType.Advanced, Side = side, State = UnitState.Alive }, WorkerUtils.UnityGameLogic);
+            template.AddComponent(new BaseUnitStatus.Snapshot { Type = UnitType.Advanced, Side = side, State = UnitState.Alive }, WorkerUtils.UnityGameLogic);
 
             TransformSynchronizationHelper.AddTransformSynchronizationComponents(template, controllAttribute);
             PlayerLifecycleHelper.AddPlayerLifecycleComponents(template, workerId, WorkerUtils.UnityGameLogic);
