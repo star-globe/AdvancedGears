@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 8221167194471028622}
   - component: {fileID: -23675687663763140}
   m_Layer: 9
-  m_Name: Character
+  m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -82,9 +82,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ReceiveStrategies:
-  - {fileID: 11400000, guid: 3d4e3c9d4646410429b49892bdf0b52c, type: 2}
-  - {fileID: 11400000, guid: 7e00873dd53438245919187ebd00e937, type: 2}
   - {fileID: 11400000, guid: d3eeea3be1ea96949b63c46a6353d4d1, type: 2}
+  - {fileID: 11400000, guid: 7e00873dd53438245919187ebd00e937, type: 2}
   SendStrategies:
   - {fileID: 11400000, guid: f312e7c0a0c68bd459f6b523a151cbb6, type: 2}
   - {fileID: 11400000, guid: f744e75b6283f6d48ad23018d67547ed, type: 2}
@@ -144,7 +143,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   postures:
   - {fileID: 4026825549013175754}
-  vehicle: {fileID: 54653834711570674}
   groundDetect: {fileID: 65358016271066852}
 --- !u!1 &1494660013534148
 GameObject:

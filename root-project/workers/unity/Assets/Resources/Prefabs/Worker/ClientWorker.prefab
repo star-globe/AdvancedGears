@@ -45,6 +45,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MaxConnectionAttempts: 3
+  playerInitInfo:
+    side: 1
+    pos: {x: -50, y: 0, z: 0}
 --- !u!114 &4639143133895456960
 MonoBehaviour:
   m_ObjectHideFlags: 0
