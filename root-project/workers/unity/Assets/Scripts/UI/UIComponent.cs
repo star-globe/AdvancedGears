@@ -11,6 +11,6 @@ namespace AdvancedGears.Scripts.UI
         public Canvas Canvas;
         public Text TestText;
         public Text ScoreText;
-        public RawImage Reticle;
+        public Image Reticle;
     }
 }
