@@ -7,26 +7,48 @@ namespace AdvancedGears
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(SpatialOSUpdateGroup))]
-    internal class AdvancedInputSync : SpatialComponentSystem
+    internal class AdvancedPlayerInputSync : AdvancedInputSync
     {
-        private const float MinInputChange = 0.01f;
-
-        private EntityQuery inputLocalGroup;
-        private EntityQuery inputUnmannedGroup;
+        private EntityQuery inputPlayerGroup;
 
         protected override void OnCreate()
         {
-            base.OnCreate();
-
             // local
-            inputLocalGroup = GetEntityQuery(
+            inputPlayerGroup = GetEntityQuery(
                 ComponentType.ReadWrite<AdvancedPlayerInput.Component>(),
                 ComponentType.ReadWrite<CameraTransform>(),
                 ComponentType.ReadOnly<AdvancedPlayerInput.ComponentAuthority>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
-            );
-            inputLocalGroup.SetFilter(AdvancedPlayerInput.ComponentAuthority.Authoritative);
 
+            );
+            inputPlayerGroup.SetFilter(AdvancedPlayerInput.ComponentAuthority.Authoritative);
+        }
+
+        protected override void OnUpdate()
+        {
+            Entities.With(inputPlayerGroup).ForEach((ref CameraTransform cameraTransform,
+                                                     ref AdvancedPlayerInput.Component playerInput,
+                                                     ref SpatialEntityId entityId) =>
+            {
+                var forward = cameraTransform.Rotation * Vector3.up;
+                var right = cameraTransform.Rotation * Vector3.right;
+                var input = InputUtils.GetMove(right, forward);
+                var isShiftDown = Input.GetKey(KeyCode.LeftShift);
+                var controller = playerInput.LocalController;
+                CommonUpdate(input, isShiftDown, entityId, ref controller);
+                playerInput.LocalController = controller;
+            });
+        }
+    }
+
+    [DisableAutoCreation]
+    [UpdateInGroup(typeof(SpatialOSUpdateGroup))]
+    internal class AdvancedUnmannedInputSync : AdvancedInputSync
+    {
+        private EntityQuery inputUnmannedGroup;
+
+        protected override void OnCreate()
+        {
             // unmanned
             inputUnmannedGroup = GetEntityQuery(
                 ComponentType.ReadWrite<AdvancedUnmannedInput.Component>(),
@@ -39,31 +61,9 @@ namespace AdvancedGears
 
         protected override void OnUpdate()
         {
-            HandleLocalInput();
-            HandleUnmannedInput();
-        }
-
-        private void HandleLocalInput()
-        {
-            Entities.With(inputLocalGroup).ForEach((ref CameraTransform cameraTransform,
-                                                    ref AdvancedPlayerInput.Component playerInput,
-                                                    ref SpatialEntityId entityId) =>
-            {
-                var forward = cameraTransform.Rotation * Vector3.up;
-                var right = cameraTransform.Rotation * Vector3.right;
-                var input = InputUtils.GetMove(right, forward);
-                var isShiftDown = Input.GetKey(KeyCode.LeftShift);
-                var controller = playerInput.LocalController;
-                CommonUpdate(input, isShiftDown, entityId, ref controller);
-                playerInput.LocalController = controller;
-            });
-        }
-
-        private void HandleUnmannedInput()
-        {
-            Entities.With(inputLocalGroup).ForEach((ref BaseUnitStatus.Component status,
-                                                    ref AdvancedUnmannedInput.Component unMannedInput,
-                                                    ref SpatialEntityId entityId) =>
+            Entities.With(inputUnmannedGroup).ForEach((ref BaseUnitStatus.Component status,
+                                                       ref AdvancedUnmannedInput.Component unMannedInput,
+                                                       ref SpatialEntityId entityId) =>
             {
                 if (status.State != UnitState.Alive)
                     return;
@@ -73,16 +73,22 @@ namespace AdvancedGears
                 if (inter.CheckTime(time) == false)
                     return;
 
+                unMannedInput.Interval = inter;
                 var x = UnityEngine.Random.Range(-1.0f, 1.0f);
                 var z = UnityEngine.Random.Range(-1.0f, 1.0f);
                 var isShiftDown = false;//Input.GetKey(KeyCode.LeftShift);
                 var controller = unMannedInput.LocalController;
-                CommonUpdate(new Vector3(x,0,z), isShiftDown, entityId, ref controller);
+                CommonUpdate(new Vector3(x, 0, z), isShiftDown, entityId, ref controller);
                 unMannedInput.LocalController = controller;
             });
         }
+    }
 
-        private void CommonUpdate(in Vector3 input, bool isShiftDown, in SpatialEntityId entityId, ref ControllerInfo oldController)
+    internal abstract class AdvancedInputSync : SpatialComponentSystem
+    {
+        private const float MinInputChange = 0.01f;
+
+        protected void CommonUpdate(in Vector3 input, bool isShiftDown, in SpatialEntityId entityId, ref ControllerInfo oldController)
         {
             if (Math.Abs(oldController.Horizontal - input.x) > MinInputChange
                 || Math.Abs(oldController.Vertical - input.z) > MinInputChange

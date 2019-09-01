@@ -18,10 +18,10 @@ namespace AdvancedGears
             componentUpdateSystem = World.GetExistingSystem<ComponentUpdateSystem>();
 
             inputGroup = GetEntityQuery(
-                ComponentType.ReadOnly<PlayerInput.ComponentAuthority>(),
+                ComponentType.ReadOnly<AdvancedPlayerInput.ComponentAuthority>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
-            inputGroup.SetFilter(PlayerInput.ComponentAuthority.Authoritative);
+            inputGroup.SetFilter(AdvancedPlayerInput.ComponentAuthority.Authoritative);
         }
 
         protected override void OnUpdate()
@@ -30,7 +30,7 @@ namespace AdvancedGears
             {
                 var authChanges =
                     componentUpdateSystem.GetAuthorityChangesReceived(spatialEntityId.EntityId,
-                        PlayerInput.ComponentId);
+                        AdvancedPlayerInput.ComponentId);
                 if (authChanges.Count > 0)
                 {
                     PostUpdateCommands.AddComponent(entity, CameraComponentDefaults.Input);

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
+using Improbable.Gdk.Subscriptions;
 
 namespace AdvancedGears
 {

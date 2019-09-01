@@ -123,7 +123,7 @@ namespace AdvancedGears
         protected void SetComponent<T>(in Entity entity, T comp) where T : struct, IComponentData
         {
             if (EntityManager.HasComponent<T>(entity))
-                EntityManager.SetComponentData(entity, comp);
+                PostUpdateCommands.SetComponent(entity, comp);
         }
 
         protected void SetComponent<T>(EntityId id, T comp) where T : struct, IComponentData

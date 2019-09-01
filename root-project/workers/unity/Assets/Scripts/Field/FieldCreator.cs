@@ -1,0 +1,73 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+using UnityEngine.Assertions;
+using Unity.Entities;
+using Improbable;
+using Improbable.Gdk.Core;
+
+namespace AdvancedGears
+{
+    public class FieldCreator : MonoBehaviour
+    {
+        World world;
+        Vector3 Origin;
+
+        GameObject fieldObject = null;
+        GameObject FieldObject
+        {
+            get
+            {
+                if (fieldObject == null)
+                {
+                    var settings = FieldDictionary.Get(0);
+                    if (settings != null)
+                        fieldObject = Instantiate(settings.FieldObject);
+                }
+
+                return fieldObject;
+            }
+        }
+
+        StaticBulletReceiver staticReceiver = null;
+        StaticBulletReceiver StaticReceiver
+        {
+            get
+            {
+                if (staticReceiver == null)
+                {
+                    staticReceiver = this.FieldObject.GetComponent<StaticBulletReceiver>();
+                }
+                return staticReceiver;
+            }
+        }
+
+        FieldRealizer fieldRealizer = null;
+        FieldRealizer FieldRealizer
+        {
+            get
+            {
+                if (fieldRealizer == null)
+                {
+                    fieldRealizer = this.FieldObject.GetComponent<FieldRealizer>();
+                }
+                return fieldRealizer;
+            }
+        }
+
+        public void Setup(World world, Vector3 origin)
+        {
+            this.world = world;
+            this.Origin = origin;
+        }
+
+        public void RealizeField(float size, Coordinates coords)
+        {
+            this.StaticReceiver.SetWorld(world);
+            this.FieldRealizer.Realize(size, coords.ToUnityVector() + this.Origin);
+        }
+    }
+}
+

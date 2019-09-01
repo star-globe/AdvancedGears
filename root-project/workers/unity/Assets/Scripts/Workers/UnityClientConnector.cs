@@ -4,6 +4,7 @@ using Improbable.Gdk.PlayerLifecycle;
 using Improbable.Worker.CInterop;
 using Improbable.Gdk.GameObjectCreation;
 using Improbable.Gdk.Subscriptions;
+using Improbable.Gdk.TransformSynchronization;
 using UnityEngine;
 
 namespace AdvancedGears
@@ -11,7 +12,10 @@ namespace AdvancedGears
     public class UnityClientConnector : WorkerConnector
     {
         [SerializeField]
-        PlayerInitInfo playerInitInfo;
+        UnitSide side;
+
+        [SerializeField]
+        Vector3 pos;
 
         public const string WorkerType = WorkerUtils.UnityClient;
 
@@ -53,7 +57,7 @@ namespace AdvancedGears
             var system = Worker.World.GetExistingSystem<SendCreatePlayerRequestSystem>();
             if (system != null)
             {
-                system.RequestPlayerCreation(SerializeUtils.SerializeArguments(playerInitInfo));
+                system.RequestPlayerCreation(SerializeUtils.SerializeArguments(new PlayerInitInfo(side,pos)));
             }
         }
     }
@@ -62,6 +66,12 @@ namespace AdvancedGears
     public class PlayerInitInfo
     {
         public UnitSide side;
-        public Vector3 pos;
+        public FixedPointVector3 pos;
+
+        public PlayerInitInfo(UnitSide side, Vector3 pos)
+        {
+            this.side = side;
+            this.pos = pos.ToFixedPointVector3();
+        }
     }
 }

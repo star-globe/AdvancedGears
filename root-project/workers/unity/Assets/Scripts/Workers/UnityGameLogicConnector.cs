@@ -47,7 +47,6 @@ namespace AdvancedGears
         private static EntityTemplate CreatePlayerEntityTemplate(string workerId, byte[] serializedArguments)
         {
             var clientAttribute = EntityTemplate.GetWorkerAccessAttribute(workerId);
-            var serverAttribute = WorkerType;
 
             var initInfo = SerializeUtils.DeserializeArguments<PlayerInitInfo>(serializedArguments);
             return BaseUnitTemplate.CreateAdvancedUnitEntityTemplate(workerId, initInfo.pos.ToCoordinates(), initInfo.side);

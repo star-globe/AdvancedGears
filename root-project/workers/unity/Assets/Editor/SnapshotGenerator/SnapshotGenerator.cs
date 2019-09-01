@@ -45,11 +45,13 @@ namespace AdvancedGears.Editor
             AddPlayerSpawner(snapshot, GroundCoordinates(-200,-200, ground));//new Coordinates(-2000, 0, -2000));
             AddPlayerSpawner(snapshot, GroundCoordinates(-200, 200, ground));//new Coordinates(-2000, 0, 2000));
 
-            AddWorldTimer(snapshot, new Coordinates { X = 0.0, Y = 0.0, Z = 0.0 });
+            AddWorldTimer(snapshot, Coordinates.Zero);//new Coordinates { X = 0.0, Y = 0.0, Z = 0.0 });
             //AddCubeGrid(snapshot, cubeCount, ground);
             //CreateSpinner(snapshot, new Coordinates { X = 5.5, Y = 0.5f, Z = 0.0 });
             //CreateSpinner(snapshot, new Coordinates { X = -5.5, Y = 0.5f, Z = 0.0 });
             AddDefaultUnits(snapshot, cubeCount, ground);
+
+            AddField(snapshot, Coordinates.Zero);
 
             return snapshot;
         }
@@ -75,6 +77,11 @@ namespace AdvancedGears.Editor
             template.SetComponentWriteAccess(EntityAcl.ComponentId, WorkerUtils.UnityGameLogic);
 
             snapshot.AddEntity(template);
+        }
+
+        private static void AddField(Snapshot snapshot, Coordinates location)
+        {
+            snapshot.AddEntity(FieldTemplate.CreateFieldEntityTemplate(location, 3000, FieldMaterialType.None));
         }
 
         private static void AddWorldTimer(Snapshot snapshot, Coordinates location)

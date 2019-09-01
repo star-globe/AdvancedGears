@@ -8,7 +8,6 @@ namespace AdvancedGears
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(SpatialOSUpdateGroup))]
-    [UpdateAfter(typeof(AdvancedInputSync))]
     internal class MoveAdvancedUnitSystem : BaseEntitySearchSystem
     {
         public struct Speed : IComponentData
@@ -48,7 +47,7 @@ namespace AdvancedGears
                 ComponentType.ReadOnly<BaseUnitStatus.Component>()
             );
             advancedInputGroup.SetFilter(TransformInternal.ComponentAuthority.Authoritative);
-        }
+       }
 
         protected override void OnUpdate()
         {
@@ -82,6 +81,9 @@ namespace AdvancedGears
                                                        ref Speed speed) =>
             {
                 if (status.State != UnitState.Alive)
+                    return;
+
+                if (status.Type != UnitType.Advanced)
                     return;
 
                 // todo Fuel check

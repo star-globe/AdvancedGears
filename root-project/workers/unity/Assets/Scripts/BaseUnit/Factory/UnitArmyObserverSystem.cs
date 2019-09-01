@@ -64,6 +64,8 @@ namespace AdvancedGears
                 if (inter.CheckTime(time) == false)
                     return;
 
+                observer.Interval = inter;
+
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
                 var pos = trans.position;
 

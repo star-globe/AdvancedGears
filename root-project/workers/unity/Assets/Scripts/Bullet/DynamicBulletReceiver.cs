@@ -19,7 +19,7 @@ namespace AdvancedGears
         protected override World World => world;
 
         [SerializeField]
-        HitNotifier[] notifiers;
+        HitNotifiersInfo notifiers;
 
         protected override void OnHit(BulletInfo info)
         {
@@ -38,7 +38,7 @@ namespace AdvancedGears
 
         void Start()
         {
-            foreach (var n in notifiers)
+            foreach (var n in notifiers.Notifiers)
             {
                 if (n != null)
                     n.OnCollisionEvent += OnCollisionEnter;
@@ -47,7 +47,7 @@ namespace AdvancedGears
 
         void OnDestroy()
         {
-            foreach (var n in notifiers)
+            foreach (var n in notifiers.Notifiers)
             {
                 if (n != null)
                     n.OnCollisionEvent -= OnCollisionEnter;

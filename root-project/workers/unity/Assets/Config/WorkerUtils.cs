@@ -26,8 +26,8 @@ namespace AdvancedGears
             PlayerLifecycleHelper.AddClientSystems(world);
             GameObjectCreationHelper.EnableStandardGameObjectCreation(world, gameObject);
             world.GetOrCreateSystem<ProcessColorChangeSystem>();
-            world.GetOrCreateSystem<LocalPlayerInputSync>();
-            world.GetOrCreateSystem<MoveLocalPlayerSystem>();
+            world.GetOrCreateSystem<AdvancedPlayerInputSync>();
+            world.GetOrCreateSystem<MoveAdvancedUnitSystem>();
             world.GetOrCreateSystem<InitCameraSystem>();
             world.GetOrCreateSystem<FollowCameraSystem>();
             world.GetOrCreateSystem<InitUISystem>();

@@ -1,0 +1,13 @@
+package advanced_gears;
+
+enum FieldMaterialType {
+    None = 0;
+}
+
+component FieldComponent {
+    id = 31000;
+
+    FieldMaterialType field_mat_type = 1;
+
+    float size = 2;
+}
