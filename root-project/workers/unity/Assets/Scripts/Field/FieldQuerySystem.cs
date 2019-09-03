@@ -14,6 +14,8 @@ using UnityEngine;
 
 namespace AdvancedGears
 {
+    [DisableAutoCreation]
+    [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     public class FieldQuerySystem : SpatialComponentSystem
     {
         IntervalChecker inter = IntervalCheckerInitializer.InitializedChecker(10.0f);

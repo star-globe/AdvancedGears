@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abe1ea70dff710f4d959fb31ffe8112e, type: 3}
   m_Name: FieldDictionary
   m_EditorClassIdentifier: 
-  fieldsList: []
+  fieldsList:
+  - {fileID: 11400000, guid: 8897388cd4deb564caba38dcf2c1b639, type: 2}
