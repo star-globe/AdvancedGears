@@ -10,18 +10,25 @@ namespace AdvancedGears
     public class FieldRealizer : MonoBehaviour
     {
         [SerializeField]
-        BoxCollider boxCollider;
+        Terrain terrain;
 
         private void Start()
         {
-            Assert.IsNotNull(boxCollider);
+            Assert.IsNotNull(terrain);
         }
 
-        public void Realize(float size, Vector3 pos)
+        public void Realize(List<TerrainPointInfo> terrainPoints, Vector3 pos)
         {
             this.transform.position = pos;
-            float rate = size / boxCollider.size.x;
-            this.transform.localScale = new Vector3(rate, 1.0f, rate);
+
+            var width = terrain.terrainData.heightmapWidth;
+
+            float[,] heights = new float[width, width];
+
+            foreach (var point in terrainsPoints)
+                heights = point.SetHeights(pos, pos.x, pos.z, width, heights);
+
+            terrain.terrainData.SetHeights(0,0, heights);
         }
     }
 }

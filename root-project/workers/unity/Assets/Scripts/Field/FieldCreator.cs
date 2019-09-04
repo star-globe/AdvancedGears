@@ -63,10 +63,10 @@ namespace AdvancedGears
             this.Origin = origin;
         }
 
-        public void RealizeField(float size, Coordinates coords)
+        public void RealizeField(List<TerrainPointInfo> terrainPoints, Coordinates coords)
         {
             this.StaticReceiver.SetWorld(world);
-            this.FieldRealizer.Realize(size, coords.ToUnityVector() + this.Origin);
+            this.FieldRealizer.Realize(terrainPoints, coords.ToUnityVector() + this.Origin);
         }
     }
 }

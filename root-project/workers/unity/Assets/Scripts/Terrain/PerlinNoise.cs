@@ -22,7 +22,7 @@ namespace AdvancedGears
             [SerializeField]
             int seeds = 1;
 
-            public float[,] SetHeights(int width, int height, float[,] b_heights)
+            public float[,] SetHeights(float x, float z, int width, int height, float[,] b_heights)
             {
                 float hillHeight = (float)((float)HighestHillHeight - (float)LowestHillHeight) / ((float)height / 2);
                 float baseHeight = (float)LowestHillHeight / ((float)height / 2);
@@ -32,7 +32,8 @@ namespace AdvancedGears
                 {
                     for (int k = 0; k < height; k++)
                     {
-                        heights[i, k] = baseHeight + b_heights[i, k] + (Mathf.PerlinNoise(seeds + ((float)i / (float)width) * tileSize, seeds + ((float)k / (float)height) * tileSize) * (float)hillHeight);
+                        heights[i, k] = baseHeight + b_heights[i, k]
+                                        + (Mathf.PerlinNoise( x + seeds + ((float)i / (float)width) * tileSize, z + seeds + ((float)k / (float)height) * tileSize) * (float)hillHeight);
                     }
                 }
 
@@ -52,10 +53,11 @@ namespace AdvancedGears
             var height = terrain.terrainData.heightmapHeight;
 
             float[,] heights = new float[width, height];
+            var pos = terrain.transform.positioin;
 
             foreach (var set in settings)
             {
-                heights = set.SetHeights(width, height, heights);
+                heights = set.SetHeights(pos.x, pos.z, width, height, heights);
             }
 
             terrain.terrainData.SetHeights(0,0, heights);

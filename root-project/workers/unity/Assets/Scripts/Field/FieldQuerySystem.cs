@@ -133,7 +133,7 @@ namespace AdvancedGears
             if (snap.TryGetComponentSnapshot(out field) == false)
                 return;
 
-            FieldCreator.RealizeField(field.Size, position.Coords);
+            FieldCreator.RealizeField(field.TerrainPoints, position.Coords);
         }
     }
 }

@@ -2,12 +2,20 @@ package advanced_gears;
 
 enum FieldMaterialType {
     None = 0;
+    Grass = 1;
+}
+
+type TerrainPointInfo {
+    float highest_hill_height = 1;
+    float lowest_hill_height = 2;
+    float tile_size = 3;
+    int32 seeds = 4;
+    float range = 5;
+    FieldMaterialType mat_type = 6;
 }
 
 component FieldComponent {
     id = 31000;
 
-    FieldMaterialType field_mat_type = 1;
-
-    float size = 2;
+    list<TerrainPointInfo> terrain_points = 1;
 }

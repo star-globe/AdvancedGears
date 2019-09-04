@@ -172,7 +172,26 @@ namespace AdvancedGears
             }
 
             return UnitBaseType.None;
-        } 
+        }
+
+        public static float[,] SetHeights(this TerrainPointSettings settings, Vector3 center, float x, float z, int width, float[,] b_heights)
+        {
+            float hillHeight = settings.HighestHillHeight - settings.LowestHillHeight;
+            float[,] heights = new float[width, width];
+            float sqr = (x-center.x)*(x-center.x) + (z-center.z)*(z-center.z);
+            float rate = Mathf.Exp(-sqr/(settings.range * settings.range));
+            int seeds = settings.Seeds;
+            float tileSize = settings.tileSize;
+
+            for (int i = 0; i < width; i++) {
+                for (int k = 0; k < width; k++) {
+                    var diff = settings.LowestHillHeight + Mathf.PerlinNoise( x + seeds + (i * tileSize / width)  , z + seeds + (k * tileSize / width)) * hillHeight;
+                    heights[i, k] = b_heights[i, k] + diff * rate;
+                }
+            }
+
+            return heights;
+        }
     }
 
     public static class IntervalCheckerInitializer
