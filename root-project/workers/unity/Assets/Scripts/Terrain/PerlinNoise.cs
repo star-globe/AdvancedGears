@@ -53,7 +53,7 @@ namespace AdvancedGears
             var height = terrain.terrainData.heightmapHeight;
 
             float[,] heights = new float[width, height];
-            var pos = terrain.transform.positioin;
+            var pos = terrain.transform.position;
 
             foreach (var set in settings)
             {

@@ -81,7 +81,7 @@ namespace AdvancedGears.Editor
 
         private static void AddField(Snapshot snapshot, Coordinates location)
         {
-            snapshot.AddEntity(FieldTemplate.CreateFieldEntityTemplate(location, 3000, FieldMaterialType.None));
+            snapshot.AddEntity(FieldTemplate.CreateFieldEntityTemplate(location, 3000, 500, FieldMaterialType.None));
         }
 
         private static void AddWorldTimer(Snapshot snapshot, Coordinates location)

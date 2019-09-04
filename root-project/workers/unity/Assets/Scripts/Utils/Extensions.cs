@@ -174,21 +174,28 @@ namespace AdvancedGears
             return UnitBaseType.None;
         }
 
-        public static float[,] SetHeights(this TerrainPointSettings settings, Vector3 center, float x, float z, int width, float[,] b_heights)
+        public static float[,] SetHeights(this TerrainPointInfo settings, Vector3 center, float x, float z, int width, float height, Vector3 size, float[,] b_heights)
         {
             float hillHeight = settings.HighestHillHeight - settings.LowestHillHeight;
             float[,] heights = new float[width, width];
-            float sqr = (x-center.x)*(x-center.x) + (z-center.z)*(z-center.z);
-            float rate = Mathf.Exp(-sqr/(settings.range * settings.range));
+            float sqr = (settings.Range * settings.Range);
             int seeds = settings.Seeds;
-            float tileSize = settings.tileSize;
+            float tileSize = settings.TileSize * 0.001f;
 
             for (int i = 0; i < width; i++) {
                 for (int k = 0; k < width; k++) {
-                    var diff = settings.LowestHillHeight + Mathf.PerlinNoise( x + seeds + (i * tileSize / width)  , z + seeds + (k * tileSize / width)) * hillHeight;
-                    heights[i, k] = b_heights[i, k] + diff * rate;
+                    float pos_x = x + (i * 1.0f / width) * size.x;
+                    float pos_z = z + (k * 1.0f / width) * size.z;
+                    var diff = settings.LowestHillHeight + Mathf.PerlinNoise(pos_x * tileSize, pos_z * tileSize) * hillHeight;
+                    var length = (pos_x - center.x) * (pos_x - center.x) + (pos_z - center.z) * (pos_z - center.z);
+                    heights[i, k] = b_heights[i, k] + (diff / height) * Mathf.Exp(-length/sqr);
                 }
             }
+
+            Debug.LogFormat("height:{0}", heights[0,0]);
+
+            Debug.LogFormat("0:{0}",Mathf.PerlinNoise(0, 10));
+            Debug.LogFormat("-0.1f:{0}", Mathf.PerlinNoise(-0.1f, 10));
 
             return heights;
         }

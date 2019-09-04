@@ -22,11 +22,13 @@ namespace AdvancedGears
             this.transform.position = pos;
 
             var width = terrain.terrainData.heightmapWidth;
+            var height = terrain.terrainData.heightmapHeight;
+            var size = terrain.terrainData.size;
 
             float[,] heights = new float[width, width];
 
-            foreach (var point in terrainsPoints)
-                heights = point.SetHeights(pos, pos.x, pos.z, width, heights);
+            foreach (var point in terrainPoints)
+                heights = point.SetHeights(pos, pos.x, pos.z, width, height, size, heights);
 
             terrain.terrainData.SetHeights(0,0, heights);
         }

@@ -23,20 +23,19 @@ namespace AdvancedGears
         }
 
         const float shrinkRate = 0.3f;
-        private static List<TerrainPointInfo> CreateTerrainPointInfo(float range, float highest, FieldMaterialType materialType = FieldMaterialType.None)
+        public static List<TerrainPointInfo> CreateTerrainPointInfo(float range, float highest, FieldMaterialType materialType = FieldMaterialType.None)
         {
             List<TerrainPointInfo> list = new List<TerrainPointInfo>();
-            int layer = highest * 3 / range + 1;
+            int layer = (int)(highest * 10 / range) + 1;
             float lowest = 0.0f;
-            float tileSize = 1.0f;
+            float tileSize = 10.0f;
             for (int i = 0; i < layer; i++) {
-
                 list.Add(new TerrainPointInfo
                         {
                             HighestHillHeight = highest,
                             LowestHillHeight = lowest,
                             TileSize = tileSize,
-                            Seeds = UnityEngine.Random.Range(int.MinValue,int.MaxValue),
+                            Seeds = UnityEngine.Random.Range(0,999),
                             Range = range,
                             MatType = materialType,
                         });
@@ -46,6 +45,8 @@ namespace AdvancedGears
                 tileSize /= shrinkRate;
                 range /= shrinkRate;
             }
+
+            return list;
         }
     }
 }
