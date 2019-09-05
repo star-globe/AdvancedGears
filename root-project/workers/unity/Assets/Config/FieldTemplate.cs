@@ -26,9 +26,9 @@ namespace AdvancedGears
         public static List<TerrainPointInfo> CreateTerrainPointInfo(float range, float highest, FieldMaterialType materialType = FieldMaterialType.None)
         {
             List<TerrainPointInfo> list = new List<TerrainPointInfo>();
-            int layer = (int)(highest * 10 / range) + 1;
+            int layer = 1;//(int)(highest * 10 / range) + 1;
             float lowest = highest / 2;
-            float tileSize = 1.0f;
+            float tileSize = 10.0f;
             for (int i = 0; i < layer; i++) {
                 list.Add(new TerrainPointInfo
                         {
