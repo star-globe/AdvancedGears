@@ -27,8 +27,8 @@ namespace AdvancedGears
         {
             List<TerrainPointInfo> list = new List<TerrainPointInfo>();
             int layer = (int)(highest * 10 / range) + 1;
-            float lowest = 0.0f;
-            float tileSize = 10.0f;
+            float lowest = highest / 2;
+            float tileSize = 1.0f;
             for (int i = 0; i < layer; i++) {
                 list.Add(new TerrainPointInfo
                         {
