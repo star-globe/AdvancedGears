@@ -19,6 +19,9 @@ namespace AdvancedGears
         [SerializeField]
         Vector3 center;
 
+        [SerializeField]
+        int seeds;
+
         private void Start()
         {
             Realize(FieldTemplate.CreateTerrainPointInfo(range, highest));
@@ -37,7 +40,11 @@ namespace AdvancedGears
             float[,] heights = new float[width, width];
 
             foreach (var point in terrainPoints)
-               heights = point.SetHeights(center, pos.x, pos.z, width, height, size, heights);
+            {
+                var p = point;
+                p.Seeds = seeds;
+                heights = p.SetHeights(center, pos.x, pos.z, width, height, size, heights);
+            }
 
             terrain.terrainData.SetHeights(0,0, heights);
         }

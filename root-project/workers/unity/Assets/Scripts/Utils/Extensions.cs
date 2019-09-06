@@ -186,7 +186,7 @@ namespace AdvancedGears
                 for (int k = 0; k < width; k++) {
                     float pos_x = x + (k * 1.0f / width) * size.x;
                     float pos_z = z + (i * 1.0f / width) * size.z;
-                    var diff = settings.LowestHillHeight + Mathf.PerlinNoise(pos_x * tileSize, pos_z * tileSize) * hillHeight;
+                    var diff = settings.LowestHillHeight + Mathf.PerlinNoise((seeds + pos_x) * tileSize, (seeds + pos_z) * tileSize) * hillHeight;
                     var length = (pos_x - center.x) * (pos_x - center.x) + (pos_z - center.z) * (pos_z - center.z);
                     heights[i, k] = b_heights[i, k] + (diff / height) * Mathf.Exp(-length/sqr);
                 }

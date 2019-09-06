@@ -22,13 +22,15 @@ namespace AdvancedGears
             return template;
         }
 
+        const float heightRate = 10.0f;
         const float shrinkRate = 0.3f;
+        const float initTile = 1.5f;
         public static List<TerrainPointInfo> CreateTerrainPointInfo(float range, float highest, FieldMaterialType materialType = FieldMaterialType.None)
         {
             List<TerrainPointInfo> list = new List<TerrainPointInfo>();
-            int layer = 1;//(int)(highest * 10 / range) + 1;
+            int layer = (int)(highest * heightRate / range) + 1;
             float lowest = highest / 2;
-            float tileSize = 10.0f;
+            float tileSize = 1.5f;
             for (int i = 0; i < layer; i++) {
                 list.Add(new TerrainPointInfo
                         {
