@@ -36,16 +36,8 @@ namespace AdvancedGears
 
             float[,] heights = new float[width, width];
 
-            //foreach (var point in terrainPoints)
-            //    heights = point.SetHeights(center, pos.x, pos.z, width, height, size, heights);
-
-            for (int i = 0; i < width; i++)
-            {
-                for (int k = 0; k < width; k++)
-                {
-                    heights[i, k] = ((pos.x + 1000)/4 +i + k * 0.5f) / 1024;
-                }
-            }
+            foreach (var point in terrainPoints)
+               heights = point.SetHeights(center, pos.x, pos.z, width, height, size, heights);
 
             terrain.terrainData.SetHeights(0,0, heights);
         }
