@@ -192,11 +192,6 @@ namespace AdvancedGears
                 }
             }
 
-            Debug.LogFormat("height:{0}", heights[0,0]);
-
-            Debug.LogFormat("0:{0}",Mathf.PerlinNoise(0, 10));
-            Debug.LogFormat("-0.1f:{0}", Mathf.PerlinNoise(-0.1f, 10));
-
             return heights;
         }
     }
