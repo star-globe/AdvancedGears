@@ -1,4 +1,5 @@
 package advanced_gears;
+import "improbable/gdk/transform_synchronization/transform_internal.schema";
 
 enum FieldMaterialType {
     None = 0;
@@ -18,4 +19,16 @@ component FieldComponent {
     id = 31000;
 
     list<TerrainPointInfo> terrain_points = 1;
+}
+
+type TreeInfo {
+    int32 tree_id = 1;
+    improbable.gdk.transform_synchronization.FixedPointVector3 pos = 2;
+    float height = 3;
+}
+
+component TreeComponent {
+    id = 31001;
+
+    map<int32,TreeInfo> tree_map = 1;
 }
