@@ -36,10 +36,8 @@ namespace AdvancedGears
         {
             base.OnUpdate();
 
-
+            // todo Detect ClientPlayerPosition
         }
-
-        public void SetPlaye
     }
 
     public abstract class FieldQueryBaseSystem : BaseEntitySearchSystem
