@@ -117,7 +117,7 @@ namespace AdvancedGears
 
             fieldQuery = new EntityQuery()
             {
-                Constraint = new AndConstrait(list),
+                Constraint = new AndConstraint(list),
                 ResultType = new SnapshotResultType()
             };
 
@@ -142,10 +142,12 @@ namespace AdvancedGears
 
                 if (response.StatusCode == StatusCode.Success)
                 {
-                    var list = fieldShanpShots[response.Result.Key];
-                    list = list ?? new List<Snapshot>();
-                    list.AddRange(response.Result.Values);
-                    fieldShanpShots[response.Result.Key] = list;
+                    foreach (var kvp in response.Result) {
+                        var list = fieldShanpShots[kvp.Key];
+                        list = list ?? new List<EntitySnapshot>();
+                        list.Add(kvp.Value);
+                        fieldShanpShots[kvp.Key] = list;
+                    }
                 }
                 else if (fieldQueryRetries < PlayerLifecycleConfig.MaxPlayerCreatorQueryRetries)
                 {
