@@ -43,7 +43,6 @@ namespace AdvancedGears
             PlayerLifecycleHelper.AddServerSystems(world);
             GameObjectCreationHelper.EnableStandardGameObjectCreation(world, gameObject);
 
-            world.GetOrCreateSystem<TriggerColorChangeSystem>();
             world.GetOrCreateSystem<ProcessLaunchCommandSystem>();
             world.GetOrCreateSystem<ProcessRechargeSystem>();
             world.GetOrCreateSystem<MetricSendSystem>();

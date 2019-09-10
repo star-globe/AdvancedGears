@@ -16,34 +16,58 @@ namespace AdvancedGears
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
-    public class FieldQuerySystem : SpatialComponentSystem
+    public class FieldQueryServerSystem : FieldQueryBaseSystem
+    {
+        protected override Vector3 BasePosition { get { return this.WorkerSystem.Origin; } }
+        protected override float SearchRadius { get { return 1000.0f; } }
+        protected override bool CheckRegularly { get { return false; } }
+    }
+
+    [DisableAutoCreation]
+    [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
+    public class FieldQueryClientSystem : FieldQueryBaseSystem
+    {
+        Vector3? playerPosition = null;
+        protected override Vector3 BasePosition { get { return playerPosition != null ? playerPosition.Value: this.WorkerSystem.Origin; } }
+        protected override float SearchRadius { get { return 500.0f; } }
+        protected override bool CheckRegularly { get { return true; } }
+
+        protected override void OnUpdate()
+        {
+            base.OnUpdate();
+
+
+        }
+
+        public void SetPlaye
+    }
+
+    public abstract class FieldQueryBaseSystem : BaseEntitySearchSystem
     {
         IntervalChecker inter = IntervalCheckerInitializer.InitializedChecker(10.0f);
 
         private int fieldQueryRetries;
         private long? fieldEntityQueryId;
-        private readonly List<EntitySnapshot> fieldShanpShots = new List<EntitySnapshot>();
+        private readonly Dictionary<EntityId,List<EntitySnapshot>> fieldShanpShots = new Dictionary<EntityId,List<EntitySnapshot>>();
 
+        const float fieldSize = 1000.0f;
+        const float checkRange = 500.0f;
+        Vector3? checkedPosition = null;
 
-        private readonly EntityQuery fieldQuery = new EntityQuery
-        {
-            Constraint = new ComponentConstraint(FieldComponent.ComponentId),
-            ResultType = new SnapshotResultType()
-        };
-
-        private WorkerSystem worker;
+        private EntityQuery fieldQuery;
 
         public FieldCreator FieldCreator { get; private set; }
 
+        protected abstract Vector3 BasePosition { get; }
+        protected abstract float SearchRadius { get; }
+        protected abstract bool CheckRegularly { get; }
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            worker = World.GetExistingSystem<WorkerSystem>();
-
             var go = new GameObject("FieldCreator");
             FieldCreator = go.AddComponent<FieldCreator>();
-            FieldCreator.Setup(worker.World, worker.Origin);
+            FieldCreator.Setup(this.WorkerSystem.World, this.WorkerSystem.Origin);
 
             SendFieldEntityQuery();
         }
@@ -58,21 +82,47 @@ namespace AdvancedGears
 
             if (fieldShanpShots.Count > 0)
             {
-                
+                foreach(var kvp in fieldShanpShots)
+                    SetField(kvp.Key, kvp.Value);
+
+                fieldShanpShots.Clear();
                 return;
             }
+
+            if (CheckRegularly == false)
+                return;
 
             var time = Time.time;
             if (inter.CheckTime(time) == false)
                 return;
 
-            fieldShanpShots.Clear();
+            // position check 
+            if (checkedPosition == null)
+                return;
+
+            var diff = checkedPosition.Value - BasePosition;
+            if (diff.sqrMagnitude < checkRange * checkRange)
+                return;
 
             SendFieldEntityQuery();
         }
 
         private void SendFieldEntityQuery()
         {
+            checkedPosition = BasePosition;
+
+            var list = new IConstraint[]
+            {
+                new ComponentConstraint(FieldComponent.ComponentId),
+                new SphereConstraint(BasePosition.x, BasePosition.y, BasePosition.z, SearchRadius),
+            };
+
+            fieldQuery = new EntityQuery()
+            {
+                Constraint = new AndConstrait(list),
+                ResultType = new SnapshotResultType()
+            };
+
             fieldEntityQueryId = this.CommandSystem.SendCommand(new WorldCommands.EntityQuery.Request
             {
                 EntityQuery = fieldQuery
@@ -94,7 +144,10 @@ namespace AdvancedGears
 
                 if (response.StatusCode == StatusCode.Success)
                 {
-                    fieldShanpShots.AddRange(response.Result.Values);
+                    var list = fieldShanpShots[response.Result.Key];
+                    list = list ?? new List<Snapshot>();
+                    list.AddRange(response.Result.Values);
+                    fieldShanpShots[response.Result.Key] = list;
                 }
                 else if (fieldQueryRetries < PlayerLifecycleConfig.MaxPlayerCreatorQueryRetries)
                 {
@@ -121,19 +174,20 @@ namespace AdvancedGears
             }
         }
 
-        private void SetField()
+        private void SetField(EntityId entityId, List<EntitySnapshot> snapShots)
         {
-            var snap = fieldShanpShots[UnityEngine.Random.Range(0, fieldShanpShots.Count)];
+            foreach (var snap in snapShots)
+            {
+                Position.Snapshot position;
+                if (snap.TryGetComponentSnapshot(out position) == false)
+                    return;
 
-            Position.Snapshot position;
-            if (snap.TryGetComponentSnapshot(out position) == false)
-                return;
+                FieldComponent.Snapshot field;
+                if (snap.TryGetComponentSnapshot(out field) == false)
+                    return;
 
-            FieldComponent.Snapshot field;
-            if (snap.TryGetComponentSnapshot(out field) == false)
-                return;
-
-            FieldCreator.RealizeField(field.TerrainPoints, position.Coords);
+                FieldCreator.RealizeField(field.TerrainPoints, position.Coords);
+            }
         }
     }
 }
