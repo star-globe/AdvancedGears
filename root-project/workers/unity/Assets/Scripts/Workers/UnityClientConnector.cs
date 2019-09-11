@@ -52,7 +52,7 @@ namespace AdvancedGears
 
         protected override void HandleWorkerConnectionEstablished()
         {
-            WorkerUtils.AddClientSystems(Worker.World, this.gameObject);
+            WorkerUtils.AddClientSystems(Worker.World, this.gameObject, false);
 
             var system = Worker.World.GetExistingSystem<SendCreatePlayerRequestSystem>();
             if (system != null)

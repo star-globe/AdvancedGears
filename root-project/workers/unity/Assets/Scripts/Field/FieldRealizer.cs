@@ -17,18 +17,19 @@ namespace AdvancedGears
             Assert.IsNotNull(terrain);
         }
 
-        public void Realize(List<TerrainPointInfo> terrainPoints, Vector3 pos)
+        public void Realize(List<TerrainPointInfo> terrainPoints, Vector3 terrainPos, Vector3 center)
         {
-            this.transform.position = pos;
-
             var width = terrain.terrainData.heightmapWidth;
             var height = terrain.terrainData.heightmapHeight;
             var size = terrain.terrainData.size;
+            var start = center - new Vector3(size.x/2, 0.0f, size.z/2);
+
+            this.transform.position = start;
 
             float[,] heights = new float[width, width];
 
             foreach (var point in terrainPoints)
-                heights = point.SetHeights(pos, pos.x, pos.z, width, height, size, heights);
+                heights = point.SetHeights(terrainPos, start.x, start.z, width, height, size, heights);
 
             terrain.terrainData.SetHeights(0,0, heights);
         }

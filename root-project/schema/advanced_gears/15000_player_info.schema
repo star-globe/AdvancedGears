@@ -1,0 +1,11 @@
+package advanced_gears;
+
+import "improbable/gdk/core/common.schema";
+
+component PlayerInfo
+{
+	id = 15000;
+
+	string name = 1;
+	string client_worker_id = 2;
+}

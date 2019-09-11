@@ -122,10 +122,13 @@ namespace AdvancedGears
             template.AddComponent(new GunComponent.Snapshot { GunsDic = new Dictionary<PosturePoint, GunInfo>() }, WorkerUtils.UnityGameLogic);
             template.AddComponent(new FuelComponent.Snapshot(), WorkerUtils.UnityGameLogic);
 
-            if (isPlayer)
+            if (isPlayer) {
                 template.AddComponent(new AdvancedPlayerInput.Snapshot(), controllAttribute);
-            else
+                template.AddComponent(new PlayerInfo.Snapshot { ClientWorkerId = workerId }, controllAttribute);
+            }
+            else { 
                 template.AddComponent(new AdvancedUnmannedInput.Snapshot(), controllAttribute);
+            }
 
             template.AddComponent(new BaseUnitStatus.Snapshot { Type = UnitType.Advanced, Side = side, State = UnitState.Alive }, WorkerUtils.UnityGameLogic);
 

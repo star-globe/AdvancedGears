@@ -32,11 +32,37 @@ namespace AdvancedGears
         protected override float SearchRadius { get { return 500.0f; } }
         protected override bool CheckRegularly { get { return true; } }
 
+        IntervalChecker inter = IntervalCheckerInitializer.InitializedChecker(10.0f);
+        private EntityQuery group;
+
+        protected override void OnCreate()
+        {
+            base.OnCreate();
+
+            group = GetEntityQuery(
+                ComponentType.ReadOnly<PlayerInfo.Component>(),
+                ComponentType.ReadOnly<Position.Component>(),
+                ComponentType.ReadOnly<SpatialEntityId>()
+            );
+        }
+
         protected override void OnUpdate()
         {
             base.OnUpdate();
 
-            // todo Detect ClientPlayerPosition
+            Entities.With(group).ForEach((Entity entity,
+                                          ref PlayerInfo.Component playerInfo,
+                                          ref Position.Component position) =>
+            {
+                var time = Time.time;
+                if (inter.CheckTime(time) == false)
+                    return;
+
+                if (playerInfo.ClientWorkerId.Equals(this.WorkerId) == false)
+                    return;
+
+                playerPosition = position.Coords.ToUnityVector() + this.Origin;
+            });
         }
     }
 

@@ -15,6 +15,8 @@ namespace AdvancedGears
         World world;
         Vector3 Origin;
 
+        float gridSize = 1000.0f;
+
         GameObject fieldObject = null;
         GameObject FieldObject
         {
@@ -63,10 +65,11 @@ namespace AdvancedGears
             this.Origin = origin;
         }
 
-        public void RealizeField(List<TerrainPointInfo> terrainPoints, Coordinates coords)
+        public void RealizeField(List<TerrainPointInfo> terrainPoints, Coordinates coords, Vector3? center = null)
         {
             this.StaticReceiver.SetWorld(world);
-            this.FieldRealizer.Realize(terrainPoints, coords.ToUnityVector() + this.Origin);
+            var pos = center != null ? center.Value: this.Origin;
+            this.FieldRealizer.Realize(terrainPoints, coords.ToUnityVector() + this.Origin, pos);
         }
     }
 }

@@ -20,10 +20,10 @@ namespace AdvancedGears
                 MobileClient
             };
 
-        public static void AddClientSystems(World world, UnityEngine.GameObject gameObject)
+        public static void AddClientSystems(World world, UnityEngine.GameObject gameObject, bool autoRequestPlayerCreation = true)
         {
             TransformSynchronizationHelper.AddClientSystems(world);
-            PlayerLifecycleHelper.AddClientSystems(world);
+            PlayerLifecycleHelper.AddClientSystems(world, autoRequestPlayerCreation);
             GameObjectCreationHelper.EnableStandardGameObjectCreation(world, gameObject);
             world.GetOrCreateSystem<ProcessColorChangeSystem>();
             world.GetOrCreateSystem<AdvancedPlayerInputSync>();
