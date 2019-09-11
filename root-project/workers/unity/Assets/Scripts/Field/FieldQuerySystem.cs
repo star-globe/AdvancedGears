@@ -8,7 +8,7 @@ using Improbable.Gdk.Core.Commands;
 using Improbable.Gdk.PlayerLifecycle;
 using Improbable.Worker.CInterop;
 using Improbable.Worker.CInterop.Query;
-using EntityQuery = Improbable.Worker.CInterop.Query.EntityQuery;
+using ImprobableEntityQuery = Improbable.Worker.CInterop.Query.EntityQuery;
 using Unity.Entities;
 using UnityEngine;
 
@@ -33,7 +33,7 @@ namespace AdvancedGears
         protected override bool CheckRegularly { get { return true; } }
 
         IntervalChecker inter = IntervalCheckerInitializer.InitializedChecker(10.0f);
-        private EntityQuery group;
+        private Unity.Entities.EntityQuery group;
 
         protected override void OnCreate()
         {
@@ -50,7 +50,7 @@ namespace AdvancedGears
         {
             base.OnUpdate();
 
-            Entities.With(group).ForEach((Entity entity,
+            Entities.With(group).ForEach((Unity.Entities.Entity entity,
                                           ref PlayerInfo.Component playerInfo,
                                           ref Position.Component position) =>
             {
@@ -58,7 +58,7 @@ namespace AdvancedGears
                 if (inter.CheckTime(time) == false)
                     return;
 
-                if (playerInfo.ClientWorkerId.Equals(this.WorkerId) == false)
+                if (playerInfo.ClientWorkerId.Equals(this.WorkerSystem.WorkerId) == false)
                     return;
 
                 playerPosition = position.Coords.ToUnityVector() + this.Origin;
@@ -78,7 +78,7 @@ namespace AdvancedGears
         const float checkRange = 500.0f;
         Vector3? checkedPosition = null;
 
-        private EntityQuery fieldQuery;
+        private ImprobableEntityQuery fieldQuery;
 
         public FieldCreator FieldCreator { get; private set; }
 
@@ -141,7 +141,7 @@ namespace AdvancedGears
                 new SphereConstraint(BasePosition.x, BasePosition.y, BasePosition.z, SearchRadius),
             };
 
-            fieldQuery = new EntityQuery()
+            fieldQuery = new ImprobableEntityQuery()
             {
                 Constraint = new AndConstraint(list),
                 ResultType = new SnapshotResultType()

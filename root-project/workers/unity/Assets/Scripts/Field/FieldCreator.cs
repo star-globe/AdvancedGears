@@ -22,7 +22,7 @@ namespace AdvancedGears
         {
             get
             {
-                GameObject fieldObject;
+                GameObject fieldObject = null;
                 if (objectQueue.Count == 0) {
                     var settings = FieldDictionary.Get(0);
                     if (settings != null)
@@ -71,7 +71,7 @@ namespace AdvancedGears
         public void Reset()
         {
             foreach (var yDic in realizedDic) {
-                foreach (var xKvp in yDic) {
+                foreach (var xKvp in yDic.Value) {
                     xKvp.Value.Reset();
                 }
             }
