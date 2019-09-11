@@ -15,18 +15,21 @@ namespace AdvancedGears
         World world;
         Vector3 Origin;
 
-        float gridSize = 1000.0f;
+        readonly Dictionary<int,Dictionary<int,FieldRealizer>> realizedDic = new Dictionary<int, Dictionary<int, FieldRealizer>>();
+        readonly Queue<GameObject> objectQueue = new Queue<GameObject>();
 
-        GameObject fieldObject = null;
         GameObject FieldObject
         {
             get
             {
-                if (fieldObject == null)
-                {
+                GameObject fieldObject;
+                if (objectQueue.Count == 0) {
                     var settings = FieldDictionary.Get(0);
                     if (settings != null)
                         fieldObject = Instantiate(settings.FieldObject);
+                }
+                else {
+                    fieldObject = objectQueue.Dequeue();
                 }
 
                 return fieldObject;
@@ -65,11 +68,68 @@ namespace AdvancedGears
             this.Origin = origin;
         }
 
+        public void Reset()
+        {
+            foreach (var yDic in realizedDic) {
+                foreach (var xKvp in yDic) {
+                    xKvp.Value.Reset();
+                }
+            }
+        }
+
+        public void RemoveFields()
+        {
+            List<int> yList = new List<int>();
+            foreach (var yDic in realizedDic) {
+                List<int> xList = new List<int>();
+
+                foreach (var xKvp in yDic.Value) {
+                    if (xKvp.Value.IsSet == false)
+                        xList.Add(xKvp.Key);
+                }
+
+                foreach (var key in xList) {
+                    objectQueue.Enqueue(yDic.Value[key].gameObject);
+                    yDic.Value.Remove(key);
+                }
+
+                if (yDic.Value.Count == 0)
+                    yList.Add(yDic.Key);
+            }
+
+            foreach (var key in yList)
+                realizedDic.Remove(key);
+        }
+
         public void RealizeField(List<TerrainPointInfo> terrainPoints, Coordinates coords, Vector3? center = null)
         {
             this.StaticReceiver.SetWorld(world);
             var pos = center != null ? center.Value: this.Origin;
-            this.FieldRealizer.Realize(terrainPoints, coords.ToUnityVector() + this.Origin, pos);
+            GetRealizer(pos).Realize(terrainPoints, coords.ToUnityVector() + this.Origin, pos);
+        }
+
+        FieldRealizer GetRealizer(Vector3 pos)
+        {
+            var size = FieldRealizer.FieldSize;
+            int x = (int)(pos.x / size);
+            int y = (int)(pos.y / size);
+
+            Dictionary<int,FieldRealizer> dic;
+            if (realizedDic.ContainsKey(y))
+                dic = realizedDic[y];
+            else
+                dic = new Dictionary<int, FieldRealizer>();
+
+            FieldRealizer realizer;
+            if (dic.ContainsKey(x))
+                realizer = dic[x];
+            else
+                realizer = this.FieldRealizer;
+
+            dic[x] = realizer;
+            realizedDic[y] = dic;
+
+            return realizer;
         }
     }
 }

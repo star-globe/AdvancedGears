@@ -169,8 +169,12 @@ namespace AdvancedGears
                 if (response.StatusCode == StatusCode.Success)
                 {
                     foreach (var kvp in response.Result) {
-                        var list = fieldShanpShots[kvp.Key];
-                        list = list ?? new List<EntitySnapshot>();
+                        List<EntitySnapshot> list;
+                        if (fieldShanpShots.ContainsKey(kvp.Key))
+                            list = fieldShanpShots[kvp.Key];
+                        else
+                            list = new List<EntitySnapshot>();
+
                         list.Add(kvp.Value);
                         fieldShanpShots[kvp.Key] = list;
                     }
@@ -202,6 +206,8 @@ namespace AdvancedGears
 
         private void SetField(EntityId entityId, List<EntitySnapshot> snapShots)
         {
+            FieldCreator.Reset();
+
             foreach (var snap in snapShots)
             {
                 Position.Snapshot position;
@@ -212,8 +218,10 @@ namespace AdvancedGears
                 if (snap.TryGetComponentSnapshot(out field) == false)
                     return;
 
-                FieldCreator.RealizeField(field.TerrainPoints, position.Coords);
+                FieldCreator.RealizeField(field.TerrainPoints, position.Coords, this.BasePosition);
             }
+
+            FieldCreator.RemoveFields();
         }
     }
 }
