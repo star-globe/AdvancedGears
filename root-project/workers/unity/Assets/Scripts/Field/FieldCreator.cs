@@ -105,7 +105,14 @@ namespace AdvancedGears
         {
             this.StaticReceiver.SetWorld(world);
             var pos = center != null ? center.Value: this.Origin;
-            GetRealizer(pos).Realize(terrainPoints, coords.ToUnityVector() + this.Origin, pos);
+            GetRealizer(pos).Realize(pos, terrainPoints, coords.ToUnityVector() + this.Origin);
+        }
+
+        public void RealizeEmptyField(Vector3? center = null)
+        {
+            this.StaticReceiver.SetWorld(world);
+            var pos = center != null ? center.Value: this.Origin;
+            GetRealizer(pos).Realize(pos);
         }
 
         FieldRealizer GetRealizer(Vector3 pos)

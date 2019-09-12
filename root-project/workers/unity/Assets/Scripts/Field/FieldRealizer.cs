@@ -27,7 +27,7 @@ namespace AdvancedGears
             this.IsSet = false;
         }
 
-        public void Realize(List<TerrainPointInfo> terrainPoints, Vector3 terrainPos, Vector3 center)
+        public void Realize(Vector3 center, List<TerrainPointInfo> terrainPoints = null, Vector3 terrainPos = Vector3.zero)
         {
             this.IsSet = true;
             var width = terrain.terrainData.heightmapWidth;
@@ -39,8 +39,10 @@ namespace AdvancedGears
 
             float[,] heights = new float[width, width];
 
-            foreach (var point in terrainPoints)
-                heights = point.SetHeights(terrainPos, start.x, start.z, width, height, size, heights);
+            if (terrainPoints != null) {
+                foreach (var point in terrainPoints)
+                    heights = point.SetHeights(terrainPos, start.x, start.z, width, height, size, heights);
+            }
 
             terrain.terrainData.SetHeights(0,0, heights);
         }

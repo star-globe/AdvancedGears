@@ -134,6 +134,7 @@ namespace AdvancedGears
         private void SendFieldEntityQuery()
         {
             checkedPosition = BasePosition;
+            fieldShanpShots.Clear();
 
             var list = new IConstraint[]
             {
@@ -178,6 +179,14 @@ namespace AdvancedGears
                         list.Add(kvp.Value);
                         fieldShanpShots[kvp.Key] = list;
                     }
+
+                    if (fieldShanpShots.Count > 0) {
+                        foreach(var kvp in fieldShanpShots)
+                            SetField(kvp.Key, kvp.Value);
+                    }
+                    else {
+                        SetFieldClear();
+                    }
                 }
                 else if (fieldQueryRetries < PlayerLifecycleConfig.MaxPlayerCreatorQueryRetries)
                 {
@@ -221,6 +230,13 @@ namespace AdvancedGears
                 FieldCreator.RealizeField(field.TerrainPoints, position.Coords, this.BasePosition);
             }
 
+            FieldCreator.RemoveFields();
+        }
+
+        private void SetFieldClear()
+        {
+            FieldCreator.Reset();
+            FieldCreator.RealizeEmptyField(this.BasePosition);
             FieldCreator.RemoveFields();
         }
     }
