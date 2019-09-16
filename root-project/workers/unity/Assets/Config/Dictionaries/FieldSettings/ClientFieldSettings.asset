@@ -9,9 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: abe1ea70dff710f4d959fb31ffe8112e, type: 3}
-  m_Name: FieldDictionary
+  m_Script: {fileID: 11500000, guid: 006f55d5918205b4ab898dfaf7870291, type: 3}
+  m_Name: ClientFieldSettings
   m_EditorClassIdentifier: 
-  fieldsList:
-  - {fileID: 11400000, guid: 8897388cd4deb564caba38dcf2c1b639, type: 2}
-  - {fileID: 11400000, guid: 19e389073be865f478888286acf0884e, type: 2}
+  fieldObject: {fileID: 6408312529055956839, guid: 56b336b39da8cec4084d0b121513abfd,
+    type: 3}
+  workerType: 1
+  fieldSize: 80

@@ -12,14 +12,13 @@ namespace AdvancedGears
         [SerializeField]
         Terrain terrain;
 
-        public static readonly float FieldSize = 1000.0f;
         public bool IsSet { get; private set;}
 
-        private void Start()
+        public void Setup(float fieldSize)
         {
             Assert.IsNotNull(terrain);
             var size = terrain.terrainData.size;
-            terrain.terrainData.size = new Vector3(FieldSize, size.y, FieldSize);
+            terrain.terrainData.size = new Vector3(fieldSize, size.y, fieldSize);
         }
 
         public void Reset()

@@ -7,7 +7,11 @@ namespace AdvancedGears
     public class FieldSettings : ScriptableObject
     {
         [SerializeField] private GameObject fieldObject;
+        [SerializeField] private FieldWorkerType workerType;
+        [SerializeField] private float fieldSize;
 
         public GameObject FieldObject => fieldObject;
+        public FieldWorkerType FieldWorkerType => workerType;
+        public float FieldSize => fieldSize;
     }
 }

@@ -18,9 +18,10 @@ namespace AdvancedGears
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     public class FieldQueryServerSystem : FieldQueryBaseSystem
     {
-        protected override Vector3 BasePosition { get { return this.WorkerSystem.Origin; } }
-        protected override float SearchRadius { get { return 1000.0f; } }
-        protected override bool CheckRegularly { get { return false; } }
+        protected override Vector3? BasePosition => this.WorkerSystem.Origin;
+        protected override float SearchRadius => 1000.0f;
+        protected override bool CheckRegularly => false;
+        protected override FieldWorkerType FieldWorkerType => FieldWorkerType.GameLogic;
     }
 
     [DisableAutoCreation]
@@ -28,11 +29,12 @@ namespace AdvancedGears
     public class FieldQueryClientSystem : FieldQueryBaseSystem
     {
         Vector3? playerPosition = null;
-        protected override Vector3 BasePosition { get { return playerPosition != null ? playerPosition.Value: this.WorkerSystem.Origin; } }
-        protected override float SearchRadius { get { return 500.0f; } }
-        protected override bool CheckRegularly { get { return true; } }
+        protected override Vector3? BasePosition => playerPosition;
+        protected override float SearchRadius => 500.0f;
+        protected override bool CheckRegularly => true;
+        protected override FieldWorkerType FieldWorkerType => FieldWorkerType.Client; 
 
-        IntervalChecker inter = IntervalCheckerInitializer.InitializedChecker(10.0f);
+        IntervalChecker inter = IntervalCheckerInitializer.InitializedChecker(10.0f, setChecked:true);
         private Unity.Entities.EntityQuery group;
 
         protected override void OnCreate()
@@ -48,8 +50,6 @@ namespace AdvancedGears
 
         protected override void OnUpdate()
         {
-            base.OnUpdate();
-
             Entities.With(group).ForEach((Unity.Entities.Entity entity,
                                           ref PlayerInfo.Component playerInfo,
                                           ref Position.Component position) =>
@@ -63,57 +63,55 @@ namespace AdvancedGears
 
                 playerPosition = position.Coords.ToUnityVector() + this.Origin;
             });
+
+            base.OnUpdate();
         }
     }
 
     public abstract class FieldQueryBaseSystem : BaseEntitySearchSystem
     {
-        IntervalChecker inter = IntervalCheckerInitializer.InitializedChecker(10.0f);
+        IntervalChecker inter = IntervalCheckerInitializer.InitializedChecker(10.0f, setChecked: true);
 
         private int fieldQueryRetries;
         private long? fieldEntityQueryId;
-        private readonly Dictionary<EntityId,List<EntitySnapshot>> fieldShanpShots = new Dictionary<EntityId,List<EntitySnapshot>>();
+        private readonly Dictionary<EntityId, List<EntitySnapshot>> fieldShanpShots = new Dictionary<EntityId, List<EntitySnapshot>>();
 
-        const float fieldSize = 1000.0f;
-        const float checkRange = 500.0f;
+        float checkRange;
         Vector3? checkedPosition = null;
 
         private ImprobableEntityQuery fieldQuery;
 
         public FieldCreator FieldCreator { get; private set; }
 
-        protected abstract Vector3 BasePosition { get; }
+        protected abstract Vector3? BasePosition { get; }
         protected abstract float SearchRadius { get; }
         protected abstract bool CheckRegularly { get; }
+        protected abstract FieldWorkerType FieldWorkerType { get;}
+
         protected override void OnCreate()
         {
             base.OnCreate();
 
             var go = new GameObject("FieldCreator");
             FieldCreator = go.AddComponent<FieldCreator>();
-            FieldCreator.Setup(this.WorkerSystem.World, this.WorkerSystem.Origin);
+            FieldCreator.Setup(this.WorkerSystem.World, this.WorkerSystem.Origin, this.WorkerSystem.WorkerId, FieldWorkerType);
 
-            SendFieldEntityQuery();
+            var settings = FieldCreator.Settings;
+            checkRange = settings != null ? settings.FieldSize / 2 : 0;
+            checkRange *= 0.8f;
         }
 
         protected override void OnUpdate()
         {
-            if (fieldEntityQueryId != null)
-            {
+            if (this.BasePosition == null)
+                return;
+
+            if (fieldEntityQueryId != null) {
                 HandleEntityQueryResponses();
                 return;
             }
 
-            if (fieldShanpShots.Count > 0)
-            {
-                foreach(var kvp in fieldShanpShots)
-                    SetField(kvp.Key, kvp.Value);
-
-                fieldShanpShots.Clear();
-                return;
-            }
-
-            if (CheckRegularly == false)
+            if (CheckRegularly == false && FieldCreator.IsSetDatas)
                 return;
 
             var time = Time.time;
@@ -121,12 +119,11 @@ namespace AdvancedGears
                 return;
 
             // position check 
-            if (checkedPosition == null)
-                return;
-
-            var diff = checkedPosition.Value - BasePosition;
-            if (diff.sqrMagnitude < checkRange * checkRange)
-                return;
+            if (checkedPosition != null) {
+                var diff = checkedPosition.Value - BasePosition.Value;
+                if (diff.sqrMagnitude < checkRange * checkRange)
+                    return;
+            }
 
             SendFieldEntityQuery();
         }
@@ -139,7 +136,7 @@ namespace AdvancedGears
             var list = new IConstraint[]
             {
                 new ComponentConstraint(FieldComponent.ComponentId),
-                new SphereConstraint(BasePosition.x, BasePosition.y, BasePosition.z, SearchRadius),
+                new SphereConstraint(BasePosition.Value.x, BasePosition.Value.y, BasePosition.Value.z, SearchRadius),
             };
 
             fieldQuery = new ImprobableEntityQuery()
@@ -152,6 +149,8 @@ namespace AdvancedGears
             {
                 EntityQuery = fieldQuery
             });
+
+            Debug.LogFormat("SendFieldQuery. WorkerId:{0}", this.WorkerSystem.WorkerId);
         }
 
         private void HandleEntityQueryResponses()
@@ -180,13 +179,14 @@ namespace AdvancedGears
                         fieldShanpShots[kvp.Key] = list;
                     }
 
-                    if (fieldShanpShots.Count > 0) {
-                        foreach(var kvp in fieldShanpShots)
-                            SetField(kvp.Key, kvp.Value);
-                    }
-                    else {
-                        SetFieldClear();
-                    }
+                    //if (fieldShanpShots.Count > 0) {
+                    //    foreach(var kvp in fieldShanpShots)
+                    //        SetField(kvp.Key, kvp.Value);
+                    //}
+                    //else {
+                    //    SetFieldClear();
+                    //}
+                    SetFieldClear();
                 }
                 else if (fieldQueryRetries < PlayerLifecycleConfig.MaxPlayerCreatorQueryRetries)
                 {

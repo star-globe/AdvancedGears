@@ -14,58 +14,62 @@ namespace AdvancedGears
     {
         World world;
         Vector3 Origin;
+        string WorkerId;
+        FieldWorkerType workerType;
 
         readonly Dictionary<int,Dictionary<int,FieldRealizer>> realizedDic = new Dictionary<int, Dictionary<int, FieldRealizer>>();
         readonly Queue<GameObject> objectQueue = new Queue<GameObject>();
 
-        GameObject FieldObject
+        public bool IsSetDatas { get; private set; }
+        public FieldSettings Settings
         {
-            get
-            {
-                GameObject fieldObject = null;
-                if (objectQueue.Count == 0) {
-                    var settings = FieldDictionary.Get(0);
-                    if (settings != null)
-                        fieldObject = Instantiate(settings.FieldObject);
-                }
-                else {
-                    fieldObject = objectQueue.Dequeue();
-                }
-
-                return fieldObject;
-            }
+            get { return FieldDictionary.Get(workerType); }
         }
 
-        StaticBulletReceiver staticReceiver = null;
-        StaticBulletReceiver StaticReceiver
+        GameObject GetNewFieldObject()
         {
-            get
-            {
-                if (staticReceiver == null)
-                {
-                    staticReceiver = this.FieldObject.GetComponent<StaticBulletReceiver>();
+            GameObject fieldObject = null;
+            if (objectQueue.Count == 0) {
+                var settings = this.Settings;
+                if (settings != null) {
+                    fieldObject = Instantiate(settings.FieldObject);
+                    fieldObject.name += this.WorkerId;
                 }
-                return staticReceiver;
             }
+            else {
+                fieldObject = objectQueue.Dequeue();
+            }
+
+            return fieldObject;
         }
 
-        FieldRealizer fieldRealizer = null;
-        FieldRealizer FieldRealizer
+        FieldRealizer GetNewFieldRealizer()
         {
-            get
-            {
-                if (fieldRealizer == null)
-                {
-                    fieldRealizer = this.FieldObject.GetComponent<FieldRealizer>();
-                }
-                return fieldRealizer;
-            }
+            var fieldObject = GetNewFieldObject();
+            if (fieldObject == null)
+                return null;
+
+            var receiver = fieldObject.GetComponent<StaticBulletReceiver>();
+            if (receiver != null)
+                receiver.SetWorld(this.world);
+
+            var realizer = fieldObject.GetComponent<FieldRealizer>();
+            realizer.Setup(this.Settings.FieldSize);
+
+            return realizer;
         }
 
-        public void Setup(World world, Vector3 origin)
+        private void Awake()
+        {
+            IsSetDatas = false;
+        }
+
+        public void Setup(World world, Vector3 origin, string workerId, FieldWorkerType type)
         {
             this.world = world;
             this.Origin = origin;
+            this.WorkerId = workerId;
+            this.workerType = type;
         }
 
         public void Reset()
@@ -75,6 +79,8 @@ namespace AdvancedGears
                     xKvp.Value.Reset();
                 }
             }
+
+            IsSetDatas = false;
         }
 
         public void RemoveFields()
@@ -103,23 +109,23 @@ namespace AdvancedGears
 
         public void RealizeField(List<TerrainPointInfo> terrainPoints, Coordinates coords, Vector3? center = null)
         {
-            this.StaticReceiver.SetWorld(world);
             var pos = center != null ? center.Value: this.Origin;
             GetRealizer(pos).Realize(pos, terrainPoints, coords.ToUnityVector() + this.Origin);
+            IsSetDatas = true;
         }
 
         public void RealizeEmptyField(Vector3? center = null)
         {
-            this.StaticReceiver.SetWorld(world);
             var pos = center != null ? center.Value: this.Origin;
             GetRealizer(pos).Realize(pos);
+            IsSetDatas = true;
         }
 
         FieldRealizer GetRealizer(Vector3 pos)
         {
-            var size = FieldRealizer.FieldSize;
+            var size = this.Settings.FieldSize;
             int x = (int)(pos.x / size);
-            int y = (int)(pos.y / size);
+            int y = (int)(pos.z / size);
 
             Dictionary<int,FieldRealizer> dic;
             if (realizedDic.ContainsKey(y))
@@ -131,7 +137,7 @@ namespace AdvancedGears
             if (dic.ContainsKey(x))
                 realizer = dic[x];
             else
-                realizer = this.FieldRealizer;
+                realizer = GetNewFieldRealizer();
 
             dic[x] = realizer;
             realizedDic[y] = dic;

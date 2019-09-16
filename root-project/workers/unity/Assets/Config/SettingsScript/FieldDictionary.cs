@@ -11,12 +11,17 @@ namespace AdvancedGears
 
         [SerializeField] private FieldSettings[] fieldsList;
 
+        readonly Dictionary<FieldWorkerType, FieldSettings> fieldDic = new Dictionary<FieldWorkerType, FieldSettings>();
+
         public override void Initialize()
         {
             Instance = this;
+
+            foreach (var f in fieldsList)
+                fieldDic[f.FieldWorkerType] = f;
         }
 
-        public static FieldSettings Get(int index)
+        public static FieldSettings Get(FieldWorkerType type)
         {
             if (Instance == null)
             {
@@ -24,13 +29,10 @@ namespace AdvancedGears
                 return null;
             }
 
-            if (index < 0 || index >= Count)
-            {
-                Debug.LogErrorFormat("The index {0} is outside of the dictionary's range (size {1}).", index, Count);
-                return null;
-            }
+            FieldSettings settings = null;
+            Instance.fieldDic.TryGetValue(type, out settings);
 
-            return Instance.fieldsList[index];
+            return settings;
         }
 
         public static int Count => Instance.fieldsList.Length;

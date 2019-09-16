@@ -198,9 +198,9 @@ namespace AdvancedGears
 
     public static class IntervalCheckerInitializer
     {
-        public static IntervalChecker InitializedChecker(float inter)
+        public static IntervalChecker InitializedChecker(float inter, bool setChecked = false)
         {
-            return new IntervalChecker(inter,0,0,-1);
+            return new IntervalChecker(inter, setChecked ? float.MinValue: 0, 0, -1);
         }
     }
 }

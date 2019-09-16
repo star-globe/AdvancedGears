@@ -1,6 +1,12 @@
 package advanced_gears;
 import "improbable/gdk/transform_synchronization/transform_internal.schema";
 
+enum FieldWorkerType {
+    None = 0;
+    Client = 1;
+    GameLogic = 2;
+}
+
 enum FieldMaterialType {
     None = 0;
     Grass = 1;
