@@ -106,7 +106,8 @@ namespace AdvancedGears
             if (this.BasePosition == null)
                 return;
 
-            if (fieldEntityQueryId != null) {
+            if (fieldEntityQueryId != null)
+            {
                 HandleEntityQueryResponses();
                 return;
             }
@@ -119,7 +120,8 @@ namespace AdvancedGears
                 return;
 
             // position check 
-            if (checkedPosition != null) {
+            if (checkedPosition != null)
+            {
                 var diff = checkedPosition.Value - BasePosition.Value;
                 if (diff.sqrMagnitude < checkRange * checkRange)
                     return;
@@ -179,14 +181,13 @@ namespace AdvancedGears
                         fieldShanpShots[kvp.Key] = list;
                     }
 
-                    //if (fieldShanpShots.Count > 0) {
-                    //    foreach(var kvp in fieldShanpShots)
-                    //        SetField(kvp.Key, kvp.Value);
-                    //}
-                    //else {
-                    //    SetFieldClear();
-                    //}
-                    SetFieldClear();
+                    if (fieldShanpShots.Count > 0) {
+                        foreach(var kvp in fieldShanpShots)
+                            SetField(kvp.Key, kvp.Value);
+                    }
+                    else {
+                        SetFieldClear();
+                    }
                 }
                 else if (fieldQueryRetries < PlayerLifecycleConfig.MaxPlayerCreatorQueryRetries)
                 {

@@ -10,8 +10,13 @@ namespace AdvancedGears
         public static FieldDictionary Instance { private get; set; }
 
         [SerializeField] private FieldSettings[] fieldsList;
-
         readonly Dictionary<FieldWorkerType, FieldSettings> fieldDic = new Dictionary<FieldWorkerType, FieldSettings>();
+
+        [SerializeField] private int standardResolution;
+        [SerializeField] private float standardSize;
+
+        [SerializeField] private int fieldHeight;
+        public float FieldHeight => fieldHeight;
 
         public override void Initialize()
         {
@@ -33,6 +38,17 @@ namespace AdvancedGears
             Instance.fieldDic.TryGetValue(type, out settings);
 
             return settings;
+        }
+
+        public static int GetResolution(float fieldSize)
+        {
+            if (Instance == null)
+            {
+                Debug.LogError("The Field Dictionary has not been set.");
+                return standardResolution;
+            }
+
+            return (int)(Instance.standardResolution * fieldSize / Instance.standardFieldSize);
         }
 
         public static int Count => Instance.fieldsList.Length;

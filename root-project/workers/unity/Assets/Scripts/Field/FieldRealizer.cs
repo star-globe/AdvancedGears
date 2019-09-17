@@ -12,13 +12,27 @@ namespace AdvancedGears
         [SerializeField]
         Terrain terrain;
 
+        [SerializeField]
+        TerrainCollider collider;
+
         public bool IsSet { get; private set;}
+
+        private void Start()
+        {
+            Assert.IsNotNull(terrain);
+            Assert.IsNotNull(collider);
+        }
 
         public void Setup(float fieldSize)
         {
-            Assert.IsNotNull(terrain);
-            var size = terrain.terrainData.size;
-            terrain.terrainData.size = new Vector3(fieldSize, size.y, fieldSize);
+            var terrainData = new TerrainData();
+            var height = FieldDictionary.Instance.FieldHeight;
+
+            terrainData.size = new Vector3(fieldSize, height, fieldSize);
+            terrainData.heightmapResolution = FieldDictionary.GetResolution(fieldSize);
+
+            terrain.terrainData = terrainData;
+            collider.terrainData = terrainData;
         }
 
         public void Reset()

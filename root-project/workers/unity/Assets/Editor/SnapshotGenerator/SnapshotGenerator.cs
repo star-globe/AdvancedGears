@@ -10,15 +10,23 @@ using Snapshot = Improbable.Gdk.Core.Snapshot;
 
 namespace AdvancedGears.Editor
 {
+    public struct UnitSnapshot
+    {
+        public UnitType type;
+        public UnitSide side;
+        public Vector3 position;
+    }
+    
+    public delegate float GetSnapshotHeight(float x, float y);
+
     internal static class SnapshotGenerator
     {
     	public struct Arguments
         {
-            public int NumberEntities;
             public string OutputPath;
         }
 
-        private static string DefaultSnapshotPath = Path.GetFullPath(
+        public static string DefaultSnapshotPath = Path.GetFullPath(
             Path.Combine(
                 Application.dataPath,
                 "..",
@@ -27,29 +35,42 @@ namespace AdvancedGears.Editor
                 "snapshots",
                 "default.snapshot"));
 
-        public static void Generate(Arguments arguments, TerrainCollider ground = null)
+        public static void Generate(Arguments arguments, GetSnapshotHeight ground = null)
         {
             Debug.Log("Generating snapshot.");
-            var snapshot = CreateSnapshot(arguments.NumberEntities, ground);
+            var snapshot = CreateSnapshot(ground);
 
             Debug.Log($"Writing snapshot to: {arguments.OutputPath}");
             snapshot.WriteToFile(arguments.OutputPath);
         }
 
-        private static Snapshot CreateSnapshot(int cubeCount, TerrainCollider ground = null)
+        public static void Generate(Arguments arguments, float fieldSize, GetSnapshotHeight ground = null, List<UnitSnapshot> units = null)
+        {
+            Debug.Log("Generating snapshot.");
+            var snapshot = CreateSnapshot(ground);
+
+            Debug.Log($"Writing snapshot to: {arguments.OutputPath}");
+            snapshot.WriteToFile(arguments.OutputPath);
+        }
+
+        const float standardSize = 400.0f;
+        private static Snapshot CreateSnapshot(GetSnapshotHeight ground = null, float fieldSize = standardSize)
         {
             var snapshot = new Snapshot();
 
-            AddPlayerSpawner(snapshot, GroundCoordinates( 200, 200, ground));//new Coordinates(2000, 0, 2000));
-            AddPlayerSpawner(snapshot, GroundCoordinates( 200,-200, ground));//new Coordinates(2000, 0, -2000));
-            AddPlayerSpawner(snapshot, GroundCoordinates(-200,-200, ground));//new Coordinates(-2000, 0, -2000));
-            AddPlayerSpawner(snapshot, GroundCoordinates(-200, 200, ground));//new Coordinates(-2000, 0, 2000));
+            int count = Mathf.Round(fieldSize / standardSize);
+            for (int i = 0; i <= count; i++)
+            {
+                for (int j = 0; j <= count; j++)
+                {
+                    var length_x = (standardSize / count ) * (i - count/2);
+                    var length_z = (standardSize / count ) * (j - count/2);
+                    AddPlayerSpawner(snapshot, GroundCoordinates( length_x, length_z, ground));
+                }
+            }
 
-            AddWorldTimer(snapshot, Coordinates.Zero);//new Coordinates { X = 0.0, Y = 0.0, Z = 0.0 });
-            //AddCubeGrid(snapshot, cubeCount, ground);
-            //CreateSpinner(snapshot, new Coordinates { X = 5.5, Y = 0.5f, Z = 0.0 });
-            //CreateSpinner(snapshot, new Coordinates { X = -5.5, Y = 0.5f, Z = 0.0 });
-            AddDefaultUnits(snapshot, cubeCount, ground);
+            AddWorldTimer(snapshot, Coordinates.Zero);
+            AddDefaultUnits(snapshot, ground);
 
             AddField(snapshot, Coordinates.Zero);
 
@@ -58,9 +79,9 @@ namespace AdvancedGears.Editor
 
         const float heightBuffer = 1.0f;
 
-        private static Coordinates GroundCoordinates(double x, double z, TerrainCollider ground)
+        private static Coordinates GroundCoordinates(double x, double z, GetSnapshotHeight ground)
         {
-            double y = ground == null ?  0: (double)ground.GetHeight((float)x, (float)z);
+            double y = ground == null ?  0: (double)ground((float)x, (float)z);
             y += heightBuffer;
             return new Coordinates(x,y,z);
         }
@@ -99,7 +120,7 @@ namespace AdvancedGears.Editor
 
         static readonly double scale = 4.0;
         
-        private static void AddCubeGrid(Snapshot snapshot, int cubeCount, TerrainCollider ground = null)
+        private static void AddCubeGrid(Snapshot snapshot, int cubeCount, GetSnapshotHeight ground = null)
         {
             // Calculate grid size
             var gridLength = (int) Math.Ceiling(Math.Sqrt(cubeCount));
@@ -140,12 +161,12 @@ namespace AdvancedGears.Editor
                 }
             }
 
-            AddDefaultUnits(snapshot, cubeCount, ground);
+            AddDefaultUnits(snapshot, ground);
         }
 
-        private static void AddDefaultUnits(Snapshot snapshot, int cubeCount, TerrainCollider ground = null)
+        private static void AddDefaultUnits(Snapshot snapshot, GetSnapshotHeight ground = null)
         {
-            var gridLength = (int)Math.Ceiling(Math.Sqrt(cubeCount));
+            var gridLength = (int)Math.Ceiling(Math.Sqrt(16));
             var len = gridLength * scale;
             var templateA = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.A, GroundCoordinates(-len * 3, 0, ground), UnitType.Stronghold);
             var templateB = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.B, GroundCoordinates(len * 3, 0, ground), UnitType.Stronghold);
