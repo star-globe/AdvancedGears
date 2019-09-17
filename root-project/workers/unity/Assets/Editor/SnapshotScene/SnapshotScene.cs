@@ -2,7 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 using Snapshot = Improbable.Gdk.Core.Snapshot;
+using AdvancedGears;
 
 namespace AdvancedGears.Editor
 {
@@ -18,18 +20,18 @@ namespace AdvancedGears.Editor
 
         public void GenerateSnapshot()
         {
-            arguments = new SnapshotGenerator.Arguments
+            var arguments = new SnapshotGenerator.Arguments
             {
                 OutputPath = SnapshotGenerator.DefaultSnapshotPath
             };
 
-            SnapshotGenerator(arguments);
+            SnapshotGenerator.Generate(arguments);
         }
     }
 
     #if UNITY_EDITOR
     [CustomEditor (typeof(SnapshotScene))]
-    public class SnapshotSceneEditor : Editor
+    public class SnapshotSceneEditor : UnityEditor.Editor
     {
         SnapshotScene scene = null;
 

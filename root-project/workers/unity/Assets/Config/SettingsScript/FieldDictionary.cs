@@ -16,7 +16,7 @@ namespace AdvancedGears
         [SerializeField] private float standardSize;
 
         [SerializeField] private int fieldHeight;
-        public float FieldHeight => fieldHeight;
+        public static float FieldHeight => Instance.fieldHeight;
 
         public override void Initialize()
         {
@@ -45,10 +45,10 @@ namespace AdvancedGears
             if (Instance == null)
             {
                 Debug.LogError("The Field Dictionary has not been set.");
-                return standardResolution;
+                return Instance.standardResolution;
             }
 
-            return (int)(Instance.standardResolution * fieldSize / Instance.standardFieldSize);
+            return (int)(Instance.standardResolution * fieldSize / Instance.standardSize);
         }
 
         public static int Count => Instance.fieldsList.Length;

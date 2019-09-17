@@ -26,7 +26,6 @@ namespace AdvancedGears.Editor
         {
             arguments = new SnapshotGenerator.Arguments
             {
-                NumberEntities = 16,
                 OutputPath = Path.GetFullPath(
                     Path.Combine(
                         Application.dataPath,
@@ -48,7 +47,6 @@ namespace AdvancedGears.Editor
                     Repaint();
                 }
 
-                arguments.NumberEntities = EditorGUILayout.IntField("Number of entities", arguments.NumberEntities);
                 arguments.OutputPath = EditorGUILayout.TextField("Snapshot path", arguments.OutputPath);
 
                 var shouldDisable = string.IsNullOrEmpty(arguments.OutputPath);

@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Collections.Generic;
 using Improbable;
 using Improbable.Gdk.Core;
 using Improbable.Gdk.PlayerLifecycle;
@@ -19,7 +20,7 @@ namespace AdvancedGears.Editor
     
     public delegate float GetSnapshotHeight(float x, float y);
 
-    internal static class SnapshotGenerator
+    public static class SnapshotGenerator
     {
     	public struct Arguments
         {
@@ -58,13 +59,13 @@ namespace AdvancedGears.Editor
         {
             var snapshot = new Snapshot();
 
-            int count = Mathf.Round(fieldSize / standardSize);
+            int count = (int)Mathf.Round(fieldSize / standardSize) * 2;
             for (int i = 0; i <= count; i++)
             {
                 for (int j = 0; j <= count; j++)
                 {
-                    var length_x = (standardSize / count ) * (i - count/2);
-                    var length_z = (standardSize / count ) * (j - count/2);
+                    var length_x = standardSize * (i - (count - 1) / 2.0f);
+                    var length_z = standardSize * (j - (count - 1) / 2.0f);
                     AddPlayerSpawner(snapshot, GroundCoordinates( length_x, length_z, ground));
                 }
             }
