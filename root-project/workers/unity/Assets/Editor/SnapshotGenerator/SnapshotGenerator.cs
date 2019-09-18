@@ -18,6 +18,15 @@ namespace AdvancedGears.Editor
         public Vector3 position;
     }
     
+    public struct FieldSnapshot
+    {
+        public float highest;
+        public float range;
+        public FieldMaterialType materialType;
+        public Vector3 pos;
+    }
+
+
     public delegate float GetSnapshotHeight(float x, float y);
 
     public static class SnapshotGenerator
@@ -45,17 +54,17 @@ namespace AdvancedGears.Editor
             snapshot.WriteToFile(arguments.OutputPath);
         }
 
-        public static void Generate(Arguments arguments, float fieldSize, GetSnapshotHeight ground = null, List<UnitSnapshot> units = null)
+        public static void Generate(Arguments arguments, float fieldSize, GetSnapshotHeight ground = null, List<UnitSnapshot> units = null, List<FieldSnapshot> fields = null)
         {
             Debug.Log("Generating snapshot.");
-            var snapshot = CreateSnapshot(ground);
+            var snapshot = CreateSnapshot(ground, fieldSize, units, fields);
 
             Debug.Log($"Writing snapshot to: {arguments.OutputPath}");
             snapshot.WriteToFile(arguments.OutputPath);
         }
 
         const float standardSize = 400.0f;
-        private static Snapshot CreateSnapshot(GetSnapshotHeight ground = null, float fieldSize = standardSize)
+        private static Snapshot CreateSnapshot(GetSnapshotHeight ground = null, float fieldSize = standardSize, List<UnitSnapshot> units = null, List<FieldSnapshot> fields = null)
         {
             var snapshot = new Snapshot();
 
@@ -71,9 +80,15 @@ namespace AdvancedGears.Editor
             }
 
             AddWorldTimer(snapshot, Coordinates.Zero);
-            AddDefaultUnits(snapshot, ground);
+            if (units == null)
+                AddDefaultUnits(snapshot, ground);
+            else
+                AddUnits(snapshot, units);
 
-            AddField(snapshot, Coordinates.Zero);
+            if (fields == null)
+                AddField(snapshot, Coordinates.Zero);
+            else
+                AddFields(snapshot, fields);
 
             return snapshot;
         }
@@ -104,6 +119,12 @@ namespace AdvancedGears.Editor
         private static void AddField(Snapshot snapshot, Coordinates location)
         {
             snapshot.AddEntity(FieldTemplate.CreateFieldEntityTemplate(location, 3000, 500, FieldMaterialType.None));
+        }
+
+        private static void AddFields(Snapshot snapshot, List<FieldSnapshot> fields)
+        {
+            foreach(var f in fields)
+                snapshot.AddEntity(FieldTemplate.CreateFieldEntityTemplate(f.pos.ToCoordinates(), f.range, f.highest, f.materialType));
         }
 
         private static void AddWorldTimer(Snapshot snapshot, Coordinates location)
@@ -163,6 +184,15 @@ namespace AdvancedGears.Editor
             }
 
             AddDefaultUnits(snapshot, ground);
+        }
+
+        private static void AddUnits(Snapshot snapshot, GetSnapshotHeight ground, List<UnitSnapshot> units)
+        {
+            foreach(var u in units)
+            {
+                var template = BaseUnitTemplate.CreateBaseUnitEntityTemplate(u.side, GroundCoordinates(u.position.x, u.position.z, ground), u.type);
+                snapshot.AddEntity(template);
+            }
         }
 
         private static void AddDefaultUnits(Snapshot snapshot, GetSnapshotHeight ground = null)

@@ -13,9 +13,27 @@ namespace AdvancedGears.Editor
         [SerializeField]
         string outputPath;
 
+        [SerializeField, Tooltip("holizon, vertical")]
+        Vector2 worldSize;
+
+        [SerializeField]
+        Terrain terrain;
+
+        readonly List<UnitSnapshot> units = new List<UnitSnapshot>();
+        readonly List<FieldSnapshot> fields = new List<FieldSnapshot>();
+
         private void Start()
         {
             outputPath = SnapshotGenerator.DefaultSnapshotPath;
+        }
+
+        public void SearchAndConvert()
+        {
+            var size = terrain.terrainData.size;
+            float rateHolizon = worldSize.x / size.x;
+            float rateVertical = worldSize.y / size.y;
+
+            
         }
 
         public void GenerateSnapshot()
