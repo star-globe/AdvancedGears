@@ -11,22 +11,6 @@ using Snapshot = Improbable.Gdk.Core.Snapshot;
 
 namespace AdvancedGears.Editor
 {
-    public struct UnitSnapshot
-    {
-        public UnitType type;
-        public UnitSide side;
-        public Vector3 position;
-    }
-    
-    public struct FieldSnapshot
-    {
-        public float highest;
-        public float range;
-        public FieldMaterialType materialType;
-        public Vector3 pos;
-    }
-
-
     public delegate float GetSnapshotHeight(float x, float y);
 
     public static class SnapshotGenerator
@@ -83,7 +67,7 @@ namespace AdvancedGears.Editor
             if (units == null)
                 AddDefaultUnits(snapshot, ground);
             else
-                AddUnits(snapshot, units);
+                AddUnits(snapshot, ground, units);
 
             if (fields == null)
                 AddField(snapshot, Coordinates.Zero);
@@ -190,7 +174,7 @@ namespace AdvancedGears.Editor
         {
             foreach(var u in units)
             {
-                var template = BaseUnitTemplate.CreateBaseUnitEntityTemplate(u.side, GroundCoordinates(u.position.x, u.position.z, ground), u.type);
+                var template = BaseUnitTemplate.CreateBaseUnitEntityTemplate(u.side, GroundCoordinates(u.pos.x, u.pos.z, ground), u.type);
                 snapshot.AddEntity(template);
             }
         }

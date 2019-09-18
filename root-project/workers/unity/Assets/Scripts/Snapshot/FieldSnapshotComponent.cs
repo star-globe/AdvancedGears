@@ -6,9 +6,9 @@ using UnityEditor;
 using Snapshot = Improbable.Gdk.Core.Snapshot;
 using AdvancedGears;
 
-namespace AdvancedGears.Editor
+namespace AdvancedGears
 {
-    public class UnitSnapshotComponents : MonoBehaviour
+    public class FieldSnapshotComponent : MonoBehaviour
     {
         [SerializeField]
         float range;
@@ -21,7 +21,6 @@ namespace AdvancedGears.Editor
         public FieldSnapshot GetFieldSnapshot(float horizontalRate, float virticalRate)
         {
             var pos = this.transform.position;
-
             return new FieldSnapshot()
             {
                 highest = pos.y * virticalRate,
