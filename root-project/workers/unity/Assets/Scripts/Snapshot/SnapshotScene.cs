@@ -17,10 +17,12 @@ namespace AdvancedGears
         [SerializeField]
         Terrain terrain;
 
-        readonly List<UnitSnapshot> units = new List<UnitSnapshot>();
+        [SerializeField]
+        List<UnitSnapshot> units = null;
         public List<UnitSnapshot> Units => units;
 
-        readonly List<FieldSnapshot> fields = new List<FieldSnapshot>();
+        [SerializeField]
+        List<FieldSnapshot> fields = null;
         public List<FieldSnapshot> Fields => fields;
 
         public void SearchAndConvert()

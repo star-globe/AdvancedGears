@@ -33,6 +33,11 @@ namespace AdvancedGears.Editor
 
             outputPath = EditorGUILayout.TextField(outputPath);
 
+            if(GUILayout.Button("Search and Convert"))
+            {
+                scene.SearchAndConvert();
+            }
+
             if(GUILayout.Button("Generate Snapshot"))
             {
                 GenerateSnapshot();
