@@ -20,8 +20,6 @@ namespace AdvancedGears.Editor
             scene = target as SnapshotScene;
         }
 
-        Rect rect = new Rect(10, 25, 200 - 20, 20);
-
         public override void OnInspectorGUI ()
         {
             base.OnInspectorGUI ();
