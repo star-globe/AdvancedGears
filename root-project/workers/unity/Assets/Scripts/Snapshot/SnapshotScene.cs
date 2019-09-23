@@ -18,6 +18,9 @@ namespace AdvancedGears
         Terrain terrain;
 
         [SerializeField]
+        FieldRealizer realizer;
+
+        [SerializeField]
         List<UnitSnapshot> units = null;
         public List<UnitSnapshot> Units => units;
 
@@ -25,21 +28,51 @@ namespace AdvancedGears
         List<FieldSnapshot> fields = null;
         public List<FieldSnapshot> Fields => fields;
 
+        Vector3 size => terrain.terrainData.size;
+
+        float rateHolizon => this.WorldSize.x / size.x;
+        float rateVertical => this.WorldSize.y / size.y;
+
         public void SearchAndConvert()
         {
-            var size = terrain.terrainData.size;
-            float rateHolizon = worldSize.x / size.x;
-            float rateVertical = worldSize.y / size.y;
-
+            units.Clear();
             foreach (var u in FindObjectsOfType<UnitSnapshotComponent>())
                 units.Add(u.GetUnitSnapshot(rateHolizon, rateVertical));
 
             fields.Clear();
             foreach (var f in FindObjectsOfType<FieldSnapshotComponent>())
-                fields.Add(f.GetFieldSnapshot(rateHolizon,rateVertical));
+                fields.Add(f.GetFieldSnapshot(rateHolizon, rateVertical));
+        }
+
+        public void ShowTestField()
+        {
+            var list = new List<ValueTuple<List<TerrainPointInfo>,Vector3>>();
+            foreach (var f in FindObjectsOfType<FieldSnapshotComponent>())
+            {
+                list.Add((FieldTemplate.CreateTerrainPointInfo(f.Range, f.Highest, f.MaterialType, f.Seeds), f.transform.position));
+            }
+
+            realizer.Reset();
+            foreach (var tuple in list)
+            {
+                realizer.Realize(Vector3.zero, tuple.Item1, tuple.Item2);
+            }
+
+            foreach (var u in FindObjectsOfType<UnitSnapshotComponent>())
+                u.SetHeight();
+        }
+
+        public float GetHeight(float x, float z)
+        {
+            var ray = new Ray(new Vector3(x / rateHolizon, 1000.0f, z/ rateHolizon), Vector3.down);
+            RaycastHit hit;
+            Physics.Raycast(ray, out hit, LayerMask.GetMask("Ground"));
+
+            return hit.point.y * rateVertical;
         }
     }
 
+    [Serializable]
     public struct UnitSnapshot
     {
         public UnitType type;
@@ -47,11 +80,13 @@ namespace AdvancedGears
         public Vector3 pos;
     }
 
+    [Serializable]
     public struct FieldSnapshot
     {
         public float highest;
         public float range;
         public FieldMaterialType materialType;
         public Vector3 pos;
+        public int seeds;
     }
 }

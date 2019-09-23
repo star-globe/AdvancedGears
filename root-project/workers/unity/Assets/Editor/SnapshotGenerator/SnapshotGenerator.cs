@@ -20,14 +20,18 @@ namespace AdvancedGears.Editor
             public string OutputPath;
         }
 
-        public static string DefaultSnapshotPath = Path.GetFullPath(
-            Path.Combine(
-                Application.dataPath,
+        public static string DefaultSnapshotRelativePath = Path.Combine(
                 "..",
                 "..",
                 "..",
                 "snapshots",
-                "default.snapshot"));
+                "default.snapshot");
+
+        public static string GetDefaultSnapshotPath(string relativePath = null)
+        {
+            var path = Path.Combine(Application.dataPath, relativePath ?? DefaultSnapshotRelativePath);
+            return Path.GetFullPath(path);
+        }
 
         public static void Generate(Arguments arguments, GetSnapshotHeight ground = null)
         {
@@ -108,7 +112,7 @@ namespace AdvancedGears.Editor
         private static void AddFields(Snapshot snapshot, List<FieldSnapshot> fields)
         {
             foreach(var f in fields)
-                snapshot.AddEntity(FieldTemplate.CreateFieldEntityTemplate(f.pos.ToCoordinates(), f.range, f.highest, f.materialType));
+                snapshot.AddEntity(FieldTemplate.CreateFieldEntityTemplate(f.pos.ToCoordinates(), f.range, f.highest, f.materialType, f.seeds));
         }
 
         private static void AddWorldTimer(Snapshot snapshot, Coordinates location)

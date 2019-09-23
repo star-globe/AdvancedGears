@@ -26,12 +26,17 @@ namespace AdvancedGears.Editor
 
             if (GUILayout.Button("Set Default Path") || outputPath == null)
             {
-                outputPath = SnapshotGenerator.DefaultSnapshotPath;
+                outputPath = SnapshotGenerator.DefaultSnapshotRelativePath;
             }
 
             outputPath = EditorGUILayout.TextField(outputPath);
 
-            if(GUILayout.Button("Search and Convert"))
+            if (GUILayout.Button("Show Test Field"))
+            {
+                scene.ShowTestField();
+            }
+
+            if (GUILayout.Button("Search and Convert"))
             {
                 scene.SearchAndConvert();
             }
@@ -49,10 +54,10 @@ namespace AdvancedGears.Editor
 
             var arguments = new SnapshotGenerator.Arguments
             {
-                OutputPath = SnapshotGenerator.DefaultSnapshotPath
+                OutputPath = SnapshotGenerator.GetDefaultSnapshotPath(outputPath)
             };
 
-            SnapshotGenerator.Generate(arguments, scene.WorldSize.x, null, scene.Units, scene.Fields);
+            SnapshotGenerator.Generate(arguments, scene.WorldSize.x, scene.GetHeight, scene.Units, scene.Fields);
         }
     }
 }

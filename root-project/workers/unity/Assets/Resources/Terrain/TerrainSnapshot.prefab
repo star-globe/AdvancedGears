@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &6408312529055956839
+--- !u!1 &3136015966841369424
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,42 +8,42 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5833588165370159850}
-  - component: {fileID: 8483870544548245784}
-  - component: {fileID: 7544641739345941694}
-  - component: {fileID: 1867463141291357884}
-  - component: {fileID: 3403004807609476740}
-  m_Layer: 14
-  m_Name: GameLogicFieldBase
+  - component: {fileID: 3136015966841369428}
+  - component: {fileID: 3136015966841369431}
+  - component: {fileID: 3136015966841369430}
+  - component: {fileID: 3136015966841369425}
+  - component: {fileID: 2011829079}
+  m_Layer: 0
+  m_Name: TerrainSnapshot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967295
   m_IsActive: 1
---- !u!4 &5833588165370159850
+--- !u!4 &3136015966841369428
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6408312529055956839}
+  m_GameObject: {fileID: 3136015966841369424}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -500, y: 0, z: -500}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!218 &8483870544548245784
+--- !u!218 &3136015966841369431
 Terrain:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6408312529055956839}
+  m_GameObject: {fileID: 3136015966841369424}
   m_Enabled: 1
   serializedVersion: 5
-  m_TerrainData: {fileID: 15600000, guid: 051931c2167e60742a9b5b238e149521, type: 2}
+  m_TerrainData: {fileID: 15600000, guid: 2f617e5394abfa14b8135c5943b70f74, type: 2}
   m_TreeDistance: 5000
   m_TreeBillboardDistance: 50
   m_TreeCrossFadeLength: 5
@@ -62,44 +62,49 @@ Terrain:
   m_BakeLightProbesForTrees: 1
   m_PreserveTreePrototypeLayers: 0
   m_DeringLightProbesForTrees: 1
-  m_ScaleInLightmap: 1
+  m_ScaleInLightmap: 0.0256
   m_LightmapParameters: {fileID: 15203, guid: 0000000000000000f000000000000000, type: 0}
   m_GroupingID: 0
-  m_AllowAutoConnect: 0
---- !u!154 &7544641739345941694
+  m_AllowAutoConnect: 1
+--- !u!154 &3136015966841369430
 TerrainCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6408312529055956839}
+  m_GameObject: {fileID: 3136015966841369424}
   m_Material: {fileID: 0}
   m_Enabled: 1
-  m_TerrainData: {fileID: 15600000, guid: 051931c2167e60742a9b5b238e149521, type: 2}
+  m_TerrainData: {fileID: 15600000, guid: 2f617e5394abfa14b8135c5943b70f74, type: 2}
   m_EnableTreeColliders: 1
---- !u!114 &1867463141291357884
+--- !u!114 &3136015966841369425
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6408312529055956839}
+  m_GameObject: {fileID: 3136015966841369424}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 031e728247d3ffd43b28fe28dc569fe4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  size: 10000
+  terrain: {fileID: 3136015966841369431}
+  realizer: {fileID: 2011829079}
+  units: []
+  fields: []
+--- !u!114 &2011829079
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3136015966841369424}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d2a66b7785a74b6418bb34b6af98eeda, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  terrain: {fileID: 8483870544548245784}
-  collider: {fileID: 7544641739345941694}
---- !u!114 &3403004807609476740
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6408312529055956839}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67d19078e982ef448a877dc3b29f4e24, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  terrain: {fileID: 3136015966841369431}
+  collider: {fileID: 3136015966841369430}

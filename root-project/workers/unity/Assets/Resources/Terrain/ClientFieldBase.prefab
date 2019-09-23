@@ -13,8 +13,8 @@ GameObject:
   - component: {fileID: 7544641739345941694}
   - component: {fileID: 1867463141291357884}
   - component: {fileID: 3403004807609476740}
-  m_Layer: 0
-  m_Name: FieldBase
+  m_Layer: 14
+  m_Name: ClientFieldBase
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -90,6 +90,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   terrain: {fileID: 8483870544548245784}
+  collider: {fileID: 7544641739345941694}
 --- !u!114 &3403004807609476740
 MonoBehaviour:
   m_ObjectHideFlags: 0

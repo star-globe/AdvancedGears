@@ -135,15 +135,15 @@ namespace AdvancedGears
             checkedPosition = BasePosition;
             fieldShanpShots.Clear();
 
-            var list = new IConstraint[]
-            {
-                new ComponentConstraint(FieldComponent.ComponentId),
-                new SphereConstraint(BasePosition.Value.x, BasePosition.Value.y, BasePosition.Value.z, SearchRadius),
-            };
+            //var list = new IConstraint[]
+            //{
+            //    new ComponentConstraint(FieldComponent.ComponentId),
+            //    new SphereConstraint(BasePosition.Value.x, BasePosition.Value.y, BasePosition.Value.z, SearchRadius),
+            //};
 
             fieldQuery = new ImprobableEntityQuery()
             {
-                Constraint = new AndConstraint(list),
+                Constraint = new ComponentConstraint(FieldComponent.ComponentId),//AndConstraint(list),
                 ResultType = new SnapshotResultType()
             };
 
@@ -181,11 +181,14 @@ namespace AdvancedGears
                         fieldShanpShots[kvp.Key] = list;
                     }
 
-                    if (fieldShanpShots.Count > 0) {
-                        foreach(var kvp in fieldShanpShots)
-                            SetField(kvp.Key, kvp.Value);
+                    Debug.LogFormat("Number of Snapshots. {0}:", fieldShanpShots.Count);
+
+                    if (fieldShanpShots.Count > 0)
+                    {
+                        SetField(fieldShanpShots.SelectMany(kvp => kvp.Value).ToList());
                     }
-                    else {
+                    else
+                    {
                         SetFieldClear();
                     }
                 }
@@ -214,7 +217,7 @@ namespace AdvancedGears
             }
         }
 
-        private void SetField(EntityId entityId, List<EntitySnapshot> snapShots)
+        private void SetField(List<EntitySnapshot> snapShots)
         {
             FieldCreator.Reset();
 

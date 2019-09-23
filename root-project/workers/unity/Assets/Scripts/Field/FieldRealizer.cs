@@ -15,6 +15,27 @@ namespace AdvancedGears
         [SerializeField]
         TerrainCollider collider;
 
+        float[,] heights = null;
+        float[,] Heights
+        {
+            get
+            {
+                if (heights == null)
+                {
+                    var width = terrain.terrainData.heightmapWidth;
+                    var height = terrain.terrainData.heightmapHeight;
+                    heights = new float[width, width];
+                }
+
+                return heights;
+            }
+            set
+            {
+                heights = value;
+            }
+        }
+
+
         public bool IsSet { get; private set;}
 
         private void Start()
@@ -38,6 +59,7 @@ namespace AdvancedGears
         public void Reset()
         {
             this.IsSet = false;
+            heights = null;
         }
 
         public void Realize(Vector3 center, List<TerrainPointInfo> terrainPoints = null, Vector3? terrainPos = null)
@@ -50,13 +72,14 @@ namespace AdvancedGears
 
             this.transform.position = start;
 
-            float[,] heights = new float[width, width];
-            Vector3 pos = terrainPoints != null ? terrainPos.Value: Vector3.zero;
+            float[,] heights = Heights;
+            Vector3 pos = terrainPos != null ? terrainPos.Value: Vector3.zero;
             if (terrainPoints != null) {
                 foreach (var point in terrainPoints)
                     heights = point.SetHeights(pos, start.x, start.z, width, height, size, heights);
             }
 
+            Heights = heights;
             terrain.terrainData.SetHeights(0,0, heights);
         }
     }

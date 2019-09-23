@@ -14,9 +14,15 @@ namespace AdvancedGears
         float range;
         public float Range => range;
 
+        public float Highest => this.transform.position.y;
+
         [SerializeField]
         FieldMaterialType materialType;
         public FieldMaterialType MaterialType => materialType;
+
+        [SerializeField]
+        int seeds;
+        public int Seeds => seeds;
 
         public FieldSnapshot GetFieldSnapshot(float horizontalRate, float virticalRate)
         {
@@ -27,6 +33,7 @@ namespace AdvancedGears
                 range = range * horizontalRate,
                 materialType = materialType,
                 pos = new Vector3(pos.x * horizontalRate, pos.y * virticalRate, pos.z * horizontalRate),
+                seeds = this.seeds,
             };
         }
     }

@@ -15,3 +15,6 @@ MonoBehaviour:
   fieldsList:
   - {fileID: 11400000, guid: 8897388cd4deb564caba38dcf2c1b639, type: 2}
   - {fileID: 11400000, guid: 19e389073be865f478888286acf0884e, type: 2}
+  standardResolution: 1024
+  standardSize: 1000
+  fieldHeight: 500

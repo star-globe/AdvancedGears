@@ -45,7 +45,7 @@ namespace AdvancedGears
             if (Instance == null)
             {
                 Debug.LogError("The Field Dictionary has not been set.");
-                return Instance.standardResolution;
+                return 0;
             }
 
             return (int)(Instance.standardResolution * fieldSize / Instance.standardSize);
