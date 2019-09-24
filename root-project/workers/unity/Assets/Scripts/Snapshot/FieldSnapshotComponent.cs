@@ -24,13 +24,13 @@ namespace AdvancedGears
         int seeds;
         public int Seeds => seeds;
 
-        public FieldSnapshot GetFieldSnapshot(float horizontalRate, float virticalRate)
+        public FieldSnapshot GetFieldSnapshot(float horizontalRate, float virticalRate, float maxRange)
         {
             var pos = this.transform.position;
             return new FieldSnapshot()
             {
                 highest = pos.y * virticalRate,
-                range = range * horizontalRate,
+                range = Mathf.Max(range * horizontalRate, maxRange),
                 materialType = materialType,
                 pos = new Vector3(pos.x * horizontalRate, pos.y * virticalRate, pos.z * horizontalRate),
                 seeds = this.seeds,

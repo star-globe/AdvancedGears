@@ -57,7 +57,7 @@ namespace AdvancedGears.Editor
                 OutputPath = SnapshotGenerator.GetDefaultSnapshotPath(outputPath)
             };
 
-            SnapshotGenerator.Generate(arguments, scene.WorldSize.x, scene.GetHeight, scene.Units, scene.Fields);
+            SnapshotGenerator.Generate(arguments, scene.WorldSize, scene.GetHeight, scene.Units, scene.Fields);
         }
     }
 }

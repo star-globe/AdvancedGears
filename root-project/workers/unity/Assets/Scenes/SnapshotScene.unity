@@ -1113,6 +1113,17 @@ PrefabInstance:
       propertyPath: worldSize.y
       value: 500
       objectReference: {fileID: 0}
+    - target: {fileID: 3136015966841369425, guid: b0cd542b77b720949ac2122756f23d8e,
+        type: 3}
+      propertyPath: worldSize
+      value: 2000
+      objectReference: {fileID: 0}
+    - target: {fileID: 3136015966841369425, guid: b0cd542b77b720949ac2122756f23d8e,
+        type: 3}
+      propertyPath: dictionary
+      value: 
+      objectReference: {fileID: 11400000, guid: 3c63fb39c87234b4087ddd150277aa39,
+        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b0cd542b77b720949ac2122756f23d8e, type: 3}
 --- !u!1001 &5311986475362576320

@@ -47,7 +47,7 @@ namespace AdvancedGears
         public void Setup(float fieldSize)
         {
             var terrainData = new TerrainData();
-            var height = FieldDictionary.FieldHeight;
+            var height = FieldDictionary.WorldHeight;
 
             terrainData.size = new Vector3(fieldSize, height, fieldSize);
             terrainData.heightmapResolution = FieldDictionary.GetResolution(fieldSize);

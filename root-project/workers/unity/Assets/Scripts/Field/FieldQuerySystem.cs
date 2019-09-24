@@ -135,15 +135,15 @@ namespace AdvancedGears
             checkedPosition = BasePosition;
             fieldShanpShots.Clear();
 
-            //var list = new IConstraint[]
-            //{
-            //    new ComponentConstraint(FieldComponent.ComponentId),
-            //    new SphereConstraint(BasePosition.Value.x, BasePosition.Value.y, BasePosition.Value.z, SearchRadius),
-            //};
+            var list = new IConstraint[]
+            {
+                new ComponentConstraint(FieldComponent.ComponentId),
+                new SphereConstraint(BasePosition.Value.x, BasePosition.Value.y, BasePosition.Value.z, FieldDictionary.QueryRange),
+            };
 
             fieldQuery = new ImprobableEntityQuery()
             {
-                Constraint = new ComponentConstraint(FieldComponent.ComponentId),//AndConstraint(list),
+                Constraint = new AndConstraint(list),
                 ResultType = new SnapshotResultType()
             };
 

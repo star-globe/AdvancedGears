@@ -11,8 +11,8 @@ namespace AdvancedGears
     public class SnapshotScene : MonoBehaviour
     {
         [SerializeField, Tooltip("holizon, vertical")]
-        Vector2 worldSize;
-        public Vector2 WorldSize => worldSize;
+        float worldSize;
+        public float WorldSize => worldSize;
 
         [SerializeField]
         Terrain terrain;
@@ -28,10 +28,14 @@ namespace AdvancedGears
         List<FieldSnapshot> fields = null;
         public List<FieldSnapshot> Fields => fields;
 
+        [SerializeField]
+        FieldDictionary dictionary;
+        float WorldHeight => dictionary.MaxHeight;
+
         Vector3 size => terrain.terrainData.size;
 
-        float rateHolizon => this.WorldSize.x / size.x;
-        float rateVertical => this.WorldSize.y / size.y;
+        float rateHolizon => this.WorldSize / size.x;
+        float rateVertical => this.WorldHeight / size.y;
 
         public void SearchAndConvert()
         {
@@ -41,7 +45,7 @@ namespace AdvancedGears
 
             fields.Clear();
             foreach (var f in FindObjectsOfType<FieldSnapshotComponent>())
-                fields.Add(f.GetFieldSnapshot(rateHolizon, rateVertical));
+                fields.Add(f.GetFieldSnapshot(rateHolizon, rateVertical, dictionary.MaxRange));
         }
 
         public void ShowTestField()

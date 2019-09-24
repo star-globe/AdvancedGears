@@ -17,4 +17,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 19e389073be865f478888286acf0884e, type: 2}
   standardResolution: 1024
   standardSize: 1000
-  fieldHeight: 500
+  maxHeight: 500
+  maxRange: 1000

@@ -15,8 +15,13 @@ namespace AdvancedGears
         [SerializeField] private int standardResolution;
         [SerializeField] private float standardSize;
 
-        [SerializeField] private int fieldHeight;
-        public static float FieldHeight => Instance.fieldHeight;
+        [SerializeField] private float maxHeight;
+        public float MaxHeight => maxHeight;
+        public static float WorldHeight => Instance.MaxHeight;
+
+        [SerializeField] private int maxRange;
+        public float MaxRange => maxRange;
+        public static float QueryRange => Instance.MaxRange * 2.0f;
 
         public override void Initialize()
         {
