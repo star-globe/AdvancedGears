@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0547997c03cd05a4682fc9dda2a65506, type: 3}
   m_Name: AdvancedUnitSettings
   m_EditorClassIdentifier: 
-  mass: 0
-  drag: 0
-  angularDrag: 0
+  mass: 20
+  drag: 1.1
+  angularDrag: 0.05
+  centerOfMass: {x: 0, y: 0, z: 0}

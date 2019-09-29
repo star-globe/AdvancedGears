@@ -15,7 +15,8 @@ MonoBehaviour:
   fieldsList:
   - {fileID: 11400000, guid: 8897388cd4deb564caba38dcf2c1b639, type: 2}
   - {fileID: 11400000, guid: 19e389073be865f478888286acf0884e, type: 2}
-  standardResolution: 1024
-  standardSize: 1000
+  standardResolution: 512
+  standardSize: 500
   maxHeight: 500
   maxRange: 1000
+  baseTerrainData: {fileID: 15600000, guid: 043177bb622af0446a82c5d83d63dce5, type: 2}

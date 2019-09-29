@@ -25,6 +25,7 @@ namespace AdvancedGears
     }
 
     [DisableAutoCreation]
+    [AlwaysUpdateSystemAttribute]
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     public class FieldQueryClientSystem : FieldQueryBaseSystem
     {
@@ -34,7 +35,7 @@ namespace AdvancedGears
         protected override bool CheckRegularly => true;
         protected override FieldWorkerType FieldWorkerType => FieldWorkerType.Client; 
 
-        IntervalChecker inter = IntervalCheckerInitializer.InitializedChecker(10.0f, setChecked:true);
+        IntervalChecker inter = IntervalCheckerInitializer.InitializedChecker(3.0f, setChecked:true);
         private Unity.Entities.EntityQuery group;
 
         protected override void OnCreate()
@@ -50,21 +51,26 @@ namespace AdvancedGears
 
         protected override void OnUpdate()
         {
-            Entities.With(group).ForEach((Unity.Entities.Entity entity,
-                                          ref PlayerInfo.Component playerInfo,
-                                          ref Position.Component position) =>
+            var time = Time.time;
+            if (inter.CheckTime(time))
             {
-                var time = Time.time;
-                if (inter.CheckTime(time) == false)
-                    return;
+                Entities.With(group).ForEach((Unity.Entities.Entity entity,
+                                              ref PlayerInfo.Component playerInfo,
+                                              ref Position.Component position) =>
+                {
+                    if (playerInfo.ClientWorkerId.Equals(this.WorkerSystem.WorkerId) == false)
+                        return;
 
-                if (playerInfo.ClientWorkerId.Equals(this.WorkerSystem.WorkerId) == false)
-                    return;
-
-                playerPosition = position.Coords.ToUnityVector() + this.Origin;
-            });
+                    playerPosition = position.Coords.ToUnityVector() + this.Origin;
+                });
+            }
 
             base.OnUpdate();
+        }
+
+        public void SetXZPosition(float x, float z)
+        {
+            this.playerPosition = new Vector3(x,0,z);
         }
     }
 
@@ -81,6 +87,7 @@ namespace AdvancedGears
 
         private ImprobableEntityQuery fieldQuery;
 
+        public event Action OnFieldCreatedEvent;
         public FieldCreator FieldCreator { get; private set; }
 
         protected abstract Vector3? BasePosition { get; }
@@ -98,7 +105,7 @@ namespace AdvancedGears
 
             var settings = FieldCreator.Settings;
             checkRange = settings != null ? settings.FieldSize / 2 : 0;
-            checkRange *= 0.8f;
+            checkRange *= FieldDictionary.CheckRangeRate;
         }
 
         protected override void OnUpdate()
@@ -191,6 +198,9 @@ namespace AdvancedGears
                     {
                         SetFieldClear();
                     }
+
+                    OnFieldCreatedEvent?.Invoke();
+                    OnFieldCreatedEvent = null;
                 }
                 else if (fieldQueryRetries < PlayerLifecycleConfig.MaxPlayerCreatorQueryRetries)
                 {

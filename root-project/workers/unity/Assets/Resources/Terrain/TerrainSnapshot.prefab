@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3136015966841369430}
   - component: {fileID: 3136015966841369425}
   - component: {fileID: 2011829079}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: TerrainSnapshot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -43,7 +43,7 @@ Terrain:
   m_GameObject: {fileID: 3136015966841369424}
   m_Enabled: 1
   serializedVersion: 5
-  m_TerrainData: {fileID: 15600000, guid: 2f617e5394abfa14b8135c5943b70f74, type: 2}
+  m_TerrainData: {fileID: 15600000, guid: 043177bb622af0446a82c5d83d63dce5, type: 2}
   m_TreeDistance: 5000
   m_TreeBillboardDistance: 50
   m_TreeCrossFadeLength: 5
@@ -75,7 +75,7 @@ TerrainCollider:
   m_GameObject: {fileID: 3136015966841369424}
   m_Material: {fileID: 0}
   m_Enabled: 1
-  m_TerrainData: {fileID: 15600000, guid: 2f617e5394abfa14b8135c5943b70f74, type: 2}
+  m_TerrainData: {fileID: 15600000, guid: 043177bb622af0446a82c5d83d63dce5, type: 2}
   m_EnableTreeColliders: 1
 --- !u!114 &3136015966841369425
 MonoBehaviour:
@@ -89,11 +89,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 031e728247d3ffd43b28fe28dc569fe4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  size: 10000
+  worldSize: 0
   terrain: {fileID: 3136015966841369431}
   realizer: {fileID: 2011829079}
   units: []
   fields: []
+  dictionary: {fileID: 11400000, guid: 3c63fb39c87234b4087ddd150277aa39, type: 2}
 --- !u!114 &2011829079
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -15,6 +15,9 @@ namespace AdvancedGears
         public float WorldSize => worldSize;
 
         [SerializeField]
+        float localSize;
+
+        [SerializeField]
         Terrain terrain;
 
         [SerializeField]
@@ -34,18 +37,22 @@ namespace AdvancedGears
 
         Vector3 size => terrain.terrainData.size;
 
-        float rateHolizon => this.WorldSize / size.x;
-        float rateVertical => this.WorldHeight / size.y;
+        float rate => this.WorldSize / localSize;
+
+        private void Start()
+        {
+            realizer.Setup(localSize, dictionary);
+        }
 
         public void SearchAndConvert()
         {
             units.Clear();
             foreach (var u in FindObjectsOfType<UnitSnapshotComponent>())
-                units.Add(u.GetUnitSnapshot(rateHolizon, rateVertical));
+                units.Add(u.GetUnitSnapshot(rate, rate));
 
             fields.Clear();
             foreach (var f in FindObjectsOfType<FieldSnapshotComponent>())
-                fields.Add(f.GetFieldSnapshot(rateHolizon, rateVertical, dictionary.MaxRange));
+                fields.Add(f.GetFieldSnapshot(rate, rate, dictionary.MaxRange));
         }
 
         public void ShowTestField()
@@ -68,11 +75,8 @@ namespace AdvancedGears
 
         public float GetHeight(float x, float z)
         {
-            var ray = new Ray(new Vector3(x / rateHolizon, 1000.0f, z/ rateHolizon), Vector3.down);
-            RaycastHit hit;
-            Physics.Raycast(ray, out hit, LayerMask.GetMask("Ground"));
-
-            return hit.point.y * rateVertical;
+            var point = PhysicsUtils.GetGroundPosition(new Vector3(x / rate, 1000.0f, z / rate));
+            return point.y * rate;
         }
     }
 

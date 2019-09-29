@@ -83,6 +83,12 @@ namespace AdvancedGears.Editor
 
         const float heightBuffer = 1.0f;
 
+        private static Coordinates GroundCoordinates(double x, double y, double z)
+        {
+            y += heightBuffer;
+            return new Coordinates(x, y, z);
+        }
+
         private static Coordinates GroundCoordinates(double x, double z, GetSnapshotHeight ground)
         {
             double y = ground == null ?  0: (double)ground((float)x, (float)z);
@@ -164,7 +170,7 @@ namespace AdvancedGears.Editor
                     else
                         nx = x+3;
 
-                        double pos_x = nx * scale;
+                    double pos_x = nx * scale;
                     double pos_z = z * scale;
                     var entityTemplate = BaseUnitTemplate.CreateBaseUnitEntityTemplate(side, GroundCoordinates(pos_x, pos_z, ground), UnitType.Soldier);
                     snapshot.AddEntity(entityTemplate);
@@ -178,7 +184,7 @@ namespace AdvancedGears.Editor
         {
             foreach(var u in units)
             {
-                var template = BaseUnitTemplate.CreateBaseUnitEntityTemplate(u.side, GroundCoordinates(u.pos.x, u.pos.z, ground), u.type);
+                var template = BaseUnitTemplate.CreateBaseUnitEntityTemplate(u.side, GroundCoordinates(u.pos.x, u.pos.y, u.pos.z), u.type);
                 snapshot.AddEntity(template);
             }
         }

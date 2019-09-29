@@ -54,11 +54,24 @@ namespace AdvancedGears
         {
             WorkerUtils.AddClientSystems(Worker.World, this.gameObject, false);
 
-            var system = Worker.World.GetExistingSystem<SendCreatePlayerRequestSystem>();
-            if (system != null)
+            var fieldSystem = Worker.World.GetExistingSystem<FieldQueryClientSystem>();
+            if (fieldSystem != null)
             {
-                system.RequestPlayerCreation(SerializeUtils.SerializeArguments(new PlayerInitInfo(side,pos)));
+                fieldSystem.OnFieldCreatedEvent += CreatePlayerRequest;
+                fieldSystem.SetXZPosition(pos.x, pos.z);
             }
+        }
+
+        void CreatePlayerRequest()
+        {
+            var system = Worker.World.GetExistingSystem<SendCreatePlayerRequestSystem>();
+            if (system == null)
+                return;
+
+            var origin = new Vector3(pos.x, FieldDictionary.WorldHeight, pos.z) + this.Worker.Origin;
+            var point = PhysicsUtils.GetGroundPosition(origin);
+            
+            system.RequestPlayerCreation(SerializeUtils.SerializeArguments(new PlayerInitInfo(side, point - this.Worker.Origin)));
         }
     }
 

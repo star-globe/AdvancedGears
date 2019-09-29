@@ -19,9 +19,9 @@ namespace AdvancedGears
         private EntityQuery newAdvancedGroup;
         private EntityQuery advancedInputGroup;
 
-        private const float WalkSpeed = 2.0f;
-        private const float RunSpeed = 6.0f;
-        private const float MaxSpeed = 8.0f;
+        private const float WalkSpeed = 12.0f;
+        private const float RunSpeed = 16.0f;
+        private const float MaxSpeed = 18.0f;
 
         private const float TurnSmoothTime = 0.2f;
         private float turnSmoothVelocity;
@@ -42,6 +42,7 @@ namespace AdvancedGears
             advancedInputGroup = GetEntityQuery(
                 ComponentType.ReadWrite<Rigidbody>(),
                 ComponentType.ReadWrite<Speed>(),
+                ComponentType.ReadOnly<UnitTransform>(),
                 ComponentType.ReadOnly<AdvancedUnitController.Component>(),
                 ComponentType.ReadOnly<TransformInternal.ComponentAuthority>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>()
@@ -89,15 +90,31 @@ namespace AdvancedGears
                 // todo Fuel check
 
                 var rigidbody = EntityManager.GetComponentObject<Rigidbody>(entity);
-                var contoroller = unitController.Controller;
-                var inputDir = new Vector2(contoroller.Horizontal, contoroller.Vertical).normalized;
-                if (inputDir != Vector2.zero) {
-                    var targetRotation = Mathf.Atan2(inputDir.x, inputDir.y) * Mathf.Rad2Deg;
-                    rigidbody.transform.eulerAngles = Vector3.up * Mathf.SmoothDampAngle(
-                        rigidbody.transform.eulerAngles.y, targetRotation,
-                        ref turnSmoothVelocity, TurnSmoothTime);
+                var controller = unitController.Controller;
+                var inputDir = new Vector2(controller.Horizontal, controller.Vertical).normalized;
+                if (inputDir.x * inputDir.x > 0.0f) {
+                    var trans = rigidbody.transform;
+                    trans.Rotate(trans.up, inputDir.x);
+
+                    //Debug.LogFormat("x:{0} y:{1}", inputDir.x, inputDir.y);
+                    //rigidbody.transform.eulerAngles = rigidbody.transform.up * Mathf.SmoothDampAngle(
+                    //    rigidbody.transform.eulerAngles.y, targetRotation,
+                    //    ref turnSmoothVelocity, TurnSmoothTime);
                 }
-                var targetSpeed = (unitController.Controller.Running ? RunSpeed : WalkSpeed) * inputDir.magnitude;
+                else
+                {
+                    var rotation = rigidbody.transform.rotation;
+                    var angles = rotation.eulerAngles;
+                    rotation.eulerAngles = new Vector3(0.0f, angles.y, angles.z);
+                    rigidbody.transform.rotation = rotation;
+                }
+
+                var x = rigidbody.velocity.x;
+                var z = rigidbody.velocity.z;
+                if (x * x + z * z > MaxSpeed * MaxSpeed)
+                    return;
+
+                var targetSpeed = (unitController.Controller.Running ? RunSpeed : WalkSpeed) * inputDir.y;
                 var currentSpeed = speed.CurrentSpeed;
                 var speedSmoothVelocity = speed.SpeedSmoothVelocity;
                 currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref speedSmoothVelocity, SpeedSmoothTime, MaxSpeed, Time.deltaTime);
@@ -109,7 +126,10 @@ namespace AdvancedGears
                 };
                 // This needs to be used instead of add force because this is running in update.
                 // It would be better to store this in another component and have something else use it on fixed update.
-                rigidbody.velocity = rigidbody.transform.forward * currentSpeed;
+
+                rigidbody.AddForce(rigidbody.transform.forward * currentSpeed, ForceMode.Acceleration);
+
+
             });
         }
 

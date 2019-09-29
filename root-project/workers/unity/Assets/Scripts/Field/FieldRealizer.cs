@@ -44,13 +44,17 @@ namespace AdvancedGears
             Assert.IsNotNull(collider);
         }
 
-        public void Setup(float fieldSize)
+        public void Setup(float fieldSize, FieldDictionary dictionary = null)
         {
-            var terrainData = new TerrainData();
-            var height = FieldDictionary.WorldHeight;
+            var dic = dictionary ?? FieldDictionary.Instance;
 
+            var terrainData = Instantiate(dic.BaseTerrainData);
+            var height = dic.GetHeight(fieldSize);
+
+            terrainData.heightmapResolution = dic.GetResolution(fieldSize);
             terrainData.size = new Vector3(fieldSize, height, fieldSize);
-            terrainData.heightmapResolution = FieldDictionary.GetResolution(fieldSize);
+
+            Debug.LogFormat("size:{0} resolution:{1}", terrainData.size, terrainData.heightmapResolution);
 
             terrain.terrainData = terrainData;
             collider.terrainData = terrainData;
@@ -72,11 +76,17 @@ namespace AdvancedGears
 
             this.transform.position = start;
 
+            Debug.LogFormat("Start:{0}",start);
+
             float[,] heights = Heights;
             Vector3 pos = terrainPos != null ? terrainPos.Value: Vector3.zero;
-            if (terrainPoints != null) {
+            if (terrainPoints != null)
+            {
                 foreach (var point in terrainPoints)
+                {
+                    //Debug.LogFormat("Height:{0} TileSize:{1}", point.HighestHillHeight, point.TileSize);
                     heights = point.SetHeights(pos, start.x, start.z, width, height, size, heights);
+                }
             }
 
             Heights = heights;

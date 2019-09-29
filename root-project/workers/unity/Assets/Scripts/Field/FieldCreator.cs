@@ -107,16 +107,26 @@ namespace AdvancedGears
                 realizedDic.Remove(key);
         }
 
+        Vector3 getPos(Vector3? center = null)
+        {
+            if (center != null)
+                return new Vector3(center.Value.x, this.Origin.y, center.Value.z);
+            else
+                return this.Origin;
+        }
+
         public void RealizeField(List<TerrainPointInfo> terrainPoints, Coordinates coords, Vector3? center = null)
         {
-            var pos = center != null ? center.Value: this.Origin;
+            Debug.LogFormat("Coords:{0}", coords);
+
+            Vector3 pos = getPos(center);
             GetRealizer(pos).Realize(pos, terrainPoints, coords.ToUnityVector() + this.Origin);
             IsSetDatas = true;
         }
 
         public void RealizeEmptyField(Vector3? center = null)
         {
-            var pos = center != null ? center.Value: this.Origin;
+            Vector3 pos = getPos(center);
             GetRealizer(pos).Realize(pos);
             IsSetDatas = true;
         }

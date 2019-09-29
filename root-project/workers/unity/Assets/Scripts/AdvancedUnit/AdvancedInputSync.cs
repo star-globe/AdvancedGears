@@ -16,7 +16,7 @@ namespace AdvancedGears
             // local
             inputPlayerGroup = GetEntityQuery(
                 ComponentType.ReadWrite<AdvancedPlayerInput.Component>(),
-                ComponentType.ReadWrite<CameraTransform>(),
+                ComponentType.ReadOnly<CameraTransform>(),
                 ComponentType.ReadOnly<AdvancedPlayerInput.ComponentAuthority>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
 
@@ -30,8 +30,8 @@ namespace AdvancedGears
                                                      ref AdvancedPlayerInput.Component playerInput,
                                                      ref SpatialEntityId entityId) =>
             {
-                var forward = cameraTransform.Rotation * Vector3.up;
-                var right = cameraTransform.Rotation * Vector3.right;
+                var forward = Vector3.forward;
+                var right = Vector3.right;
                 var input = InputUtils.GetMove(right, forward);
                 var isShiftDown = Input.GetKey(KeyCode.LeftShift);
                 var controller = playerInput.LocalController;

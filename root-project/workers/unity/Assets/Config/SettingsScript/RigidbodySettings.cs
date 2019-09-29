@@ -19,6 +19,7 @@ namespace AdvancedGears
         //[SerializeField] private byte alignment;
         [SerializeField] private float drag;
         [SerializeField] private float angularDrag;
+        [SerializeField] private Vector3 centerOfMass;
 
         public void SetRigid(Rigidbody rigid)
         {
@@ -28,6 +29,8 @@ namespace AdvancedGears
             rigid.angularDrag = angularDrag;
 
             rigid.useGravity = true;
+
+            rigid.centerOfMass = centerOfMass;
         }
     }
 }

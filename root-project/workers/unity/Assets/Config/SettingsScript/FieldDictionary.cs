@@ -7,21 +7,33 @@ namespace AdvancedGears
     [CreateAssetMenu(menuName = "AdvancedGears/Field Config/Field Dictionary", order = 0)]
     public class FieldDictionary : DictionarySettings
     {
-        public static FieldDictionary Instance { private get; set; }
+        public static FieldDictionary Instance { get; private set; }
 
         [SerializeField] private FieldSettings[] fieldsList;
         readonly Dictionary<FieldWorkerType, FieldSettings> fieldDic = new Dictionary<FieldWorkerType, FieldSettings>();
 
         [SerializeField] private int standardResolution;
+        public int StandardResolution => standardResolution;
+
         [SerializeField] private float standardSize;
 
         [SerializeField] private float maxHeight;
         public float MaxHeight => maxHeight;
         public static float WorldHeight => Instance.MaxHeight;
 
-        [SerializeField] private int maxRange;
+        [SerializeField] private float maxRange;
         public float MaxRange => maxRange;
-        public static float QueryRange => Instance.MaxRange * 2.0f;
+
+        [SerializeField] private float queryRangeRate = 3.0f;
+        [SerializeField] private float checkRangeRate = 0.5f;
+
+        public static float CheckRangeRate => Instance.checkRangeRate;
+
+        public static float QueryRange => Instance.MaxRange * Instance.queryRangeRate;
+
+        [SerializeField]
+        TerrainData baseTerrainData;
+        public TerrainData BaseTerrainData => baseTerrainData;
 
         public override void Initialize()
         {
@@ -45,15 +57,14 @@ namespace AdvancedGears
             return settings;
         }
 
-        public static int GetResolution(float fieldSize)
+        public int GetResolution(float fieldSize)
         {
-            if (Instance == null)
-            {
-                Debug.LogError("The Field Dictionary has not been set.");
-                return 0;
-            }
+            return (int)(standardResolution * fieldSize / standardSize);
+        }
 
-            return (int)(Instance.standardResolution * fieldSize / Instance.standardSize);
+        public float GetHeight(float fieldSize)
+        {
+            return maxHeight * fieldSize / standardSize;
         }
 
         public static int Count => Instance.fieldsList.Length;
