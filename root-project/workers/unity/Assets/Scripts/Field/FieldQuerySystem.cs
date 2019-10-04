@@ -126,7 +126,7 @@ namespace AdvancedGears
             base.OnUpdate();
         }
 
-        private override void SendEntityQuery()
+        protected override void SendEntityQuery()
         {
             checkedPosition = BasePosition;
 

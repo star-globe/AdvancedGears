@@ -16,10 +16,10 @@ namespace AdvancedGears
 {
     public abstract class EntityQuerySystem : BaseEntitySearchSystem
     {
-        IntervalChecker inter = null;
+        IntervalChecker inter;
         private int queryRetries;
         private long? entityQueryId;
-        private readonly Dictionary<EntityId, List<EntitySnapshot>> shanpShots = new Dictionary<EntityId, List<EntitySnapshot>>();
+        private readonly Dictionary<EntityId, List<EntitySnapshot>> snapShots = new Dictionary<EntityId, List<EntitySnapshot>>();
 
         public event Action OnQueriedEvent;
 
@@ -59,7 +59,7 @@ namespace AdvancedGears
             SendEntityQuery();
         }
 
-        private virtual void SendEntityQuery()
+        protected virtual void SendEntityQuery()
         {
             var entityQuery = this.EntityQuery;
 
@@ -86,16 +86,16 @@ namespace AdvancedGears
                 {
                     foreach (var kvp in response.Result) {
                         List<EntitySnapshot> list;
-                        if (shanpShots.ContainsKey(kvp.Key))
-                            list = shanpShots[kvp.Key];
+                        if (snapShots.ContainsKey(kvp.Key))
+                            list = snapShots[kvp.Key];
                         else
                             list = new List<EntitySnapshot>();
 
                         list.Add(kvp.Value);
-                        shanpShots[kvp.Key] = list;
+                        snapShots[kvp.Key] = list;
                     }
 
-                    Debug.LogFormat("Number of Snapshots. {0}:", shanpShots.Count);
+                    Debug.LogFormat("Number of Snapshots. {0}:", snapShots.Count);
 
                     ReceiveSnapshots(snapShots);
 
@@ -107,15 +107,15 @@ namespace AdvancedGears
                     ++queryRetries;
 
                     this.LogDispatcher.HandleLog(LogType.Warning, new LogEvent(
-                        string.Format("Retrying {0} query, attempt {1}.\n{2}", this.Name, queryRetries, response.Message)
+                        string.Format("Retrying {0} query, attempt {1}.\n{2}", this.GetType().Name, queryRetries, response.Message)
                     ));
 
-                    EntityQuery();
+                    SendEntityQuery();
                 }
                 else
                 {
                     this.LogDispatcher.HandleLog(LogType.Error, new LogEvent(
-                        string.Format("Unable to get {0} query, after {1} attempts.", this.Name, queryRetries)
+                        string.Format("Unable to get {0} query, after {1} attempts.", this.GetType().Name, queryRetries)
                     ));
                 }
 

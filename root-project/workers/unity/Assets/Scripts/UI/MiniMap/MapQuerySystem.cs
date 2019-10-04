@@ -20,7 +20,7 @@ namespace AdvancedGears
     {
         protected override Vector3? BasePosition => this.WorkerSystem.Origin;
         protected override float SearchRadius => 1000.0f;
-        protected override IEnumerable<int> ComponentIds
+        protected override IEnumerable<uint> ComponentIds
         {
             get
             {
@@ -37,7 +37,7 @@ namespace AdvancedGears
         Vector3? playerPosition = null;
         protected override Vector3? BasePosition => playerPosition;
         protected override float SearchRadius => 500.0f;
-        protected override IEnumerable<int> ComponentIds
+        protected override IEnumerable<uint> ComponentIds
         {
             get
             {
@@ -82,8 +82,9 @@ namespace AdvancedGears
 
     public abstract class MapQueryBaseSystem : EntityQuerySystem
     {
+        protected abstract Vector3? BasePosition { get; }
         protected abstract float SearchRadius { get; }
-        protected abstract IEnumerable<int> ComponentIds { get; }
+        protected abstract IEnumerable<uint> ComponentIds { get; }
 
 
         protected override void OnCreate()
@@ -99,25 +100,9 @@ namespace AdvancedGears
             base.OnUpdate();
         }
 
-        protected override void SendMapEntityQuery()
+        protected override void SendEntityQuery()
         {
-            objectsShanpShots.Clear();
-
-            var list = new List<IConstraint>();
-            list.Add(new SphereConstraint(BasePosition.Value.x, BasePosition.Value.y, BasePosition.Value.z, SearchRadius));
-            foreach(var id in ComponentIds)
-                list.Add(new ComponentConstraint(id));
-
-            mapQuery = new ImprobableEntityQuery()
-            {
-                Constraint = new AndConstraint(list),
-                ResultType = new SnapshotResultType()
-            };
-
-            mapEntityQueryId = this.CommandSystem.SendCommand(new WorldCommands.EntityQuery.Request
-            {
-                EntityQuery = mapQuery
-            });
+            base.SendEntityQuery();
 
             Debug.LogFormat("SendMapQuery. WorkerId:{0}", this.WorkerSystem.WorkerId);
         }

@@ -57,7 +57,7 @@ namespace AdvancedGears
             var fieldSystem = Worker.World.GetExistingSystem<FieldQueryClientSystem>();
             if (fieldSystem != null)
             {
-                fieldSystem.OnFieldCreatedEvent += CreatePlayerRequest;
+                fieldSystem.OnQueriedEvent += CreatePlayerRequest;
                 fieldSystem.SetXZPosition(pos.x, pos.z);
             }
         }
