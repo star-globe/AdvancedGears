@@ -34,7 +34,6 @@ namespace AdvancedGears
         protected override float SearchRadius => 500.0f;
         protected override bool CheckRegularly => true;
         protected override FieldWorkerType FieldWorkerType => FieldWorkerType.Client; 
-
         IntervalChecker inter = IntervalCheckerInitializer.InitializedChecker(3.0f, setChecked:true);
         private Unity.Entities.EntityQuery group;
 
@@ -74,26 +73,37 @@ namespace AdvancedGears
         }
     }
 
-    public abstract class FieldQueryBaseSystem : BaseEntitySearchSystem
+    public abstract class FieldQueryBaseSystem : EntityQuerySystem
     {
-        IntervalChecker inter = IntervalCheckerInitializer.InitializedChecker(10.0f, setChecked: true);
-
-        private int fieldQueryRetries;
-        private long? fieldEntityQueryId;
-        private readonly Dictionary<EntityId, List<EntitySnapshot>> fieldShanpShots = new Dictionary<EntityId, List<EntitySnapshot>>();
-
         float checkRange;
         Vector3? checkedPosition = null;
 
-        private ImprobableEntityQuery fieldQuery;
-
-        public event Action OnFieldCreatedEvent;
         public FieldCreator FieldCreator { get; private set; }
 
         protected abstract Vector3? BasePosition { get; }
         protected abstract float SearchRadius { get; }
         protected abstract bool CheckRegularly { get; }
         protected abstract FieldWorkerType FieldWorkerType { get;}
+
+        protected override bool IsCheckTime
+        {
+            get { return CheckRegularly == false && FieldCreator.IsSetDatas; }
+        }
+
+        protected override bool OtherCheck
+        {
+            get
+            {
+                if (checkedPosition != null && BasePosition != null)
+                {
+                    var diff = checkedPosition.Value - BasePosition.Value;
+                    if (diff.sqrMagnitude < checkRange * checkRange)
+                        return false;
+                }
+
+                return  true;
+            }
+        }
 
         protected override void OnCreate()
         {
@@ -113,117 +123,46 @@ namespace AdvancedGears
             if (this.BasePosition == null)
                 return;
 
-            if (fieldEntityQueryId != null)
-            {
-                HandleEntityQueryResponses();
-                return;
-            }
-
-            if (CheckRegularly == false && FieldCreator.IsSetDatas)
-                return;
-
-            var time = Time.time;
-            if (inter.CheckTime(time) == false)
-                return;
-
-            // position check 
-            if (checkedPosition != null)
-            {
-                var diff = checkedPosition.Value - BasePosition.Value;
-                if (diff.sqrMagnitude < checkRange * checkRange)
-                    return;
-            }
-
-            SendFieldEntityQuery();
+            base.OnUpdate();
         }
 
-        private void SendFieldEntityQuery()
+        private override void SendEntityQuery()
         {
             checkedPosition = BasePosition;
-            fieldShanpShots.Clear();
 
-            var list = new IConstraint[]
-            {
-                new ComponentConstraint(FieldComponent.ComponentId),
-                new SphereConstraint(BasePosition.Value.x, BasePosition.Value.y, BasePosition.Value.z, FieldDictionary.QueryRange),
-            };
-
-            fieldQuery = new ImprobableEntityQuery()
-            {
-                Constraint = new AndConstraint(list),
-                ResultType = new SnapshotResultType()
-            };
-
-            fieldEntityQueryId = this.CommandSystem.SendCommand(new WorldCommands.EntityQuery.Request
-            {
-                EntityQuery = fieldQuery
-            });
+            base.SendEntityQuery();
 
             Debug.LogFormat("SendFieldQuery. WorkerId:{0}", this.WorkerSystem.WorkerId);
         }
 
-        private void HandleEntityQueryResponses()
+        protected override ImprobableEntityQuery EntityQuery
         {
-            var entityQueryResponses = this.CommandSystem.GetResponses<WorldCommands.EntityQuery.ReceivedResponse>();
-            for (var i = 0; i < entityQueryResponses.Count; i++)
+            get
             {
-                ref readonly var response = ref entityQueryResponses[i];
-                if (response.RequestId != fieldEntityQueryId)
+                var pos = BasePosition != null ? BasePosition.Value: Vector3.zero;
+                var list = new IConstraint[]
                 {
-                    continue;
-                }
+                    new ComponentConstraint(FieldComponent.ComponentId),
+                    new SphereConstraint(pos.x, pos.y, pos.z, FieldDictionary.QueryRange),
+                };
 
-                fieldEntityQueryId = null;
-
-                if (response.StatusCode == StatusCode.Success)
+                return new ImprobableEntityQuery()
                 {
-                    foreach (var kvp in response.Result) {
-                        List<EntitySnapshot> list;
-                        if (fieldShanpShots.ContainsKey(kvp.Key))
-                            list = fieldShanpShots[kvp.Key];
-                        else
-                            list = new List<EntitySnapshot>();
+                    Constraint = new AndConstraint(list),
+                    ResultType = new SnapshotResultType()
+                };
+            }
+        }
 
-                        list.Add(kvp.Value);
-                        fieldShanpShots[kvp.Key] = list;
-                    }
-
-                    Debug.LogFormat("Number of Snapshots. {0}:", fieldShanpShots.Count);
-
-                    if (fieldShanpShots.Count > 0)
-                    {
-                        SetField(fieldShanpShots.SelectMany(kvp => kvp.Value).ToList());
-                    }
-                    else
-                    {
-                        SetFieldClear();
-                    }
-
-                    OnFieldCreatedEvent?.Invoke();
-                    OnFieldCreatedEvent = null;
-                }
-                else if (fieldQueryRetries < PlayerLifecycleConfig.MaxPlayerCreatorQueryRetries)
-                {
-                    ++fieldQueryRetries;
-
-                    this.LogDispatcher.HandleLog(LogType.Warning, new LogEvent(
-                        $"Retrying field query, attempt {fieldQueryRetries}.\n{response.Message}"
-                    ));
-
-                    SendFieldEntityQuery();
-                }
-                else
-                {
-                    var retryText = fieldQueryRetries == 0
-                        ? "1 attempt"
-                        : $"{fieldQueryRetries + 1} attempts";
-
-                    this.LogDispatcher.HandleLog(LogType.Error, new LogEvent(
-                        $"Unable to find player creator after {retryText}."
-                    ));
-                }
-
-                break;
+        protected override void ReceiveSnapshots(Dictionary<EntityId, List<EntitySnapshot>> shots)
+        {
+            if (shots.Count > 0)
+            {
+                SetField(shots.SelectMany(kvp => kvp.Value).ToList());
+            }
+            else
+            {
+                SetFieldClear();
             }
         }
 
