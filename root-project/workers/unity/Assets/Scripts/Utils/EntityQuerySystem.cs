@@ -45,7 +45,7 @@ namespace AdvancedGears
                 return;
             }
 
-            if(IsCheckTime == false)
+            if(IsCheckTime)
                 return;
 
             var time = Time.time;

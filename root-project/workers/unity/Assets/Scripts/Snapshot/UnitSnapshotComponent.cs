@@ -27,34 +27,15 @@ namespace AdvancedGears
             };
         }
 
-        const float buffer = 0.1f;
-        public void SetHeight()
+        const float buffer = 0.2f;
+        public void SetHeight(float rate)
         {
             var pos = this.transform.position;
             var ray = new Ray(new Vector3(pos.x, 1000.0f, pos.z), Vector3.down);
             RaycastHit hit;
             Physics.Raycast(ray, out hit);
 
-            this.transform.position = new Vector3(pos.x, hit.point.y + buffer, pos.z);
+            this.transform.position = new Vector3(pos.x, hit.point.y + buffer / rate, pos.z);
         }
     }
-
-#if UNITY_EDITOR
-    [CustomEditor(typeof(UnitSnapshotComponent))]
-    public class UnitSnapshotComponentEditor : UnityEditor.Editor
-    {
-        public override void OnInspectorGUI()
-        {
-            base.OnInspectorGUI();
-
-            var component = target as UnitSnapshotComponent;
-
-            if (GUILayout.Button("Set Height"))
-            {
-                if (component != null)
-                    component.SetHeight();
-            }
-        }
-    }
-#endif
 }

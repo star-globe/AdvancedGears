@@ -41,6 +41,11 @@ namespace AdvancedGears
 
         private void Start()
         {
+            Initialize();
+        }
+
+        public void Initialize()
+        {
             realizer.Setup(localSize, dictionary);
         }
 
@@ -70,7 +75,7 @@ namespace AdvancedGears
             }
 
             foreach (var u in FindObjectsOfType<UnitSnapshotComponent>())
-                u.SetHeight();
+                u.SetHeight(rate);
         }
 
         public float GetHeight(float x, float z)

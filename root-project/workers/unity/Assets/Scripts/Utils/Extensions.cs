@@ -182,11 +182,19 @@ namespace AdvancedGears
             int seeds = settings.Seeds;
             float tileSize = settings.TileSize * 0.001f;
 
+            float base_x = size.x / width;
+            float base_z = size.z / width;
+
             for (int i = 0; i < width; i++) {
                 for (int k = 0; k < width; k++) {
-                    float pos_x = x + (k * 1.0f / width) * size.x;
-                    float pos_z = z + (i * 1.0f / width) * size.z;
-                    var diff = settings.LowestHillHeight + Mathf.PerlinNoise((seeds + pos_x) * tileSize, (seeds + pos_z) * tileSize) * hillHeight;
+
+                    float pos_x = x + k * size.x / width;
+                    float noise_x = (x + (k+seeds) * base_x) / size.x;
+
+                    float pos_z = z + i * base_z;
+                    float noise_z = (z + (i+seeds) * base_z) / size.z;
+
+                    var diff = settings.LowestHillHeight + Mathf.PerlinNoise(noise_x * tileSize, noise_z * tileSize) * hillHeight;
                     var length = (pos_x - center.x) * (pos_x - center.x) + (pos_z - center.z) * (pos_z - center.z);
                     heights[i, k] = b_heights[i, k] + (diff / height) * Mathf.Exp(-length/sqr);
                 }

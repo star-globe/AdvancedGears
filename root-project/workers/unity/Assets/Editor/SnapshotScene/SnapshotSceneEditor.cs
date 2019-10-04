@@ -31,20 +31,17 @@ namespace AdvancedGears.Editor
 
             outputPath = EditorGUILayout.TextField(outputPath);
 
+            if (GUILayout.Button("Initialize"))
+                scene.Initialize();
+
             if (GUILayout.Button("Show Test Field"))
-            {
                 scene.ShowTestField();
-            }
 
             if (GUILayout.Button("Search and Convert"))
-            {
                 scene.SearchAndConvert();
-            }
 
             if(GUILayout.Button("Generate Snapshot"))
-            {
                 GenerateSnapshot();
-            }
         }
 
         void GenerateSnapshot()
