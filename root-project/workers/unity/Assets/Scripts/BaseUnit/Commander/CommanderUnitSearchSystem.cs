@@ -32,6 +32,7 @@ namespace AdvancedGears
                 ComponentType.ReadWrite<CommanderStatus.Component>(),
                 ComponentType.ReadWrite<CommanderAction.Component>(),
                 ComponentType.ReadOnly<CommanderAction.ComponentAuthority>(),
+                ComponentType.ReadOnly<CommanderTeam>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<Transform>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
@@ -44,6 +45,7 @@ namespace AdvancedGears
             Entities.With(group).ForEach((Entity entity,
                               ref CommanderSight.Component sight,
                               ref CommanderStatus.Component commander,
+                              ref CommanderTeam.Component team,
                               ref CommanderAction.Component action,
                               ref BaseUnitStatus.Component status,
                               ref SpatialEntityId entityId) =>
@@ -70,10 +72,10 @@ namespace AdvancedGears
                 bool is_target;
                 int sol = commander.TeamConfig.Soldiers / 2;
                 int com = commander.TeamConfig.Commanders / 2;
-                if (CheckNeedsFollowers(ref commander, sol, com))
+                if (CheckNeedsFollowers(ref team, sol, com, commander.Rank))
                     is_target = escapeOrder(status, entityId, pos, ref sight, ref commander);
                 else
-                    is_target = attackOrder(status, entityId, pos, ref sight, ref commander);
+                    is_target = attackOrder(status, entityId, pos, ref sight, ref commander, ref team);
 
                 action.IsTarget = is_target;
             });
@@ -127,7 +129,10 @@ namespace AdvancedGears
             return tgt != null;
         }
 
-        bool attackOrder(in BaseUnitStatus.Component status, in SpatialEntityId entityId, in Vector3 pos, ref CommanderSight.Component sight, ref CommanderStatus.Component commander)
+        bool attackOrder(in BaseUnitStatus.Component status, in SpatialEntityId entityId, in Vector3 pos,
+                         ref CommanderSight.Component sight,
+                         ref CommanderStatus.Component commander,
+                         ref CommanderTeam.Component team)
         {
             // check rank
             var tgt = getNearestEnemey(status.Side, pos, sight.Range, UnitType.Stronghold, UnitType.Commander);
@@ -138,7 +143,7 @@ namespace AdvancedGears
             OrderType current = GetOrder(status.Side, pos, sight.Range);
             commander.Order.Self(current);
 
-            SetFollowers(commander.FollowerInfo.Followers, targetInfo, current);
+            SetFollowers(team.FollowerInfo.Followers, targetInfo, current);
 
             return tgt != null;
         }
@@ -215,19 +220,19 @@ namespace AdvancedGears
     public abstract class BaseCommanderSearch : BaseSearchSystem
     {
         #region CheckMethod
-        protected bool CheckNeedsFollowers(ref CommanderStatus.Component commander, int soldiers, int commanders)
+        protected bool CheckNeedsFollowers(ref CommanderTeam.Component commander, int soldiers, int commanders, uint rank)
         {
             if (GetFollowerCount(ref commander,false) < soldiers)
                 return true;
 
-            if (commander.Rank > 0 &&
+            if (rank > 0 &&
                 GetFollowerCount(ref commander, true) <= commanders)
                 return true;
 
             return false;
         }
 
-        protected int GetFollowerCount(CommanderStatus.Component commander, bool isUnderCommander)
+        protected int GetFollowerCount(CommanderTeam.Component commander, bool isUnderCommander)
         {
             if (isUnderCommander)
                 return commander.FollowerInfo.UnderCommanders.Count(f => CheckAlive(f.Id));
@@ -235,7 +240,7 @@ namespace AdvancedGears
                 return commander.FollowerInfo.Followers.Count(f => CheckAlive(f.Id));
         }
 
-        protected int GetFollowerCount(ref CommanderStatus.Component commander, bool isUnderCommander)
+        protected int GetFollowerCount(ref CommanderTeam.Component commander, bool isUnderCommander)
         {
             var info = commander.FollowerInfo;
             List<EntityId> followers;

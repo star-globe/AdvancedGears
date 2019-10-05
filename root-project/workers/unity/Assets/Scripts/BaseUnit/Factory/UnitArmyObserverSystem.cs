@@ -84,8 +84,12 @@ namespace AdvancedGears
                     if (TryGetComponent(unit.id, out comp) == false)
                         return;
 
+                    CommanderTeam.Component? team;
+                    if (TryGetComponent(unit.id, out team) == false)
+                        return;
+
                     var id = entityId.EntityId.Id;
-                    if (comp.Value.SuperiorInfo.EntityId.IsValid()) {
+                    if (team.Value.SuperiorInfo.EntityId.IsValid()) {
                         requestedIds.Remove(id);
                         return;
                     }

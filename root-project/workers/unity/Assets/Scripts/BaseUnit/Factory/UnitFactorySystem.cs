@@ -172,7 +172,7 @@ namespace AdvancedGears
             var current = orders[0];
             // create unit
             EntityTemplate template = BaseUnitTemplate.CreateCommanderUnitEntityTemplate(current.Side, coords, current.Rank, null);
-            var snap = template.GetComponent<CommanderStatus.Snapshot>();
+            var snap = template.GetComponent<CommanderTeam.Snapshot>();
             if (snap != null) {
                 var s = snap.Value;
                 s.FollowerInfo.Followers.AddRange(current.Followers);
@@ -230,14 +230,14 @@ namespace AdvancedGears
             // SetFollowers
             foreach(var kvp in followerDic) {
                 var info = kvp.Value;
-                this.CommandSystem.SendCommand(new CommanderStatus.AddFollower.Request(kvp.Key, new FollowerInfo { Followers = info.Followers.ToList(),
+                this.CommandSystem.SendCommand(new CommanderTeam.AddFollower.Request(kvp.Key, new FollowerInfo { Followers = info.Followers.ToList(),
                                                                                                               UnderCommanders = info.UnderCommanders.ToList() }));
             }
 
             // SetSuperiors
             foreach(var kvp in superiorDic) {
                 foreach(var f in kvp.Value) {
-                    this.CommandSystem.SendCommand(new CommanderStatus.SetSuperior.Request(f, new SuperiorInfo { EntityId = kvp.Key }));
+                    this.CommandSystem.SendCommand(new CommanderTeam.SetSuperior.Request(f, new SuperiorInfo { EntityId = kvp.Key }));
                 }
             }
         }

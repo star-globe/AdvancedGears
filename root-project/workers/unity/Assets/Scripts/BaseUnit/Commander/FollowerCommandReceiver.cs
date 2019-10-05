@@ -9,8 +9,10 @@ namespace AdvancedGears
 {
     public class FollowerCommandReceiver : MonoBehaviour
     {
-        [Require] CommanderStatusCommandReceiver commandReceiver;
-        [Require] CommanderStatusWriter writer;
+        [Require] CommanderTeamCommandReceiver commandReceiver;
+        [Require] CommanderTeamWriter writer;
+        [Require] CommanderStatusReader reader;
+        [Require] BaseUnitStatusReader statusReader;
 
         class FollowerInfoContainer
         {
@@ -54,6 +56,7 @@ namespace AdvancedGears
         public void OnEnable()
         {
             commandReceiver.OnAddFollowerRequestReceived += OnAddFollowerRequest;
+            commandReceiver.OnGetTeamInfoRequestReceived += OnTeamInfoRequest;
         }
 
         private void Update()
@@ -64,7 +67,7 @@ namespace AdvancedGears
             var info = writer.Data.FollowerInfo;
             infoContainer.SetFollowers(ref info);
 
-            writer.SendUpdate(new CommanderStatus.Update()
+            writer.SendUpdate(new CommanderTeam.Update()
             {
                 FollowerInfo = info,
             });
@@ -72,21 +75,46 @@ namespace AdvancedGears
             infoContainer.Clear();
         }
 
-        private void OnAddFollowerRequest(CommanderStatus.AddFollower.ReceivedRequest request)
+        private void OnAddFollowerRequest(CommanderTeam.AddFollower.ReceivedRequest request)
         {
-            commandReceiver.SendAddFollowerResponse(new CommanderStatus.AddFollower.Response(request.RequestId, new Empty()));
+            commandReceiver.SendAddFollowerResponse(new CommanderTeam.AddFollower.Response(request.RequestId, new Empty()));
 
             infoContainer.AddFollowerInfo(request.Payload);
         }
 
-        private void OnSetSuperiorRequest(CommanderStatus.SetSuperior.ReceivedRequest request)
+        private void OnSetSuperiorRequest(CommanderTeam.SetSuperior.ReceivedRequest request)
         {
-            commandReceiver.SendSetSuperiorResponse(new CommanderStatus.SetSuperior.Response(request.RequestId, new Empty()));
+            commandReceiver.SendSetSuperiorResponse(new CommanderTeam.SetSuperior.Response(request.RequestId, new Empty()));
 
-            writer.SendUpdate(new CommanderStatus.Update()
+            writer.SendUpdate(new CommanderTeam.Update()
             {
                 SuperiorInfo = request.Payload,
             });
+        }
+
+        private void OnTeamInfoRequest(CommanderTeam.GetTeamInfo.ReceivedRequest request)
+        {
+            var data = writer.Data;
+            var status = statusReader.Data;
+
+            var hqId = data.HqInfo.EntityId;
+            if (request.EntityId != hqId)
+            {
+                commandReceiver.SendGetTeamInfoFailure(request.RequestId, string.Format("Requested Wrong HQ EntityId:{0}", hqId.Id));
+                return;
+            }
+
+            commandReceiver.SendGetTeamInfoResponse(new CommanderTeam.GetTeamInfo.Response(request.RequestId, new TeamInfoResponse()
+            {
+                HqEntityId = hqId,
+                TeamInfo = new TeamInfo()
+                {
+                    Rank = reader.Data.Rank,
+                    Soldiers = data.FollowerInfo.Followers,
+                    UnderCommanders = data.FollowerInfo.UnderCommanders,
+                    State = status.State,
+                }
+            }));
         }
     }
 }

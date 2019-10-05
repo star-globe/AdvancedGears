@@ -15,3 +15,5 @@ MonoBehaviour:
   mass: 1000
   drag: 1
   angularDrag: 1
+  centerOfMass: {x: 0, y: 0, z: 0}
+  useGravity: 1

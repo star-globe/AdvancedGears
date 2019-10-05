@@ -159,6 +159,10 @@ type SuperiorInfo {
     EntityId entity_id = 1;
 }
 
+type HQInfo {
+    EntityId entity_id = 1;
+}
+
 type TeamConfig {
     int32 soldiers = 1;
     int32 commanders = 2;
@@ -172,11 +176,34 @@ component CommanderStatus {
     uint32 rank = 3;
 
     float ally_range = 4;
-    FollowerInfo follower_info = 5;
-    SuperiorInfo superior_info = 6;
+}
+
+type TeamInfo {
+    uint32 rank = 1;
+    UnitState state = 2;
+    list<EntityId> soldiers = 5;
+    list<EntityId> under_commanders = 6;
+}
+
+type TeamInfoResponse {
+    EntityId hq_entity_id = 1;
+    TeamInfo team_info = 2;
+}
+
+type TeamInfoRequest {
+    EntityId hq_entitt_id = 1;
+}
+
+component CommanderTeam {
+    id = 20021;
+
+    FollowerInfo follower_info = 1;
+    SuperiorInfo superior_info = 2;
+    HQInfo hq_info = 3;
 
     command improbable.gdk.core.Empty add_follower(FollowerInfo);
     command improbable.gdk.core.Empty set_superior(SuperiorInfo);
+    command TeamInfoResponse get_team_info(TeamInfoRequest);
 }
 
 type WarPower {
@@ -185,7 +212,7 @@ type WarPower {
 }
 
 component CommanderSight {
-    id = 20021;
+    id = 20022;
 
     float range = 1;
     IntervalChecker interval = 2;
@@ -209,6 +236,13 @@ type SuperiorOrder {
     uint32 rank = 3;
 }
 
+type CommanderOrder {
+    EntityId hq_entity_id = 1;
+    list<EntityId> followers = 2;
+    UnitSide side = 3;
+    uint32 rank = 4;
+}
+
 enum CommandActionType
 {
     None = 0;
@@ -217,7 +251,7 @@ enum CommandActionType
 }
 
 component CommanderAction {
-    id = 20022;
+    id = 20023;
 
     bool is_target = 1;
     IntervalChecker interval = 2;
@@ -248,6 +282,7 @@ component UnitFactory {
 
     command improbable.gdk.core.Empty add_follower_order(FollowerOrder);
     command improbable.gdk.core.Empty add_superior_order(SuperiorOrder);
+    command improbable.gdk.core.Empty add_commander_order(CommanderOrder);
 }
 
 component UnitArmyObserver {
@@ -290,4 +325,18 @@ component HeadQuarters {
     transient list<OrganizeOrder> orders = 5;
 
     command improbable.gdk.core.Empty add_order(OrganizeOrder);
+}
+
+type CreatedCommanderInfo {
+    EntityId entity_id = 1;
+}
+
+component CommandersManager {
+    id = 20041;
+
+    IntervalChecker interval = 1;
+
+    map<EntityId,TeamInfo> datas = 2;
+
+    command improbable.gdk.core.Empty add_commander(CreatedCommanderInfo);
 }

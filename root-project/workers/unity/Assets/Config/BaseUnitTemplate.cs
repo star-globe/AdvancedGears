@@ -63,10 +63,10 @@ namespace AdvancedGears
 
                 case UnitType.Commander:
                     template.AddComponent(new BulletComponent.Snapshot(), writeAccess);
-                    template.AddComponent(new CommanderStatus.Snapshot { FollowerInfo = new FollowerInfo { Followers = new List<EntityId>(), UnderCommanders = new List<EntityId>() },
-                                                                         SuperiorInfo = new SuperiorInfo(),
-                                                                         Order = new OrderPair { Self = OrderType.Idle, Upper = OrderType.Idle },
+                    template.AddComponent(new CommanderStatus.Snapshot { Order = new OrderPair { Self = OrderType.Idle, Upper = OrderType.Idle },
                                                                          Rank = 0, }, writeAccess);
+                    template.AddComponent(new CommanderTeam.Snapshot { FollowerInfo = new FollowerInfo { Followers = new List<EntityId>(), UnderCommanders = new List<EntityId>() },
+                                                                       SuperiorInfo = new SuperiorInfo() }, writeAccess);
                     template.AddComponent(new CommanderSight.Snapshot { WarPowers = new List<WarPower>() }, writeAccess);
                     template.AddComponent(new CommanderAction.Snapshot { ActionType = CommandActionType.None }, writeAccess);
                     template.AddComponent(new BaseUnitPosture.Snapshot { Posture = new PostureInfo { Datas = new Dictionary<PosturePoint, PostureData>() } }, writeAccess);
@@ -90,15 +90,23 @@ namespace AdvancedGears
         public static EntityTemplate CreateCommanderUnitEntityTemplate(UnitSide side, Coordinates coords, uint rank, EntityId? superiorId)
         {
             var template = CreateBaseUnitEntityTemplate(side, coords, UnitType.Commander);
-            var snap = template.GetComponent<CommanderStatus.Snapshot>();
-            if (snap != null) {
-                var s = snap.Value;
+            var status = template.GetComponent<CommanderStatus.Snapshot>();
+            if (status != null) {
+                var s = status.Value;
                 s.Rank = rank;
 
                 if (superiorId != null)
-                    s.SuperiorInfo.EntityId = superiorId.Value;
+                    
 
                 template.SetComponent(s);
+            }
+
+            var team = template.GetComponent<CommanderTeam.Snapshot>();
+            if (team != null && superiorId != null) {
+                var t = team.Value;
+                t.SuperiorInfo.EntityId = superiorId.Value;
+
+                template.SetComponent(t);
             }
 
             return template;
