@@ -87,7 +87,7 @@ namespace AdvancedGears
             }
         }
 
-        public static EntityTemplate CreateCommanderUnitEntityTemplate(UnitSide side, Coordinates coords, uint rank, EntityId? superiorId)
+        public static EntityTemplate CreateCommanderUnitEntityTemplate(UnitSide side, Coordinates coords, uint rank, EntityId? superiorId, EntityId? hqId)
         {
             var template = CreateBaseUnitEntityTemplate(side, coords, UnitType.Commander);
             var status = template.GetComponent<CommanderStatus.Snapshot>();
@@ -95,16 +95,18 @@ namespace AdvancedGears
                 var s = status.Value;
                 s.Rank = rank;
 
-                if (superiorId != null)
-                    
-
                 template.SetComponent(s);
             }
 
             var team = template.GetComponent<CommanderTeam.Snapshot>();
-            if (team != null && superiorId != null) {
+            if (team != null) {
                 var t = team.Value;
-                t.SuperiorInfo.EntityId = superiorId.Value;
+
+                if (superiorId != null)
+                    t.SuperiorInfo.EntityId = superiorId.Value;
+
+                if (hqId != null)
+                    t.HqInfo.EntityId = hqId.Value;
 
                 template.SetComponent(t);
             }

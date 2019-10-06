@@ -115,9 +115,9 @@ namespace AdvancedGears
 
                 bool finished = false;
                 if (s_order != null)
-                    template = CreateSuperior(factory.SuperiorOrders, coords, out finished);
+                    template = CreateSuperior(factory.SuperiorOrders, coords, s_order.Value.HqEntityId, out finished);
                 else if (f_order != null)
-                    template = CreateFollower(factory.FollowerOrders, coords, f_order.Value.Customer, out finished);
+                    template = CreateFollower(factory.FollowerOrders, coords, f_order.Value.Customer, f_order.Value.HqEntityId, out finished);
 
                 var request = new WorldCommands.CreateEntity.Request
                 (
@@ -131,7 +131,7 @@ namespace AdvancedGears
             });
         }
 
-        EntityTemplate CreateFollower(List<FollowerOrder> orders, in Coordinates coords, in EntityId superiorId, out bool finished)
+        EntityTemplate CreateFollower(List<FollowerOrder> orders, in Coordinates coords, in EntityId superiorId, in EntityId hqId, out bool finished)
         {
             finished = false;
             if (orders.Count == 0)
@@ -143,7 +143,7 @@ namespace AdvancedGears
             switch (current.Type)
             {
                 case UnitType.Commander:
-                    template = BaseUnitTemplate.CreateCommanderUnitEntityTemplate(current.Side, coords, current.Rank, superiorId);
+                    template = BaseUnitTemplate.CreateCommanderUnitEntityTemplate(current.Side, coords, current.Rank, superiorId, hqId);
                     break;
                 default:
                     template = BaseUnitTemplate.CreateBaseUnitEntityTemplate(current.Side, coords, current.Type);
@@ -163,7 +163,7 @@ namespace AdvancedGears
             return template;
         }
 
-        EntityTemplate CreateSuperior(List<SuperiorOrder> orders, in Coordinates coords, out bool finished)
+        EntityTemplate CreateSuperior(List<SuperiorOrder> orders, in Coordinates coords, in EntityId hqId, out bool finished)
         {
             finished = false;
             if (orders.Count == 0)
@@ -171,7 +171,7 @@ namespace AdvancedGears
 
             var current = orders[0];
             // create unit
-            EntityTemplate template = BaseUnitTemplate.CreateCommanderUnitEntityTemplate(current.Side, coords, current.Rank, null);
+            EntityTemplate template = BaseUnitTemplate.CreateCommanderUnitEntityTemplate(current.Side, coords, current.Rank, null, hqId);
             var snap = template.GetComponent<CommanderTeam.Snapshot>();
             if (snap != null) {
                 var s = snap.Value;
@@ -187,8 +187,8 @@ namespace AdvancedGears
 
         void HandleProductResponse()
         {
-            var followerDic = new Dictionary<EntityId,FollowerInfo>();
-            var superiorDic = new Dictionary<EntityId,List<EntityId>>();
+            Dictionary<EntityId, FollowerInfo> followerDic = null;
+            Dictionary<EntityId, List<EntityId>> superiorDic = null;
 
             var responses = this.CommandSystem.GetResponses<WorldCommands.CreateEntity.ReceivedResponse>();
             for (var i = 0; i < responses.Count; i++) {
@@ -203,6 +203,8 @@ namespace AdvancedGears
 
                 var order = requestContext;
                 if (order.f_order != null) {
+                    followerDic = followerDic ?? new Dictionary<EntityId, FollowerInfo>();
+
                     var id = order.f_order.Value.Customer;
                     if (followerDic.ContainsKey(id) == false)
                         followerDic.Add(id, new FollowerInfo { Followers = new List<EntityId>(),
@@ -219,6 +221,8 @@ namespace AdvancedGears
                 }
 
                 if (order.s_order != null) {
+                    superiorDic = superiorDic ?? new Dictionary<EntityId, List<EntityId>>();
+
                     var id = response.EntityId.Value;
                     if (superiorDic.ContainsKey(id) == false)
                         superiorDic.Add(id, new List<EntityId>());
@@ -228,16 +232,26 @@ namespace AdvancedGears
             }
 
             // SetFollowers
-            foreach(var kvp in followerDic) {
-                var info = kvp.Value;
-                this.CommandSystem.SendCommand(new CommanderTeam.AddFollower.Request(kvp.Key, new FollowerInfo { Followers = info.Followers.ToList(),
-                                                                                                              UnderCommanders = info.UnderCommanders.ToList() }));
+            if (followerDic != null) {
+                foreach (var kvp in followerDic)
+                {
+                    var info = kvp.Value;
+                    this.CommandSystem.SendCommand(new CommanderTeam.AddFollower.Request(kvp.Key, new FollowerInfo
+                    {
+                        Followers = info.Followers.ToList(),
+                        UnderCommanders = info.UnderCommanders.ToList()
+                    }));
+                }
             }
 
             // SetSuperiors
-            foreach(var kvp in superiorDic) {
-                foreach(var f in kvp.Value) {
-                    this.CommandSystem.SendCommand(new CommanderTeam.SetSuperior.Request(f, new SuperiorInfo { EntityId = kvp.Key }));
+            if (superiorDic != null) {
+                foreach (var kvp in superiorDic)
+                {
+                    foreach (var f in kvp.Value)
+                    {
+                        this.CommandSystem.SendCommand(new CommanderTeam.SetSuperior.Request(f, new SuperiorInfo { EntityId = kvp.Key }));
+                    }
                 }
             }
         }

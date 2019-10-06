@@ -17,14 +17,9 @@ namespace AdvancedGears
     {
         private EntityQuery group;
 
-        private Vector3 origin;
-
         protected override void OnCreateManager()
         {
             base.OnCreateManager();
-
-            // ここで基準位置を取る
-            origin = this.Origin;
 
             group = GetEntityQuery(
                 ComponentType.ReadWrite<HeadQuarters.Component>(),
@@ -65,14 +60,14 @@ namespace AdvancedGears
                 headQuarter.Interval = inter;
 
                 foreach (var order in headQuarter.Orders) {
-                    var pos = order.Pos.ToWorkerPosition(origin);
+                    var pos = order.Pos.ToWorkerPosition(this.Origin);
                     var str = getNearestAlly(status.Side, pos, RangeDictionary.Get(FixedRangeType.RadioRange), UnitType.Stronghold);
                     if (str == null)
                         continue;
 
                     var map = headQuarter.FactoryDatas;
                     uint u_rank;
-                    SetSuperior(str.id, status.Side, order, ref map, out u_rank);
+                    SetSuperior(str.id, status.Side, order, ref map, entityId.EntityId, out u_rank);
                     headQuarter.FactoryDatas = map;
                     if (headQuarter.UpperRank < u_rank)
                         headQuarter.UpperRank = u_rank;
@@ -82,7 +77,7 @@ namespace AdvancedGears
             });
         }
 
-        void SetSuperior(EntityId id, UnitSide side, in OrganizeOrder order, ref FactoryMap map, out uint upper_rank)
+        void SetSuperior(EntityId id, UnitSide side, in OrganizeOrder order, ref FactoryMap map, in EntityId entityId, out uint upper_rank)
         {
             upper_rank = 0;
 
@@ -104,6 +99,7 @@ namespace AdvancedGears
 
             upper_rank = rank + 1;
             var request = new UnitFactory.AddSuperiorOrder.Request(id, new SuperiorOrder() { Followers = info.Followers.ToList(),
+                                                                                             HqEntityId = entityId,
                                                                                              Side = side,
                                                                                              Rank = rank + 1 });
             Entity entity;

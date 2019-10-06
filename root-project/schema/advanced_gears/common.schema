@@ -58,7 +58,7 @@ enum FixedRangeType
     RadioRange = 2;
 }
 
-//type Som
-//{
-//    float k = 1;
-//}
+type Som
+{
+    float k = 1;
+}

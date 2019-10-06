@@ -224,16 +224,18 @@ component CommanderSight {
 
 type FollowerOrder {
     EntityId customer = 1;
-    UnitSide side = 2;
-    UnitType type = 3;
-    int32 number = 4;
-    uint32 rank = 5;
+    EntityId hq_entity_id = 2;
+    UnitSide side = 3;
+    UnitType type = 4;
+    int32 number = 5;
+    uint32 rank = 6;
 }
 
 type SuperiorOrder {
     list<EntityId> followers = 1;
-    UnitSide side = 2;
-    uint32 rank = 3;
+    EntityId hq_entity_id = 2;
+    UnitSide side = 3;
+    uint32 rank = 4;
 }
 
 type CommanderOrder {
