@@ -254,6 +254,8 @@ namespace AdvancedGears
                     }
                 }
             }
+
+            // RegisterCommanderToHQ
         }
     }
 }

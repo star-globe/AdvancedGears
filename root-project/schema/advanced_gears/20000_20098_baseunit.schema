@@ -322,7 +322,7 @@ component HeadQuarters {
 }
 
 type CreatedCommanderInfo {
-    EntityId entity_id = 1;
+    list<EntityId> commanders = 1;
 }
 
 enum CommanderManagerState {
