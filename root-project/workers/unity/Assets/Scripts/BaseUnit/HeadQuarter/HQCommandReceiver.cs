@@ -8,23 +8,38 @@ namespace AdvancedGears
 {
     public class HQCommandReceiver : MonoBehaviour
     {
-        [Require] HeadQuartersCommandReceiver commandReceiver;
-        [Require] HeadQuartersWriter writer;
+        //[Require] HeadQuartersCommandReceiver commandReceiver;
+        //[Require] HeadQuartersWriter writer;
+        [Require] CommandersManagerCommandReceiver commandReceiver;
+        [Require] CommandersManagerWriter writer;
 
         public void OnEnable()
         {
-            commandReceiver.OnAddOrderRequestReceived += OnAddFollowerOrderRequest;
+            //commandReceiver.OnAddOrderRequestReceived += OnAddFollowerOrderRequest;
+            commandReceiver.OnAddCommanderRequestReceived += OnAddCommanderRequest;
         }
 
-        private void OnAddFollowerOrderRequest(HeadQuarters.AddOrder.ReceivedRequest request)
-        {
-            commandReceiver.SendAddOrderResponse(new HeadQuarters.AddOrder.Response(request.RequestId, new Empty()));
+        //private void OnAddFollowerOrderRequest(HeadQuarters.AddOrder.ReceivedRequest request)
+        //{
+        //    commandReceiver.SendAddOrderResponse(new HeadQuarters.AddOrder.Response(request.RequestId, new Empty()));
+        //
+        //    var list = writer.Data.Orders;
+        //    list.Add(request.Payload);
+        //    writer.SendUpdate(new HeadQuarters.Update()
+        //    {
+        //        Orders = list,
+        //    });
+        //}
 
-            var list = writer.Data.Orders;
-            list.Add(request.Payload);
-            writer.SendUpdate(new HeadQuarters.Update()
+        private void OnAddCommanderRequest(CommandersManager.AddCommander.ReceivedRequest request)
+        {
+            commandReceiver.SendAddCommanderResponse(new CommandersManager.AddCommander.Response(request.RequestId, new Empty()));
+
+            var datas = writer.Data.CommanderDatas;
+            datas.Add(request.Payload.EntityId, null);
+            writer.SendUpdate(new CommandersManager.Update()
             {
-                Orders = list,
+                CommanderDatas = datas,
             });
         }
     }

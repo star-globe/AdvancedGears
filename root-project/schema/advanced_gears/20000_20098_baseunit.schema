@@ -238,13 +238,6 @@ type SuperiorOrder {
     uint32 rank = 4;
 }
 
-type CommanderOrder {
-    EntityId hq_entity_id = 1;
-    list<EntityId> followers = 2;
-    UnitSide side = 3;
-    uint32 rank = 4;
-}
-
 enum CommandActionType
 {
     None = 0;
@@ -284,7 +277,6 @@ component UnitFactory {
 
     command improbable.gdk.core.Empty add_follower_order(FollowerOrder);
     command improbable.gdk.core.Empty add_superior_order(SuperiorOrder);
-    command improbable.gdk.core.Empty add_commander_order(CommanderOrder);
 }
 
 component UnitArmyObserver {
@@ -333,12 +325,20 @@ type CreatedCommanderInfo {
     EntityId entity_id = 1;
 }
 
+enum CommanderManagerState {
+    None = 0,
+    CreateCommander = 1;
+}
+
 component CommandersManager {
     id = 20041;
 
     IntervalChecker interval = 1;
 
-    map<EntityId,TeamInfo> datas = 2;
+    map<EntityId,TeamInfo> commander_datas = 2;
+    CommanderManagerState state = 3;
+    EntitId factory_id = 4;
+    float sight_range = 5;
 
     command improbable.gdk.core.Empty add_commander(CreatedCommanderInfo);
 }
