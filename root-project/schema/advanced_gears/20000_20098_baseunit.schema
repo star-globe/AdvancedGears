@@ -326,7 +326,7 @@ type CreatedCommanderInfo {
 }
 
 enum CommanderManagerState {
-    None = 0,
+    None = 0;
     CreateCommander = 1;
 }
 
@@ -337,7 +337,7 @@ component CommandersManager {
 
     map<EntityId,TeamInfo> commander_datas = 2;
     CommanderManagerState state = 3;
-    EntitId factory_id = 4;
+    EntityId factory_id = 4;
     float sight_range = 5;
 
     command improbable.gdk.core.Empty add_commander(CreatedCommanderInfo);

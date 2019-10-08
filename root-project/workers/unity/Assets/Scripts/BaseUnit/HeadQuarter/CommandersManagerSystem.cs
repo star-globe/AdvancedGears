@@ -59,26 +59,26 @@ namespace AdvancedGears
                 manager.Interval = inter;
 
                 if (manager.CommanderDatas.Count == 0) {
-                    int rank = 0;
+                    uint rank = 0;
 
-                    if (manager.factoryId.IsValid() == false) {
+                    if (manager.FactoryId.IsValid() == false) {
                         var trans = EntityManager.GetComponentObject<Transform>(entity);
                         var pos = trans.position;
 
                         var tgt = getNearestAlly(status.Side, pos, manager.SightRange, UnitType.Stronghold);
                         if (tgt != null)
-                            manager.factoryId = tgt.id;
+                            manager.FactoryId = tgt.id;
                     }
 
-                    if (manager.factoryId.IsValid()) {
+                    if (manager.FactoryId.IsValid()) {
                         var id = entityId.EntityId;
                         var request = new UnitFactory.AddSuperiorOrder.Request(id, new SuperiorOrder() { Followers = new List<EntityId>(),
                                                                                                          HqEntityId = id,
-                                                                                                         Side = side,
+                                                                                                         Side = status.Side,
                                                                                                          Rank = rank + 1 });
-                        Entity entity;
-                        if (TryGetEntity(id, out entity)) {
-                            this.CommandSystem.SendCommand(request, entity);
+                        Entity factory;
+                        if (TryGetEntity(id, out factory)) {
+                            this.CommandSystem.SendCommand(request, factory);
                             manager.State = CommanderManagerState.CreateCommander;
                         }
                     }

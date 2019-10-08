@@ -36,8 +36,8 @@ namespace AdvancedGears
             commandReceiver.SendAddCommanderResponse(new CommandersManager.AddCommander.Response(request.RequestId, new Empty()));
 
             var datas = writer.Data.CommanderDatas;
-            foreach(var id in request.Payload)
-                datas.Add(id, null);
+            foreach(var id in request.Payload.Commanders)
+                datas.Add(id, new TeamInfo(0,UnitState.None,null,null));
 
             writer.SendUpdate(new CommandersManager.Update()
             {
