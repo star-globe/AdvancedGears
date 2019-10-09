@@ -29,6 +29,7 @@ namespace AdvancedGears
             public FollowerOrder? f_order;
             public SuperiorOrder? s_order;
             public UnitType type;
+            public EntityId hqId;
         }
 
         protected override void OnCreateManager()
@@ -119,10 +120,15 @@ namespace AdvancedGears
                 else if (f_order != null)
                     template = CreateFollower(factory.FollowerOrders, coords, f_order.Value.Customer, f_order.Value.HqEntityId, out finished);
 
+                EntityId hqId = s_order != null ? s_order.Value.HqEntityId : f_order.Value.HqEntityId;
+
                 var request = new WorldCommands.CreateEntity.Request
                 (
                     template,
-                    context: new ProductOrderContext() { f_order = f_order, s_order = s_order, type = factory.CurrentType }
+                    context: new ProductOrderContext() { f_order = f_order,
+                                                         s_order = s_order,
+                                                         type = factory.CurrentType,
+                                                         hqId = hqId }
                 );
                 this.CommandSystem.SendCommand(request);
 
@@ -189,6 +195,7 @@ namespace AdvancedGears
         {
             Dictionary<EntityId, FollowerInfo> followerDic = null;
             Dictionary<EntityId, List<EntityId>> superiorDic = null;
+            Dictionary<EntityId, List<EntityId>> commanders = null;
 
             var responses = this.CommandSystem.GetResponses<WorldCommands.CreateEntity.ReceivedResponse>();
             for (var i = 0; i < responses.Count; i++) {
@@ -209,25 +216,29 @@ namespace AdvancedGears
                     if (followerDic.ContainsKey(id) == false)
                         followerDic.Add(id, new FollowerInfo { Followers = new List<EntityId>(),
                                                                UnderCommanders = new List<EntityId>() });
+
                     var info = followerDic[id];
                     var entityId = response.EntityId.Value;
+
                     switch (order.type)
                     {
-                        case UnitType.Soldier:      info.Followers.Add(entityId); break;
-                        case UnitType.Commander:    info.UnderCommanders.Add(entityId); break;
+                        case UnitType.Soldier:
+                            info.Followers.Add(entityId);
+                            break;
+
+                        case UnitType.Commander:
+                            info.UnderCommanders.Add(entityId);
+                            SetList(commanders, order.hqId, entityId);
+                            break;
                     }
 
                     followerDic[id] = info;
                 }
 
                 if (order.s_order != null) {
-                    superiorDic = superiorDic ?? new Dictionary<EntityId, List<EntityId>>();
-
                     var id = response.EntityId.Value;
-                    if (superiorDic.ContainsKey(id) == false)
-                        superiorDic.Add(id, new List<EntityId>());
-                    var list = superiorDic[id];
-                    list.AddRange(order.s_order.Value.Followers);
+                    SetList(superiorDic, id, order.s_order.Value.Followers);
+                    SetList(commanders, order.hqId, id);
                 }
             }
 
@@ -250,12 +261,43 @@ namespace AdvancedGears
                 {
                     foreach (var f in kvp.Value)
                     {
-                        this.CommandSystem.SendCommand(new CommanderTeam.SetSuperior.Request(f, new SuperiorInfo { EntityId = kvp.Key }));
+                        this.CommandSystem.SendCommand(new CommanderTeam.SetSuperior.Request(f,
+                                                        new SuperiorInfo { EntityId = kvp.Key }));
                     }
                 }
             }
 
             // RegisterCommanderToHQ
+            if (commanders != null)
+            {
+                foreach (var kvp in commanders)
+                {
+                    this.CommandSystem.SendCommand(new CommandersManager.AddCommander.Request(kvp.Key,
+                                                    new CreatedCommanderInfo { Commanders = kvp.Value.ToList() }));
+                }
+            }
+        }
+
+        private void SetList(Dictionary<EntityId, List<EntityId>> commanders, in EntityId hqId, in EntityId product)
+        {
+            commanders = commanders ?? new Dictionary<EntityId, List<EntityId>>();
+
+            List<EntityId> list = null;
+            commanders.TryGetValue(hqId, out list);
+            list = list ?? new List<EntityId>();
+            list.Add(product);
+            commanders[hqId] = list;
+        }
+
+        private void SetList(Dictionary<EntityId, List<EntityId>> superiorDic, in EntityId superior, IEnumerable<EntityId> followers)
+        {
+            superiorDic = superiorDic ?? new Dictionary<EntityId, List<EntityId>>();
+
+            List<EntityId> list = null;
+            superiorDic.TryGetValue(superior, out list);
+            list = list ?? new List<EntityId>();
+            list.AddRange(followers);
+            superiorDic[superior] = list;
         }
     }
 }
