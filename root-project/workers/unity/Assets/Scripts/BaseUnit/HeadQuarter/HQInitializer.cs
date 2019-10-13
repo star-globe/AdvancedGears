@@ -8,7 +8,7 @@ namespace AdvancedGears
 {
     public class HQInitializer : MonoBehaviour
     {
-        [Require] HeadQuartersWriter writer;
+        [Require] CommandersManagerWriter writer;
 
         [SerializeField]
         HeadQuarterInitSettings settings;
@@ -17,9 +17,10 @@ namespace AdvancedGears
         {
             Assert.IsNotNull(settings);
 
-            writer.SendUpdate(new HeadQuarters.Update
+            writer.SendUpdate(new CommandersManager.Update
             {
                 Interval = IntervalCheckerInitializer.InitializedChecker(settings.Inter),
+                SightRange = settings.SightRange,
                 MaxRank = settings.MaxRank,
             });
         }

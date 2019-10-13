@@ -80,9 +80,11 @@ namespace AdvancedGears
                     break;
 
                 case UnitType.HeadQuarter:
-                    template.AddComponent(new HeadQuarters.Snapshot { UpperRank = 0,
-                                                                     FactoryDatas = new FactoryMap { Reserves = new Dictionary<EntityId,ReserveMap>() },
-                                                                     Orders = new List<OrganizeOrder>() }, writeAccess);
+                    //template.AddComponent(new HeadQuarters.Snapshot { UpperRank = 0,
+                    //                                                 FactoryDatas = new FactoryMap { Reserves = new Dictionary<EntityId,ReserveMap>() },
+                    //                                                 Orders = new List<OrganizeOrder>() }, writeAccess);
+                    template.AddComponent(new CommandersManager.Snapshot { State = CommanderManagerState.None,
+                                                                           CommanderDatas = new Dictionary<EntityId, TeamInfo>() }, writeAccess);
                     break;
             }
         }

@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sightRange: 100
   maxRank: 0
-  inter: 3
+  inter: 10

@@ -58,9 +58,15 @@ namespace AdvancedGears
 
                 manager.Interval = inter;
 
-                if (manager.CommanderDatas.Count == 0) {
-                    uint rank = 0;
+                uint rank = 0;
+                foreach (var kvp in manager.CommanderDatas)
+                {
+                    var r = kvp.Value.Rank;
+                    if (r > rank)
+                        rank = r;
+                }
 
+                if (rank < manager.MaxRank) {
                     if (manager.FactoryId.IsValid() == false) {
                         var trans = EntityManager.GetComponentObject<Transform>(entity);
                         var pos = trans.position;

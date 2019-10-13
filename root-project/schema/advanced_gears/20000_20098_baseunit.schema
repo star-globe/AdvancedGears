@@ -339,6 +339,7 @@ component CommandersManager {
     CommanderManagerState state = 3;
     EntityId factory_id = 4;
     float sight_range = 5;
+    uint32 max_rank = 6;
 
     command improbable.gdk.core.Empty add_commander(CreatedCommanderInfo);
 }

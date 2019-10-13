@@ -57,6 +57,7 @@ namespace AdvancedGears
             world.GetOrCreateSystem<UnitFactorySystem>();
             //world.GetOrCreateSystem<HQOrganizeSystem>();
             //world.GetOrCreateSystem<UnitArmyObserveSystem>();
+            world.GetOrCreateSystem<CommandersManagerSystem>();
             world.GetOrCreateSystem<BulletMovementSystem>();
             world.GetOrCreateSystem<BaseUnitReviveTimerSystem>();
             world.GetOrCreateSystem<FieldQueryServerSystem>();
