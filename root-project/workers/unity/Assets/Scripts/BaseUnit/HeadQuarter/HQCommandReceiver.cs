@@ -42,6 +42,7 @@ namespace AdvancedGears
             writer.SendUpdate(new CommandersManager.Update()
             {
                 CommanderDatas = datas,
+                State = CommanderManagerState.None,
             });
         }
     }

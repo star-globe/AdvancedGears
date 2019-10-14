@@ -61,6 +61,9 @@ namespace AdvancedGears
                 uint rank = 0;
                 foreach (var kvp in manager.CommanderDatas)
                 {
+                    if (kvp.Value.State != UnitState.Alive)
+                        continue;
+
                     var r = kvp.Value.Rank;
                     if (r > rank)
                         rank = r;
