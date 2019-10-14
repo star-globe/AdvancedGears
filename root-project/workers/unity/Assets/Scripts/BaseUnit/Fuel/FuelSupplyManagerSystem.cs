@@ -21,16 +21,9 @@ namespace AdvancedGears
     {
         EntityQuery group;
 
-       ILogDispatcher logDispatcher;
-        private Vector3 origin;
-
-        protected override void OnCreateManager()
+        protected override void OnCreate()
         {
-            base.OnCreateManager();
-
-            // ここで基準位置を取る
-            origin = this.Origin;
-            logDispatcher = this.LogDispatcher;
+            base.OnCreate();
 
             group = GetEntityQuery(
                 ComponentType.ReadWrite<FuelSupplyManager.Component>(),

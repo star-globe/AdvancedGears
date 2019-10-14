@@ -19,8 +19,6 @@ namespace AdvancedGears
     {
         EntityQuery group;
 
-        private Vector3 origin;
-
         private class DeleteUnitContext
         {
             public EntityId entityId;
@@ -29,12 +27,9 @@ namespace AdvancedGears
         private readonly HashSet<EntityId> deadUnitIds = new HashSet<EntityId>();
         private readonly HashSet<EntityId> deletedIds = new HashSet<EntityId>();
 
-        protected override void OnCreateManager()
+        protected override void OnCreate()
         {
-            base.OnCreateManager();
-
-            // ここで基準位置を取る
-            origin = this.Origin;
+            base.OnCreate();
 
             group = GetEntityQuery(
                 ComponentType.ReadWrite<BaseUnitReviveTimer.Component>(),

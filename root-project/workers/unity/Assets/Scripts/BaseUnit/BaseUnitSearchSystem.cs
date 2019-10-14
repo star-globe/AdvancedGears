@@ -19,14 +19,9 @@ namespace AdvancedGears
     {
         EntityQuery group;
 
-        private Vector3 origin;
-
-        protected override void OnCreateManager()
+        protected override void OnCreate()
         {
-            base.OnCreateManager();
-
-            // ここで基準位置を取る
-            origin = this.Origin;
+            base.OnCreate();
 
             group = GetEntityQuery(
                 ComponentType.ReadWrite<BaseUnitMovement.Component>(),
@@ -93,7 +88,7 @@ namespace AdvancedGears
                 {
                     movement.IsTarget = true;
                     action.IsTarget = true;
-                    var epos = enemy.pos.ToWorldPosition(origin);
+                    var epos = enemy.pos.ToWorldPosition(this.Origin);
 
                     movement.TargetPosition = epos;
                     action.EnemyPositions.Add(epos);

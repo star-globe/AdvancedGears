@@ -20,7 +20,7 @@ namespace AdvancedGears
 
         public BulletCreator BulletCreator { get; private set; }
 
-        protected override void OnCreateManager()
+        protected override void OnCreate()
         {
             worker = World.GetExistingSystem<WorkerSystem>();
 

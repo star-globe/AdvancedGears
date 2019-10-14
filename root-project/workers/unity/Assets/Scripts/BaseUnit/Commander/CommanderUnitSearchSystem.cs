@@ -17,22 +17,17 @@ namespace AdvancedGears
     {
         private EntityQuery group;
 
-        private Vector3 origin;
-
         #region ComponentSystem
-        protected override void OnCreateManager()
+        protected override void OnCreate()
         {
-            base.OnCreateManager();
-
-            // ここで基準位置を取る
-            origin = World.GetExistingSystem<WorkerSystem>().Origin;
+            base.OnCreate();
 
             group = GetEntityQuery(
                 ComponentType.ReadWrite<CommanderSight.Component>(),
                 ComponentType.ReadWrite<CommanderStatus.Component>(),
                 ComponentType.ReadWrite<CommanderAction.Component>(),
                 ComponentType.ReadOnly<CommanderAction.ComponentAuthority>(),
-                ComponentType.ReadOnly<CommanderTeam>(),
+                ComponentType.ReadOnly<CommanderTeam.Component>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<Transform>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
@@ -94,7 +89,7 @@ namespace AdvancedGears
             if (baseInfo.IsTarget)
             {
                 id = tgt.id;
-                tpos = tgt.pos.ToWorldPosition(origin);
+                tpos = tgt.pos.ToWorldPosition(this.Origin);
                 type = tgt.type;
                 side = tgt.side;
             }

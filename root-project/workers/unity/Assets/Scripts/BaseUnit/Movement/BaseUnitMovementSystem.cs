@@ -11,18 +11,13 @@ namespace AdvancedGears
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
-    internal class BaseUnitMovementSystem : ComponentSystem
+    internal class BaseUnitMovementSystem : SpatialComponentSystem
     {
         EntityQuery group;
 
-        private Vector3 origin;
-
-        protected override void OnCreateManager()
+        protected override void OnCreate()
         {
-            base.OnCreateManager();
-
-            // ここで基準位置を取る
-            origin = World.GetExistingSystem<WorkerSystem>().Origin;
+            base.OnCreate();
 
             group = GetEntityQuery(
                     ComponentType.ReadWrite<BaseUnitPosture.Component>(),
@@ -81,12 +76,12 @@ namespace AdvancedGears
 
                 var pos = rigidbody.position;
 
-                var tgt = movement.TargetPosition.ToWorkerPosition(origin);
+                var tgt = movement.TargetPosition.ToWorkerPosition(this.Origin);
 
                 // modify target
                 if (action.IsTarget == false && target.TargetInfo.CommanderId.IsValid())
                 {
-                    var com = movement.CommanderPosition.ToWorkerPosition(origin);
+                    var com = movement.CommanderPosition.ToWorkerPosition(this.Origin);
                     tgt = get_nearly_position(pos, tgt, com, target.TargetInfo.AllyRange);
                 }
 

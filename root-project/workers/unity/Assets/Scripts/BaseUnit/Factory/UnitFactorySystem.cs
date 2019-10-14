@@ -20,9 +20,6 @@ namespace AdvancedGears
     public class UnitFactorySystem : SpatialComponentSystem
     {
         EntityQuery group;
-        ILogDispatcher logDispatcher;
-
-        private Vector3 origin;
 
         private class ProductOrderContext
         {
@@ -32,13 +29,9 @@ namespace AdvancedGears
             public EntityId hqId;
         }
 
-        protected override void OnCreateManager()
+        protected override void OnCreate()
         {
-            base.OnCreateManager();
-
-            // ここで基準位置を取る
-            origin = this.Origin;
-            logDispatcher = this.LogDispatcher;
+            base.OnCreate();
 
             group = GetEntityQuery(
                 ComponentType.ReadWrite<UnitFactory.Component>(),
@@ -110,7 +103,7 @@ namespace AdvancedGears
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
                 var p = trans.position + RandomLogic.XZRandomCirclePos(range);
 
-                var pos = p - origin;
+                var pos = p - this.Origin;
                 EntityTemplate template = null;
                 var coords = new Coordinates(pos.x, pos.y + height_buffer, pos.z);
 

@@ -17,14 +17,9 @@ namespace AdvancedGears
     {
         private EntityQuery group;
 
-        private Vector3 origin;
-
-        protected override void OnCreateManager()
+        protected override void OnCreate()
         {
-            base.OnCreateManager();
-
-            // ここで基準位置を取る
-            origin = this.Origin;
+            base.OnCreate();
 
             group = GetEntityQuery(
                 ComponentType.ReadWrite<CommanderAction.Component>(),
@@ -90,7 +85,7 @@ namespace AdvancedGears
             if (action.ActionType == CommandActionType.Product)
                 return;
 
-            var diff = tgt.TargetInfo.Position.ToWorkerPosition(origin) - pos;
+            var diff = tgt.TargetInfo.Position.ToWorkerPosition(this.Origin) - pos;
             float length = 10.0f;   // TODO from:master
             if (diff.sqrMagnitude > length * length)
                 return;

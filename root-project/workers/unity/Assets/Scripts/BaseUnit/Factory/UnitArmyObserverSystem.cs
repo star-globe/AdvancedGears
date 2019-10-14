@@ -20,16 +20,11 @@ namespace AdvancedGears
     {
         EntityQuery group;
 
-        private Vector3 origin;
-
         readonly private HashSet<long> requestedIds = new HashSet<long>();
 
-        protected override void OnCreateManager()
+        protected override void OnCreate()
         {
-            base.OnCreateManager();
-
-            // ここで基準位置を取る
-            origin = this.Origin;
+            base.OnCreate();
 
             group = GetEntityQuery(
                 ComponentType.ReadWrite<UnitArmyObserver.Component>(),

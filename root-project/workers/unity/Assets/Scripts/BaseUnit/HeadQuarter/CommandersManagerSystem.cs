@@ -17,9 +17,9 @@ namespace AdvancedGears
     {
         private EntityQuery group;
 
-        protected override void OnCreateManager()
+        protected override void OnCreate()
         {
-            base.OnCreateManager();
+            base.OnCreate();
 
             group = GetEntityQuery(
                 ComponentType.ReadWrite<CommandersManager.Component>(),
@@ -77,13 +77,14 @@ namespace AdvancedGears
                     }
 
                     if (manager.FactoryId.IsValid()) {
+                        var factoryId = manager.FactoryId;
                         var id = entityId.EntityId;
-                        var request = new UnitFactory.AddSuperiorOrder.Request(id, new SuperiorOrder() { Followers = new List<EntityId>(),
-                                                                                                         HqEntityId = id,
-                                                                                                         Side = status.Side,
-                                                                                                         Rank = rank + 1 });
+                        var request = new UnitFactory.AddSuperiorOrder.Request(factoryId, new SuperiorOrder() { Followers = new List<EntityId>(),
+                                                                                                                HqEntityId = id,
+                                                                                                                Side = status.Side,
+                                                                                                                Rank = rank + 1 });
                         Entity factory;
-                        if (TryGetEntity(id, out factory)) {
+                        if (TryGetEntity(factoryId, out factory)) {
                             this.CommandSystem.SendCommand(request, factory);
                             manager.State = CommanderManagerState.CreateCommander;
                         }

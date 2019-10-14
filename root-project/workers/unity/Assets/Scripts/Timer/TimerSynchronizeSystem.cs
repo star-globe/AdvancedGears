@@ -10,17 +10,13 @@ using UnityEngine.Experimental.PlayerLoop;
 namespace AdvancedGears
 {
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
-    internal class TimerSynchronizeSystem : ComponentSystem
+    internal class TimerSynchronizeSystem : SpatialComponentSystem
     {
         EntityQuery group;
 
-        private ComponentUpdateSystem updateSystem;
-
-        protected override void OnCreateManager()
+        protected override void OnCreate()
         {
-            base.OnCreateManager();
-
-            updateSystem = World.GetExistingSystem<ComponentUpdateSystem>();
+            base.OnCreate();
 
             group = GetEntityQuery(
                     ComponentType.ReadWrite<WorldTimer.Component>(),
@@ -55,7 +51,7 @@ namespace AdvancedGears
 
                 timer.CurrentTime = info;
 
-                updateSystem.SendEvent(new WorldTimer.Updates.Event(info), entityId.EntityId);
+                this.UpdateSystem.SendEvent(new WorldTimer.Updates.Event(info), entityId.EntityId);
             });
         }
     }

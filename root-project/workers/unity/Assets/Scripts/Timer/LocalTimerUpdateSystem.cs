@@ -18,8 +18,6 @@ namespace AdvancedGears
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     internal class LocalTimerUpdateSystem : BaseEntitySearchSystem
     {
-        private ILogDispatcher logDispatcher;
-
         private TimerInfo? timerInfo;
         public TimerInfo? Timer { get { return timerInfo;} }
 
@@ -56,11 +54,9 @@ namespace AdvancedGears
             });
         }
 
-        protected override void OnCreateManager()
+        protected override void OnCreate()
         {
-            base.OnCreateManager();
-
-            logDispatcher = this.LogDispatcher;
+            base.OnCreate();
 
             Initialize();
 
@@ -116,7 +112,7 @@ namespace AdvancedGears
                 {
                     ++retries;
 
-                    logDispatcher.HandleLog(LogType.Warning, new LogEvent(
+                    this.LogDispatcher.HandleLog(LogType.Warning, new LogEvent(
                         $"Retrying timer query, attempt {retries}.\n{response.Message}"
                     ));
 
@@ -128,7 +124,7 @@ namespace AdvancedGears
                         ? "1 attempt"
                         : $"{retries + 1} attempts";
 
-                    logDispatcher.HandleLog(LogType.Error, new LogEvent(
+                    this.LogDispatcher.HandleLog(LogType.Error, new LogEvent(
                         $"Unable to find timer after {retryText}."
                     ));
                 }
