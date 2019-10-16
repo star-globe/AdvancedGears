@@ -9,3 +9,8 @@ component PlayerInfo
 	string name = 1;
 	string client_worker_id = 2;
 }
+
+component PlayerControls
+{
+	id = 15001;	
+}

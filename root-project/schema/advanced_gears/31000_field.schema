@@ -38,3 +38,7 @@ component TreeComponent {
 
     map<int32,TreeInfo> tree_map = 1;
 }
+
+component MinimapRepresentaion {
+    id = 31002;
+}
