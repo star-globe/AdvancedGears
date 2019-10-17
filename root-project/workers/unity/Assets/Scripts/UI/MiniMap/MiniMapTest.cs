@@ -34,42 +34,4 @@ namespace AdvancedGears
             playerTemplate.AddComponent(interestTemplate.ToSnapshot(), WorkerUtils.UnityGameLogic);
         }
     }
-
-    class MinimapSystem : SpatialComponentSystem
-    {
-        EntityQuery group;
-
-        protected override void OnCreate()
-        {
-            base.OnCreate();
-
-            group = GetEntityQuery(
-                ComponentType.ReadOnly<Interest.Component>(),
-                ComponentType.ReadOnly<PlayerControls.Component>(),
-                ComponentType.ReadOnly<SpatialEntityId>()
-            );
-
-        }
-
-        protected override void OnUpdate()
-        {
-            Entities.With(group).ForEach((Entity entity,
-                                          ref Interest.Component interest,
-                                          ref PlayerControls.Component controls,
-                                          ref SpatialEntityId entityId) =>
-            {
-                var dic = interest.ComponentInterest;
-                foreach (var kvp in dic)
-                {
-                    var uid = kvp.Key;
-                    var value = kvp.Value;
-
-                    foreach(var q in value.Queries)
-                    {
-                        var list = q.ResultComponentId;
-                    }
-                }
-            });
-        }
-    }
 }
