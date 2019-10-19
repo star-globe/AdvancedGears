@@ -1,5 +1,6 @@
 package advanced_gears;
 import "improbable/gdk/transform_synchronization/transform_internal.schema";
+import "advanced_gears/common.schema";
 
 enum FieldWorkerType {
     None = 0;
@@ -41,4 +42,11 @@ component TreeComponent {
 
 component MinimapRepresentaion {
     id = 31002;
+}
+
+component SymbolicTower {
+    id = 31003;
+
+    UnitSide side = 1;
+    float height = 2;
 }
