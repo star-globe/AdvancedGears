@@ -17,6 +17,9 @@ namespace AdvancedGears
         float intervalRate = 1.0f / 100;
         public static float IntervalRate { get { return Instance.intervalRate; } }
 
+        [SerializeField]
+        float dispLength = 700.0f;
+        public static float DispLength { get { return Instance.dispLength; } }
 
         public override void Initialize()
         {

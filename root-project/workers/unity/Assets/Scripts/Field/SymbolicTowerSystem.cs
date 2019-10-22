@@ -55,7 +55,10 @@ namespace AdvancedGears
             }
 
             UpdatePlayerPosition();
-            UpdateTowers();
+            var min = UpdateTowers(interval.Value.Interval);
+
+            if (min < float.MaxValue)
+                interval = IntervalCheckerInitializer.InitializedChecker(min);
         }
 
         private void UpdatePlayerPosition()
@@ -71,10 +74,12 @@ namespace AdvancedGears
             });
         }
 
-        private void UpdateTowers()
+        private float UpdateTowers(float inter)
         {
             if (playerPosition == null)
-                return;
+                return inter;
+
+            float minLength = float.MaxValue;
 
             Entities.With(groupTower).ForEach((Entity entity,
                                           ref SymbolicTower.Component tower,
@@ -94,8 +99,22 @@ namespace AdvancedGears
                     towerObj = towerObjDic[tower.Side];
                 }
 
-                // position check
+                var t_pos = position.Coords.ToUnityVector() + this.Origin;
+                var diff = t_pos - playerPosition.Value;
+                var length = diff.magnitude;
+
+                if (minLength > length)
+                    minLength = length;
+
+                var rate = length / TowerDictionary.DispLength;
+
+                var scaledPos = rate * diff + playerPosition.Value;
+
+                towerObj.transform.localScale = Vector3.one * rate;
+                towerObj.transform.position = scaledPos;
             });
+
+            return minLength;
         }
     }
 }
