@@ -31,7 +31,7 @@ namespace AdvancedGears
         public void SetHeight(float rate)
         {
             var pos = this.transform.position;
-            var ray = new Ray(new Vector3(pos.x, 1000.0f, pos.z), Vector3.down);
+            var ray = new Ray(new Vector3(pos.x, 3000.0f, pos.z), Vector3.down);
             RaycastHit hit;
             Physics.Raycast(ray, out hit);
 

@@ -3,6 +3,7 @@ using Improbable;
 using Improbable.Gdk.Core;
 using Improbable.Gdk.TransformSynchronization;
 using Improbable.Gdk.PlayerLifecycle;
+using Improbable.Gdk.QueryBasedInterest;
 using Improbable.Worker;
 
 namespace AdvancedGears
@@ -74,6 +75,7 @@ namespace AdvancedGears
                     break;
 
                 case UnitType.Stronghold:
+                    template.AddComponent(new StrongholdUnitStatus.Snapshot(), writeAccess);
                     template.AddComponent(new UnitFactory.Snapshot { FollowerOrders = new List<FollowerOrder>(), SuperiorOrders = new List<SuperiorOrder>() }, writeAccess);
                     template.AddComponent(new UnitArmyObserver.Snapshot(), writeAccess);
                     template.AddComponent(new DominationStamina.Snapshot { SideStaminas = new Dictionary<UnitSide,float>() }, writeAccess);
@@ -85,6 +87,10 @@ namespace AdvancedGears
                     //                                                 Orders = new List<OrganizeOrder>() }, writeAccess);
                     template.AddComponent(new CommandersManager.Snapshot { State = CommanderManagerState.None,
                                                                            CommanderDatas = new Dictionary<EntityId, TeamInfo>() }, writeAccess);
+                    var strongholdQuery = InterestQuery.Query(Constraint.Component<StrongholdUnitStatus.Component>())
+                                          .FilterResults(Position.ComponentId, BaseUnitStatus.ComponentId);
+                    var interestTemplate = InterestTemplate.Create().AddQueries<CommandersManager.Component>(strongholdQuery);
+                    template.AddComponent(interestTemplate.ToSnapshot(), writeAccess);
                     break;
             }
         }

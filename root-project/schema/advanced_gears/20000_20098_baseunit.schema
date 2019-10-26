@@ -181,6 +181,7 @@ component CommanderStatus {
 type TeamInfo {
     uint32 rank = 1;
     UnitState state = 2;
+    EntityId target_stronghold = 3;
     list<EntityId> soldiers = 5;
     list<EntityId> under_commanders = 6;
 }
@@ -256,8 +257,6 @@ component CommanderAction {
 // stronghold:20030~
 component StrongholdUnitStatus {
     id = 20030;
-
-    float capture_range = 1;
 }
 
 component UnitFactory {

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Improbable;
 using Improbable.Gdk.Core;
 using Improbable.Gdk.Subscriptions;
 using Unity.Collections;
@@ -25,7 +26,7 @@ namespace AdvancedGears
                 ComponentType.ReadWrite<CommandersManager.Component>(),
                 ComponentType.ReadOnly<CommandersManager.ComponentAuthority>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
-                ComponentType.ReadOnly<Transform>(),
+                ComponentType.ReadOnly<Position.Component>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
 
@@ -34,9 +35,15 @@ namespace AdvancedGears
 
         protected override void OnUpdate()
         {
+            UpdateForCreateCommander();
+        }
+
+        void UpdateForCreateCommander()
+        {
             Entities.With(group).ForEach((Entity entity,
                                           ref CommandersManager.Component manager,
                                           ref BaseUnitStatus.Component status,
+                                          ref Position.Component position,
                                           ref SpatialEntityId entityId) =>
             {
                 if (status.State != UnitState.Alive)
@@ -71,8 +78,7 @@ namespace AdvancedGears
 
                 if (rank < manager.MaxRank) {
                     if (manager.FactoryId.IsValid() == false) {
-                        var trans = EntityManager.GetComponentObject<Transform>(entity);
-                        var pos = trans.position;
+                        var pos = position.Coords.ToUnityVector() + this.Origin;
 
                         var tgt = getNearestAlly(status.Side, pos, manager.SightRange, UnitType.Stronghold);
                         if (tgt != null)
@@ -94,6 +100,10 @@ namespace AdvancedGears
                     }
                 }
             });
+        }
+
+        void UpdateForOrder()
+        {
         }
     }
 }
