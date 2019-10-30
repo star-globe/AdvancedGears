@@ -106,10 +106,6 @@ namespace AdvancedGears
                         }
                     }
                 }
-                else
-                {
-                    
-                }
             });
         }
 
