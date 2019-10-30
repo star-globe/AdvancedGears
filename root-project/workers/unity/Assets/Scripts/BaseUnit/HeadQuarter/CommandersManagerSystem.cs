@@ -76,8 +76,10 @@ namespace AdvancedGears
                         rank = r;
                 }
 
-                if (rank < manager.MaxRank) {
-                    if (manager.FactoryId.IsValid() == false) {
+                if (rank < manager.MaxRank)
+                {
+                    if (manager.FactoryId.IsValid() == false)
+                    {
                         var pos = position.Coords.ToUnityVector() + this.Origin;
 
                         var tgt = getNearestAlly(status.Side, pos, manager.SightRange, UnitType.Stronghold);
@@ -85,19 +87,28 @@ namespace AdvancedGears
                             manager.FactoryId = tgt.id;
                     }
 
-                    if (manager.FactoryId.IsValid()) {
+                    if (manager.FactoryId.IsValid())
+                    {
                         var factoryId = manager.FactoryId;
                         var id = entityId.EntityId;
-                        var request = new UnitFactory.AddSuperiorOrder.Request(factoryId, new SuperiorOrder() { Followers = new List<EntityId>(),
-                                                                                                                HqEntityId = id,
-                                                                                                                Side = status.Side,
-                                                                                                                Rank = rank + 1 });
+                        var request = new UnitFactory.AddSuperiorOrder.Request(factoryId, new SuperiorOrder()
+                        {
+                            Followers = new List<EntityId>(),
+                            HqEntityId = id,
+                            Side = status.Side,
+                            Rank = rank + 1
+                        });
                         Entity factory;
-                        if (TryGetEntity(factoryId, out factory)) {
+                        if (TryGetEntity(factoryId, out factory))
+                        {
                             this.CommandSystem.SendCommand(request, factory);
                             manager.State = CommanderManagerState.CreateCommander;
                         }
                     }
+                }
+                else
+                {
+                    
                 }
             });
         }
