@@ -57,6 +57,7 @@ namespace AdvancedGears
         {
             commandReceiver.OnAddFollowerRequestReceived += OnAddFollowerRequest;
             commandReceiver.OnGetTeamInfoRequestReceived += OnTeamInfoRequest;
+            commandReceiver.OnSetTargetStrogholdRequestReceived += OnSetTargerRequest;
         }
 
         private void Update()
@@ -115,6 +116,14 @@ namespace AdvancedGears
                     State = status.State,
                 }
             }));
+        }
+
+        private void OnSetTargerRequest(CommanderTeam.SetTargetStroghold.ReceivedRequest request)
+        {
+            writer.SendUpdate(new CommanderTeam.Update()
+            {
+                TargetStronghold = request.Payload,
+            });
         }
     }
 }

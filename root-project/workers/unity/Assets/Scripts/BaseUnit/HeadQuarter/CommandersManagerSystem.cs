@@ -31,7 +31,7 @@ namespace AdvancedGears
         private EntityQuery commanderGroup;
         private EntityQuery strongholdGroup;
 
-        private Dictionary<SpatialEntityId, StrongInfo> strongDic = null;
+        private Dictionary<EntityId, StrongInfo> strongDic = null;
         IntervalChecker inter;
 
         protected override void OnCreate()
@@ -83,16 +83,13 @@ namespace AdvancedGears
                 if (status.Order == OrderType.Idle)
                     return;
 
-                if (manager.State == CommanderManagerState.CreateCommander)
-                    return;
-
                 var inter = manager.Interval;
                 if (inter.CheckTime() == false)
                     return;
 
                 manager.Interval = inter;
 
-                List<SpatialEntityId> allies, enemies;
+                List<EntityId> allies, enemies;
                 GetStrongholdEntity(status.Side, position.Coords, out allies, out enemies);
 
                 var pos = position.Coords.ToUnityVector() + this.Origin;
@@ -115,11 +112,21 @@ namespace AdvancedGears
                     {
                         manager.CommanderDatas[kvp.Key] = team;
 
-                        //var request = new 
-                        //
-                        //this.CommandSystem.SendCommand();
+                        var info = strongDic[team.TargetStronghold];
+
+                        var request = new CommanderTeam.SetTargetStroghold.Request(kvp.Key, new TargetStrongholdInfo()
+                        {
+                            TargetStronghold = team.TargetStronghold,
+                            Position = info.coords,
+                            Side = info.side,
+                        });
+
+                        this.CommandSystem.SendCommand(request);
                     }
                 }
+
+                if (manager.State == CommanderManagerState.CreateCommander)
+                    return;
 
                 if (rank < manager.MaxRank)
                 {
@@ -151,14 +158,15 @@ namespace AdvancedGears
 
         void UpdateStrongHolds()
         {
-            strongDic = strongDic ?? new Dictionary<SpatialEntityId, StrongInfo>();
+            strongDic = strongDic ?? new Dictionary<EntityId, StrongInfo>();
 
             Entities.With(strongholdGroup).ForEach((Entity entity,
                                   ref StrongholdUnitStatus.Component stronghold,
                                   ref BaseUnitStatus.Component status,
                                   ref Position.Component position,
-                                  ref SpatialEntityId entityId) =>
+                                  ref SpatialEntityId spatialEntityId) =>
             {
+                var entityId = spatialEntityId.EntityId;
                 if (strongDic.ContainsKey(entityId))
                     strongDic[entityId].side = status.Side;
                 else
@@ -166,7 +174,7 @@ namespace AdvancedGears
             });
         }
 
-        bool SelectTarget(ref int index, ref EntityId targetId, List<SpatialEntityId> list)
+        bool SelectTarget(ref int index, ref EntityId targetId, List<EntityId> list)
         {
             if (list.Count == 0 || targetId.IsValid())
                 return false;
@@ -174,16 +182,16 @@ namespace AdvancedGears
             if (index >= list.Count)
                 index = 0;
 
-            targetId = list[index].EntityId;
+            targetId = list[index];
             index++;
 
             return true;
         }
 
-        readonly Dictionary<SpatialEntityId, double> allyDic = new Dictionary<SpatialEntityId, double>();
-        readonly Dictionary<SpatialEntityId, double> enemyDic = new Dictionary<SpatialEntityId, double>();
+        readonly Dictionary<EntityId, double> allyDic = new Dictionary<EntityId, double>();
+        readonly Dictionary<EntityId, double> enemyDic = new Dictionary<EntityId, double>();
 
-        void GetStrongholdEntity(UnitSide side, Coordinates coords, out List<SpatialEntityId> allies, out List<SpatialEntityId> enemies)
+        void GetStrongholdEntity(UnitSide side, Coordinates coords, out List<EntityId> allies, out List<EntityId> enemies)
         {
             if (strongDic == null)
                 UpdateStrongHolds();
