@@ -48,9 +48,8 @@ namespace AdvancedGears
         {
             if (interval != null)
             {
-                var time = Time.time;
                 var inter = interval.Value;
-                if (inter.CheckTime(time) == false)
+                if (inter.CheckTime() == false)
                     return;
             }
 

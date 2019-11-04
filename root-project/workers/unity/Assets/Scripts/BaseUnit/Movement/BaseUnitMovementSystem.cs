@@ -98,9 +98,8 @@ namespace AdvancedGears
 
                 if (rotate(rigidbody.transform, tgt - pos, movement.RotSpeed))
                 {
-                    var time = Time.time;
                     var inter = posture.Interval;
-                    if (posture.Initialized && inter.CheckTime(time))
+                    if (posture.Initialized && inter.CheckTime())
                     {
                         posture.Interval = inter;
                         posture.Root = rigidbody.transform.rotation.ToCompressedQuaternion();

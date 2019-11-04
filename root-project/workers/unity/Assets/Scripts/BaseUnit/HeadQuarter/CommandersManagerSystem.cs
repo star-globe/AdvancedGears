@@ -16,13 +16,29 @@ namespace AdvancedGears
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     class CommandersManagerSystem : BaseSearchSystem
     {
-        private EntityQuery group;
+        class StrongInfo
+        {
+            public UnitSide side;
+            public Coordinates coords;
+
+            public StrongInfo(UnitSide s, Coordinates c)
+            {
+                side = s;
+                coords = c;
+            }
+        }
+
+        private EntityQuery commanderGroup;
+        private EntityQuery strongholdGroup;
+
+        private Dictionary<SpatialEntityId, StrongInfo> strongDic = null;
+        IntervalChecker inter;
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            group = GetEntityQuery(
+            commanderGroup = GetEntityQuery(
                 ComponentType.ReadWrite<CommandersManager.Component>(),
                 ComponentType.ReadOnly<CommandersManager.ComponentAuthority>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
@@ -30,17 +46,29 @@ namespace AdvancedGears
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
 
-            group.SetFilter(CommandersManager.ComponentAuthority.Authoritative);
+            commanderGroup.SetFilter(CommandersManager.ComponentAuthority.Authoritative);
+
+            strongholdGroup = GetEntityQuery(
+                ComponentType.ReadOnly<StrongholdUnitStatus.Component>(),
+                ComponentType.ReadOnly<BaseUnitStatus.Component>(),
+                ComponentType.ReadOnly<Position.Component>(),
+                ComponentType.ReadOnly<SpatialEntityId>()
+            );
+
+            inter = IntervalCheckerInitializer.InitializedChecker(10.0f);
         }
 
         protected override void OnUpdate()
         {
+            if (inter.CheckTime())
+                UpdateStrongHolds();
+
             UpdateForCreateCommander();
         }
 
         void UpdateForCreateCommander()
         {
-            Entities.With(group).ForEach((Entity entity,
+            Entities.With(commanderGroup).ForEach((Entity entity,
                                           ref CommandersManager.Component manager,
                                           ref BaseUnitStatus.Component status,
                                           ref Position.Component position,
@@ -58,15 +86,22 @@ namespace AdvancedGears
                 if (manager.State == CommanderManagerState.CreateCommander)
                     return;
 
-                var time = Time.time;
                 var inter = manager.Interval;
-                if (inter.CheckTime(time) == false)
+                if (inter.CheckTime() == false)
                     return;
 
                 manager.Interval = inter;
 
+                List<SpatialEntityId> allies, enemies;
+                GetStrongholdEntity(status.Side, position.Coords, out allies, out enemies);
+
+                var pos = position.Coords.ToUnityVector() + this.Origin;
+
+                int allyIndex = 0, enemyIndex = 0;
                 uint rank = 0;
-                foreach (var kvp in manager.CommanderDatas)
+
+                var dic = manager.CommanderDatas.ToList();
+                foreach (var kvp in dic)
                 {
                     if (kvp.Value.State != UnitState.Alive)
                         continue;
@@ -74,18 +109,23 @@ namespace AdvancedGears
                     var r = kvp.Value.Rank;
                     if (r > rank)
                         rank = r;
+
+                    var team = kvp.Value;
+                    if (SelectTarget(ref allyIndex, ref team.TargetStronghold, allies))
+                    {
+                        manager.CommanderDatas[kvp.Key] = team;
+
+                        //var request = new 
+                        //
+                        //this.CommandSystem.SendCommand();
+                    }
                 }
 
                 if (rank < manager.MaxRank)
                 {
-                    if (manager.FactoryId.IsValid() == false)
-                    {
-                        var pos = position.Coords.ToUnityVector() + this.Origin;
-
-                        var tgt = getNearestAlly(status.Side, pos, manager.SightRange, UnitType.Stronghold);
-                        if (tgt != null)
-                            manager.FactoryId = tgt.id;
-                    }
+                    var tgtId = manager.FactoryId;
+                    if (SelectTarget(ref enemyIndex, ref tgtId, enemies))
+                        manager.FactoryId = tgtId;
 
                     if (manager.FactoryId.IsValid())
                     {
@@ -109,8 +149,60 @@ namespace AdvancedGears
             });
         }
 
-        void UpdateForOrder()
+        void UpdateStrongHolds()
         {
+            strongDic = strongDic ?? new Dictionary<SpatialEntityId, StrongInfo>();
+
+            Entities.With(strongholdGroup).ForEach((Entity entity,
+                                  ref StrongholdUnitStatus.Component stronghold,
+                                  ref BaseUnitStatus.Component status,
+                                  ref Position.Component position,
+                                  ref SpatialEntityId entityId) =>
+            {
+                if (strongDic.ContainsKey(entityId))
+                    strongDic[entityId].side = status.Side;
+                else
+                    strongDic.Add(entityId, new StrongInfo(status.Side, position.Coords));
+            });
+        }
+
+        bool SelectTarget(ref int index, ref EntityId targetId, List<SpatialEntityId> list)
+        {
+            if (list.Count == 0 || targetId.IsValid())
+                return false;
+
+            if (index >= list.Count)
+                index = 0;
+
+            targetId = list[index].EntityId;
+            index++;
+
+            return true;
+        }
+
+        readonly Dictionary<SpatialEntityId, double> allyDic = new Dictionary<SpatialEntityId, double>();
+        readonly Dictionary<SpatialEntityId, double> enemyDic = new Dictionary<SpatialEntityId, double>();
+
+        void GetStrongholdEntity(UnitSide side, Coordinates coords, out List<SpatialEntityId> allies, out List<SpatialEntityId> enemies)
+        {
+            if (strongDic == null)
+                UpdateStrongHolds();
+
+            allyDic.Clear();
+            enemyDic.Clear();
+
+            foreach (var kvp in strongDic)
+            {
+                var length = (kvp.Value.coords - coords).SqrMagnitude();
+
+                if (kvp.Value.side == side)
+                    allyDic.Add(kvp.Key, length);
+                else
+                    enemyDic.Add(kvp.Key, length);
+            }
+
+            allies = allyDic.OrderBy(kvp => kvp.Value).Select(kvp => kvp.Key).ToList();
+            enemies = enemyDic.OrderBy(kvp => kvp.Value).Select(kvp => kvp.Key).ToList();
         }
     }
 }

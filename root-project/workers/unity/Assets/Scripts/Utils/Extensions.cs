@@ -10,6 +10,11 @@ namespace AdvancedGears
 {
     static class Extensions
     {
+        public static double SqrMagnitude(this Coordinates coords)
+        {
+            return (coords.X * coords.X) + (coords.Y * coords.Y) + (coords.Z * coords.Z);
+        }
+        
         public static Vector3 ToWorkerPosition(this FixedPointVector3 pos, Vector3 origin)
         {
             return pos.ToUnityVector() + origin;
@@ -29,6 +34,11 @@ namespace AdvancedGears
         {
             diff = inter.Buffer + inter.Interval;
             return CheckTime(ref inter, current);
+        }
+
+        public static bool CheckTime(this ref IntervalChecker inter)
+        {
+            return CheckTime(ref inter, Time.time);
         }
 
         public static bool CheckTime(this ref IntervalChecker inter, float current)

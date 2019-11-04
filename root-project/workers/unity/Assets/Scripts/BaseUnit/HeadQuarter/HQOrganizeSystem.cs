@@ -52,9 +52,8 @@ namespace AdvancedGears
                 if (headQuarter.UpperRank >= headQuarter.MaxRank)
                     return;
 
-                var time = Time.time;
                 var inter = headQuarter.Interval;
-                if (inter.CheckTime(time) == false)
+                if (inter.CheckTime() == false)
                     return;
 
                 headQuarter.Interval = inter;

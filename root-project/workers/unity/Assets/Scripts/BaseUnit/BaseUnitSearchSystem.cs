@@ -57,9 +57,8 @@ namespace AdvancedGears
                     status.Type != UnitType.Commander)
                     return;
 
-                var time = Time.time;
                 var inter = sight.Interval;
-                if (inter.CheckTime(time) == false)
+                if (inter.CheckTime() == false)
                     return;
 
                 sight.Interval = inter;

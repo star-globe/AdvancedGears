@@ -55,9 +55,8 @@ namespace AdvancedGears
                 if (fuel.Fuel == 0)
                     return;
 
-                var time = Time.time;
                 var inter = server.Interval;
-                if (inter.CheckTime(time) == false)
+                if (inter.CheckTime() == false)
                     return;
 
                 server.Interval = inter;

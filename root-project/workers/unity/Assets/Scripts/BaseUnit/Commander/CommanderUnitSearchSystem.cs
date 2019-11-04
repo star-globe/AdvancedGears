@@ -54,9 +54,8 @@ namespace AdvancedGears
                 if (status.Order == OrderType.Idle)
                     return;
 
-                var time = Time.time;
                 var inter = sight.Interval;
-                if (inter.CheckTime(time) == false)
+                if (inter.CheckTime() == false)
                     return;
 
                 sight.Interval = inter;

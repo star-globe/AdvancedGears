@@ -27,6 +27,17 @@ namespace AdvancedGears
             public SuperiorOrder? s_order;
             public UnitType type;
             public EntityId hqId;
+
+            public uint CommanderRank
+            {
+                get
+                {
+                    if (f_order != null)
+                        return f_order.Value.Rank;
+
+                    return s_order.Value.Rank;
+                }
+            }
         }
 
         protected override void OnCreate()
@@ -188,7 +199,7 @@ namespace AdvancedGears
         {
             Dictionary<EntityId, FollowerInfo> followerDic = null;
             Dictionary<EntityId, List<EntityId>> superiorDic = null;
-            Dictionary<EntityId, List<EntityId>> commanders = null;
+            Dictionary<EntityId, List<CommanderInfo>> commanders = null;
 
             var responses = this.CommandSystem.GetResponses<WorldCommands.CreateEntity.ReceivedResponse>();
             for (var i = 0; i < responses.Count; i++) {
@@ -221,7 +232,7 @@ namespace AdvancedGears
 
                         case UnitType.Commander:
                             info.UnderCommanders.Add(entityId);
-                            SetList(commanders, order.hqId, entityId);
+                            SetList(commanders, order.hqId, entityId, order.CommanderRank);
                             break;
                     }
 
@@ -231,7 +242,7 @@ namespace AdvancedGears
                 if (order.s_order != null) {
                     var id = response.EntityId.Value;
                     SetList(superiorDic, id, order.s_order.Value.Followers);
-                    SetList(commanders, order.hqId, id);
+                    SetList(commanders, order.hqId, id, order.CommanderRank);
                 }
             }
 
@@ -266,19 +277,19 @@ namespace AdvancedGears
                 foreach (var kvp in commanders)
                 {
                     this.CommandSystem.SendCommand(new CommandersManager.AddCommander.Request(kvp.Key,
-                                                    new CreatedCommanderInfo { Commanders = kvp.Value.ToList() }));
+                                                    new CreatedCommanderList { Commanders = kvp.Value.ToList() }));
                 }
             }
         }
 
-        private void SetList(Dictionary<EntityId, List<EntityId>> commanders, in EntityId hqId, in EntityId product)
+        private void SetList(Dictionary<EntityId, List<CommanderInfo>> commanders, in EntityId hqId, in EntityId product, uint rank)
         {
-            commanders = commanders ?? new Dictionary<EntityId, List<EntityId>>();
+            commanders = commanders ?? new Dictionary<EntityId, List<CommanderInfo>>();
 
-            List<EntityId> list = null;
+            List<CommanderInfo> list = null;
             commanders.TryGetValue(hqId, out list);
-            list = list ?? new List<EntityId>();
-            list.Add(product);
+            list = list ?? new List<CommanderInfo>();
+            list.Add(new CommanderInfo(product,rank));
             commanders[hqId] = list;
         }
 

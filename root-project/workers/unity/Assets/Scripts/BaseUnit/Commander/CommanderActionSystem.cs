@@ -53,9 +53,8 @@ namespace AdvancedGears
                 if (!action.IsTarget)
                     return;
 
-                var time = Time.time;
                 var inter = action.Interval;
-                if (inter.CheckTime(time) == false)
+                if (inter.CheckTime() == false)
                     return;
 
                 action.Interval = inter;

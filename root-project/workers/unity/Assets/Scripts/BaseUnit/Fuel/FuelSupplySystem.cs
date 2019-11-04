@@ -62,9 +62,8 @@ namespace AdvancedGears
                 if (supply.OrderFinished)
                     return;
 
-                var time = Time.time;
                 var inter = supply.Interval;
-                if (inter.CheckTime(time) == false)
+                if (inter.CheckTime() == false)
                     return;
 
                 supply.Interval = inter;

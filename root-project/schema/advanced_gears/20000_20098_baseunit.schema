@@ -1,4 +1,5 @@
 package advanced_gears;
+import "improbable/standard_library.schema";
 import "improbable/gdk/core/common.schema";
 import "improbable/gdk/transform_synchronization/transform_internal.schema";
 import "advanced_gears/common.schema";
@@ -195,12 +196,20 @@ type TeamInfoRequest {
     EntityId hq_entitt_id = 1;
 }
 
+type TargetStrongholdInfo {
+    EntityId target_stronghold = 1;
+    UnitSide side = 2;
+    improbable.Coordinates position = 3;
+}
+
 component CommanderTeam {
     id = 20021;
 
     FollowerInfo follower_info = 1;
     SuperiorInfo superior_info = 2;
     HQInfo hq_info = 3;
+
+    EntityId target_stronghold = 4;
 
     command improbable.gdk.core.Empty add_follower(FollowerInfo);
     command improbable.gdk.core.Empty set_superior(SuperiorInfo);
@@ -320,8 +329,13 @@ component HeadQuarters {
     command improbable.gdk.core.Empty add_order(OrganizeOrder);
 }
 
-type CreatedCommanderInfo {
-    list<EntityId> commanders = 1;
+type CommanderInfo {
+    EntityId commander_id = 1;
+    uint32 rank = 2;
+}
+
+type CreatedCommanderList {
+    list<CommanderInfo> commanders = 1;
 }
 
 enum CommanderManagerState {
@@ -340,5 +354,5 @@ component CommandersManager {
     float sight_range = 5;
     uint32 max_rank = 6;
 
-    command improbable.gdk.core.Empty add_commander(CreatedCommanderInfo);
+    command improbable.gdk.core.Empty add_commander(CreatedCommanderList);
 }

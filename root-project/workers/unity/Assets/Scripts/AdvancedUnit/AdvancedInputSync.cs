@@ -68,9 +68,8 @@ namespace AdvancedGears
                 if (status.State != UnitState.Alive)
                     return;
 
-                var time = Time.time;
                 var inter = unMannedInput.Interval;
-                if (inter.CheckTime(time) == false)
+                if (inter.CheckTime() == false)
                     return;
 
                 unMannedInput.Interval = inter;

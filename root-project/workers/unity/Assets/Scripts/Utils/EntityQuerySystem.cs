@@ -48,8 +48,7 @@ namespace AdvancedGears
             if(IsCheckTime)
                 return;
 
-            var time = Time.time;
-            if (inter.CheckTime(time) == false)
+            if (inter.CheckTime() == false)
                 return;
 
             // position check 
