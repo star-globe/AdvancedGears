@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: abe1ea70dff710f4d959fb31ffe8112e, type: 3}
+  m_Script: {fileID: 11500000, guid: e642199e563d8bf4e93913a34abc10da, type: 3}
   m_Name: FieldDictionary
   m_EditorClassIdentifier: 
   fieldsList:
@@ -19,4 +19,6 @@ MonoBehaviour:
   standardSize: 500
   maxHeight: 500
   maxRange: 1000
+  queryRangeRate: 3
+  checkRangeRate: 0.5
   baseTerrainData: {fileID: 15600000, guid: 043177bb622af0446a82c5d83d63dce5, type: 2}

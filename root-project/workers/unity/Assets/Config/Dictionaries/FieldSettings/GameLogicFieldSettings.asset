@@ -9,10 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 006f55d5918205b4ab898dfaf7870291, type: 3}
+  m_Script: {fileID: 11500000, guid: 493fc6fb409a3184aa5bab9bcf441a63, type: 3}
   m_Name: GameLogicFieldSettings
   m_EditorClassIdentifier: 
   fieldObject: {fileID: 6408312529055956839, guid: bb6af3051b29a234ca6f5c142f006540,
     type: 3}
   workerType: 2
-  fieldSize: 500
+  fieldSize: 1500

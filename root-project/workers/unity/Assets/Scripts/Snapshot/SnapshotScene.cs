@@ -46,6 +46,7 @@ namespace AdvancedGears
 
         public void Initialize()
         {
+            this.transform.position = new Vector3(-localSize/2,0,-localSize/2);
             realizer.Setup(localSize, dictionary);
         }
 

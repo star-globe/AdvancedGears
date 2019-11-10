@@ -129,7 +129,19 @@ namespace AdvancedGears
                          ref CommanderTeam.Component team)
         {
             // check rank
-            var tgt = getNearestEnemey(status.Side, pos, sight.Range, UnitType.Stronghold, UnitType.Commander);
+            UnitInfo tgt;
+            var info = team.TargetStronghold;
+            if (info.TargetStronghold.IsValid()) {
+                tgt = new UnitInfo() {
+                    id = info.TargetStronghold,
+                    pos = info.Position.ToUnityVector() + this.Origin,
+                    side = info.Side,
+                    type = UnitType.Stronghold
+                };
+            }
+            else
+                tgt = getNearestEnemey(status.Side, pos, sight.Range, UnitType.Stronghold, UnitType.Commander);
+
             TargetInfo targetInfo;
             commonTargeting(tgt, entityId, commander, ref sight, out targetInfo);
 
