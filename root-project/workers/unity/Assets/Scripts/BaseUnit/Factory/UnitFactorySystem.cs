@@ -232,7 +232,7 @@ namespace AdvancedGears
 
                         case UnitType.Commander:
                             info.UnderCommanders.Add(entityId);
-                            SetList(commanders, order.hqId, entityId, order.CommanderRank);
+                            SetList(ref commanders, order.hqId, entityId, order.CommanderRank);
                             break;
                     }
 
@@ -241,8 +241,8 @@ namespace AdvancedGears
 
                 if (order.s_order != null) {
                     var id = response.EntityId.Value;
-                    SetList(superiorDic, id, order.s_order.Value.Followers);
-                    SetList(commanders, order.hqId, id, order.CommanderRank);
+                    SetList(ref superiorDic, id, order.s_order.Value.Followers);
+                    SetList(ref commanders, order.hqId, id, order.CommanderRank);
                 }
             }
 
@@ -282,7 +282,7 @@ namespace AdvancedGears
             }
         }
 
-        private void SetList(Dictionary<EntityId, List<CommanderInfo>> commanders, in EntityId hqId, in EntityId product, uint rank)
+        private void SetList(ref Dictionary<EntityId, List<CommanderInfo>> commanders, in EntityId hqId, in EntityId product, uint rank)
         {
             commanders = commanders ?? new Dictionary<EntityId, List<CommanderInfo>>();
 
@@ -293,7 +293,7 @@ namespace AdvancedGears
             commanders[hqId] = list;
         }
 
-        private void SetList(Dictionary<EntityId, List<EntityId>> superiorDic, in EntityId superior, IEnumerable<EntityId> followers)
+        private void SetList(ref Dictionary<EntityId, List<EntityId>> superiorDic, in EntityId superior, IEnumerable<EntityId> followers)
         {
             superiorDic = superiorDic ?? new Dictionary<EntityId, List<EntityId>>();
 

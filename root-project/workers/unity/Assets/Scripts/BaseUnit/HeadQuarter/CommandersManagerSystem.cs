@@ -108,7 +108,7 @@ namespace AdvancedGears
                         rank = r;
 
                     var team = kvp.Value;
-                    if (SelectTarget(ref allyIndex, ref team.TargetStronghold, allies))
+                    if (SelectTarget(ref enemyIndex, ref team.TargetStronghold, enemies))
                     {
                         manager.CommanderDatas[kvp.Key] = team;
 
@@ -131,7 +131,7 @@ namespace AdvancedGears
                 if (rank < manager.MaxRank)
                 {
                     var tgtId = manager.FactoryId;
-                    if (SelectTarget(ref enemyIndex, ref tgtId, enemies))
+                    if (SelectTarget(ref allyIndex, ref tgtId, allies))
                         manager.FactoryId = tgtId;
 
                     if (manager.FactoryId.IsValid())
