@@ -1,4 +1,3 @@
-using Improbable.Gdk.ObjectPooling;
 using UnityEngine;
 
 namespace AdvancedGears
@@ -146,19 +145,9 @@ namespace AdvancedGears
                 ValidateGunPrefab(bulletModel);
             }
 
-            if (impactEffect != null)
-            {
-                ValidateImpactPrefab(impactEffect);
-            }
-
             if (muzzleFlashEffect != null)
             {
                 ValidateMuzzleFlashPrefab(muzzleFlashEffect);
-            }
-
-            if (bulletLineRenderer != null)
-            {
-                ValidateBulletPrefab(bulletLineRenderer);
             }
         }
 
@@ -187,29 +176,11 @@ namespace AdvancedGears
             //}
         }
 
-        private void ValidateImpactPrefab(GameObject prefab)
-        {
-            if (prefab.GetComponent<PoolableParticleEffect>() == null)
-            {
-                Debug.LogErrorFormat("The Impact Effect '{0}' must have a Poolable Particle Effect script.",
-                    prefab.name);
-            }
-        }
-
         private void ValidateMuzzleFlashPrefab(GameObject prefab)
         {
             if (prefab.GetComponentInChildren<ParticleSystem>() == null)
             {
                 Debug.LogWarningFormat("The Muzzle Flash Effect '{0}' has no Particle Systems.", prefab.name);
-            }
-        }
-
-        private void ValidateBulletPrefab(GameObject prefab)
-        {
-            if (prefab.GetComponentInChildren<PoolableLineRenderer>() == null)
-            {
-                Debug.LogErrorFormat("The Bullet Line Renderer '{0}' must have a Poolable Line Renderer script.",
-                    prefab.name);
             }
         }
     }

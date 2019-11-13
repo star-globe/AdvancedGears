@@ -1,4 +1,3 @@
-using Improbable.Gdk.ObjectPooling;
 using UnityEngine;
 
 namespace AdvancedGears

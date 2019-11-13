@@ -39,7 +39,7 @@ namespace AdvancedGears
             foreach (var info in request.Payload.Commanders)
             {
                 if (datas.ContainsKey(info.CommanderId) == false)
-                    datas.Add(info.CommanderId, new TeamInfo(info.Rank, UnitState.Alive, new EntityId(), null, null));
+                    datas.Add(info.CommanderId, new TeamInfo(info.Rank, UnitState.Alive, new EntityId(), new List<EntityId>(), new List<EntityId>()));
             }
 
             writer.SendUpdate(new CommandersManager.Update()
