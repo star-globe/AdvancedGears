@@ -50,3 +50,15 @@ component SymbolicTower {
     UnitSide side = 1;
     float height = 2;
 }
+
+enum SpawnType {
+    None = 0;
+    Start = 1;
+    Revive = 2;
+}
+
+component SpawnPoint {
+    id = 31004;
+
+    SpawnType type = 1;
+}

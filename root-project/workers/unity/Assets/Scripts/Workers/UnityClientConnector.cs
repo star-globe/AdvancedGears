@@ -1,4 +1,5 @@
 using System;
+using Improbable;
 using Improbable.Gdk.Core;
 using Improbable.Gdk.PlayerLifecycle;
 using Improbable.Worker.CInterop;
@@ -14,10 +15,9 @@ namespace AdvancedGears
         [SerializeField]
         UnitSide side;
 
-        [SerializeField]
-        Vector3 pos;
-
         public const string WorkerType = WorkerUtils.UnityClient;
+
+        Coordinates startPoint;
 
         private async void Start()
         {
@@ -54,6 +54,27 @@ namespace AdvancedGears
         {
             WorkerUtils.AddClientSystems(Worker.World, this.gameObject, false);
 
+            var spawnPointSystem = Worker.World.GetExistingSystem<SpawnPointQuerySystem>();
+            if (spawnPointSystem == null)
+            {
+                Debug.LogErrorFormat("There is no SpawnPointQuerySystem. {0}", this.Worker.World);
+                return;
+            }
+
+            var current = this.transform.position - this.Worker.Origin;
+            spawnPointSystem.RequestGetNearestSpawn(side, SpawnType.Start, current.ToCoordinates(), SetFieldQueryClientSystem);
+        }
+
+        void SetFieldQueryClientSystem(Coordinates? point)
+        {
+            if (point == null)
+            {
+                Debug.LogErrorFormat("There is no SpawnPoint type:{0}", SpawnType.Start);
+                return;
+            }
+
+            this.startPoint = point.Value;
+            var pos = startPoint.ToUnityVector();
             var fieldSystem = Worker.World.GetExistingSystem<FieldQueryClientSystem>();
             if (fieldSystem != null)
             {
@@ -68,6 +89,7 @@ namespace AdvancedGears
             if (system == null)
                 return;
 
+            var pos = startPoint.ToUnityVector();
             var origin = new Vector3(pos.x, FieldDictionary.WorldHeight, pos.z) + this.Worker.Origin;
             var point = PhysicsUtils.GetGroundPosition(origin);
             

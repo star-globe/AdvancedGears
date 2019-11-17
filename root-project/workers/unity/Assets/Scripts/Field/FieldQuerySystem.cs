@@ -173,11 +173,11 @@ namespace AdvancedGears
             {
                 Position.Snapshot position;
                 if (snap.TryGetComponentSnapshot(out position) == false)
-                    return;
+                    continue;
 
                 FieldComponent.Snapshot field;
                 if (snap.TryGetComponentSnapshot(out field) == false)
-                    return;
+                    continue;
 
                 FieldCreator.RealizeField(field.TerrainPoints, position.Coords, this.BasePosition);
             }

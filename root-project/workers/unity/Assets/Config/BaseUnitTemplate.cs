@@ -79,6 +79,7 @@ namespace AdvancedGears
                     template.AddComponent(new UnitFactory.Snapshot { FollowerOrders = new List<FollowerOrder>(), SuperiorOrders = new List<SuperiorOrder>() }, writeAccess);
                     template.AddComponent(new UnitArmyObserver.Snapshot(), writeAccess);
                     template.AddComponent(new DominationStamina.Snapshot { SideStaminas = new Dictionary<UnitSide,float>() }, writeAccess);
+                    template.AddComponent(new SpawnPoint.Snapshot { Type = SpawnType.Revive }, writeAccess);
                     break;
 
                 case UnitType.HeadQuarter:
@@ -91,6 +92,7 @@ namespace AdvancedGears
                                           .FilterResults(Position.ComponentId, BaseUnitStatus.ComponentId);
                     var interestTemplate = InterestTemplate.Create().AddQueries<CommandersManager.Component>(strongholdQuery);
                     template.AddComponent(interestTemplate.ToSnapshot(), writeAccess);
+                    template.AddComponent(new SpawnPoint.Snapshot { Type = SpawnType.Start }, writeAccess);
                     break;
             }
         }
