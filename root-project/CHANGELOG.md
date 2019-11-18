@@ -2,6 +2,25 @@
 
 ## Unreleased
 
+## `0.3.0` - 2019-11-11
+
+### Changed
+
+- Upgraded to GDK for Unity version `0.3.0`
+- Changed the default client network connection type from KCP to Modular UDP with compression enabled. [#77](https://github.com/spatialos/gdk-for-unity-blank-project/pull/77)
+
+## `0.2.10` - 2019-10-15
+
+### Changed
+
+- Upgraded to GDK for Unity version `0.2.10`
+
+## `0.2.9` - 2019-09-16
+
+### Changed
+
+- Upgraded to GDK for Unity version `0.2.9`
+
 ## `0.2.8` - 2019-09-03
 
 ### Changed
