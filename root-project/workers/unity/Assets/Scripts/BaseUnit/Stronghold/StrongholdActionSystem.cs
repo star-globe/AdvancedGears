@@ -13,7 +13,7 @@ namespace AdvancedGears
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
-    internal class CommanderActionSystem : BaseCommanderSearch
+    internal class StrongholdActionSystem : BaseSearchSystem
     {
         private EntityQuery group;
 
@@ -22,24 +22,20 @@ namespace AdvancedGears
             base.OnCreate();
 
             group = GetEntityQuery(
-                ComponentType.ReadWrite<CommanderAction.Component>(),
-                ComponentType.ReadOnly<CommanderAction.ComponentAuthority>(),
-                ComponentType.ReadOnly<CommanderStatus.Component>(),
-                ComponentType.ReadOnly<CommanderTeam.Component>(),
+                ComponentType.ReadWrite<StrongholdUnitStatus.Component>(),
+                ComponentType.ReadOnly<StrongholdUnitStatus.ComponentAuthority>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<BaseUnitTarget.Component>(),
                 ComponentType.ReadOnly<Transform>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
-            group.SetFilter(CommanderAction.ComponentAuthority.Authoritative);
+            group.SetFilter(StrongholdUnitStatus.ComponentAuthority.Authoritative);
         }
 
         protected override void OnUpdate()
         {
             Entities.With(group).ForEach((Entity entity,
-                                          ref CommanderAction.Component action,
-                                          ref CommanderStatus.Component commander,
-                                          ref CommanderTeam.Component team,
+                                          ref StrongholdUnitStatus.Component stronghold,
                                           ref BaseUnitStatus.Component status,
                                           ref BaseUnitTarget.Component tgt,
                                           ref SpatialEntityId entityId) =>
@@ -47,34 +43,55 @@ namespace AdvancedGears
                 if (status.State != UnitState.Alive)
                     return;
 
-                if (status.Type != UnitType.Commander)
+                if (status.Type != UnitType.Stronghold)
                     return;
 
-                if (!action.IsTarget)
-                    return;
-
-                var inter = action.Interval;
+                var inter = stronghold.Interval;
                 if (inter.CheckTime() == false)
                     return;
 
-                action.Interval = inter;
+                stronghold.Interval = inter;
 
-                //var trans = EntityManager.GetComponentObject<Transform>(entity);
-                //switch (status.Order)
-                //{
-                //    case OrderType.Escape:
-                //        ProductAlly(trans.position, status.Side, commander, team, entityId, tgt, ref action);
-                //        break;
-                //
-                //    case OrderType.Organize:
-                //        //
-                //        break;
-                //
-                //    default:
-                //        action.ActionType = CommandActionType.None;
-                //        break;
-                //}
+                var trans = EntityManager.GetComponentObject<Transform>(entity);
+                switch (status.Order)
+                {
+                    case OrderType.Attack:
+                        CheckAttackers(trans.position, status.Side, ref stronghold);
+                        break;
+                
+                    case OrderType.Guard:
+                        //
+                        break;
+
+                    case OrderType.Supply:
+                        break;
+                
+                    default:
+                        //action.ActionType = CommandActionType.None;
+                        break;
+                }
             });
+        }
+
+        void CheckAttackers(in Vector3 pos, UnitSide side,
+                        ref StrongholdUnitStatus.Component stronghold)
+        {
+            var datas = stronghold.CommanderDatas;
+            var removeList = new List<EntityId>();
+            foreach (var kvp in datas)
+            {
+                if (CheckAlive(kvp.Key.Id) == false)
+                    removeList.Add(kvp.Key);
+            }
+
+            if (removeList.Count > 0) {
+                foreach (var r in removeList)
+                    datas.Remove(r);
+
+                stronghold.CommanderDatas = datas;
+            }
+
+
         }
 
         void ProductAlly(in Vector3 pos, UnitSide side,
@@ -92,7 +109,7 @@ namespace AdvancedGears
             var id = tgt.TargetInfo.TargetId;
             List<UnitFactory.AddFollowerOrder.Request> reqList = new List<UnitFactory.AddFollowerOrder.Request>();
 
-            var n_sol = 0;//commander.TeamConfig.Soldiers - GetFollowerCount(team, false);
+            var n_sol = 0;// commander.TeamConfig.Soldiers - GetFollowerCount(team, false);
             if (n_sol > 0) {
                 reqList.Add(new UnitFactory.AddFollowerOrder.Request(id, new FollowerOrder() { Customer = entityId.EntityId,
                                                                                                HqEntityId = team.HqInfo.EntityId,
@@ -101,7 +118,7 @@ namespace AdvancedGears
                                                                                                Side = side }));
             }
 
-            var n_com = 0;//commander.TeamConfig.Commanders - GetFollowerCount(team,true);
+            var n_com = 0;// commander.TeamConfig.Commanders - GetFollowerCount(team,true);
             if (n_com > 0 && commander.Rank > 0) {
                 reqList.Add(new UnitFactory.AddFollowerOrder.Request(id, new FollowerOrder() { Customer = entityId.EntityId,
                                                                                                HqEntityId = team.HqInfo.EntityId,

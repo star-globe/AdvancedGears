@@ -22,8 +22,8 @@ namespace AdvancedGears
         {
             { UnitType.Soldier, OrderType.Idle },
             { UnitType.Commander, OrderType.Attack },
-            { UnitType.Stronghold, OrderType.Organize },
-            { UnitType.HeadQuarter, OrderType.Organize },
+            { UnitType.Stronghold, OrderType.Idle },
+            { UnitType.HeadQuarter, OrderType.Attack },
         };
 
         public static EntityTemplate CreateBaseUnitEntityTemplate(UnitSide side, Coordinates coords, UnitType type, OrderType? order = null)
@@ -75,11 +75,15 @@ namespace AdvancedGears
                     break;
 
                 case UnitType.Stronghold:
-                    template.AddComponent(new StrongholdUnitStatus.Snapshot(), writeAccess);
+                    template.AddComponent(new StrongholdUnitStatus.Snapshot { CommanderDatas = new Dictionary<EntityId, TeamInfo>() }, writeAccess);
                     template.AddComponent(new UnitFactory.Snapshot { FollowerOrders = new List<FollowerOrder>(), SuperiorOrders = new List<SuperiorOrder>() }, writeAccess);
                     template.AddComponent(new UnitArmyObserver.Snapshot(), writeAccess);
                     template.AddComponent(new DominationStamina.Snapshot { SideStaminas = new Dictionary<UnitSide,float>() }, writeAccess);
                     template.AddComponent(new SpawnPoint.Snapshot { Type = SpawnType.Revive }, writeAccess);
+                    var commandersQuery = InterestQuery.Query(Constraint.Component<CommanderStatus.Component>())
+                                            .FilterResults(Position.ComponentId, BaseUnitStatus.ComponentId);
+                    var commanderInterest = InterestTemplate.Create().AddQueries<StrongholdUnitStatus.Component>(commandersQuery);
+                    template.AddComponent(commanderInterest.ToSnapshot(), writeAccess);
                     break;
 
                 case UnitType.HeadQuarter:
@@ -90,8 +94,8 @@ namespace AdvancedGears
                                                                            CommanderDatas = new Dictionary<EntityId, TeamInfo>() }, writeAccess);
                     var strongholdQuery = InterestQuery.Query(Constraint.Component<StrongholdUnitStatus.Component>())
                                           .FilterResults(Position.ComponentId, BaseUnitStatus.ComponentId);
-                    var interestTemplate = InterestTemplate.Create().AddQueries<CommandersManager.Component>(strongholdQuery);
-                    template.AddComponent(interestTemplate.ToSnapshot(), writeAccess);
+                    var strongholdInterest = InterestTemplate.Create().AddQueries<CommandersManager.Component>(strongholdQuery);
+                    template.AddComponent(strongholdInterest.ToSnapshot(), writeAccess);
                     template.AddComponent(new SpawnPoint.Snapshot { Type = SpawnType.Start }, writeAccess);
                     break;
             }

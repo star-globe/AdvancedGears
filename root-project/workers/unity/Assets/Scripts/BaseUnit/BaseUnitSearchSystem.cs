@@ -72,8 +72,8 @@ namespace AdvancedGears
                 var pos = trans.position;
 
                 UnitInfo enemy = null;
-                if (status.Order != OrderType.Escape)
-                    enemy = getNearestEnemey(status.Side, pos, sight.Range);
+                //if (status.Order != OrderType.Escape)
+                enemy = getNearestEnemey(status.Side, pos, sight.Range);
 
                 if (enemy == null)
                 {
@@ -115,7 +115,7 @@ namespace AdvancedGears
                 switch (status.Order)
                 {
                     case OrderType.Move:
-                    case OrderType.Escape: range *= 0.4f; break;
+                    case OrderType.Guard: range *= 0.4f; break;
                     case OrderType.Attack: range *= 0.8f; break;
                     case OrderType.Keep: range *= 1.5f; break;
                 }
