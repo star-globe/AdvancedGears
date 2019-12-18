@@ -49,7 +49,7 @@ namespace AdvancedGears
             commanderGroup.SetFilter(CommandersManager.ComponentAuthority.Authoritative);
 
             strongholdGroup = GetEntityQuery(
-                ComponentType.ReadOnly<StrongholdUnitStatus.Component>(),
+                ComponentType.ReadOnly<StrongholdStatus.Component>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<Position.Component>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
@@ -161,7 +161,7 @@ namespace AdvancedGears
             strongDic = strongDic ?? new Dictionary<EntityId, StrongInfo>();
 
             Entities.With(strongholdGroup).ForEach((Entity entity,
-                                  ref StrongholdUnitStatus.Component stronghold,
+                                  ref StrongholdStatus.Component stronghold,
                                   ref BaseUnitStatus.Component status,
                                   ref Position.Component position,
                                   ref SpatialEntityId spatialEntityId) =>

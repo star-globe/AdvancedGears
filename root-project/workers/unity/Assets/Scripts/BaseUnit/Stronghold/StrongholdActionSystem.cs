@@ -83,7 +83,7 @@ namespace AdvancedGears
         }
 
         void CheckAlive(in Vector3 pos, UnitSide side,
-                        ref StrongholdUnitStatus.Component stronghold)
+                        ref StrongholdStatus.Component stronghold)
         {
             var datas = stronghold.CommanderDatas;
             var removeList = new List<EntityId>();
