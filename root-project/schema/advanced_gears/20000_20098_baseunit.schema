@@ -273,11 +273,17 @@ component CommanderAction {
 }
 
 // stronghold:20030~
-component StrongholdUnitStatus {
+component StrongholdStatus {
     id = 20030;
 
     IntervalChecker interval = 1;
-    map<EntityId,TeamInfo> commander_datas = 2;
+    uint32 rank = 2;
+    map<EntityId,TeamInfo> commander_datas = 3;
+}
+
+type TeamOrder {
+    uint32 commander_rank = 1;
+    int32 soldiers_number = 2;
 }
 
 component UnitFactory {
@@ -290,10 +296,11 @@ component UnitFactory {
 
     UnitType current_type = 4;
 
-    transient list<FollowerOrder> follower_orders = 5;
-    transient list<SuperiorOrder> superior_orders = 6;
+    transient list<TeamOrder> team_orders = 10;
+    transient list<FollowerOrder> follower_orders = 11;
+    transient list<SuperiorOrder> superior_orders = 12;
 
-    IntervalChecker product_interval = 7;
+    IntervalChecker product_interval = 20;
 
     command improbable.gdk.core.Empty add_follower_order(FollowerOrder);
     command improbable.gdk.core.Empty add_superior_order(SuperiorOrder);

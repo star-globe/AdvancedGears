@@ -22,20 +22,24 @@ namespace AdvancedGears
             base.OnCreate();
 
             group = GetEntityQuery(
-                ComponentType.ReadWrite<StrongholdUnitStatus.Component>(),
-                ComponentType.ReadOnly<StrongholdUnitStatus.ComponentAuthority>(),
+                ComponentType.ReadWrite<StrongholdStatus.Component>(),
+                ComponentType.ReadOnly<StrongholdStatus.ComponentAuthority>(),
+                ComponentType.ReadWrite<UnitFactory.Component>(),
+                ComponentType.ReadOnly<UnitFactory.ComponentAuthority>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<BaseUnitTarget.Component>(),
                 ComponentType.ReadOnly<Transform>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
-            group.SetFilter(StrongholdUnitStatus.ComponentAuthority.Authoritative);
+            group.SetFilter(StrongholdStatus.ComponentAuthority.Authoritative);
+            group.SetFilter(UnitFactory.ComponentAuthority.Authoritative);
         }
 
         protected override void OnUpdate()
         {
             Entities.With(group).ForEach((Entity entity,
-                                          ref StrongholdUnitStatus.Component stronghold,
+                                          ref StrongholdStatus.Component stronghold,
+                                          ref UnitFactory.Component factory,
                                           ref BaseUnitStatus.Component status,
                                           ref BaseUnitTarget.Component tgt,
                                           ref SpatialEntityId entityId) =>
@@ -53,10 +57,15 @@ namespace AdvancedGears
                 stronghold.Interval = inter;
 
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
+                CheckAlive(trans.position, status.Side, ref stronghold);
+
+                if (factory.TeamOrders.Count > 0)
+                    return;
+                    
                 switch (status.Order)
                 {
                     case OrderType.Attack:
-                        CheckAttackers(trans.position, status.Side, ref stronghold);
+                        
                         break;
                 
                     case OrderType.Guard:
@@ -73,7 +82,7 @@ namespace AdvancedGears
             });
         }
 
-        void CheckAttackers(in Vector3 pos, UnitSide side,
+        void CheckAlive(in Vector3 pos, UnitSide side,
                         ref StrongholdUnitStatus.Component stronghold)
         {
             var datas = stronghold.CommanderDatas;

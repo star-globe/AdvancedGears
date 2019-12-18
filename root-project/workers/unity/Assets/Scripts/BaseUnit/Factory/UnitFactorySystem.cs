@@ -46,10 +46,12 @@ namespace AdvancedGears
 
             group = GetEntityQuery(
                 ComponentType.ReadWrite<UnitFactory.Component>(),
+                ComponentType.ReadOnly<UnitFactory.ComponentAuthority>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<Transform>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
+            group.SetFilter(UnitFactory.ComponentAuthority.Authoritative);
         }
 
         protected override void OnUpdate()
@@ -67,6 +69,7 @@ namespace AdvancedGears
             Entities.With(group).ForEach((Unity.Entities.Entity entity,
                                           ref UnitFactory.Component factory,
                                           ref BaseUnitStatus.Component status,
+                                          ref StrongholdStatus.Component stronghold,
                                           ref SpatialEntityId entityId) =>
             {
                 if (status.State != UnitState.Alive)
