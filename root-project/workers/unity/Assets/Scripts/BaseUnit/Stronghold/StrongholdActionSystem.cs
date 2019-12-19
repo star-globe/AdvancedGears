@@ -93,7 +93,7 @@ namespace AdvancedGears
         {
             uint maxrank = 0;
 
-            TeamType teamType;
+            TeamType teamType = TeamType.Attacker;
             switch (order)
             {
                 case OrderType.Attack:
@@ -120,7 +120,7 @@ namespace AdvancedGears
             var teams = new List<TeamOrder>();
             int coms = 1;
             for(var r = maxrank; r >= 0; r--) {
-                var count = datas.Count(kvp => kvp.Value.rank == r);
+                var count = datas.Count(kvp => kvp.Value.Rank == r);
                 if (count < coms) {
                     teams.Add(new TeamOrder()
                     {
