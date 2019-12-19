@@ -61,24 +61,10 @@ namespace AdvancedGears
 
                 if (factory.TeamOrders.Count > 0)
                     return;
-                    
-                switch (status.Order)
-                {
-                    case OrderType.Attack:
-                        
-                        break;
                 
-                    case OrderType.Guard:
-                        //
-                        break;
-
-                    case OrderType.Supply:
-                        break;
-                
-                    default:
-                        //action.ActionType = CommandActionType.None;
-                        break;
-                }
+                var orders = makeOrders(stronghold.Rank, status.Order, stronghold.CommanderDatas);
+                if (orders != null)
+                    factory.TeamOrders.AddRange(orders);
             });
         }
 
@@ -99,8 +85,57 @@ namespace AdvancedGears
 
                 stronghold.CommanderDatas = datas;
             }
+        }
 
+        const int solnum = 5;
+        const int underCommands = 3;
+        List<TeamOrder> makeOrders(uint rank, OrderType order, Dictionary<EntityId,TeamInfo> datas)
+        {
+            uint maxrank = 0;
 
+            TeamType teamType;
+            switch (order)
+            {
+                case OrderType.Attack:
+                    teamType = TeamType.Attacker;
+                    maxrank = rank;
+                    break;
+                case OrderType.Guard:
+                    teamType = TeamType.Guardian;
+                    maxrank = rank;
+                    break;   
+                case OrderType.Keep:
+                    teamType = TeamType.Guardian;
+                    maxrank = 1;
+                    break;
+                case OrderType.Supply:
+                    teamType = TeamType.Supplyer;
+                    maxrank = 1;
+                    break;
+            }
+
+            if (maxrank <= 0 || datas == null)
+                return null;
+
+            var teams = new List<TeamOrder>();
+            int coms = 1;
+            for(var r = maxrank; r >= 0; r--) {
+                var count = datas.Count(kvp => kvp.Value.rank == r);
+                if (count < coms) {
+                    teams.Add(new TeamOrder()
+                    {
+                        CommanderRank = r,
+                        SoldiersNumber = solnum,
+                        Order = order,
+                        Type = teamType,
+                        Stack = coms - count,
+                    });
+                }
+
+                coms *= underCommands;
+            }
+
+            return teams;
         }
 
         void ProductAlly(in Vector3 pos, UnitSide side,

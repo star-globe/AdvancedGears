@@ -284,6 +284,9 @@ component StrongholdStatus {
 type TeamOrder {
     uint32 commander_rank = 1;
     int32 soldiers_number = 2;
+    OrderType order = 3;
+    TeamType type = 4;
+    int32 stack = 10;
 }
 
 component UnitFactory {

@@ -76,8 +76,10 @@ namespace AdvancedGears
 
                 case UnitType.Stronghold:
                     template.AddComponent(new StrongholdStatus.Snapshot { CommanderDatas = new Dictionary<EntityId, TeamInfo>(),
-                                                                              Rank = 0, }, writeAccess);
-                    template.AddComponent(new UnitFactory.Snapshot { FollowerOrders = new List<FollowerOrder>(), SuperiorOrders = new List<SuperiorOrder>() }, writeAccess);
+                                                                          Rank = 1, }, writeAccess);
+                    template.AddComponent(new UnitFactory.Snapshot { FollowerOrders = new List<FollowerOrder>(),
+                                                                     SuperiorOrders = new List<SuperiorOrder>(),
+                                                                     TeamOrders = new List<TeamOrder>() }, writeAccess);
                     template.AddComponent(new UnitArmyObserver.Snapshot(), writeAccess);
                     template.AddComponent(new DominationStamina.Snapshot { SideStaminas = new Dictionary<UnitSide,float>() }, writeAccess);
                     template.AddComponent(new SpawnPoint.Snapshot { Type = SpawnType.Revive }, writeAccess);
