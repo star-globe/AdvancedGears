@@ -117,11 +117,12 @@ namespace AdvancedGears
             if (maxrank <= 0 || datas == null)
                 return null;
 
-            var teams = new List<TeamOrder>();
+            List<TeamOrder> teams = null;
             int coms = 1;
             for(var r = maxrank; r >= 0; r--) {
                 var count = datas.Count(kvp => kvp.Value.Rank == r);
                 if (count < coms) {
+                    teams = teams ?? new List<TeamOrder>();
                     teams.Add(new TeamOrder()
                     {
                         CommanderRank = r,
