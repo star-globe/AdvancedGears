@@ -100,8 +100,8 @@ namespace AdvancedGears
                 var dic = manager.CommanderDatas.ToList();
                 foreach (var kvp in dic)
                 {
-                    if (kvp.Value.State != UnitState.Alive)
-                        continue;
+                    //if (kvp.Value.State != UnitState.Alive)
+                    //    continue;
 
                     var r = kvp.Value.Rank;
                     if (r > rank)

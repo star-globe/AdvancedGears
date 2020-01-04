@@ -111,9 +111,6 @@ namespace AdvancedGears
                 TeamInfo = new TeamInfo()
                 {
                     Rank = reader.Data.Rank,
-                    Soldiers = data.FollowerInfo.Followers,
-                    UnderCommanders = data.FollowerInfo.UnderCommanders,
-                    State = status.State,
                 }
             }));
         }

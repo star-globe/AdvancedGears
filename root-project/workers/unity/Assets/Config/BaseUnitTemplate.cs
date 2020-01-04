@@ -75,8 +75,7 @@ namespace AdvancedGears
                     break;
 
                 case UnitType.Stronghold:
-                    template.AddComponent(new StrongholdStatus.Snapshot { CommanderDatas = new Dictionary<EntityId, TeamInfo>(),
-                                                                          Rank = 1, }, writeAccess);
+                    template.AddComponent(new StrongholdStatus.Snapshot { Rank = 1, }, writeAccess);
                     template.AddComponent(new UnitFactory.Snapshot { FollowerOrders = new List<FollowerOrder>(),
                                                                      SuperiorOrders = new List<SuperiorOrder>(),
                                                                      TeamOrders = new List<TeamOrder>() }, writeAccess);

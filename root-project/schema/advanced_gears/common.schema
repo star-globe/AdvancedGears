@@ -56,6 +56,7 @@ enum FixedRangeType
     None = 0;
     BaseRange = 1;
     RadioRange = 2;
+    StrongholdRange = 3;
 }
 
 //type Som

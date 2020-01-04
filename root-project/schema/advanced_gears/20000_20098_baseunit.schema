@@ -164,12 +164,6 @@ type HQInfo {
     EntityId entity_id = 1;
 }
 
-enum TeamType {
-    Attacker = 0;
-    Guardian = 1;
-    Supplyer = 2;
-}
-
 type TeamConfig {
     int32 soldiers = 1;
     int32 commanders = 2;
@@ -179,7 +173,6 @@ component CommanderStatus {
     id = 20020;
 
     OrderPair order = 1;
-    //TeamConfig team_config = 2; 
     uint32 rank = 3;
 
     float ally_range = 4;
@@ -188,11 +181,8 @@ component CommanderStatus {
 type TeamInfo {
     EntityId commander_id = 1;
     uint32 rank = 2;
-    UnitState state = 3;
-    EntityId target_entity_id = 4;
-    TeamType type = 5;
-    list<EntityId> soldiers = 6;
-    list<EntityId> under_commanders = 7;
+    OrderType order = 4;
+    EntityId target_entity_id = 5;
 }
 
 type TeamInfoResponse {
@@ -278,14 +268,12 @@ component StrongholdStatus {
 
     IntervalChecker interval = 1;
     uint32 rank = 2;
-    map<EntityId,TeamInfo> commander_datas = 3;
 }
 
 type TeamOrder {
     uint32 commander_rank = 1;
     int32 soldiers_number = 2;
     OrderType order = 3;
-    TeamType type = 4;
     int32 stack = 10;
 }
 

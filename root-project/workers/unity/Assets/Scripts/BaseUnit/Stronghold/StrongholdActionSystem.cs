@@ -54,36 +54,36 @@ namespace AdvancedGears
                 if (inter.CheckTime() == false)
                     return;
 
+                if (factory.TeamOrders.Count > 0)
+                    return;
+
                 stronghold.Interval = inter;
 
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
-                CheckAlive(trans.position, status.Side, ref stronghold);
+                CheckAlive(trans.position, status.Side, out var datas);
 
-                if (factory.TeamOrders.Count > 0)
-                    return;
-                
-                var orders = makeOrders(stronghold.Rank, status.Order, stronghold.CommanderDatas);
+                var orders = makeOrders(stronghold.Rank, status.Order, datas);
                 if (orders != null)
                     factory.TeamOrders.AddRange(orders);
             });
         }
 
-        void CheckAlive(in Vector3 pos, UnitSide side,
-                        ref StrongholdStatus.Component stronghold)
+        void CheckAlive(in Vector3 pos, UnitSide side, out Dictionary<EntityId,TeamInfo> datas)
         {
-            var datas = stronghold.CommanderDatas;
-            var removeList = new List<EntityId>();
-            foreach (var kvp in datas)
-            {
-                if (CheckAlive(kvp.Key.Id) == false)
-                    removeList.Add(kvp.Key);
-            }
+            datas = new Dictionary<EntityId, TeamInfo>();
 
-            if (removeList.Count > 0) {
-                foreach (var r in removeList)
-                    datas.Remove(r);
+            var units = getAllyUnits(side, pos, 0, UnitType.Commander);
 
-                stronghold.CommanderDatas = datas;
+            foreach (var u in units) {
+                if (TryGetComponent<CommanderStatus.Component>(u.id, out var comp)) {
+                    var commander = comp.Value;
+                    var teamInfo = new TeamInfo()
+                    {
+                        CommanderId = u.id,
+                        Rank = commander.Rank,
+                        Order = u.order,
+                    };
+                }
             }
         }
 
@@ -93,23 +93,18 @@ namespace AdvancedGears
         {
             uint maxrank = 0;
 
-            TeamType teamType = TeamType.Attacker;
             switch (order)
             {
                 case OrderType.Attack:
-                    teamType = TeamType.Attacker;
                     maxrank = rank;
                     break;
                 case OrderType.Guard:
-                    teamType = TeamType.Guardian;
                     maxrank = rank;
                     break;   
                 case OrderType.Keep:
-                    teamType = TeamType.Guardian;
                     maxrank = 1;
                     break;
                 case OrderType.Supply:
-                    teamType = TeamType.Supplyer;
                     maxrank = 1;
                     break;
             }
@@ -128,7 +123,6 @@ namespace AdvancedGears
                         CommanderRank = r,
                         SoldiersNumber = solnum,
                         Order = order,
-                        Type = teamType,
                         Stack = coms - count,
                     });
                 }

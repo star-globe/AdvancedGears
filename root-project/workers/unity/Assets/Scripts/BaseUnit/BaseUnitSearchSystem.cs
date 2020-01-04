@@ -179,6 +179,14 @@ namespace AdvancedGears
             return info;
         }
 
+        /// <summary>
+        /// Get Ally UnitsInfo. allowDead = false;
+        /// </summary>
+        /// <param name="self_side"></param>
+        /// <param name="pos"></param>
+        /// <param name="length"></param>
+        /// <param name="types"></param>
+        /// <returns></returns>
         protected List<UnitInfo> getAllyUnits(UnitSide self_side, in Vector3 pos, float length, params UnitType[] types)
         {
             return getUnits(self_side, pos, length, false, false, types);
@@ -213,6 +221,7 @@ namespace AdvancedGears
                     info.pos = col.transform.position;
                     info.type = unit.Value.Type;
                     info.side = unit.Value.Side;
+                    info.order = unit.Value.Order;
 
                     unitList.Add(info);
                 }
@@ -238,6 +247,7 @@ namespace AdvancedGears
         public Vector3 pos;
         public UnitType type;
         public UnitSide side;
+        public OrderType order;
     }
 
     public static class RandomInterval
