@@ -57,23 +57,26 @@ namespace AdvancedGears
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
 
                 var target = sight.TargetStronghold;
-                var order = GetTargetStronghold(trans.position, status.Side, entityId.EntityId, ref target);
+                var vector = sight.StrategyVector.ToUnityVector();
+                var order = GetTargetStronghold(trans.position, status.Side, vector, entityId.EntityId, ref target);
 
                 sight.TargetStronghold = target;
                 status.Order = order;
             });
         }
 
-        private OrderType GetTargetStronghold(in Vector3 pos, UnitSide side, EntityId selfId, ref TargetStrongholdInfo target)
+        private OrderType GetTargetStronghold(in Vector3 pos, UnitSide side, in Vector3 strategyVector, EntityId selfId, ref TargetStrongholdInfo target)
         {
             OrderType order = OrderType.Idle;
 
-            var unit = getNearestEnemey(side, pos, RangeDictionary.Get(FixedRangeType.StrongholdRange), UnitType.Stronghold);
+            var range = RangeDictionary.Get(FixedRangeType.StrongholdRange);
+            var unit = getNearestEnemey(side, pos, range, UnitType.Stronghold);
             if (unit != null) {
                 order = OrderType.Attack;
             }
             else {
-                unit = getNearestAlly(selfId, side, pos, RangeDictionary.Get(FixedRangeType.StrongholdRange), UnitType.Stronghold);
+                var newCenter = pos + strategyVector * range;
+                unit = getNearestAlly(selfId, side, newCenter, range, UnitType.Stronghold);
                 if (unit != null)
                     order = OrderType.Guard;
             }
