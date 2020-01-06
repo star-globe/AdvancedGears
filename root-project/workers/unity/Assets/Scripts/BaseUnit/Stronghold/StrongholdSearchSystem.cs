@@ -89,7 +89,7 @@ namespace AdvancedGears
                 target.Position = unit.pos.ToCoordinates();
             }
             else {
-                target.Stronghold = selfId;
+                target.StrongholdId = selfId;
                 target.Side = side;
                 target.Position = pos.ToCoordinates();
                 order = OrderType.Keep;

@@ -25,6 +25,12 @@ namespace AdvancedGears
             return (pos - origin).ToFixedPointVector3();
         }
 
+        public static Coordinates ToCoordinates(this Vector3 pos)
+        {
+            return new Coordinates(pos.x, pos.y, pos.z);
+        }
+
+
         public static float SqrMagnitude (this FixedPointVector3 vec)
         {
             return (vec.X * vec.X) + (vec.Y * vec.Y) + (vec.Z * vec.Z);

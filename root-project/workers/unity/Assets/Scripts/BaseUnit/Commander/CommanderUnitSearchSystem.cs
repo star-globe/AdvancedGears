@@ -131,9 +131,9 @@ namespace AdvancedGears
             // check rank
             UnitInfo tgt;
             var info = team.TargetStronghold;
-            if (info.TargetStronghold.IsValid()) {
+            if (info.StrongholdId.IsValid()) {
                 tgt = new UnitInfo() {
-                    id = info.TargetStronghold,
+                    id = info.StrongholdId,
                     pos = info.Position.ToUnityVector() + this.Origin,
                     side = info.Side,
                     type = UnitType.Stronghold

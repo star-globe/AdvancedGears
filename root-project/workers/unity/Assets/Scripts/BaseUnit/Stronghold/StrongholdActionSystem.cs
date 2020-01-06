@@ -63,7 +63,7 @@ namespace AdvancedGears
                 if (factory.TeamOrders.Count == 0) {
                     var teamOrders = makeOrders(stronghold.Rank, status.Order, datas);
                     if (teamOrders != null)
-                        factory.TeamOrders.AddRange(orders);
+                        factory.TeamOrders.AddRange(teamOrders);
                 }
 
                 // order check
@@ -98,7 +98,7 @@ namespace AdvancedGears
 
         const int solnum = 5;
         const int underCommands = 3;
-        List<TeamOrder> makeOrders(uint rank, OrderType order, Dictionary<EntityId,TeamInfo> datas, out List<EntityId> directOrders)
+        List<TeamOrder> makeOrders(uint rank, OrderType order, Dictionary<EntityId,TeamInfo> datas)
         {
             uint maxrank = 0;
             switch (order)
