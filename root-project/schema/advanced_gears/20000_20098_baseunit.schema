@@ -195,7 +195,7 @@ type TeamInfoRequest {
 }
 
 type TargetStrongholdInfo {
-    EntityId target_stronghold = 1;
+    EntityId stronghold_id = 1;
     UnitSide side = 2;
     improbable.Coordinates position = 3;
 }
@@ -268,6 +268,13 @@ component StrongholdStatus {
 
     IntervalChecker interval = 1;
     uint32 rank = 2;
+}
+
+component StrongholdSight {
+    id = 20031;
+
+    IntervalChecker interval = 1;
+    TargetStrongholdInfo target_stronghold = 4;
 }
 
 type TeamOrder {

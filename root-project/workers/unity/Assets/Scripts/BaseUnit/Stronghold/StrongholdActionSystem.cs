@@ -27,7 +27,7 @@ namespace AdvancedGears
                 ComponentType.ReadWrite<UnitFactory.Component>(),
                 ComponentType.ReadOnly<UnitFactory.ComponentAuthority>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
-                ComponentType.ReadOnly<BaseUnitTarget.Component>(),
+                ComponentType.ReadOnly<StrongholdSight.Component>(),
                 ComponentType.ReadOnly<Transform>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
@@ -41,7 +41,7 @@ namespace AdvancedGears
                                           ref StrongholdStatus.Component stronghold,
                                           ref UnitFactory.Component factory,
                                           ref BaseUnitStatus.Component status,
-                                          ref BaseUnitTarget.Component tgt,
+                                          ref StrongholdSight.Component sight,
                                           ref SpatialEntityId entityId) =>
             {
                 if (status.State != UnitState.Alive)
@@ -54,17 +54,20 @@ namespace AdvancedGears
                 if (inter.CheckTime() == false)
                     return;
 
-                if (factory.TeamOrders.Count > 0)
-                    return;
-
                 stronghold.Interval = inter;
 
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
                 CheckAlive(trans.position, status.Side, out var datas);
 
-                var orders = makeOrders(stronghold.Rank, status.Order, datas);
-                if (orders != null)
-                    factory.TeamOrders.AddRange(orders);
+                // number check
+                if (factory.TeamOrders.Count == 0) {
+                    var teamOrders = makeOrders(stronghold.Rank, status.Order, datas);
+                    if (teamOrders != null)
+                        factory.TeamOrders.AddRange(orders);
+                }
+
+                // order check
+                CheckOrder(status.Order, sight.TargetStronghold, datas);
             });
         }
 
@@ -72,27 +75,32 @@ namespace AdvancedGears
         {
             datas = new Dictionary<EntityId, TeamInfo>();
 
-            var units = getAllyUnits(side, pos, 0, UnitType.Commander);
+            var units = getAllyUnits(side, pos, RangeDictionary.Get(FixedRangeType.StrongholdRange), UnitType.Commander);
 
             foreach (var u in units) {
-                if (TryGetComponent<CommanderStatus.Component>(u.id, out var comp)) {
-                    var commander = comp.Value;
-                    var teamInfo = new TeamInfo()
-                    {
-                        CommanderId = u.id,
-                        Rank = commander.Rank,
-                        Order = u.order,
-                    };
-                }
+                if (TryGetComponent<CommanderStatus.Component>(u.id, out var comd) == false)
+                    continue;
+
+                if (TryGetComponent<CommanderTeam.Component>(u.id, out var team) == false)
+                    continue;
+
+                var teamInfo = new TeamInfo()
+                {
+                    CommanderId = u.id,
+                    Rank = comd.Value.Rank,
+                    Order = u.order,
+                    TargetEntityId = team.Value.TargetStronghold.StrongholdId,
+                };
+
+                datas.Add(u.id, teamInfo);
             }
         }
 
         const int solnum = 5;
         const int underCommands = 3;
-        List<TeamOrder> makeOrders(uint rank, OrderType order, Dictionary<EntityId,TeamInfo> datas)
+        List<TeamOrder> makeOrders(uint rank, OrderType order, Dictionary<EntityId,TeamInfo> datas, out List<EntityId> directOrders)
         {
             uint maxrank = 0;
-
             switch (order)
             {
                 case OrderType.Attack:
@@ -112,13 +120,13 @@ namespace AdvancedGears
             if (maxrank <= 0 || datas == null)
                 return null;
 
-            List<TeamOrder> teams = null;
+            List<TeamOrder> teamOrders = null;
             int coms = 1;
             for(var r = maxrank; r >= 0; r--) {
                 var count = datas.Count(kvp => kvp.Value.Rank == r);
                 if (count < coms) {
-                    teams = teams ?? new List<TeamOrder>();
-                    teams.Add(new TeamOrder()
+                    teamOrders = teamOrders ?? new List<TeamOrder>();
+                    teamOrders.Add(new TeamOrder()
                     {
                         CommanderRank = r,
                         SoldiersNumber = solnum,
@@ -130,7 +138,34 @@ namespace AdvancedGears
                 coms *= underCommands;
             }
 
-            return teams;
+            return teamOrders;
+        }
+
+        private bool SetCommand(EntityId id, in TargetStrongholdInfo targetInfo, OrderType order)
+        {
+            if (base.SetCommand(id, order, out var entity) == false)
+                return false;
+
+            this.CommandSystem.SendCommand(new CommanderTeam.SetTargetStroghold.Request(id, targetInfo), entity);
+            return true;
+        }
+
+        private void CheckOrder(OrderType order, in TargetStrongholdInfo target, Dictionary<EntityId,TeamInfo> datas)
+        {
+            List<EntityId> entityIds = null;
+            foreach(var kvp in datas) {
+                if (kvp.Value.Order != order ||
+                    kvp.Value.TargetEntityId != target.StrongholdId) {
+                    entityIds = entityIds ?? new List<EntityId>();
+                    entityIds.Add(kvp.Key);
+                }
+            }
+
+            if (entityIds != null) {
+                foreach(var id in entityIds) {
+                    SetCommand(id, target, order);
+                }
+            }
         }
 
         void ProductAlly(in Vector3 pos, UnitSide side,

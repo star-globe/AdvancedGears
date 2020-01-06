@@ -116,7 +116,7 @@ namespace AdvancedGears
 
                         var request = new CommanderTeam.SetTargetStroghold.Request(kvp.Key, new TargetStrongholdInfo()
                         {
-                            TargetStronghold = team.TargetEntityId,
+                            StrongholdId = team.TargetEntityId,
                             Position = info.coords,
                             Side = info.side,
                         });

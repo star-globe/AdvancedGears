@@ -63,4 +63,12 @@ namespace AdvancedGears
             world.GetOrCreateSystem<FieldQueryServerSystem>();
         }
     }
+
+    public static class Utils
+    {
+        public static EntityId EmptyEntityId
+        {
+            get { return new EntityId(0); }
+        }
+    }
 }

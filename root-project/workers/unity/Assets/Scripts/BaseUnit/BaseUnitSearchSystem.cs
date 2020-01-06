@@ -129,15 +129,15 @@ namespace AdvancedGears
     {
         protected UnitInfo getNearestEnemey(UnitSide self_side, in Vector3 pos, float length, params UnitType[] types)
         {
-            return getNearestUnit(self_side, pos, length, true, types);
+            return getNearestUnit(self_side, pos, length, true, null, types);
         }
 
-        protected UnitInfo getNearestAlly(UnitSide self_side, in Vector3 pos, float length, params UnitType[] types)
+        protected UnitInfo getNearestAlly(EntityId selfId, UnitSide self_side, in Vector3 pos, float length, params UnitType[] types)
         {
-            return getNearestUnit(self_side, pos, length, false, types);
+            return getNearestUnit(self_side, pos, length, false, selfId, types);
         }
 
-        protected UnitInfo getNearestUnit(UnitSide self_side, in Vector3 pos, float length, bool isEnemy, params UnitType[] types)
+        protected UnitInfo getNearestUnit(UnitSide self_side, in Vector3 pos, float length, bool isEnemy, EntityId? selfId, params UnitType[] types)
         {
             float len = float.MaxValue;
             UnitInfo info = null;
@@ -148,6 +148,9 @@ namespace AdvancedGears
                 var col = colls[i];
                 var comp = col.GetComponent<LinkedEntityComponent>();
                 if (comp == null)
+                    continue;
+
+                if (selfId != null && selfId.Value.Equals(comp.EntityId))
                     continue;
 
                 BaseUnitStatus.Component? unit;
@@ -237,6 +240,22 @@ namespace AdvancedGears
                 return false;
 
             return status.Value.State == UnitState.Alive;
+        }
+
+        protected bool SetCommand(EntityId id, OrderType order, out Entity entity)
+        {
+            if (!base.TryGetEntity(id, out entity))
+                return false;
+
+            BaseUnitStatus.Component? status;
+            if (base.TryGetComponent(id, out status) == false)
+                return false;
+
+            if (status.Value.Order == order)
+                return false;
+
+            this.CommandSystem.SendCommand(new BaseUnitStatus.SetOrder.Request(id, new OrderInfo() { Order = order }), entity);
+            return true;
         }
     }
 
