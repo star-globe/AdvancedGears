@@ -59,7 +59,7 @@ namespace AdvancedGears
                 manager.Interval = inter;
 
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
-                var range = RangeDic.Get(FixedRangeType.HeadQuarterRange);
+                var range = RangeDictionary.Get(FixedRangeType.HeadQuarterRange);
 
                 var entityId = new EntityId();
                 var enemy = getNearestEnemey(status.Side, trans.position, range, UnitType.HeadQuarter);
@@ -73,7 +73,7 @@ namespace AdvancedGears
                 manager.TargetHq = new TargetHeadQuartersInfo()
                 {
                     HeadQuarterId = enemy.id,
-                    Side = enenmy.side,
+                    Side = enemy.side,
                     Position = enemy.pos.ToCoordinates(),
                 };
 

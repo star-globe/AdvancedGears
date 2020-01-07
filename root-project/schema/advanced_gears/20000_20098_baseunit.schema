@@ -272,7 +272,7 @@ component StrongholdStatus {
 
 type StrategyVector {
     UnitSide side = 1;
-    improbable.gdk.transform_synchronization.FixedPointVector3 strategy_vector = 2;
+    improbable.gdk.transform_synchronization.FixedPointVector3 vector = 2;
 }
 
 component StrongholdSight {
