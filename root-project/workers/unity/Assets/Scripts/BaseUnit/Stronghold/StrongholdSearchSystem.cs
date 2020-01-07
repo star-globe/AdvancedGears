@@ -57,7 +57,7 @@ namespace AdvancedGears
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
 
                 var target = sight.TargetStronghold;
-                var vector = sight.StrategyVector.ToUnityVector();
+                var vector = sight.StrategyVector.Vector.ToUnityVector();
                 var order = GetTargetStronghold(trans.position, status.Side, vector, entityId.EntityId, ref target);
 
                 sight.TargetStronghold = target;

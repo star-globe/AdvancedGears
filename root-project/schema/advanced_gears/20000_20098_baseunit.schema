@@ -270,12 +270,19 @@ component StrongholdStatus {
     uint32 rank = 2;
 }
 
+type StrategyVector {
+    UnitSide side = 1;
+    improbable.gdk.transform_synchronization.FixedPointVector3 strategy_vector = 2;
+}
+
 component StrongholdSight {
     id = 20031;
 
     IntervalChecker interval = 1;
-    improbable.gdk.transform_synchronization.FixedPointVector3 strategy_vector = 2;
+    StrategyVector strategy_vector = 2;
     TargetStrongholdInfo target_stronghold = 4;
+
+    command improbable.gdk.core.Empty set_strategy_vector(StrategyVector);
 }
 
 type TeamOrder {
@@ -373,4 +380,18 @@ component CommandersManager {
     uint32 max_rank = 6;
 
     command improbable.gdk.core.Empty add_commander(CreatedCommanderList);
+}
+
+type TargetHeadQuartersInfo {
+    EntityId head_quarter_id = 1;
+    UnitSide side = 2;
+    improbable.Coordinates position = 3;
+}
+
+component StrategyOrderManager {
+    id = 20042;
+
+    IntervalChecker interval = 1;
+
+    TargetHeadQuartersInfo target_hq = 2;
 }
