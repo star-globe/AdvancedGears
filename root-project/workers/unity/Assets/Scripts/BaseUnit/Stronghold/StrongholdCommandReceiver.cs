@@ -13,7 +13,7 @@ namespace AdvancedGears
 
         public void OnEnable()
         {
-            commandReceiver.SetStrategyVectorRequestReceived += OnSetStrategyVectorCommanderRequest;
+            commandReceiver.OnSetStrategyVectorRequestReceived += OnSetStrategyVectorCommanderRequest;
         }
 
         private void OnSetStrategyVectorCommanderRequest(StrongholdSight.SetStrategyVector.ReceivedRequest request)
