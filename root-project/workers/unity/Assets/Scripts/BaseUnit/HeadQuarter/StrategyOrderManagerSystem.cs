@@ -77,11 +77,21 @@ namespace AdvancedGears
                     Position = enemy.pos.ToCoordinates(),
                 };
 
+                var range = RangeDictionary.Get(StrongholdRange);
                 var allies = getAllyUnits(status.Side, trans.position, range, UnitType.Stronghold);
-                foreach(var a in allies) {
-                    
+                foreach(var unit in allies) {
+                    var diff = (enemy.pos - unit.pos).normalized;
+                    SendCommand(unit.id, enemy.side, diff * range);
                 }
             });
+        }
+
+        void SendCommand(EntityId id, UnitSide side, Vector3 vec)
+        {
+            if (!base.TryGetEntity(id, out var entity))
+                return;
+
+            this.CommandSystem.SendCommand(new StrongholdSight.SetStrategyVector.Request(id, new StrategyVector() { Side = side, Vector = vec.ToFixedPointVector3() }), entity);
         }
     }
 }
