@@ -141,7 +141,7 @@ namespace AdvancedGears
                         var request = new UnitFactory.AddSuperiorOrder.Request(factoryId, new SuperiorOrder()
                         {
                             Followers = new List<EntityId>(),
-                            HqEntityId = id,
+                            //HqEntityId = id,
                             Side = status.Side,
                             Rank = rank + 1
                         });

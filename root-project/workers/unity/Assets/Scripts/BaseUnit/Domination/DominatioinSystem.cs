@@ -6,7 +6,7 @@ using Improbable;
 using Improbable.Gdk.Core;
 using Improbable.Gdk.Core.Commands;
 using Improbable.Gdk.Subscriptions;
-using Improbable.Gdk.Standardtypes;
+using Improbable.Gdk.TransformSynchronization;
 using Improbable.Worker.CInterop;
 using Unity.Collections;
 using Unity.Entities;
@@ -125,7 +125,7 @@ namespace AdvancedGears
         private void AffectCapture(UnitSide side, float speed, Dictionary<UnitSide,float> sumsDic)
         {
             if (sumsDic.ContainsKey(side) == false)
-                sumsDic.Add(sisumsDic);
+                sumsDic.Add(side, 0.0f);
 
             sumsDic[side] += speed;
         }

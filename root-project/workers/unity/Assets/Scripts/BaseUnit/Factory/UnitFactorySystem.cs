@@ -131,10 +131,17 @@ namespace AdvancedGears
                 var coords = new Coordinates(pos.x, pos.y + height_buffer, pos.z);
 
                 bool finished = false;
+                UnitType type = UnitType.None;
                 if (s_order != null)
+                {
                     template = CreateSuperior(factory.SuperiorOrders, coords, out finished);
+                    type = UnitType.Commander;
+                }
                 else if (f_order != null)
+                {
                     template = CreateFollower(factory.FollowerOrders, coords, f_order.Value.Customer, out finished);
+                    type = UnitType.Soldier;
+                }
 
                 if (template != null) {
                     var request = new WorldCommands.CreateEntity.Request
@@ -142,7 +149,7 @@ namespace AdvancedGears
                         template,
                         context: new ProductOrderContext() { f_order = f_order,
                                                              s_order = s_order,
-                                                             type = factory.CurrentType }
+                                                             type = type }
                     );
                     this.CommandSystem.SendCommand(request);
                 }
@@ -224,19 +231,20 @@ namespace AdvancedGears
             public int requestId; 
         }
 
-        void CreateTeam(UnitSide side, EntityId id, in TeamOrder team, in Coordinates coords, out bool fnished)
+        void CreateTeam(UnitSide side, EntityId id, in TeamOrder team, in Coordinates coords, out bool finished)
         {
+            finished = false;
             List<ValueTuple<EntityTemplate,UnitType>> templates = new List<ValueTuple<EntityTemplate,UnitType>>();
-            var temp = BaseUnitTemplate.CreateCommanderUnitEntityTemplate(side, coords, team.CommanderRank);
+            var temp = BaseUnitTemplate.CreateCommanderUnitEntityTemplate(side, coords, team.CommanderRank, null);
             templates.Add((temp, UnitType.Commander));
-            foreach(var i in Enumrable.Range(0,team.Stack)) {
+            foreach(var i in Enumerable.Range(0,team.Stack)) {
                 temp = BaseUnitTemplate.CreateBaseUnitEntityTemplate(side, coords, UnitType.Soldier);
                 templates.Add((temp, UnitType.Soldier));
             }
 
             foreach(var pair in templates) {
                 this.CommandSystem.SendCommand(new WorldCommands.CreateEntity.Request(
-                    pair.item1,
+                    pair.Item1,
                     context: new TeamOrderContext() { type = pair.Item2, 
                                                       requestId = currentRequestId }
                 ));
@@ -248,14 +256,16 @@ namespace AdvancedGears
 
             dic.Add(currentRequestId, new RequestInfo()
             {
-                team = new TeamInfo() { CommanderId = Entity.Nul,
+                team = new TeamInfo() { CommanderId = new EntityId(),
                                         Rank = team.CommanderRank,
                                         Order = team.Order,
-                                        TargetEntityId = Entity.Null },
+                                        TargetEntityId = new EntityId()
+                },
                 soldiers = new List<EntityId>(),
             });
 
             currentRequestId++;
+            finished = true;
         }
 
         void HandleProductResponse()

@@ -95,7 +95,7 @@ namespace AdvancedGears
             var n_sol = 0;//commander.TeamConfig.Soldiers - GetFollowerCount(team, false);
             if (n_sol > 0) {
                 reqList.Add(new UnitFactory.AddFollowerOrder.Request(id, new FollowerOrder() { Customer = entityId.EntityId,
-                                                                                               HqEntityId = team.HqInfo.EntityId,
+                                                                                               //HqEntityId = team.HqInfo.EntityId,
                                                                                                Number = n_sol,
                                                                                                Type = UnitType.Soldier,
                                                                                                Side = side }));
@@ -104,7 +104,7 @@ namespace AdvancedGears
             var n_com = 0;//commander.TeamConfig.Commanders - GetFollowerCount(team,true);
             if (n_com > 0 && commander.Rank > 0) {
                 reqList.Add(new UnitFactory.AddFollowerOrder.Request(id, new FollowerOrder() { Customer = entityId.EntityId,
-                                                                                               HqEntityId = team.HqInfo.EntityId,
+                                                                                               //HqEntityId = team.HqInfo.EntityId,
                                                                                                Number = n_com,
                                                                                                Type = UnitType.Commander,
                                                                                                Side = side,

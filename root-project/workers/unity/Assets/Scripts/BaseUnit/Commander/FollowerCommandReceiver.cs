@@ -98,21 +98,21 @@ namespace AdvancedGears
             var data = writer.Data;
             var status = statusReader.Data;
 
-            var hqId = data.HqInfo.EntityId;
-            if (request.EntityId != hqId)
-            {
-                commandReceiver.SendGetTeamInfoFailure(request.RequestId, string.Format("Requested Wrong HQ EntityId:{0}", hqId.Id));
-                return;
-            }
-
-            commandReceiver.SendGetTeamInfoResponse(new CommanderTeam.GetTeamInfo.Response(request.RequestId, new TeamInfoResponse()
-            {
-                HqEntityId = hqId,
-                TeamInfo = new TeamInfo()
-                {
-                    Rank = reader.Data.Rank,
-                }
-            }));
+            //var hqId = data.HqInfo.EntityId;
+            //if (request.EntityId != hqId)
+            //{
+            //    commandReceiver.SendGetTeamInfoFailure(request.RequestId, string.Format("Requested Wrong HQ EntityId:{0}", hqId.Id));
+            //    return;
+            //}
+            //
+            //commandReceiver.SendGetTeamInfoResponse(new CommanderTeam.GetTeamInfo.Response(request.RequestId, new TeamInfoResponse()
+            //{
+            //    HqEntityId = hqId,
+            //    TeamInfo = new TeamInfo()
+            //    {
+            //        Rank = reader.Data.Rank,
+            //    }
+            //}));
         }
 
         private void OnSetTargerRequest(CommanderTeam.SetTargetStroghold.ReceivedRequest request)

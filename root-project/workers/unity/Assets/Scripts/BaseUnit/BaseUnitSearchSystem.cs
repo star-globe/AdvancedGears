@@ -247,7 +247,7 @@ namespace AdvancedGears
             return status.Value.State == UnitState.Alive;
         }
 
-        protected bool SetCommand(EntityId id, OrderType order, Entity sendingEntity = Entity.Null)
+        protected bool SetCommand(EntityId id, OrderType order, Entity? sendingEntity = null)
         {
             BaseUnitStatus.Component? status;
             if (base.TryGetComponent(id, out status) == false)
@@ -256,7 +256,8 @@ namespace AdvancedGears
             if (status.Value.Order == order)
                 return false;
 
-            this.CommandSystem.SendCommand(new BaseUnitStatus.SetOrder.Request(id, new OrderInfo() { Order = order }), sendingEntity);
+            var send = sendingEntity ?? Entity.Null;
+            this.CommandSystem.SendCommand(new BaseUnitStatus.SetOrder.Request(id, new OrderInfo() { Order = order }), send);
             return true;
         }
     }

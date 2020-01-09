@@ -98,7 +98,7 @@ namespace AdvancedGears
 
             upper_rank = rank + 1;
             var request = new UnitFactory.AddSuperiorOrder.Request(id, new SuperiorOrder() { Followers = info.Followers.ToList(),
-                                                                                             HqEntityId = entityId,
+                                                                                             //HqEntityId = entityId,
                                                                                              Side = side,
                                                                                              Rank = rank + 1 });
             Entity entity;
