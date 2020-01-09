@@ -143,10 +143,10 @@ namespace AdvancedGears
 
         private bool SetCommand(EntityId id, in TargetStrongholdInfo targetInfo, OrderType order)
         {
-            if (base.SetCommand(id, order, out var entity) == false)
+            if (base.SetCommand(id, order) == false)
                 return false;
 
-            this.CommandSystem.SendCommand(new CommanderTeam.SetTargetStroghold.Request(id, targetInfo), entity);
+            this.CommandSystem.SendCommand(new CommanderTeam.SetTargetStroghold.Request(id, targetInfo));
             return true;
         }
 

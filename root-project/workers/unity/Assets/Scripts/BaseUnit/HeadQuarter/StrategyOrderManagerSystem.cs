@@ -88,10 +88,10 @@ namespace AdvancedGears
 
         void SendCommand(EntityId id, UnitSide side, Vector3 vec)
         {
-            if (!base.TryGetEntity(id, out var entity))
-                return;
-
-            this.CommandSystem.SendCommand(new StrongholdSight.SetStrategyVector.Request(id, new StrategyVector() { Side = side, Vector = FixedPointVector3.FromUnityVector(vec)}), entity);
+            this.CommandSystem.SendCommand(new StrongholdSight.SetStrategyVector.Request(
+                id,
+                new StrategyVector( side, FixedPointVector3.FromUnityVector(vec)))
+            );
         }
     }
 }

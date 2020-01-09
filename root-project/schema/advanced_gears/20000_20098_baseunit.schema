@@ -39,13 +39,6 @@ component BaseUnitStatus {
     command improbable.gdk.core.Empty force_state(ForceStateChange);
 }
 
-component BaseUnitReviveTimer {
-    id = 20003;
-
-    bool is_start = 1;
-    float rest_time = 2;
-}
-
 type HealthModifier {
     uint32 type = 1;
     int32 amount = 2;
@@ -66,6 +59,13 @@ component BaseUnitHealth {
 
     command improbable.gdk.core.Empty modify_health(HealthModifier);
     event HealthModifiedInfo health_modified;
+}
+
+component BaseUnitReviveTimer {
+    id = 20003;
+
+    bool is_start = 1;
+    float rest_time = 2;
 }
 
 // move:20010~20019
@@ -205,7 +205,6 @@ component CommanderTeam {
 
     FollowerInfo follower_info = 1;
     SuperiorInfo superior_info = 2;
-    HQInfo hq_info = 3;
 
     TargetStrongholdInfo target_stronghold = 4;
 
@@ -233,7 +232,6 @@ component CommanderSight {
 
 type FollowerOrder {
     EntityId customer = 1;
-    EntityId hq_entity_id = 2;
     UnitSide side = 3;
     UnitType type = 4;
     int32 number = 5;
@@ -242,7 +240,6 @@ type FollowerOrder {
 
 type SuperiorOrder {
     list<EntityId> followers = 1;
-    EntityId hq_entity_id = 2;
     UnitSide side = 3;
     uint32 rank = 4;
 }
@@ -292,6 +289,13 @@ type TeamOrder {
     int32 stack = 10;
 }
 
+enum FactoryOrderType {
+    None = 0;
+    Follower = 1;
+    Superior = 2;
+    Team = 3;
+}
+
 component UnitFactory {
     id = 20032;
 
@@ -300,7 +304,7 @@ component UnitFactory {
 
     IntervalChecker interval = 3;
 
-    UnitType current_type = 4;
+    FactoryOrderType current_type = 4;
 
     transient list<TeamOrder> team_orders = 10;
     transient list<FollowerOrder> follower_orders = 11;

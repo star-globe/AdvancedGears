@@ -26,8 +26,6 @@ namespace AdvancedGears
             public FollowerOrder? f_order;
             public SuperiorOrder? s_order;
             public UnitType type;
-            public EntityId hqId;
-
             public uint CommanderRank
             {
                 get
@@ -83,15 +81,26 @@ namespace AdvancedGears
 
                 FollowerOrder? f_order = null;
                 SuperiorOrder? s_order = null;
+                TeamOrder? t_order = null;
 
-                if (factory.SuperiorOrders.Count > 0)
+                FactoryOrderType orderType = FactoryOrderType.None;
+
+                if (factory.SuperiorOrders.Count > 0) {
                     s_order = factory.SuperiorOrders[0];
-                else if (factory.FollowerOrders.Count > 0)
+                    orderType = FactoryOrderType.Superior;
+                }
+                else if (factory.FollowerOrders.Count > 0) {
                     f_order = factory.FollowerOrders[0];
+                    orderType = FactoryOrderType.Follower;
+                }
+                else if (factory.TeamOrders.Count > 0) {
+                    t_order = factory.TeamOrders[0];
+                    orderType = FactoryOrderType.Team;
+                }
 
                 // calc time cost
                 float cost = 0.0f;
-                if (s_order == null && f_order == null)
+                if (orderType == FactoryOrderType.None)
                     return;
 
                 var time = Time.time;
@@ -102,10 +111,10 @@ namespace AdvancedGears
                 factory.Interval = inter;
 
                 cost = timeCost;
-                if (factory.CurrentType == UnitType.None)
+                if (factory.CurrentType == FactoryOrderType.None)
                 {
                     factory.ProductInterval = new IntervalChecker(cost, time + cost, 0, -1);   // TODO modify
-                    factory.CurrentType = s_order != null ? UnitType.Commander : f_order.Value.Type;
+                    factory.CurrentType = orderType;
                 }
 
                 inter = factory.ProductInterval;
@@ -123,28 +132,30 @@ namespace AdvancedGears
 
                 bool finished = false;
                 if (s_order != null)
-                    template = CreateSuperior(factory.SuperiorOrders, coords, s_order.Value.HqEntityId, out finished);
+                    template = CreateSuperior(factory.SuperiorOrders, coords, out finished);
                 else if (f_order != null)
-                    template = CreateFollower(factory.FollowerOrders, coords, f_order.Value.Customer, f_order.Value.HqEntityId, out finished);
+                    template = CreateFollower(factory.FollowerOrders, coords, f_order.Value.Customer, out finished);
 
-                EntityId hqId = s_order != null ? s_order.Value.HqEntityId : f_order.Value.HqEntityId;
+                if (template != null) {
+                    var request = new WorldCommands.CreateEntity.Request
+                    (
+                        template,
+                        context: new ProductOrderContext() { f_order = f_order,
+                                                             s_order = s_order,
+                                                             type = factory.CurrentType }
+                    );
+                    this.CommandSystem.SendCommand(request);
+                }
+                else {
 
-                var request = new WorldCommands.CreateEntity.Request
-                (
-                    template,
-                    context: new ProductOrderContext() { f_order = f_order,
-                                                         s_order = s_order,
-                                                         type = factory.CurrentType,
-                                                         hqId = hqId }
-                );
-                this.CommandSystem.SendCommand(request);
+                }
 
                 if (finished)
-                    factory.CurrentType = UnitType.None;
+                    factory.CurrentType = FactoryOrderType.None;
             });
         }
 
-        EntityTemplate CreateFollower(List<FollowerOrder> orders, in Coordinates coords, in EntityId superiorId, in EntityId hqId, out bool finished)
+        EntityTemplate CreateFollower(List<FollowerOrder> orders, in Coordinates coords, in EntityId superiorId, out bool finished)
         {
             finished = false;
             if (orders.Count == 0)
@@ -156,7 +167,7 @@ namespace AdvancedGears
             switch (current.Type)
             {
                 case UnitType.Commander:
-                    template = BaseUnitTemplate.CreateCommanderUnitEntityTemplate(current.Side, coords, current.Rank, superiorId, hqId);
+                    template = BaseUnitTemplate.CreateCommanderUnitEntityTemplate(current.Side, coords, current.Rank, superiorId);
                     break;
                 default:
                     template = BaseUnitTemplate.CreateBaseUnitEntityTemplate(current.Side, coords, current.Type);
@@ -176,7 +187,7 @@ namespace AdvancedGears
             return template;
         }
 
-        EntityTemplate CreateSuperior(List<SuperiorOrder> orders, in Coordinates coords, in EntityId hqId, out bool finished)
+        EntityTemplate CreateSuperior(List<SuperiorOrder> orders, in Coordinates coords, out bool finished)
         {
             finished = false;
             if (orders.Count == 0)
@@ -184,7 +195,7 @@ namespace AdvancedGears
 
             var current = orders[0];
             // create unit
-            EntityTemplate template = BaseUnitTemplate.CreateCommanderUnitEntityTemplate(current.Side, coords, current.Rank, null, hqId);
+            EntityTemplate template = BaseUnitTemplate.CreateCommanderUnitEntityTemplate(current.Side, coords, current.Rank, null);
             var snap = template.GetComponent<CommanderTeam.Snapshot>();
             if (snap != null) {
                 var s = snap.Value;
@@ -196,6 +207,55 @@ namespace AdvancedGears
             finished = true;
 
             return template;
+        }
+
+        class RequestInfo
+        {
+            public TeamInfo team;
+            public List<EntityId> soldiers;
+        }
+
+        readonly Dictionary<EntityId,Dictionary<int,RequestInfo>> requestDic = new Dictionary<EntityId, Dictionary<int, RequestInfo>>();
+        int currentRequestId = 0;
+
+        private class TeamOrderContext
+        {
+            public UnitType type;
+            public int requestId; 
+        }
+
+        void CreateTeam(UnitSide side, EntityId id, in TeamOrder team, in Coordinates coords, out bool fnished)
+        {
+            List<ValueTuple<EntityTemplate,UnitType>> templates = new List<ValueTuple<EntityTemplate,UnitType>>();
+            var temp = BaseUnitTemplate.CreateCommanderUnitEntityTemplate(side, coords, team.CommanderRank);
+            templates.Add((temp, UnitType.Commander));
+            foreach(var i in Enumrable.Range(0,team.Stack)) {
+                temp = BaseUnitTemplate.CreateBaseUnitEntityTemplate(side, coords, UnitType.Soldier);
+                templates.Add((temp, UnitType.Soldier));
+            }
+
+            foreach(var pair in templates) {
+                this.CommandSystem.SendCommand(new WorldCommands.CreateEntity.Request(
+                    pair.item1,
+                    context: new TeamOrderContext() { type = pair.Item2, 
+                                                      requestId = currentRequestId }
+                ));
+            }
+
+            Dictionary<int, RequestInfo> dic = null;
+            if (requestDic.TryGetValue(id, out dic) == false)
+                dic = new Dictionary<int, RequestInfo>();
+
+            dic.Add(currentRequestId, new RequestInfo()
+            {
+                team = new TeamInfo() { CommanderId = Entity.Nul,
+                                        Rank = team.CommanderRank,
+                                        Order = team.Order,
+                                        TargetEntityId = Entity.Null },
+                soldiers = new List<EntityId>(),
+            });
+
+            currentRequestId++;
         }
 
         void HandleProductResponse()
@@ -235,7 +295,7 @@ namespace AdvancedGears
 
                         case UnitType.Commander:
                             info.UnderCommanders.Add(entityId);
-                            SetList(ref commanders, order.hqId, entityId, order.CommanderRank);
+                            //SetList(ref commanders, entityId, order.CommanderRank);
                             break;
                     }
 
@@ -245,7 +305,7 @@ namespace AdvancedGears
                 if (order.s_order != null) {
                     var id = response.EntityId.Value;
                     SetList(ref superiorDic, id, order.s_order.Value.Followers);
-                    SetList(ref commanders, order.hqId, id, order.CommanderRank);
+                    //SetList(ref commanders, id, order.CommanderRank);
                 }
             }
 
@@ -275,26 +335,26 @@ namespace AdvancedGears
             }
 
             // RegisterCommanderToHQ
-            if (commanders != null)
-            {
-                foreach (var kvp in commanders)
-                {
-                    this.CommandSystem.SendCommand(new CommandersManager.AddCommander.Request(kvp.Key,
-                                                    new CreatedCommanderList { Commanders = kvp.Value.ToList() }));
-                }
-            }
+            //if (commanders != null)
+            //{
+            //    foreach (var kvp in commanders)
+            //    {
+            //        this.CommandSystem.SendCommand(new CommandersManager.AddCommander.Request(kvp.Key,
+            //                                        new CreatedCommanderList { Commanders = kvp.Value.ToList() }));
+            //    }
+            //}
         }
 
-        private void SetList(ref Dictionary<EntityId, List<CommanderInfo>> commanders, in EntityId hqId, in EntityId product, uint rank)
-        {
-            commanders = commanders ?? new Dictionary<EntityId, List<CommanderInfo>>();
-
-            List<CommanderInfo> list = null;
-            commanders.TryGetValue(hqId, out list);
-            list = list ?? new List<CommanderInfo>();
-            list.Add(new CommanderInfo(product,rank));
-            commanders[hqId] = list;
-        }
+        //private void SetList(ref Dictionary<EntityId, List<CommanderInfo>> commanders, in EntityId product, uint rank)
+        //{
+        //    commanders = commanders ?? new Dictionary<EntityId, List<CommanderInfo>>();
+        //
+        //    List<CommanderInfo> list = null;
+        //    commanders.TryGetValue(hqId, out list);
+        //    list = list ?? new List<CommanderInfo>();
+        //    list.Add(new CommanderInfo(product,rank));
+        //    commanders[hqId] = list;
+        //}
 
         private void SetList(ref Dictionary<EntityId, List<EntityId>> superiorDic, in EntityId superior, IEnumerable<EntityId> followers)
         {

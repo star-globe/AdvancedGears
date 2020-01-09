@@ -210,10 +210,10 @@ namespace AdvancedGears
 
         private bool SetCommand(EntityId id, in TargetInfo targetInfo, OrderType order)
         {
-            if (base.SetCommand(id, order, out var entity) == false)
+            if (base.SetCommand(id, order) == false)
                 return false;
         
-            this.CommandSystem.SendCommand(new BaseUnitTarget.SetTarget.Request(id, targetInfo), entity);
+            this.CommandSystem.SendCommand(new BaseUnitTarget.SetTarget.Request(id, targetInfo));
             return true;
         }
         #endregion

@@ -195,6 +195,11 @@ namespace AdvancedGears
             return getUnits(self_side, pos, length, false, false, types);
         }
 
+        protected List<UnitInfo> getAllUnits(in Vector3 pos, float length, params UnitType[] types)
+        {
+            return getUnits(UnitSide.None, pos, length, null, false, types);
+        }
+
         protected List<UnitInfo> getUnits(UnitSide self_side, in Vector3 pos, float length, bool? isEnemy, bool allowDead, params UnitType[] types)
         {
             List<UnitInfo> unitList = new List<UnitInfo>();
@@ -242,11 +247,8 @@ namespace AdvancedGears
             return status.Value.State == UnitState.Alive;
         }
 
-        protected bool SetCommand(EntityId id, OrderType order, out Entity entity)
+        protected bool SetCommand(EntityId id, OrderType order, Entity sendingEntity = Entity.Null)
         {
-            if (!base.TryGetEntity(id, out entity))
-                return false;
-
             BaseUnitStatus.Component? status;
             if (base.TryGetComponent(id, out status) == false)
                 return false;
@@ -254,7 +256,7 @@ namespace AdvancedGears
             if (status.Value.Order == order)
                 return false;
 
-            this.CommandSystem.SendCommand(new BaseUnitStatus.SetOrder.Request(id, new OrderInfo() { Order = order }), entity);
+            this.CommandSystem.SendCommand(new BaseUnitStatus.SetOrder.Request(id, new OrderInfo() { Order = order }), sendingEntity);
             return true;
         }
     }

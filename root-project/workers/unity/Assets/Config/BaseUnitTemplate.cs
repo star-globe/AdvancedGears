@@ -71,7 +71,7 @@ namespace AdvancedGears
                     template.AddComponent(new CommanderSight.Snapshot { WarPowers = new List<WarPower>() }, writeAccess);
                     template.AddComponent(new CommanderAction.Snapshot { ActionType = CommandActionType.None }, writeAccess);
                     template.AddComponent(new BaseUnitPosture.Snapshot { Posture = new PostureInfo { Datas = new Dictionary<PosturePoint, PostureData>() } }, writeAccess);
-                    template.AddComponent(new DominationDevice.Snapshot { Type = DominationDeviceType.Capturing, Speed = 0.0f, }, writeAccess);
+                    template.AddComponent(new DominationDevice.Snapshot { Type = DominationDeviceType.Capturing, Speed = 0.5f, }, writeAccess);
                     break;
 
                 case UnitType.Stronghold:
@@ -104,7 +104,7 @@ namespace AdvancedGears
             }
         }
 
-        public static EntityTemplate CreateCommanderUnitEntityTemplate(UnitSide side, Coordinates coords, uint rank, EntityId? superiorId, EntityId? hqId)
+        public static EntityTemplate CreateCommanderUnitEntityTemplate(UnitSide side, Coordinates coords, uint rank, EntityId? superiorId)
         {
             var template = CreateBaseUnitEntityTemplate(side, coords, UnitType.Commander);
             var status = template.GetComponent<CommanderStatus.Snapshot>();
@@ -121,9 +121,6 @@ namespace AdvancedGears
 
                 if (superiorId != null)
                     t.SuperiorInfo.EntityId = superiorId.Value;
-
-                if (hqId != null)
-                    t.HqInfo.EntityId = hqId.Value;
 
                 template.SetComponent(t);
             }
