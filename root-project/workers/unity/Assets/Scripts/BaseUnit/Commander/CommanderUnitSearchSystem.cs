@@ -122,22 +122,22 @@ namespace AdvancedGears
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
                 var pos = trans.position;
 
-                team.UnderCommanders.Clear();
+                team.FollowerInfo.UnderCommanders.Clear();
 
                 var rank = commander.Rank - 1;
                 var allies = getAllyUnits(status.Side, pos, sight.Range, UnitType.Commander);
                 foreach(var unit in allies) {
-                    if (unit.Id == entityId.EntityId)
+                    if (unit.id == entityId.EntityId)
                         continue;
 
-                    CommanderStatus.Component com;
-                    if (this.TryGetComponent(unit.Id, out com) == false)
+                    CommanderStatus.Component? com;
+                    if (this.TryGetComponent(unit.id, out com) == false)
                         continue;
                     
-                    if (com.Rank != rank)
+                    if (com.Value.Rank != rank)
                         continue;
 
-                    team.UnderCommanders.Add(unit.Id);
+                    team.FollowerInfo.UnderCommanders.Add(unit.id);
                 }
             });
         }

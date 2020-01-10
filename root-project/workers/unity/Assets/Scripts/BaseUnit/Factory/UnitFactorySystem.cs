@@ -153,8 +153,8 @@ namespace AdvancedGears
                     );
                     this.CommandSystem.SendCommand(request);
                 }
-                else {
-                    CreateTeam(status.Side, entityId.EntityId, t_order, coords, out finished);
+                else if (t_order != null) {
+                    CreateTeam(status.Side, entityId.EntityId, t_order.Value, coords, out finished);
                 }
 
                 if (finished)
@@ -251,6 +251,8 @@ namespace AdvancedGears
             List<ValueTuple<EntityTemplate,UnitType>> templates = new List<ValueTuple<EntityTemplate,UnitType>>();
             var temp = BaseUnitTemplate.CreateCommanderUnitEntityTemplate(side, coords, team.CommanderRank, null);
             templates.Add((temp, UnitType.Commander));
+
+            var pos = coords;
             int edge = 1;
             int index = 0;
             foreach(var i in Enumerable.Range(0,team.Stack)) {
@@ -273,8 +275,8 @@ namespace AdvancedGears
                 else if (index <= 8 * edge)
                     x = inter;
 
-                coords += new Coordinates(x, 0, z);
-                temp = BaseUnitTemplate.CreateBaseUnitEntityTemplate(side, coords, UnitType.Soldier);
+                pos += new Coordinates(x, 0, z);
+                temp = BaseUnitTemplate.CreateBaseUnitEntityTemplate(side, pos, UnitType.Soldier);
                 templates.Add((temp, UnitType.Soldier));
                 index++;
             }
@@ -317,17 +319,17 @@ namespace AdvancedGears
 
             var responses = this.CommandSystem.GetResponses<WorldCommands.CreateEntity.ReceivedResponse>();
             for (var i = 0; i < responses.Count; i++) {
+                ref readonly var response = ref responses[i];
                 if (response.StatusCode != StatusCode.Success)
                     continue;
 
-                ref readonly var response = ref responses[i];
                 if (response.Context is ProductOrderContext requestContext) {
                     HandleProductOrderContext(followerDic, superiorDic, commanders, requestContext, response.EntityId.Value);
                     continue;
                 }
 
                 if (response.Context is TeamOrderContext teamOrderContext) {
-                    HandleTeamOrderContext(teamOrderContext, response.EntityId);
+                    HandleTeamOrderContext(teamOrderContext, response.EntityId.Value);
                     continue;
                 }
             }
@@ -451,10 +453,9 @@ namespace AdvancedGears
             }
 
             if (requestInfo.IsReady) {
-                this.CommandSystem.SendCommand(new CommanderTeam.AddFollowerInfo.Request(requestInfo.team.CommanderId,
-                                                                                         new FollowerInfo() {
-                                                                                            Followers = requestInfo.soldiers,
-                                                                                            UnderCommanders = new List<EntityId>()}));
+                this.CommandSystem.SendCommand(new CommanderTeam.AddFollower.Request(requestInfo.team.CommanderId,
+                                                                                     new FollowerInfo() { Followers = requestInfo.soldiers,
+                                                                                                          UnderCommanders = new List<EntityId>()}));
                 requestDic[strongholdId].Remove(requestId);
             }
             else {
