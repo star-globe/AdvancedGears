@@ -183,6 +183,7 @@ type TeamInfo {
     uint32 rank = 2;
     OrderType order = 4;
     EntityId target_entity_id = 5;
+    EntityId stronghold_entity_id = 6;
 }
 
 type TeamInfoResponse {
