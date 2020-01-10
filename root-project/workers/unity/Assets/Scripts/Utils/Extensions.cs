@@ -218,6 +218,14 @@ namespace AdvancedGears
 
             return heights;
         }
+
+        public static List<EntityId> GetAllFollowers(this FollowerInfo info)
+        {
+            var list = new List<EntityId>();
+            list.AddRange(info.Followers);
+            list.AddRange(info.UnderCommanders);
+            return list;
+        }
     }
 
     public static class IntervalCheckerInitializer

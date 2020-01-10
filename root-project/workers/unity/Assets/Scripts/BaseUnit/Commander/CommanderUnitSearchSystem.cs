@@ -15,14 +15,17 @@ namespace AdvancedGears
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     public class CommanderUnitSearchSystem : BaseCommanderSearch
     {
-        private EntityQuery group;
+        private EntityQuery targettingGroup;
+        private EntityQuery teamingGroup;
+
+        IntervalChecker inter;
 
         #region ComponentSystem
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            group = GetEntityQuery(
+            targettingGroup = GetEntityQuery(
                 ComponentType.ReadWrite<CommanderSight.Component>(),
                 ComponentType.ReadWrite<CommanderStatus.Component>(),
                 ComponentType.ReadWrite<CommanderAction.Component>(),
@@ -32,12 +35,32 @@ namespace AdvancedGears
                 ComponentType.ReadOnly<Transform>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
-            group.SetFilter(CommanderAction.ComponentAuthority.Authoritative);
+            targettingGroup.SetFilter(CommanderAction.ComponentAuthority.Authoritative);
+
+            teamingGroup = GetEntityQuery(
+                ComponentType.ReadWrite<CommanderTeam.Component>(),
+                ComponentType.ReadOnly<CommanderTeam.ComponentAuthority>(),
+                ComponentType.ReadOnly<CommanderSight.Component>(),
+                ComponentType.ReadOnly<CommanderStatus.Component>(),
+                ComponentType.ReadOnly<BaseUnitStatus.Component>(),
+                ComponentType.ReadOnly<Transform>(),
+                ComponentType.ReadOnly<SpatialEntityId>()
+            );
+            teamingGroup.SetFilter(CommanderTeam.ComponentAuthority.Authoritative);
+
+            inter = IntervalCheckerInitializer.InitializedChecker(5.0f);
         }
 
         protected override void OnUpdate()
         {
-            Entities.With(group).ForEach((Entity entity,
+            if (inter.CheckTime())
+                HandleTeaming();
+
+            HandleTargetting();
+        }
+        private void HandleTargetting()
+        {
+            Entities.With(targettingGroup).ForEach((Entity entity,
                               ref CommanderSight.Component sight,
                               ref CommanderStatus.Component commander,
                               ref CommanderTeam.Component team,
@@ -72,6 +95,50 @@ namespace AdvancedGears
                 is_target = attackOrder(status, entityId, pos, ref sight, ref commander, ref team);
 
                 action.IsTarget = is_target;
+            });
+        }
+        
+        private void HandleTeaming()
+        {
+            Entities.With(teamingGroup).ForEach((Entity entity,
+                              ref CommanderSight.Component sight,
+                              ref CommanderStatus.Component commander,
+                              ref CommanderTeam.Component team,
+                              ref BaseUnitStatus.Component status,
+                              ref SpatialEntityId entityId) =>
+            {
+                if (status.State != UnitState.Alive)
+                    return;
+
+                if (status.Type != UnitType.Commander)
+                    return;
+
+                if (status.Order == OrderType.Idle)
+                    return;
+
+                if (commander.Rank == 0)
+                    return;
+
+                var trans = EntityManager.GetComponentObject<Transform>(entity);
+                var pos = trans.position;
+
+                team.UnderCommanders.Clear();
+
+                var rank = commander.Rank - 1;
+                var allies = getAllyUnits(status.Side, pos, sight.Range, UnitType.Commander);
+                foreach(var unit in allies) {
+                    if (unit.Id == entityId.EntityId)
+                        continue;
+
+                    CommanderStatus.Component com;
+                    if (this.TryGetComponent(unit.Id, out com) == false)
+                        continue;
+                    
+                    if (com.Rank != rank)
+                        continue;
+
+                    team.UnderCommanders.Add(unit.Id);
+                }
             });
         }
         #endregion
@@ -155,7 +222,7 @@ namespace AdvancedGears
 
             commander.Order.Self(current.Value);
 
-            SetFollowers(team.FollowerInfo.Followers, targetInfo, current.Value);
+            SetOrderFollowers(team.FollowerInfo.GetAllFollowers(), targetInfo, current.Value);
 
             return tgt != null;
         }
@@ -198,7 +265,7 @@ namespace AdvancedGears
         #endregion
 
         #region SetMethod
-        private void SetFollowers(List<EntityId> followers, in TargetInfo targetInfo, OrderType order)
+        private void SetOrderFollowers(List<EntityId> followers, in TargetInfo targetInfo, OrderType order)
         {
             foreach (var id in followers)
             {
