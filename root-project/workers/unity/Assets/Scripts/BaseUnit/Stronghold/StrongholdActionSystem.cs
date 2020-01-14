@@ -25,14 +25,14 @@ namespace AdvancedGears
                 ComponentType.ReadWrite<StrongholdStatus.Component>(),
                 ComponentType.ReadOnly<StrongholdStatus.ComponentAuthority>(),
                 ComponentType.ReadWrite<UnitFactory.Component>(),
-                ComponentType.ReadOnly<UnitFactory.ComponentAuthority>(),
+                //ComponentType.ReadOnly<UnitFactory.ComponentAuthority>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<StrongholdSight.Component>(),
                 ComponentType.ReadOnly<Transform>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
             group.SetFilter(StrongholdStatus.ComponentAuthority.Authoritative);
-            group.SetFilter(UnitFactory.ComponentAuthority.Authoritative);
+            //group.SetFilter(UnitFactory.ComponentAuthority.Authoritative);
         }
 
         protected override void OnUpdate()

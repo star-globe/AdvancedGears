@@ -36,6 +36,7 @@ namespace AdvancedGears
             world.GetOrCreateSystem<MetricSendSystem>();
             world.GetOrCreateSystem<BulletMovementSystem>();
             world.GetOrCreateSystem<FieldQueryClientSystem>();
+            world.GetOrCreateSystem<SpawnPointQuerySystem>();
         }
 
         public static void AddGameLogicSystems(World world, UnityEngine.GameObject gameObject)
@@ -57,7 +58,9 @@ namespace AdvancedGears
             world.GetOrCreateSystem<UnitFactorySystem>();
             //world.GetOrCreateSystem<HQOrganizeSystem>();
             //world.GetOrCreateSystem<UnitArmyObserveSystem>();
-            world.GetOrCreateSystem<CommandersManagerSystem>();
+            //world.GetOrCreateSystem<CommandersManagerSystem>();
+            world.GetOrCreateSystem<StrongholdSearchSystem>();
+            world.GetOrCreateSystem<StrongholdActionSystem>();
             world.GetOrCreateSystem<BulletMovementSystem>();
             world.GetOrCreateSystem<BaseUnitReviveTimerSystem>();
             world.GetOrCreateSystem<FieldQueryServerSystem>();

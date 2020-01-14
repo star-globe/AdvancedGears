@@ -19,6 +19,8 @@ GameObject:
   - component: {fileID: -2529005582107269055}
   - component: {fileID: 6513623476166926668}
   - component: {fileID: 5539662744652403619}
+  - component: {fileID: 6646940192886194758}
+  - component: {fileID: 625205394078282003}
   m_Layer: 11
   m_Name: StrongholdUnit
   m_TagString: Untagged
@@ -180,6 +182,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rigidBody: {fileID: 6513623476166926668}
   configRef: {fileID: 3185150595974839569}
+--- !u!114 &6646940192886194758
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7117998853217099108}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb32067bdac12784eae0249d7d30c07b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  settings: {fileID: 11400000, guid: 984fcbde33cdd064ba32a7c286b48367, type: 2}
+--- !u!114 &625205394078282003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7117998853217099108}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aba65ec0d854148449d28c352cb9e5ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &4419458866152112006
 PrefabInstance:
   m_ObjectHideFlags: 0

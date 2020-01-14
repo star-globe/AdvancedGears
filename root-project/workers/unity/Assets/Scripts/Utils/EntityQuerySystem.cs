@@ -39,6 +39,9 @@ namespace AdvancedGears
 
         protected override void OnUpdate()
         {
+            if (this.CommandSystem == null)
+                return;
+
             if (entityQueryId != null)
             {
                 HandleEntityQueryResponses();
