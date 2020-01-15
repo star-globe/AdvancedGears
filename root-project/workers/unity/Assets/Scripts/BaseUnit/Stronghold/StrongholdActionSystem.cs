@@ -17,13 +17,15 @@ namespace AdvancedGears
     {
         private EntityQuery group;
 
+        IntervalChecker inter;
+
         protected override void OnCreate()
         {
             base.OnCreate();
 
             group = GetEntityQuery(
-                ComponentType.ReadWrite<StrongholdStatus.Component>(),
-                ComponentType.ReadOnly<StrongholdStatus.ComponentAuthority>(),
+                ComponentType.ReadOnly<StrongholdStatus.Component>(),
+                //ComponentType.ReadOnly<StrongholdStatus.ComponentAuthority>(),
                 ComponentType.ReadWrite<UnitFactory.Component>(),
                 //ComponentType.ReadOnly<UnitFactory.ComponentAuthority>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
@@ -31,12 +33,17 @@ namespace AdvancedGears
                 ComponentType.ReadOnly<Transform>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
-            group.SetFilter(StrongholdStatus.ComponentAuthority.Authoritative);
+            //group.SetFilter(StrongholdStatus.ComponentAuthority.Authoritative);
             //group.SetFilter(UnitFactory.ComponentAuthority.Authoritative);
+
+            inter = IntervalCheckerInitializer.InitializedChecker(3.0f);
         }
 
         protected override void OnUpdate()
         {
+            if (inter.CheckTime() == false)
+                return;
+
             Entities.With(group).ForEach((Entity entity,
                                           ref StrongholdStatus.Component stronghold,
                                           ref UnitFactory.Component factory,
@@ -50,11 +57,11 @@ namespace AdvancedGears
                 if (status.Type != UnitType.Stronghold)
                     return;
 
-                var inter = stronghold.Interval;
-                if (inter.CheckTime() == false)
-                    return;
-
-                stronghold.Interval = inter;
+                //var inter = stronghold.Interval;
+                //if (inter.CheckTime() == false)
+                //    return;
+                //
+                //stronghold.Interval = inter;
 
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
                 CheckAlive(trans.position, status.Side, out var datas);
@@ -66,8 +73,8 @@ namespace AdvancedGears
                         factory.TeamOrders.AddRange(teamOrders);
                 }
 
-                // order check
-                CheckOrder(status.Order, sight.TargetStronghold, datas);
+                //// order check
+                //CheckOrder(status.Order, sight.TargetStronghold, datas);
             });
         }
 

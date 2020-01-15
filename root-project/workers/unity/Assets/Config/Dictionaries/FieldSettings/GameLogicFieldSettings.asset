@@ -15,4 +15,4 @@ MonoBehaviour:
   fieldObject: {fileID: 6408312529055956839, guid: bb6af3051b29a234ca6f5c142f006540,
     type: 3}
   workerType: 2
-  fieldSize: 1800
+  fieldSize: 1000
