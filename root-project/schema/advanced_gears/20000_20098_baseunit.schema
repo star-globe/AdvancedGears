@@ -290,6 +290,10 @@ type TeamOrder {
     int32 stack = 10;
 }
 
+type TeamOrderList {
+    list<TeamOrder> orders = 1;
+}
+
 enum FactoryOrderType {
     None = 0;
     Follower = 1;
@@ -315,6 +319,7 @@ component UnitFactory {
 
     command improbable.gdk.core.Empty add_follower_order(FollowerOrder);
     command improbable.gdk.core.Empty add_superior_order(SuperiorOrder);
+    command improbable.gdk.core.Empty add_team_order(TeamOrderList);
 }
 
 component UnitArmyObserver {

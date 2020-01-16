@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Improbable.Gdk.Core;
 using Improbable.Gdk.Subscriptions;
+using Improbable.Worker.CInterop;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
@@ -19,32 +20,38 @@ namespace AdvancedGears
 
         IntervalChecker inter;
 
+        readonly HashSet<EntityId> requestLists = new HashSet<EntityId>();
+
         protected override void OnCreate()
         {
             base.OnCreate();
 
             group = GetEntityQuery(
                 ComponentType.ReadOnly<StrongholdStatus.Component>(),
-                //ComponentType.ReadOnly<StrongholdStatus.ComponentAuthority>(),
                 ComponentType.ReadWrite<UnitFactory.Component>(),
-                //ComponentType.ReadOnly<UnitFactory.ComponentAuthority>(),
+                ComponentType.ReadOnly<UnitFactory.ComponentAuthority>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<StrongholdSight.Component>(),
                 ComponentType.ReadOnly<Transform>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
-            //group.SetFilter(StrongholdStatus.ComponentAuthority.Authoritative);
-            //group.SetFilter(UnitFactory.ComponentAuthority.Authoritative);
+            group.SetFilter(UnitFactory.ComponentAuthority.Authoritative);
 
             inter = IntervalCheckerInitializer.InitializedChecker(3.0f);
         }
 
         protected override void OnUpdate()
         {
+            HandleRequests();
+            HandleResponses();
+        }
+
+        void HandleRequests()
+        {
             if (inter.CheckTime() == false)
                 return;
 
-            Entities.With(group).ForEach((Entity entity,
+            Entities.With(group).ForEach((Unity.Entities.Entity entity,
                                           ref StrongholdStatus.Component stronghold,
                                           ref UnitFactory.Component factory,
                                           ref BaseUnitStatus.Component status,
@@ -57,25 +64,33 @@ namespace AdvancedGears
                 if (status.Type != UnitType.Stronghold)
                     return;
 
-                //var inter = stronghold.Interval;
-                //if (inter.CheckTime() == false)
-                //    return;
-                //
-                //stronghold.Interval = inter;
-
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
                 CheckAlive(trans.position, status.Side, out var datas);
 
                 // number check
-                if (factory.TeamOrders.Count == 0) {
+                var id = entityId.EntityId;
+                if (factory.TeamOrders.Count == 0 &&
+                    requestLists.Contains(id) == false) {
                     var teamOrders = makeOrders(stronghold.Rank, status.Order, datas);
                     if (teamOrders != null)
-                        factory.TeamOrders.AddRange(teamOrders);
+                        factory.TeamOrders.AddRange(teamOrders);//SendTeamOrders(id, teamOrders);
                 }
 
-                //// order check
-                //CheckOrder(status.Order, sight.TargetStronghold, datas);
+                // order check
+                CheckOrder(status.Order, sight.TargetStronghold, datas);
             });
+        }
+
+        void HandleResponses()
+        {
+            var responses = this.CommandSystem.GetResponses<UnitFactory.AddTeamOrder.ReceivedResponse>();
+            for (var i = 0; i < responses.Count; i++) {
+                ref readonly var response = ref responses[i];
+                if (response.StatusCode != StatusCode.Success)
+                    continue;
+
+                requestLists.Remove(response.EntityId);
+            }
         }
 
         void CheckAlive(in Vector3 pos, UnitSide side, out Dictionary<EntityId,TeamInfo> datas)
@@ -101,6 +116,12 @@ namespace AdvancedGears
 
                 datas.Add(u.id, teamInfo);
             }
+        }
+
+        void SendTeamOrders(EntityId id, List<TeamOrder> teamOrders)
+        {
+            this.CommandSystem.SendCommand(new UnitFactory.AddTeamOrder.Request(id, new TeamOrderList { Orders = teamOrders }));
+            requestLists.Add(id);
         }
 
         const int solnum = 5;
@@ -143,6 +164,9 @@ namespace AdvancedGears
                 }
 
                 coms *= underCommands;
+
+                if (r == 0)
+                    break;
             }
 
             return teamOrders;
@@ -209,7 +233,7 @@ namespace AdvancedGears
                                                                                                Rank = commander.Rank - 1 }));
             }
 
-            Entity entity;
+            Unity.Entities.Entity entity;
             if (TryGetEntity(id, out entity) == false)
                 return;
 
