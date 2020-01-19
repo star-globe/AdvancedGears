@@ -205,6 +205,8 @@ namespace AdvancedGears
                     side = info.Side,
                     type = UnitType.Stronghold
                 };
+
+                Debug.LogFormat("TargetStronghold is Valid. Side:{0} Position:{1}", status.Side, tgt.pos);
             }
             else
                 tgt = getNearestEnemey(status.Side, pos, sight.Range, UnitType.Stronghold, UnitType.Commander);

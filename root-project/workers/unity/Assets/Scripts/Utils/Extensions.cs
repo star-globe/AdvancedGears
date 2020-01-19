@@ -226,6 +226,16 @@ namespace AdvancedGears
             list.AddRange(info.UnderCommanders);
             return list;
         }
+
+        /// <summary>
+        /// RigidBodyの停止
+        /// </summary>
+        /// <param name="rigidbody"></param>
+        public static void Stop(this Rigidbody rigidbody)
+        {
+            rigidbody.velocity = Vector3.zero;
+            rigidbody.angularVelocity = Vector3.zero;
+        }
     }
 
     public static class IntervalCheckerInitializer

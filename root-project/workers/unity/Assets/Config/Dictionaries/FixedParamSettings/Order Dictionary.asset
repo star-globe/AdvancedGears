@@ -12,4 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e44ee67070d779447a1cd7abb3233e40, type: 3}
   m_Name: Order Dictionary
   m_EditorClassIdentifier: 
-  numberSettings: []
+  numberSettings:
+  - order: 2
+    perRank: 0
+    fix: 1
+  - order: 3
+    perRank: 0
+    fix: 1
+  - order: 4
+    perRank: 0
+    fix: 1
+  - order: 5
+    perRank: 0
+    fix: 1

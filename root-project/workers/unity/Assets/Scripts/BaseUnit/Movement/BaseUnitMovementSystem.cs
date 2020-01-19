@@ -69,8 +69,7 @@ namespace AdvancedGears
 
                 if (!movement.IsTarget)
                 {
-                    rigidbody.velocity = Vector3.zero;
-                    rigidbody.angularVelocity = Vector3.zero;
+                    rigidbody.Stop();
                     return;
                 }
 
@@ -85,16 +84,16 @@ namespace AdvancedGears
                     tgt = get_nearly_position(pos, tgt, com, target.TargetInfo.AllyRange);
                 }
 
-                int foward = 0;
+                int forward = 0;
                 var diff = tgt - pos;
                 var range = movement.TargetRange;
-                var min_range = range * 0.9f;
+                var min_range = range * RangeDictionary.MoveRangeRate;
                 var mag = diff.sqrMagnitude;
 
                 if (mag > range * range)
-                    foward = 1;
+                    forward = 1;
                 else if (mag < min_range * min_range)
-                    foward = -1;
+                    forward = -1;
 
                 if (rotate(rigidbody.transform, tgt - pos, movement.RotSpeed))
                 {
@@ -106,7 +105,13 @@ namespace AdvancedGears
                     }
                 }
 
-                var uVec = rigidbody.transform.forward * movement.MoveSpeed * foward;
+                if (forward == 0)
+                {
+                    rigidbody.Stop();
+                    return;
+                }
+
+                var uVec = rigidbody.transform.forward * movement.MoveSpeed * forward;
                 var moveVec = uVec * Time.fixedDeltaTime;
                 rigidbody.MovePosition(pos + moveVec);
 

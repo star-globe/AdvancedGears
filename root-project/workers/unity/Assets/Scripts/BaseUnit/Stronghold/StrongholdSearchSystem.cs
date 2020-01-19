@@ -48,6 +48,9 @@ namespace AdvancedGears
                 if (status.Type != UnitType.Stronghold)
                     return;
 
+                if (status.Side == UnitSide.None)
+                    return;
+
                 var inter = sight.Interval;
                 if (inter.CheckTime() == false)
                     return;
@@ -86,14 +89,16 @@ namespace AdvancedGears
             if (unit != null) {
                 target.StrongholdId = unit.id;
                 target.Side = unit.side;
-                target.Position = unit.pos.ToCoordinates();
+                target.Position = unit.pos.ToWorldPosition(this.Origin).ToCoordinates();
             }
             else {
                 target.StrongholdId = selfId;
                 target.Side = side;
-                target.Position = pos.ToCoordinates();
+                target.Position = pos.ToWorldPosition(this.Origin).ToCoordinates();
                 order = OrderType.Keep;
             }
+
+            Debug.LogFormat("Side:{0} Order:{1} StrategyVector:{2}", side, order, strategyVector);
 
             return order;
         }

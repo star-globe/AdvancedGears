@@ -154,7 +154,7 @@ namespace AdvancedGears
                     this.CommandSystem.SendCommand(request);
                 }
                 else if (t_order != null) {
-                    CreateTeam(status.Side, entityId.EntityId, t_order.Value, coords, out finished);
+                    CreateTeam(factory.TeamOrders, status.Side, entityId.EntityId, coords, out finished);
                 }
 
                 if (finished)
@@ -244,36 +244,41 @@ namespace AdvancedGears
             public EntityId strongholdEntityId;
         }
 
-        double inter = 2.0;
-        void CreateTeam(UnitSide side, EntityId id, in TeamOrder team, in Coordinates coords, out bool finished)
+        void CreateTeam(List<TeamOrder> orders, UnitSide side, EntityId id, in Coordinates coords, out bool finished)
         {
             finished = false;
+            if (orders.Count == 0)
+                return;
+
+            var current = orders[0];
+            // create unit
             List<ValueTuple<EntityTemplate,UnitType>> templates = new List<ValueTuple<EntityTemplate,UnitType>>();
-            var temp = BaseUnitTemplate.CreateCommanderUnitEntityTemplate(side, coords, team.CommanderRank, null);
+            var temp = BaseUnitTemplate.CreateCommanderUnitEntityTemplate(side, coords, current.CommanderRank, null);
             templates.Add((temp, UnitType.Commander));
 
             var pos = coords;
             int edge = 1;
             int index = 0;
-            foreach(var i in Enumerable.Range(0,team.Stack)) {
+            double inter = RangeDictionary.UnitInter;
+            double x = 0, z = 0;
+            foreach (var i in Enumerable.Range(0, current.Stack)) {
                 if (i == 8 * edge + 1) {
                     edge++;
                     index = 0;
                 }
 
-                double x = 0, z = 0;
                 if (index == 0) {
-                    x = inter;
-                    z = inter;
+                    x += inter;
+                    z += inter;
                 }
                 else if (index <= 2 * edge)
-                    z = -inter;
+                    z -= inter;
                 else if (index <= 4 * edge)
-                    x = -inter;
+                    x -= inter;
                 else if (index <= 6 * edge)
-                    z = inter;
+                    z += inter;
                 else if (index <= 8 * edge)
-                    x = inter;
+                    x += inter;
 
                 pos += new Coordinates(x, 0, z);
                 temp = BaseUnitTemplate.CreateBaseUnitEntityTemplate(side, pos, UnitType.Soldier);
@@ -297,17 +302,18 @@ namespace AdvancedGears
             dic.Add(currentRequestId, new RequestInfo()
             {
                 team = new TeamInfo() { CommanderId = new EntityId(),
-                                        Rank = team.CommanderRank,
-                                        Order = team.Order,
+                                        Rank = current.CommanderRank,
+                                        Order = current.Order,
                                         TargetEntityId = new EntityId(),
                                         StrongholdEntityId = id },
                 soldiers = new List<EntityId>(),
-                stack = team.Stack
+                stack = current.Stack
             });
 
             requestDic[id] = dic;
 
             currentRequestId++;
+            orders.RemoveAt(0);
             finished = true;
         }
 

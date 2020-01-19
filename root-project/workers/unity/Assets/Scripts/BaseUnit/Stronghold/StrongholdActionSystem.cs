@@ -64,13 +64,17 @@ namespace AdvancedGears
                 if (status.Type != UnitType.Stronghold)
                     return;
 
+                if (status.Side == UnitSide.None)
+                    return;
+
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
                 CheckAlive(trans.position, status.Side, out var datas);
 
+                Debug.LogFormat("TeamDatas.Count:{0}", datas.Count);
+
                 // number check
                 var id = entityId.EntityId;
-                if (factory.TeamOrders.Count == 0 &&
-                    requestLists.Contains(id) == false) {
+                if (factory.TeamOrders.Count == 0) {
                     var teamOrders = makeOrders(stronghold.Rank, status.Order, datas);
                     if (teamOrders != null)
                         factory.TeamOrders.AddRange(teamOrders);
@@ -128,23 +132,6 @@ namespace AdvancedGears
         const int underCommands = 3;
         List<TeamOrder> makeOrders(uint rank, OrderType order, Dictionary<EntityId,TeamInfo> datas)
         {
-            //uint maxrank = 0;
-            //switch (order)
-            //{
-            //    case OrderType.Attack:
-            //        maxrank = rank;
-            //        break;
-            //    case OrderType.Guard:
-            //        maxrank = rank;
-            //        break;   
-            //    case OrderType.Keep:
-            //        maxrank = 1;
-            //        break;
-            //    case OrderType.Supply:
-            //        maxrank = 1;
-            //        break;
-            //}
-
             var maxrank = OrderDictionary.GetMaxRank(order, rank);
 
             if (maxrank <= 0 || datas == null)
@@ -154,6 +141,9 @@ namespace AdvancedGears
             int coms = 1;
             for(var r = maxrank; r >= 0; r--) {
                 var count = datas.Count(kvp => kvp.Value.Rank == r);
+
+                Debug.LogFormat("Commanders Count:{0} Rank:{1}", count, r);
+
                 if (count < coms) {
                     teamOrders = teamOrders ?? new List<TeamOrder>();
                     teamOrders.Add(new TeamOrder()

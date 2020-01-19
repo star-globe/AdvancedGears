@@ -12,6 +12,12 @@ namespace AdvancedGears
 
         [SerializeField] private RangeSettings[] rangeSettings;
 
+        [SerializeField] private double unitInter;
+        public static double UnitInter => Instance.unitInter;
+
+        [SerializeField] private float moveRangeRate;
+        public static float MoveRangeRate => Instance.moveRangeRate;
+
         Dictionary<FixedRangeType, float> rangeDic = null;
         Dictionary<FixedRangeType, float> RangeDic
         {
