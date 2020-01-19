@@ -73,7 +73,7 @@ namespace AdvancedGears
                     requestLists.Contains(id) == false) {
                     var teamOrders = makeOrders(stronghold.Rank, status.Order, datas);
                     if (teamOrders != null)
-                        factory.TeamOrders.AddRange(teamOrders);//SendTeamOrders(id, teamOrders);
+                        factory.TeamOrders.AddRange(teamOrders);
                 }
 
                 // order check
@@ -128,22 +128,24 @@ namespace AdvancedGears
         const int underCommands = 3;
         List<TeamOrder> makeOrders(uint rank, OrderType order, Dictionary<EntityId,TeamInfo> datas)
         {
-            uint maxrank = 0;
-            switch (order)
-            {
-                case OrderType.Attack:
-                    maxrank = rank;
-                    break;
-                case OrderType.Guard:
-                    maxrank = rank;
-                    break;   
-                case OrderType.Keep:
-                    maxrank = 1;
-                    break;
-                case OrderType.Supply:
-                    maxrank = 1;
-                    break;
-            }
+            //uint maxrank = 0;
+            //switch (order)
+            //{
+            //    case OrderType.Attack:
+            //        maxrank = rank;
+            //        break;
+            //    case OrderType.Guard:
+            //        maxrank = rank;
+            //        break;   
+            //    case OrderType.Keep:
+            //        maxrank = 1;
+            //        break;
+            //    case OrderType.Supply:
+            //        maxrank = 1;
+            //        break;
+            //}
+
+            var maxrank = OrderDictionary.GetMaxRank(order, rank);
 
             if (maxrank <= 0 || datas == null)
                 return null;
