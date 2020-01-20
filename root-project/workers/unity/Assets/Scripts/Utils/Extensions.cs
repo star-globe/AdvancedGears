@@ -237,6 +237,16 @@ namespace AdvancedGears
             if (isRotating == false)
                 rigidbody.angularVelocity = Vector3.zero;
         }
+
+        public static bool IsPoor(this BaseUnitHealth.Component health)
+        {
+            return health.Health < health.MaxHealth;
+        }
+
+        public static bool IsPoor(this FuelComponent.Component fuel)
+        {
+            return fuel.Fuel < fuel.MaxFuel;
+        }
     }
 
     public static class IntervalCheckerInitializer
