@@ -82,8 +82,8 @@ namespace AdvancedGears
                                                                      TeamOrders = new List<TeamOrder>() }, writeAccess);
                     //template.AddComponent(new UnitArmyObserver.Snapshot(), writeAccess);
                     template.AddComponent(new DominationStamina.Snapshot { SideStaminas = new Dictionary<UnitSide,float>() }, writeAccess);
-                    template.AddComponent(new ResourceComponent.Snapshot { type = ResourceType.Supply }, writeAccess);
-                    template.AddComponent(new RecoveryComponent.Snapshot { state = RecoveryState.Supplying }, writeAccess);
+                    template.AddComponent(new ResourceComponent.Snapshot { Type = ResourceType.Supply }, writeAccess);
+                    template.AddComponent(new RecoveryComponent.Snapshot { State = RecoveryState.Supplying }, writeAccess);
                     template.AddComponent(new SpawnPoint.Snapshot { Type = SpawnType.Revive }, writeAccess);
                     var commandersQuery = InterestQuery.Query(Constraint.Component<CommanderStatus.Component>())
                                             .FilterResults(Position.ComponentId, BaseUnitStatus.ComponentId);

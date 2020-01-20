@@ -121,7 +121,7 @@ namespace AdvancedGears
                     if (resource.Resource >= resourceCost)
                         return;
 
-                    factory.ProductInterval = new IntervalChecker(cost, time + timeCost, 0, -1);   // TODO modify
+                    factory.ProductInterval = new IntervalChecker(timeCost, time + timeCost, 0, -1);   // TODO modify
                     factory.CurrentType = orderType;
                     resource.Resource -= resourceCost;
                 }
@@ -188,7 +188,7 @@ namespace AdvancedGears
                 int solResource;
                 float solTime;
                 if (UnitFactoryDictionary.TryGetCost(UnitType.Commander, out resourceCost, out timeCost) &&
-                    UnitFactoryDictionary.TryGetCost(unitType.Soldier, out solResource, out solTime)) {
+                    UnitFactoryDictionary.TryGetCost(UnitType.Soldier, out solResource, out solTime)) {
                     resourceCost += solResource * number;
                     timeCost += solTime * number;
                     return true;
@@ -328,8 +328,10 @@ namespace AdvancedGears
 
             if (current.Stack <= 1)
                 orders.RemoveAt(0);
-            else
-                orders[0].Stack--;
+            else {
+                current.Stack--;
+                orders[0] = current;
+            }
 
             finished = true;
         }

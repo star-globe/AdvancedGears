@@ -21,7 +21,7 @@ namespace AdvancedGears
     {
         EntityQuery group;
 
-        IntervalCheckerInitializer inter;
+        IntervalChecker inter;
         const float time = 1.0f; 
         protected override void OnCreate()
         {

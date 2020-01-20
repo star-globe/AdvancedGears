@@ -120,7 +120,7 @@ namespace AdvancedGears
             writer.SendUpdate(new CommanderTeam.Update()
             {
                 TargetStronghold = request.Payload,
-                StrongholdEntityId = request.RequestId,
+                StrongholdEntityId = new EntityId(request.RequestId),
             });
         }
     }

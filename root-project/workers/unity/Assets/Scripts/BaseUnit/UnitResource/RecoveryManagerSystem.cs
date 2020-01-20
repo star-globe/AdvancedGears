@@ -21,7 +21,7 @@ namespace AdvancedGears
     {
         EntityQuery group;
 
-        IntervalCheckerInitializer inter;
+        IntervalChecker inter;
         const float time = 1.0f; 
         protected override void OnCreate()
         {
@@ -43,7 +43,8 @@ namespace AdvancedGears
             if (inter.CheckTime() == false)
                 return;
 
-            Entities.With(group).ForEach((ref RecoveryComponent.Component recovery,
+            Entities.With(group).ForEach((Unity.Entities.Entity entity,
+                                          ref RecoveryComponent.Component recovery,
                                           ref BaseUnitStatus.Component status,
                                           ref SpatialEntityId entityId) =>
             {
@@ -64,19 +65,15 @@ namespace AdvancedGears
                 switch (recovery.State)
                 {
                     case RecoveryState.Supplying:
-                        RecoveryUnits(status.Side, pos, current, ref resource);
+                        RecoveryUnits(status.Side, pos, current, ref recovery);
                         break;
 
                     case RecoveryState.Reducing:
-                        RecoveryUnits(status.Side, pos, current, ref resource, isReducing:true);
+                        RecoveryUnits(status.Side, pos, current, ref recovery, isReducing:true);
                         break;
 
                     default:
                         return;
-                }
-
-                if (resource.Type == ResourceType.Supply) {
-                    
                 }
             });
         }
@@ -84,7 +81,7 @@ namespace AdvancedGears
         private void RecoveryUnits(UnitSide side, in Vector3 pos, float current, ref RecoveryComponent.Component recovery, bool isReducing = false)
         {
             if (recovery.CheckedTime != 0.0f) {
-                var deltaTime = current - recovery.CheckedTime;
+                var delta = current - recovery.CheckedTime;
 
                 var allies = getAllyUnits(side, pos, recovery.Range);
                 foreach(var unit in allies) {
@@ -92,20 +89,20 @@ namespace AdvancedGears
                     if (this.TryGetComponent(unit.id, out health) && health.Value.IsPoor()) {
                         var diff = (int)(health.Value.MaxHealth * recovery.RecoveryRate * delta);
                         if (diff > 0)
-                            this.UpdateSystem.SendEvent(new BaseUnitHealth.HealthModified.Event(new HealthDiff {Diff = diff }));
+                            this.UpdateSystem.SendEvent(new BaseUnitHealth.HealthDiffed.Event(new HealthDiff {Diff = diff }), unit.id);
                     }
 
                     FuelComponent.Component? fuel;
                     if (this.TryGetComponent(unit.id, out fuel) && fuel.Value.IsPoor()) {
                         var diff = (int)(fuel.Value.MaxFuel * recovery.RecoveryRate * delta);
                         if (diff > 0)
-                            this.UpdateSystem.SendEvent(new FuelComponent.FuelDiffed.Event(new FueldDiff { Diff = diff }));
+                            this.UpdateSystem.SendEvent(new FuelComponent.FuelDiffed.Event(new FuelDiff { Diff = diff }), unit.id);
                     }
                 }
             }
 
             if (isReducing && current > recovery.EndTime)
-                recovery.state = RecoveryState.Stopped;
+                recovery.State = RecoveryState.Stopped;
 
             recovery.CheckedTime = current;
         }

@@ -13,12 +13,12 @@ namespace AdvancedGears
         [SerializeField] private CostSettings[] costSettings;
 
         Dictionary<UnitType, CostSettings> costDic = null;
-        Dictionary<FUnitype, CostSettings> CostDic
+        Dictionary<UnitType, CostSettings> CostDic
         {
             get
             {
                 if (costDic == null) {
-                    costDic = new Dictionary<FUnitype, CostSettings>();
+                    costDic = new Dictionary<UnitType, CostSettings>();
 
                     foreach (var set in costSettings)
                     {
@@ -42,7 +42,7 @@ namespace AdvancedGears
         {
             resourceCost = 0;
             timeCost = 0;
-            if (Instance.RangeDic.TryGetValue(rangeType, out var set)) {
+            if (Instance.CostDic.TryGetValue(unitType, out var set)) {
                 resourceCost = set.resourceCost;
                 timeCost = set.timeCost;
                 return true;
@@ -55,7 +55,7 @@ namespace AdvancedGears
         public class CostSettings
         {
             public UnitType type;
-            public int resorceCost;
+            public int resourceCost;
             public float timeCost;
         }
     }

@@ -206,6 +206,7 @@ component CommanderTeam {
     SuperiorInfo superior_info = 2;
 
     TargetStrongholdInfo target_stronghold = 4;
+    EntityId stronghold_entity_id = 5;
 
     command improbable.gdk.core.Empty add_follower(FollowerInfo);
     command improbable.gdk.core.Empty set_superior(SuperiorInfo);
