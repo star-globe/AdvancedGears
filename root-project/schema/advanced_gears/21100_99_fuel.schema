@@ -17,6 +17,10 @@ type FuelModifier {
     int32 amount = 2;
 }
 
+type FuelDiff {
+    int32 diff = 1;
+}
+
 component FuelComponent {
     id = 21100;
 
@@ -25,6 +29,7 @@ component FuelComponent {
 
     command improbable.gdk.core.Empty modify_fuel(FuelModifier);
     event FuelModifier fuel_modified;
+    event FuelDiff fuel_diffed;
 }
 
 //----old supply----
@@ -148,4 +153,20 @@ component ResourceComponent {
 }
 
 //---------------------------------
-// resource:21130~21139
+// recovery:21140~21149
+enum RecoveryState {
+    None = 0;
+    Supplying = 1;
+    Reducing = 2;
+    Stopped = 3;
+}
+
+component RecoveryComponent {
+    id = 21140;
+
+    RecoveryState state = 1;
+    float range = 2;
+    float recovery_rate = 3;
+    float checked_time = 4;
+    float end_time = 5;
+}
