@@ -95,6 +95,7 @@ namespace AdvancedGears
                 else if (mag < min_range * min_range)
                     forward = -1;
 
+                bool isRotating = false;
                 if (rotate(rigidbody.transform, tgt - pos, movement.RotSpeed))
                 {
                     var inter = posture.Interval;
@@ -103,11 +104,12 @@ namespace AdvancedGears
                         posture.Interval = inter;
                         posture.Root = rigidbody.transform.rotation.ToCompressedQuaternion();
                     }
+                    isRotating = true;
                 }
 
                 if (forward == 0)
                 {
-                    rigidbody.Stop();
+                    rigidbody.Stop(isRotating);
                     return;
                 }
 

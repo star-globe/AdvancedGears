@@ -68,12 +68,11 @@ namespace AdvancedGears
             });
         }
 
-        const float vectorRate = 100.0f;
         private OrderType GetTargetStronghold(in Vector3 pos, UnitSide side, in Vector3 vector, EntityId selfId, ref TargetStrongholdInfo target)
         {
             OrderType order = OrderType.Idle;
 
-            var strategyVector = vector * vectorRate;
+            var strategyVector = vector;// * RangeDictionary.StrategyRangeRate;
             var range = strategyVector.magnitude;
             var unit = getNearestEnemey(side, pos, range, UnitType.Stronghold);
             if (unit != null) {

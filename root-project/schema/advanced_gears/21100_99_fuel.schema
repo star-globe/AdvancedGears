@@ -27,6 +27,8 @@ component FuelComponent {
     event FuelModifier fuel_modified;
 }
 
+//----old supply----
+
 component FuelServer {
     id = 21101;
 
@@ -93,6 +95,8 @@ component FuelSupplyManager {
     command improbable.gdk.core.Empty add_supply_points(SupplyPoint);
 }
 
+//----new supply----
+
 //---------------------------------
 // domination:21120~21129
 enum DominationDeviceType {
@@ -117,3 +121,31 @@ component DominationStamina {
 
     map<UnitSide,float> side_staminas = 4;
 }
+
+//---------------------------------
+// resource:21130~21139
+type ResourceModifier {
+    int32 amount = 1;
+}
+
+enum ResourceType {
+    None = 0;
+    Supply = 1;
+    Transport = 2;
+}
+
+component ResourceComponent {
+    id = 21130;
+
+    ResourceType type = 1;
+    int32 resource = 2;
+    int32 resource_max = 3;
+
+    float recovery_rate = 4;
+    float checked_time = 5;
+
+    command improbable.gdk.core.Empty modify_resource(ResourceModifier);
+}
+
+//---------------------------------
+// resource:21130~21139

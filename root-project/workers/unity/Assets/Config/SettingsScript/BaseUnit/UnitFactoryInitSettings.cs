@@ -9,10 +9,12 @@ namespace AdvancedGears
     {
         [SerializeField] float sightRange = 100.0f;
         [SerializeField] int resourceMax = 100;
+        [SerializeField] float recoveryRate = 1.0f;
         [SerializeField] float inter = 3.0f;
 
         public float SightRange => sightRange;
         public int ResourceMax => resourceMax;
+        public float RecoveryRate => recoveryRate;
         public float Inter => inter;
     }
 }

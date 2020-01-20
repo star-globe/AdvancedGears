@@ -45,11 +45,14 @@ namespace AdvancedGears
             group = GetEntityQuery(
                 ComponentType.ReadWrite<UnitFactory.Component>(),
                 ComponentType.ReadOnly<UnitFactory.ComponentAuthority>(),
+                ComponentType.ReadWrite<ResourceComponent.Component>(),
+                ComponentType.ReadOnly<ResourceComponent.ComponentAuthority>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<Transform>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
             group.SetFilter(UnitFactory.ComponentAuthority.Authoritative);
+            group.SetFilter(ResourceComponent.ComponentAuthority.Authoritative);
         }
 
         protected override void OnUpdate()
@@ -59,13 +62,13 @@ namespace AdvancedGears
         }
 
         // TODO:getFromSettings;
-        const float timeCost = 2;
         const float range = 12.0f;
         const float height_buffer = 5.0f;
         void HandleProductUnit()
         {
             Entities.With(group).ForEach((Unity.Entities.Entity entity,
                                           ref UnitFactory.Component factory,
+                                          ref ResourceComponent.Component resource,
                                           ref BaseUnitStatus.Component status,
                                           ref StrongholdStatus.Component stronghold,
                                           ref SpatialEntityId entityId) =>
@@ -98,8 +101,6 @@ namespace AdvancedGears
                     orderType = FactoryOrderType.Team;
                 }
 
-                // calc time cost
-                float cost = 0.0f;
                 if (orderType == FactoryOrderType.None)
                     return;
 
@@ -110,11 +111,19 @@ namespace AdvancedGears
 
                 factory.Interval = inter;
 
-                cost = timeCost;
-                if (factory.CurrentType == FactoryOrderType.None)
-                {
-                    factory.ProductInterval = new IntervalChecker(cost, time + cost, 0, -1);   // TODO modify
+                // calc time cost
+                int resourceCost;
+                float timeCost;
+                if (CalcOrderCost(out resourceCost, out timeCost, f_order, s_order, t_order) == false)
+                    return;
+
+                if (factory.CurrentType == FactoryOrderType.None) {
+                    if (resource.Resource >= resourceCost)
+                        return;
+
+                    factory.ProductInterval = new IntervalChecker(cost, time + timeCost, 0, -1);   // TODO modify
                     factory.CurrentType = orderType;
+                    resource.Resource -= resourceCost;
                 }
 
                 inter = factory.ProductInterval;
@@ -160,6 +169,33 @@ namespace AdvancedGears
                 if (finished)
                     factory.CurrentType = FactoryOrderType.None;
             });
+        }
+
+        private bool CalcOrderCost(out int resourceCost, out float timeCost,
+                                    FollowerOrder? f_order = null, SuperiorOrder? s_order = null, TeamOrder? t_order = null)
+        {
+            resourceCost = 0;
+            timeCost = 0;
+
+            if (f_order != null && UnitFactoryDictionary.TryGetCost(f_order.Value.Type, out resourceCost, out timeCost))
+                return true;
+
+            if (s_order != null && UnitFactoryDictionary.TryGetCost(UnitType.Commander, out resourceCost, out timeCost))
+                return true;
+
+            if (t_order != null) {
+                var number = t_order.Value.SoldiersNumber;
+                int solResource;
+                float solTime;
+                if (UnitFactoryDictionary.TryGetCost(UnitType.Commander, out resourceCost, out timeCost) &&
+                    UnitFactoryDictionary.TryGetCost(unitType.Soldier, out solResource, out solTime)) {
+                    resourceCost += solResource * number;
+                    timeCost += solTime * number;
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         EntityTemplate CreateFollower(List<FollowerOrder> orders, in Coordinates coords, in EntityId superiorId, out bool finished)
@@ -256,34 +292,10 @@ namespace AdvancedGears
             var temp = BaseUnitTemplate.CreateCommanderUnitEntityTemplate(side, coords, current.CommanderRank, null);
             templates.Add((temp, UnitType.Commander));
 
-            var pos = coords;
-            int edge = 1;
-            int index = 0;
-            double inter = RangeDictionary.UnitInter;
-            double x = 0, z = 0;
-            foreach (var i in Enumerable.Range(0, current.Stack)) {
-                if (i == 8 * edge + 1) {
-                    edge++;
-                    index = 0;
-                }
-
-                if (index == 0) {
-                    x += inter;
-                    z += inter;
-                }
-                else if (index <= 2 * edge)
-                    z -= inter;
-                else if (index <= 4 * edge)
-                    x -= inter;
-                else if (index <= 6 * edge)
-                    z += inter;
-                else if (index <= 8 * edge)
-                    x += inter;
-
-                pos += new Coordinates(x, 0, z);
+            var posList = GetCoordinates(coords, current.SoldiersNumber);
+            foreach(var pos in posList) {
                 temp = BaseUnitTemplate.CreateBaseUnitEntityTemplate(side, pos, UnitType.Soldier);
                 templates.Add((temp, UnitType.Soldier));
-                index++;
             }
 
             foreach(var pair in templates) {
@@ -313,8 +325,55 @@ namespace AdvancedGears
             requestDic[id] = dic;
 
             currentRequestId++;
-            orders.RemoveAt(0);
+
+            if (current.Stack <= 1)
+                orders.RemoveAt(0);
+            else
+                orders[0].Stack--;
+
             finished = true;
+        }
+
+
+        List<Coordinates> GetCoordinates(in Coordinates coords, int num)
+        {
+            if (num <= 0)
+                return null;
+
+            var posList = new List<Coordinates>();
+            var pos = coords;
+            int edge = 1;
+            int index = 0;
+            double inter = RangeDictionary.UnitInter;
+
+            foreach (var i in Enumerable.Range(0, num)) {
+                if (i == 8 * edge + 1) {
+                    edge++;
+                    index = 0;
+                }
+
+                double x = 0, z = 0;
+                if (index == 0) {
+                    x = inter;
+                    z = inter;
+                }
+                else if (index <= 2 * edge)
+                    z = -inter;
+                else if (index <= 4 * edge)
+                    x = -inter;
+                else if (index <= 6 * edge)
+                    z = inter;
+                else if (index <= 8 * edge)
+                    x = inter;
+
+                pos += new Coordinates(x, 0, z);
+                //temp = BaseUnitTemplate.CreateBaseUnitEntityTemplate(side, pos, UnitType.Soldier);
+                //templates.Add((temp, UnitType.Soldier));
+                posList.Add(pos);
+                index++;
+            }
+
+            return posList;
         }
 
         void HandleProductResponse()

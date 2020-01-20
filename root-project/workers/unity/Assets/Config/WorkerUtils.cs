@@ -56,6 +56,8 @@ namespace AdvancedGears
             world.GetOrCreateSystem<CommanderUnitSearchSystem>();
             world.GetOrCreateSystem<CommanderActionSystem>();
             world.GetOrCreateSystem<UnitFactorySystem>();
+            world.GetOrCreateSystem<StrategyOrderManagerSystem>();
+            world.GetOrCreateSystem<ResourceSupplyManagerSystem>();
             //world.GetOrCreateSystem<HQOrganizeSystem>();
             //world.GetOrCreateSystem<UnitArmyObserveSystem>();
             //world.GetOrCreateSystem<CommandersManagerSystem>();

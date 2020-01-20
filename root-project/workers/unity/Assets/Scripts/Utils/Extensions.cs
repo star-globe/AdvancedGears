@@ -231,10 +231,11 @@ namespace AdvancedGears
         /// RigidBodyの停止
         /// </summary>
         /// <param name="rigidbody"></param>
-        public static void Stop(this Rigidbody rigidbody)
+        public static void Stop(this Rigidbody rigidbody, bool isRotating = false)
         {
             rigidbody.velocity = Vector3.zero;
-            rigidbody.angularVelocity = Vector3.zero;
+            if (isRotating == false)
+                rigidbody.angularVelocity = Vector3.zero;
         }
     }
 

@@ -304,9 +304,6 @@ enum FactoryOrderType {
 component UnitFactory {
     id = 20032;
 
-    int32 resource = 1;
-    int32 resource_max = 2;
-
     IntervalChecker interval = 3;
 
     FactoryOrderType current_type = 4;
