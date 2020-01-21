@@ -149,20 +149,11 @@ component ResourceSupplyer {
     float checked_time = 5;
 }
 
-type TransportInfo {
-    EntityId target_id = 1;
-    UnitType type = 2;
-    improbable.gdk.transform_synchronization.FixedPointVector3 position = 3;
-}
-
 component ResouceTransporter {
     id = 21132;
 
     float range = 1;
-    TransportInfo transport_target = 3;
     EntityId base_stronghold_id = 4;
-
-    command improbable.gdk.core.Empty set_target(TransportInfo);
 }
 
 //---------------------------------

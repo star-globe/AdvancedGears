@@ -31,15 +31,13 @@ namespace AdvancedGears
                 ComponentType.ReadWrite<ResourceComponent.Component>(),
                 ComponentType.ReadOnly<ResourceComponent.ComponentAuthority>(),
                 ComponentType.ReadWrite<ResourceTransporter.Component>(),
-                ComponentType.ReadWrite<BaseUnitTarget.Component>(),
-                ComponentType.ReadOnly<BaseUnitTarget.ComponentAuthority>(),
+                ComponentType.ReadOnly<BaseUnitTarget.Component>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<Transform>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
 
             group.SetFilter(ResourceComponent.ComponentAuthority.Authoritative);
-            group.SetFilter(BaseUnitTarget.ComponentAuthority.Authoritative);
             inter = IntervalCheckerInitializer.InitializedChecker(time);
         }
 
@@ -61,7 +59,12 @@ namespace AdvancedGears
                 if (status.Type != UnitType.Stronghold)
                     return;
 
+                var range = transporter.Range;
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
+                var diff = target.Position.ToWorkerPosition(this.Origin) - trans.position;
+                if (diff.sqrMagnitude <= range * range) {
+                    // todo:TransportAction
+                }
             });
         }
     }
