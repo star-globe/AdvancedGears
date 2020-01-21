@@ -270,7 +270,7 @@ namespace AdvancedGears
             return isEmpty;
         }
 
-        public static void AddBullets(ref this GunComponent gun, int num)
+        public static void AddBullets(ref this GunInfo gun, int num)
         {
             gun.StockBullets = Mathf.Clamp(gun.StockBullets + num, 0, gun.StockMax);
         }

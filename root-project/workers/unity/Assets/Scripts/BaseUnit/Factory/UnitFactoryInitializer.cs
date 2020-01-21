@@ -10,6 +10,7 @@ namespace AdvancedGears
     {
         [Require] UnitFactoryWriter factoryWriter;
         [Require] ResourceComponentWriter resourceWriter;
+        [Require] ResourceSupplyerWriter supplyerWriter;
 
         [SerializeField]
         UnitFactoryInitSettings settings;
@@ -27,6 +28,10 @@ namespace AdvancedGears
             {
                 ResourceMax = settings.ResourceMax,
                 Resource = settings.ResourceMax,
+            });
+
+            supplyerWriter.SendUpdate(new ResourceSupplyer.Update
+            {
                 RecoveryRate = settings.RecoveryRate,
             });
         }

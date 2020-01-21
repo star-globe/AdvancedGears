@@ -149,7 +149,7 @@ component ResourceSupplyer {
     float checked_time = 5;
 }
 
-component ResouceTransporter {
+component ResourceTransporter {
     id = 21132;
 
     float range = 1;

@@ -46,7 +46,7 @@ namespace AdvancedGears
             if (inter.CheckTime() == false)
                 return;
 
-            Entities.With(group).ForEach((Entity entity,
+            Entities.With(group).ForEach((Unity.Entities.Entity entity,
                                           ref ResourceComponent.Component resource,
                                           ref ResourceTransporter.Component transporter,
                                           ref BaseUnitTarget.Component target,
@@ -61,7 +61,7 @@ namespace AdvancedGears
 
                 var range = transporter.Range;
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
-                var diff = target.Position.ToWorkerPosition(this.Origin) - trans.position;
+                var diff = target.TargetInfo.Position.ToWorkerPosition(this.Origin) - trans.position;
                 if (diff.sqrMagnitude <= range * range) {
                     // todo:TransportAction
                 }

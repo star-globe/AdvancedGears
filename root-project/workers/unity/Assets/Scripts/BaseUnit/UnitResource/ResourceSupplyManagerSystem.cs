@@ -60,7 +60,7 @@ namespace AdvancedGears
             });
         }
 
-        private void RecoveryResource(float current, ref ResourceComponent.Component resource, ref ResourceSupplyManagerSystem.Component supplyer)
+        private void RecoveryResource(float current, ref ResourceComponent.Component resource, ref ResourceSupplyer.Component supplyer)
         {
             if (resource.Resource >= resource.ResourceMax) {
                 resource.Resource = resource.ResourceMax;
