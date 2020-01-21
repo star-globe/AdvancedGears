@@ -84,19 +84,28 @@ namespace AdvancedGears
                 var delta = current - recovery.CheckedTime;
 
                 var allies = getAllyUnits(side, pos, recovery.Range);
+                var recoveryRate = recovery.RecoveryRate;
                 foreach(var unit in allies) {
                     BaseUnitHealth.Component? health;
                     if (this.TryGetComponent(unit.id, out health) && health.Value.IsPoor()) {
-                        var diff = (int)(health.Value.MaxHealth * recovery.RecoveryRate * delta);
+                        var diff = (int)(health.Value.MaxHealth * recoveryRate * delta);
                         if (diff > 0)
-                            this.UpdateSystem.SendEvent(new BaseUnitHealth.HealthDiffed.Event(new HealthDiff {Diff = diff }), unit.id);
+                            this.UpdateSystem.SendEvent(new BaseUnitHealth.HealthDiffed.Event(new HealthDiff { Diff = diff }), unit.id);
                     }
 
                     FuelComponent.Component? fuel;
                     if (this.TryGetComponent(unit.id, out fuel) && fuel.Value.IsPoor()) {
-                        var diff = (int)(fuel.Value.MaxFuel * recovery.RecoveryRate * delta);
+                        var diff = (int)(fuel.Value.MaxFuel * recoveryRate * delta);
                         if (diff > 0)
                             this.UpdateSystem.SendEvent(new FuelComponent.FuelDiffed.Event(new FuelDiff { Diff = diff }), unit.id);
+                    }
+
+                    GunComponent.Component? gun;
+                    if (this.TryGetComponent(unit.id, out gun) && gun.Value.IsPoor(out var emptyList)) {
+                        var diffs = emptyList.Select(emp => new BulletDiff { GunId = emp.GunId, Diff = (int)(emp.StockMax * recoveryRate * delta) })
+                                             .Where(d => d.Diff > 0).ToList();
+                        if (diffs.Count > 0)
+                            this.UpdateSystem.SendEvent(new GunComponent.BulletDiffed.Event(new BulletDiffList { Diffs = diffs }), unit.id);
                     }
                 }
             }

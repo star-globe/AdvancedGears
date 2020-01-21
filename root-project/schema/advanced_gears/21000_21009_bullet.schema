@@ -68,10 +68,21 @@ type SupplyBulletInfo {
     int32 amount = 4;
 }
 
+type BulletDiff {
+    uint64 gun_id = 1;
+    int32 diff = 2;
+}
+
+type BulletDiffList {
+    list<BulletDiff> diffs = 1;
+}
+
 component GunComponent {
     id = 21001;
 
     map<PosturePoint,GunInfo> guns_dic = 1;
+
     event AttackTargetInfo fire_triggered;
     event SupplyBulletInfo bullet_supplied;
+    event BulletDiffList bullet_diffed;
 }

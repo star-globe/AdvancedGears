@@ -238,6 +238,7 @@ namespace AdvancedGears
                 rigidbody.angularVelocity = Vector3.zero;
         }
 
+        //----CheckPoor----
         public static bool IsPoor(this BaseUnitHealth.Component health)
         {
             return health.Health < health.MaxHealth;
@@ -246,6 +247,32 @@ namespace AdvancedGears
         public static bool IsPoor(this FuelComponent.Component fuel)
         {
             return fuel.Fuel < fuel.MaxFuel;
+        }
+
+        public static bool IsPoor(this GunInfo gun)
+        {
+            return gun.StockBullets < gun.StockMax;
+        }
+
+        public static bool IsPoor(this GunComponent.Component gun, out List<GunInfo> emptyList)
+        {
+            emptyList = null;
+            bool isEmpty = false;
+            foreach (var kvp in gun.GunsDic) {
+                if (kvp.Value.IsPoor() == false)
+                    continue;
+
+                emptyList = emptyList ?? new List<GunInfo>();
+                emptyList.Add(kvp.Value);
+                isEmpty |= true;
+            }
+
+            return isEmpty;
+        }
+
+        public static void AddBullets(ref this GunComponent gun, int num)
+        {
+            gun.StockBullets = Mathf.Clamp(gun.StockBullets + num, 0, gun.StockMax);
         }
     }
 
