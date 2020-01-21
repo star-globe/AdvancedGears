@@ -164,13 +164,10 @@ namespace AdvancedGears
             return teamOrders;
         }
 
-        private bool SetCommand(EntityId id, in TargetStrongholdInfo targetInfo, OrderType order)
+        private void SetCommand(EntityId id, in TargetStrongholdInfo targetInfo, OrderType order)
         {
-            if (base.SetCommand(id, order) == false)
-                return false;
-
+            base.SetCommand(id, order);
             this.CommandSystem.SendCommand(new CommanderTeam.SetTargetStroghold.Request(id, targetInfo));
-            return true;
         }
 
         private void CheckOrder(OrderType order, in TargetStrongholdInfo target, Dictionary<EntityId,TeamInfo> datas)

@@ -103,11 +103,12 @@ namespace AdvancedGears
                     //template.AddComponent(new HeadQuarters.Snapshot { UpperRank = 0,
                     //                                                 FactoryDatas = new FactoryMap { Reserves = new Dictionary<EntityId,ReserveMap>() },
                     //                                                 Orders = new List<OrganizeOrder>() }, writeAccess);
-                    template.AddComponent(new CommandersManager.Snapshot { State = CommanderManagerState.None,
-                                                                           CommanderDatas = new Dictionary<EntityId, TeamInfo>() }, writeAccess);
+                    //template.AddComponent(new CommandersManager.Snapshot { State = CommanderManagerState.None,
+                    //                                                       CommanderDatas = new Dictionary<EntityId, TeamInfo>() }, writeAccess);
+                    template.AddComponent(new StrategyOrderManager.Snapshot { }, writeAccess);
                     var strongholdQuery = InterestQuery.Query(Constraint.Component<StrongholdStatus.Component>())
                                           .FilterResults(Position.ComponentId, BaseUnitStatus.ComponentId);
-                    var strongholdInterest = InterestTemplate.Create().AddQueries<CommandersManager.Component>(strongholdQuery);
+                    var strongholdInterest = InterestTemplate.Create().AddQueries<StrategyOrderManager.Component>(strongholdQuery);
                     template.AddComponent(strongholdInterest.ToSnapshot(), writeAccess);
                     template.AddComponent(new SpawnPoint.Snapshot { Type = SpawnType.Start }, writeAccess);
                     break;

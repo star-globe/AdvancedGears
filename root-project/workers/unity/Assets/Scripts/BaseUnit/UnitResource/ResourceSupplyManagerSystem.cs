@@ -62,14 +62,21 @@ namespace AdvancedGears
 
         private void RecoveryResource(float current, ref ResourceComponent.Component resource, ref ResourceSupplyer.Component supplyer)
         {
+            Debug.LogFormat("CurrentResource:{0}", resource.Resource);
+
             if (resource.Resource >= resource.ResourceMax) {
                 resource.Resource = resource.ResourceMax;
                 return;
             }
 
             if (supplyer.CheckedTime != 0.0f) {
-                var res = resource.Resource + (int)((supplyer.CheckedTime - current) * supplyer.RecoveryRate);
-                resource.Resource = Mathf.Min(res, resource.ResourceMax);
+                supplyer.ResourceFraction += (supplyer.CheckedTime - current) * supplyer.RecoveryRate;
+                var add = Mathf.FloorToInt(supplyer.ResourceFraction);
+                if (add > 0) {
+                    var res = resource.Resource + add;
+                    resource.Resource = Mathf.Min(res, resource.ResourceMax);
+                    supplyer.ResourceFraction -= add;
+                }
             }
 
             supplyer.CheckedTime = current;

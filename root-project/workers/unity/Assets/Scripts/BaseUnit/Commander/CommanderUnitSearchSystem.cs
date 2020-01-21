@@ -277,13 +277,10 @@ namespace AdvancedGears
             SetCommand(targetInfo.CommanderId, targetInfo, order);
         }
 
-        private bool SetCommand(EntityId id, in TargetInfo targetInfo, OrderType order)
+        private void SetCommand(EntityId id, in TargetInfo targetInfo, OrderType order)
         {
-            if (base.SetCommand(id, order) == false)
-                return false;
-        
+            base.SetCommand(id, order);
             this.CommandSystem.SendCommand(new BaseUnitTarget.SetTarget.Request(id, targetInfo));
-            return true;
         }
         #endregion
     }

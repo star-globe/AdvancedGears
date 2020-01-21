@@ -117,18 +117,25 @@ namespace AdvancedGears
                 if (CalcOrderCost(out resourceCost, out timeCost, f_order, s_order, t_order) == false)
                     return;
 
-                if (factory.CurrentType == FactoryOrderType.None) {
-                    if (resource.Resource >= resourceCost)
-                        return;
+                Debug.LogFormat("ResourceCost:{0} TimeCost:{1}", resourceCost, timeCost);
 
-                    factory.ProductInterval = new IntervalChecker(timeCost, time + timeCost, 0, -1);   // TODO modify
+                if (factory.CurrentType == FactoryOrderType.None) {
+                    if (resource.Resource < resourceCost)
+                    {
+                        Debug.LogFormat("ResourcePoor:{0}", resource.Resource);
+                        return;
+                    }
+
+                    factory.ProductInterval = IntervalCheckerInitializer.InitializedChecker(timeCost);//new IntervalChecker(timeCost, time + timeCost, 0, -1);   // TODO modify
                     factory.CurrentType = orderType;
                     resource.Resource -= resourceCost;
                 }
 
                 inter = factory.ProductInterval;
-                if (inter.CheckTime(time) == false)
+                if (inter.CheckTime() == false)
                     return;
+
+                Debug.LogFormat("CreateUnit!");
 
                 factory.ProductInterval = inter;
 

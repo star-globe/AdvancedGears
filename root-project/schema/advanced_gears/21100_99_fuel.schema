@@ -145,6 +145,7 @@ component ResourceComponent {
 component ResourceSupplyer {
     id = 21131;
 
+    float resource_fraction = 3;
     float recovery_rate = 4;
     float checked_time = 5;
 }
