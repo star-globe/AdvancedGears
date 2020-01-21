@@ -17,7 +17,7 @@ namespace AdvancedGears
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
-    public class ResourceSupplyManagerSystem : BaseSearchSystem
+    public class ResourceTransporterManagerSystem : BaseSearchSystem
     {
         EntityQuery group;
 
@@ -30,12 +30,16 @@ namespace AdvancedGears
             group = GetEntityQuery(
                 ComponentType.ReadWrite<ResourceComponent.Component>(),
                 ComponentType.ReadOnly<ResourceComponent.ComponentAuthority>(),
-                ComponentType.ReadWrite<ResourceSupplyer.Component>(),
+                ComponentType.ReadWrite<ResourceTransporter.Component>(),
+                ComponentType.ReadWrite<BaseUnitTarget.Component>(),
+                ComponentType.ReadOnly<BaseUnitTarget.ComponentAuthority>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
+                ComponentType.ReadOnly<Transform>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
 
             group.SetFilter(ResourceComponent.ComponentAuthority.Authoritative);
+            group.SetFilter(BaseUnitTarget.ComponentAuthority.Authoritative);
             inter = IntervalCheckerInitializer.InitializedChecker(time);
         }
 
@@ -44,8 +48,10 @@ namespace AdvancedGears
             if (inter.CheckTime() == false)
                 return;
 
-            Entities.With(group).ForEach((ref ResourceComponent.Component resource,
-                                          ref ResourceSupplyer.Component supplyer,
+            Entities.With(group).ForEach((Entity entity,
+                                          ref ResourceComponent.Component resource,
+                                          ref ResourceTransporter.Component transporter,
+                                          ref BaseUnitTarget.Component target,
                                           ref BaseUnitStatus.Component status,
                                           ref SpatialEntityId entityId) =>
             {
@@ -55,24 +61,8 @@ namespace AdvancedGears
                 if (status.Type != UnitType.Stronghold)
                     return;
 
-                var current = Time.time;
-                RecoveryResource(current, ref resource, ref supplyer);
+                var trans = EntityManager.GetComponentObject<Transform>(entity);
             });
-        }
-
-        private void RecoveryResource(float current, ref ResourceComponent.Component resource, ref ResourceSupplyManagerSystem.Component supplyer)
-        {
-            if (resource.Resource >= resource.ResourceMax) {
-                resource.Resource = resource.ResourceMax;
-                return;
-            }
-
-            if (supplyer.CheckedTime != 0.0f) {
-                var res = resource.Resource + (int)((supplyer.CheckedTime - current) * supplyer.RecoveryRate);
-                resource.Resource = Mathf.Min(res, resource.ResourceMax);
-            }
-
-            supplyer.CheckedTime = current;
         }
     }
 }

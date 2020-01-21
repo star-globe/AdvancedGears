@@ -133,23 +133,36 @@ type ResourceModifier {
     int32 amount = 1;
 }
 
-enum ResourceType {
-    None = 0;
-    Supply = 1;
-    Transport = 2;
-}
-
 component ResourceComponent {
     id = 21130;
 
-    ResourceType type = 1;
     int32 resource = 2;
     int32 resource_max = 3;
 
+    command improbable.gdk.core.Empty modify_resource(ResourceModifier);
+}
+
+component ResourceSupplyer {
+    id = 21131;
+
     float recovery_rate = 4;
     float checked_time = 5;
+}
 
-    command improbable.gdk.core.Empty modify_resource(ResourceModifier);
+type TransportInfo {
+    EntityId target_id = 1;
+    UnitType type = 2;
+    improbable.gdk.transform_synchronization.FixedPointVector3 position = 3;
+}
+
+component ResouceTransporter {
+    id = 21132;
+
+    float range = 1;
+    TransportInfo transport_target = 3;
+    EntityId base_stronghold_id = 4;
+
+    command improbable.gdk.core.Empty set_target(TransportInfo);
 }
 
 //---------------------------------

@@ -74,6 +74,13 @@ namespace AdvancedGears
                     template.AddComponent(new DominationDevice.Snapshot { Type = DominationDeviceType.Capturing, Speed = 0.5f, }, writeAccess);
                     break;
 
+                case UnitType.Supply:
+                    template.AddComponent(new BulletComponent.Snapshot(), writeAccess);
+                    template.AddComponent(new BaseUnitPosture.Snapshot { Posture = new PostureInfo { Datas = new Dictionary<PosturePoint, PostureData>() } }, writeAccess);
+                    template.AddComponent(new ResourceComponent.Snapshot(), writeAccess);
+                    template.AddComponent(new ResouceTransporter.Snapshot(), writeAccess);
+                    break;
+
                 case UnitType.Stronghold:
                     template.AddComponent(new StrongholdStatus.Snapshot { Rank = 1, }, writeAccess);
                     template.AddComponent(new StrongholdSight.Snapshot(), writeAccess);
@@ -82,7 +89,8 @@ namespace AdvancedGears
                                                                      TeamOrders = new List<TeamOrder>() }, writeAccess);
                     //template.AddComponent(new UnitArmyObserver.Snapshot(), writeAccess);
                     template.AddComponent(new DominationStamina.Snapshot { SideStaminas = new Dictionary<UnitSide,float>() }, writeAccess);
-                    template.AddComponent(new ResourceComponent.Snapshot { Type = ResourceType.Supply }, writeAccess);
+                    template.AddComponent(new ResourceComponent.Snapshot(), writeAccess);
+                    template.AddComponent(new ResourceSuppley.Snapshot(), writeAccess);
                     template.AddComponent(new RecoveryComponent.Snapshot { State = RecoveryState.Supplying }, writeAccess);
                     template.AddComponent(new SpawnPoint.Snapshot { Type = SpawnType.Revive }, writeAccess);
                     var commandersQuery = InterestQuery.Query(Constraint.Component<CommanderStatus.Component>())
