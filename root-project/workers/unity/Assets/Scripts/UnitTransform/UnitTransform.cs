@@ -119,7 +119,7 @@ namespace AdvancedGears
             var bounds = groundDetect.bounds;
             vertical.direction = -groundDetect.transform.up;
             vertical.origin = bounds.center;
-            return Physics.Raycast(vertical, bounds.extents.y * 1.1f, hitInfo, this.Layer);
+            return Physics.Raycast(vertical, out hitInfo, bounds.extents.y * 1.1f, this.Layer);
         }
 
 #if false

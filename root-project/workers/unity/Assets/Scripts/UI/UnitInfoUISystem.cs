@@ -14,18 +14,15 @@ namespace AdvancedGears.UI
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
-    internal class UnitUIInfo : BaseSearchSystem
+    internal class UnitUIInfoSystem : BaseSearchSystem
     {
         private EntityQuery group;
 
-        public UnitUICreator UnitUICreator { get; private set; }
+        public UnitUICreator UnitUICreator { private get; set; }
 
         protected override void OnCreate()
         {
             base.OnCreate();
-
-            var go = new GameObject("UnitUICreator");
-            UnitUICreator = go.AddComponent<UnitUICreator>();
 
             group = GetEntityQuery(
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),

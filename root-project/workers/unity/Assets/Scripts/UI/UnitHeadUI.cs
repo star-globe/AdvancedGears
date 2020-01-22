@@ -24,7 +24,9 @@ namespace AdvancedGears.UI
 
         public void SetInfo(Vector2 pos, int hp)
         {
-            this.Rect?.position = pos;
+            if (this.Rect != null)
+                this.Rect.position = pos;
+
             hpText?.SetText(hp.ToString());
         }
     }

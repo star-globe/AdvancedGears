@@ -1,4 +1,4 @@
-using System;
+using System.Collections.Generic;
 using Improbable;
 using Improbable.Gdk.Core;
 using Improbable.Gdk.TransformSynchronization;
@@ -29,12 +29,12 @@ namespace AdvancedGears
             public bool CheckChanged(bool isGrounded, bool isNotAlive)
             {
                 bool isChanged = false;
-                IsChanged |= this.isGrounded != isGrounded;
-                IsChanged |= this.isNotAlive != isNotAlive;
+                isChanged |= this.isGrounded != isGrounded;
+                isChanged |= this.isNotAlive != isNotAlive;
 
                 this.isGrounded = isGrounded;
                 this.isNotAlive = isNotAlive;
-                return IsChanged;
+                return isChanged;
             } 
         }
 
@@ -53,7 +53,7 @@ namespace AdvancedGears
 
         Ray vertical = new Ray();
         //readonly int layer = //LayerMask.//LayerMask.GetMask("Ground");
-        readonly Dicitonary<EntityId,PhysInfo> physDic = new Dicitonary<EntityId, PhysInfo>();
+        readonly Dictionary<EntityId,PhysInfo> physDic = new Dictionary<EntityId, PhysInfo>();
         protected override void OnUpdate()
         {
             Entities.With(group).ForEach((Entity entity,
@@ -77,9 +77,13 @@ namespace AdvancedGears
                 }
 
                 var rigidbody = EntityManager.GetComponentObject<Rigidbody>(entity);
-                rigidbody.freezeRotation = isGrounded & (isBuilding | !inNotAlive);
+
                 if (isGrounded & isBuilding)
-                    rigidbody.constraints = RigidBodyConstraints.FreezePosition;
+                    rigidbody.constraints = RigidbodyConstraints.FreezePosition;
+                else
+                    rigidbody.constraints = RigidbodyConstraints.None;
+
+                rigidbody.freezeRotation = isGrounded & (isBuilding | !isNotAlive);
             });
         }
     }

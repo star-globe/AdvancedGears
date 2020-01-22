@@ -1,10 +1,21 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Unity.Entities;
+using Improbable.Gdk.Core;
+using Improbable;
+using Improbable.Gdk.Subscriptions;
+using AdvancedGears;
 
 namespace AdvancedGears.UI
 {
     public class UnitUICreator : MonoBehaviour
     {
+        [Require] World world;
+ 
+        [SerializeField]
+        Canvas canvas;
+
         UnitHeadUI baseHeadUI = null;
         UnitHeadUI BaseHeadUI
         {
@@ -22,6 +33,13 @@ namespace AdvancedGears.UI
         readonly Dictionary<EntityId,UnitHeadUI> headUIDic = new Dictionary<EntityId, UnitHeadUI>();
         readonly Queue<UnitHeadUI> sleepUIList = new Queue<UnitHeadUI>();
 
+        private void Start()
+        {
+            var system = world.GetExistingSystem<UnitUIInfoSystem>();
+            if (system != null)
+                system.UnitUICreator = this;
+        }
+
         public UnitHeadUI GetOrCreateHeadUI(EntityId id)
         {
             if (headUIDic.ContainsKey(id))
@@ -33,7 +51,7 @@ namespace AdvancedGears.UI
                 ui.gameObject.SetActive(true);
             }
             else {
-                var go = Instantiate(this.BaseHeadUI.gameObject, Canvas.rootCanvas.transform);
+                var go = Instantiate(this.BaseHeadUI.gameObject, canvas.transform);
                 ui = go.GetComponent<UnitHeadUI>();
             }
 

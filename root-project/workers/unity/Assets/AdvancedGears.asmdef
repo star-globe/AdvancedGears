@@ -11,7 +11,8 @@
         "Improbable.Gdk.QueryBasedInterestHelper",
         "Unity.Entities",
         "Unity.Entities.Hybrid",
-        "Unity.Mathematics"
+        "Unity.Mathematics",
+        "Unity.TextMeshPro"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],

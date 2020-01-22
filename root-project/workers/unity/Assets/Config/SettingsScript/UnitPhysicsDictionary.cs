@@ -1,4 +1,4 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -39,7 +39,7 @@ namespace AdvancedGears
 
         public static bool IsBuilding(UnitType unitType)
         {
-            if (Instance.Physics.TryGetValue(unitType, out var set))
+            if (Instance.PhysicsDic.TryGetValue(unitType, out var set))
                 return set.isBuilding;
 
             return false;
