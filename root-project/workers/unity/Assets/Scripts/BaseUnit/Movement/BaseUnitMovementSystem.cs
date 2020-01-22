@@ -62,10 +62,13 @@ namespace AdvancedGears
                 var unit = EntityManager.GetComponentObject<UnitTransform>(entity);
 
                 // check ground
-                if (unit.GetGrounded() == false)
+                if (unit == null || unit.GetGrounded(out var hitInfo) == false)
                     return;
 
                 var rigidbody = EntityManager.GetComponentObject<Rigidbody>(entity);
+
+                // set grounded normal
+                rigidbody.transform.up = hitInfo.normal;
 
                 if (!movement.IsTarget)
                 {

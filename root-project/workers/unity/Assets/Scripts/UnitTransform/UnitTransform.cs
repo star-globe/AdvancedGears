@@ -111,10 +111,15 @@ namespace AdvancedGears
 
         public bool GetGrounded()
         {
+            return GetGrounded(out var hitInfo);
+        }
+
+        public bool GetGrounded(out RaycastHit hitInfo)
+        {
             var bounds = groundDetect.bounds;
             vertical.direction = -groundDetect.transform.up;
             vertical.origin = bounds.center;
-            return Physics.Raycast(vertical, bounds.extents.y * 1.1f, this.Layer);
+            return Physics.Raycast(vertical, bounds.extents.y * 1.1f, hitInfo, this.Layer);
         }
 
 #if false
