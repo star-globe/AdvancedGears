@@ -19,11 +19,6 @@ namespace AdvancedGears
         {
             Assert.IsNotNull(settings);
 
-            factoryWriter.SendUpdate(new UnitFactory.Update
-            {
-                Interval = IntervalCheckerInitializer.InitializedChecker(settings.Inter),
-            });
-
             resourceWriter.SendUpdate(new ResourceComponent.Update
             {
                 ResourceMax = settings.ResourceMax,

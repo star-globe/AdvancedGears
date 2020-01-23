@@ -306,15 +306,15 @@ enum ContainerState {
     Created = 2;
 }
 
-type UnitCotainer {
-    Coordinates pos = 1;
+type UnitContainer {
+    improbable.gdk.transform_synchronization.FixedPointVector3 pos = 1;
     ContainerState state = 2;
 }
 
 component UnitFactory {
     id = 20032;
 
-    transient list<UnitCotainer> containers = 3;
+    transient list<UnitContainer> containers = 3;
 
     FactoryOrderType current_type = 4;
 
@@ -327,7 +327,7 @@ component UnitFactory {
     command improbable.gdk.core.Empty add_follower_order(FollowerOrder);
     command improbable.gdk.core.Empty add_superior_order(SuperiorOrder);
     command improbable.gdk.core.Empty add_team_order(TeamOrderList);
-    command improbable.gdk.core.Empty set_empty(Coordinates);
+    command improbable.gdk.core.Empty set_container(UnitContainer);
 }
 
 component UnitArmyObserver {

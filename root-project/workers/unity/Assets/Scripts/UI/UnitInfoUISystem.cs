@@ -60,8 +60,8 @@ namespace AdvancedGears.UI
                     return;
 
                 var range = RangeDictionary.UIRange;
-                var diff = trans.position - CharEnumerator.main.transform.position;
-                if (diff.sqrtMagnitude > range * range)
+                var diff = trans.position - Camera.main.transform.position;
+                if (diff.sqrMagnitude > range * range)
                     return;
 
                 var ui = this.UnitUICreator.GetOrCreateHeadUI(entityId.EntityId);

@@ -30,6 +30,15 @@ namespace AdvancedGears
             return new Coordinates(pos.x, pos.y, pos.z);
         }
 
+        public static Coordinates ToCoordinates(this FixedPointVector3 pos)
+        {
+            return pos.ToUnityVector().ToCoordinates();
+        }
+
+        public static FixedPointVector3 ToFixedPointVector3(this Coordinates coords)
+        {
+            return coords.ToUnityVector().ToFixedPointVector3();
+        }
 
         public static float SqrMagnitude (this FixedPointVector3 vec)
         {
@@ -273,6 +282,16 @@ namespace AdvancedGears
         public static void AddBullets(ref this GunInfo gun, int num)
         {
             gun.StockBullets = Mathf.Clamp(gun.StockBullets + num, 0, gun.StockMax);
+        }
+
+        public static void ChangeState(this List<UnitContainer> containers, int index, ContainerState state)
+        {
+            if (containers == null || containers.Count <= index)
+                return;
+
+            var c = containers[index];
+            c.State = state;
+            containers[index] = c;
         }
     }
 

@@ -5,7 +5,7 @@ using System.Linq;
 using Improbable;
 using Improbable.Gdk.Core;
 using Improbable.Gdk.Core.Commands;
-using Improbable.Gdk.Subscriptions;
+using Improbable.Gdk.TransformSynchronization;
 using Improbable.Gdk.Standardtypes;
 using Improbable.Worker.CInterop;
 using Unity.Collections;
@@ -27,7 +27,7 @@ namespace AdvancedGears
             public SuperiorOrder? s_order;
             public UnitType type;
             public EntityId strongholdId;
-            public Coordinates coords;
+            public UnitContainer container;
             public uint CommanderRank
             {
                 get
@@ -39,6 +39,8 @@ namespace AdvancedGears
                 }
             }
         }
+
+        IntervalChecker inter;
 
         protected override void OnCreate()
         {
@@ -55,6 +57,8 @@ namespace AdvancedGears
             );
             group.SetFilter(UnitFactory.ComponentAuthority.Authoritative);
             group.SetFilter(ResourceComponent.ComponentAuthority.Authoritative);
+
+            inter = IntervalCheckerInitializer.InitializedChecker(1.0f);
         }
 
         protected override void OnUpdate()
@@ -68,6 +72,9 @@ namespace AdvancedGears
         const float height_buffer = 5.0f;
         void HandleProductUnit()
         {
+            if (inter.CheckTime() == false)
+                return;
+
             Entities.With(group).ForEach((Unity.Entities.Entity entity,
                                           ref UnitFactory.Component factory,
                                           ref ResourceComponent.Component resource,
@@ -106,13 +113,6 @@ namespace AdvancedGears
                 if (orderType == FactoryOrderType.None)
                     return;
 
-                var time = Time.time;
-                var inter = factory.Interval;
-                if (inter.CheckTime(time) == false)
-                    return;
-
-                factory.Interval = inter;
-
                 // calc time cost
                 int resourceCost;
                 float timeCost;
@@ -143,10 +143,10 @@ namespace AdvancedGears
 
                 //var trans = EntityManager.GetComponentObject<Transform>(entity);
                 //var p = trans.position + RandomLogic.XZRandomCirclePos(range);
-                var pos = GetEmptyCoordinates(entityId.EntityId, position.Position, factory.Containers);
+                var pos = GetEmptyCoordinates(entityId.EntityId, position.Coords, factory.Containers);
                 //var pos = p - this.Origin;
                 EntityTemplate template = null;
-                var coords = new Coordinates(pos.x, pos.y + height_buffer, pos.z);
+                var coords = new Coordinates(pos.X, pos.Y + height_buffer, pos.Z);
 
                 bool finished = false;
                 UnitType type = UnitType.None;
@@ -169,7 +169,7 @@ namespace AdvancedGears
                                                              s_order = s_order,
                                                              type = type,
                                                              strongholdId = entityId.EntityId,
-                                                             coords = coords }
+                                                             container = new UnitContainer(coords.ToFixedPointVector3(), ContainerState.Created) }
                     );
                     this.CommandSystem.SendCommand(request);
                 }
@@ -187,19 +187,19 @@ namespace AdvancedGears
         {
             var index = containers.FindIndex(c => c.State == ContainerState.Empty);
             if (index >= 0) {
-                containers[index].State = ContainerState.Reserved;
-                return containers[index].Pos;
+                containers.ChangeState(index, ContainerState.Reserved);
+                return containers[index].Pos.ToCoordinates();
             }
 
             VortexCoordsContainer vortex = null;
             if (strDic.TryGetValue(id, out vortex) == false) {
-                vortex = new VortexCoordsContainer(center, containers.Select(c => c.Pos).ToList(), RangeDictionary.UnitInter);
+                vortex = new VortexCoordsContainer(center, containers.Select(c => c.Pos.ToCoordinates()).ToList(), RangeDictionary.UnitInter);
                 strDic[id] = vortex;
             }
 
             index = containers.Count;
-            containers.Add(new UnitContainer() { Pos = vortex.AddPos(), State = ContainerState.Reserved });
-            return containers[index].Pos;
+            containers.Add(new UnitContainer() { Pos = vortex.AddPos().ToFixedPointVector3(), State = ContainerState.Reserved });
+            return containers[index].Pos.ToCoordinates();
         }
 
         private bool CalcOrderCost(out int resourceCost, out float timeCost,
@@ -373,11 +373,11 @@ namespace AdvancedGears
         {
             VortexCoordsContainer container = null;
             if (vortexDic.TryGetValue(coords, out container) == false) {
-                container = new VortexCoordsContainer(coords);
+                container = new VortexCoordsContainer(coords, RangeDictionary.UnitInter);
                 vortexDic.Add(coords, container);
             }
 
-            return container.GetCoordinates(coords, num, RangeDictionary.UnitInter);
+            return container.GetCoordinates(coords, num);
         }
 
         void HandleProductResponse()
@@ -470,7 +470,7 @@ namespace AdvancedGears
             //                                        new CreatedCommanderList { Commanders = kvp.Value.ToList() }));
             //    }
             //}
-            this.CommandSystem.SendCommand(new UnitFactorySystem.SetEmpty.Request(order.strongholdId, order.coords));
+            this.CommandSystem.SendCommand(new UnitFactory.SetContainer.Request(order.strongholdId, order.container));
         }
 
         //private void SetList(ref Dictionary<EntityId, List<CommanderInfo>> commanders, in EntityId product, uint rank)
@@ -548,7 +548,7 @@ namespace AdvancedGears
             Reset(coords);
         }
 
-        public VortexCoordsContainer(in Coordinates center, List<Coodinates> posList, double inter)
+        public VortexCoordsContainer(in Coordinates center, List<Coordinates> posList, double inter)
         {
             this.center = center;
             this.posList = posList;
@@ -573,13 +573,13 @@ namespace AdvancedGears
         public List<Coordinates> GetCoordinates(in Coordinates coords, int num)
         {
             if (center != coords) 
-                Reset(coors);
+                Reset(coords);
 
             int count = posList.Count;
             if (num <= count)
                 return posList.Take(num).ToList();
 
-            foreach(var i in Enumerable.Range(count - num)) {
+            foreach(var i in Enumerable.Range(0,count - num)) {
                 AddPos();
             }
 
@@ -591,7 +591,7 @@ namespace AdvancedGears
             var first = posList.Count;
 
             Coordinates pos;
-            if (fist == 0)
+            if (first == 0)
                 pos = this.center;
             else
                 pos = posList[first - 1];
