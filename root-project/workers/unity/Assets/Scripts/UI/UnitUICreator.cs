@@ -11,6 +11,29 @@ namespace AdvancedGears.UI
 {
     public class UnitUICreator : MonoBehaviour
     {
+        struct UnitHeadUIChache
+        {
+            UnitHeadUI ui;
+            public bool isChecked { get; private set; }
+
+            public UnitHeadUIChache(UnitHeadUI ui)
+            {
+                this.ui = ui;
+                isChecked = true;
+            }
+
+            public void Reset()
+            {
+                isChecked = false;
+            }
+
+            public UnitHeadUI GetUI()
+            {
+                isChecked = true;
+                return this.ui;
+            }
+        }
+
         [Require] World world;
  
         [SerializeField]
@@ -30,7 +53,7 @@ namespace AdvancedGears.UI
             }
         }
 
-        readonly Dictionary<EntityId,UnitHeadUI> headUIDic = new Dictionary<EntityId, UnitHeadUI>();
+        readonly Dictionary<EntityId,UnitHeadUIChache> headUIDic = new Dictionary<EntityId, UnitHeadUIChache>();
         readonly Queue<UnitHeadUI> sleepUIList = new Queue<UnitHeadUI>();
 
         private void Start()
@@ -40,10 +63,28 @@ namespace AdvancedGears.UI
                 system.UnitUICreator = this;
         }
 
+        public void ResetAll()
+        {
+            foreach(var kvp in headUIDic)
+                kvp.Value.Reset();
+        }
+
+        public void SleepAllUnused()
+        {
+            var ids = new HashSet<EntityId>();
+            foreach(var kvp in headUIDic) {
+                if (kvp.Value.isChecked == false)
+                    ids.Add(kvp.Key);
+            }
+
+            foreach(var i in ids)
+                SleepUI(i);
+        }
+
         public UnitHeadUI GetOrCreateHeadUI(EntityId id)
         {
             if (headUIDic.ContainsKey(id))
-                return headUIDic[id];
+                return headUIDic[id].GetUI();
 
             UnitHeadUI ui = null;
             if (sleepUIList.Count > 0) {
@@ -56,7 +97,7 @@ namespace AdvancedGears.UI
             }
 
             if (ui != null)
-                headUIDic[id] = ui;
+                headUIDic[id] = new UnitHeadUIChache(ui);
 
             return ui;
         }
@@ -66,7 +107,7 @@ namespace AdvancedGears.UI
             if (headUIDic.ContainsKey(id) == false)
                 return;
 
-            sleepUIList.Enqueue(headUIDic[id]);
+            sleepUIList.Enqueue(headUIDic[id].GetUI());
             headUIDic.Remove(id);
         }
     }

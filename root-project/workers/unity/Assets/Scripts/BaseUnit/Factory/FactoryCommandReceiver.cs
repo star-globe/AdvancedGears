@@ -16,6 +16,7 @@ namespace AdvancedGears
             commandReceiver.OnAddFollowerOrderRequestReceived += OnAddFollowerOrderRequest;
             commandReceiver.OnAddSuperiorOrderRequestReceived += OnAddSuperiorOrderRequest;
             commandReceiver.OnAddTeamOrderRequestReceived += OnAddTeamOrderRequest;
+            commandReceiver.OnSetEmptyRequestReceived += OnSetEmptyRequest;
         }
 
         private void OnAddFollowerOrderRequest(UnitFactory.AddFollowerOrder.ReceivedRequest request)
@@ -51,6 +52,22 @@ namespace AdvancedGears
             writer.SendUpdate(new UnitFactory.Update()
             {
                 TeamOrders = list,
+            });
+        }
+
+        private void OnSetEmptyRequest(UnitFactory.SetEmpty.ReceivedRequest request)
+        {
+            commandReceiver.SendSetEmptyResponse(new UnitFactorySystem.SetEmpty.Response(request.RequestId, new Empty()));
+
+            var containers = writer.Data.Containers;
+            var index = containers.FindIndex(c => c.Pos == request.Payload);
+            if (index < 0)
+                return;
+
+            containers[index].State = ContainerState.Created;
+            writer.SendUpdate(new UnitFactorySystem.Update()
+            {
+                Containers = containers,
             });
         }
     }

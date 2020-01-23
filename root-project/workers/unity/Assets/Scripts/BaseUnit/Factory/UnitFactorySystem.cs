@@ -26,6 +26,8 @@ namespace AdvancedGears
             public FollowerOrder? f_order;
             public SuperiorOrder? s_order;
             public UnitType type;
+            public EntityId strongholdId;
+            public Coordinates coords;
             public uint CommanderRank
             {
                 get
@@ -48,7 +50,7 @@ namespace AdvancedGears
                 ComponentType.ReadWrite<ResourceComponent.Component>(),
                 ComponentType.ReadOnly<ResourceComponent.ComponentAuthority>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
-                ComponentType.ReadOnly<Transform>(),
+                ComponentType.ReadOnly<Position.Component>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
             group.SetFilter(UnitFactory.ComponentAuthority.Authoritative);
@@ -70,7 +72,7 @@ namespace AdvancedGears
                                           ref UnitFactory.Component factory,
                                           ref ResourceComponent.Component resource,
                                           ref BaseUnitStatus.Component status,
-                                          ref StrongholdStatus.Component stronghold,
+                                          ref Position.Component position,
                                           ref SpatialEntityId entityId) =>
             {
                 if (status.State != UnitState.Alive)
@@ -139,10 +141,10 @@ namespace AdvancedGears
 
                 factory.ProductInterval = inter;
 
-                var trans = EntityManager.GetComponentObject<Transform>(entity);
-                var p = trans.position + RandomLogic.XZRandomCirclePos(range);
-
-                var pos = p - this.Origin;
+                //var trans = EntityManager.GetComponentObject<Transform>(entity);
+                //var p = trans.position + RandomLogic.XZRandomCirclePos(range);
+                var pos = GetEmptyCoordinates(entityId.EntityId, position.Position, factory.Containers);
+                //var pos = p - this.Origin;
                 EntityTemplate template = null;
                 var coords = new Coordinates(pos.x, pos.y + height_buffer, pos.z);
 
@@ -165,7 +167,9 @@ namespace AdvancedGears
                         template,
                         context: new ProductOrderContext() { f_order = f_order,
                                                              s_order = s_order,
-                                                             type = type }
+                                                             type = type,
+                                                             strongholdId = entityId.EntityId,
+                                                             coords = coords }
                     );
                     this.CommandSystem.SendCommand(request);
                 }
@@ -176,6 +180,26 @@ namespace AdvancedGears
                 if (finished)
                     factory.CurrentType = FactoryOrderType.None;
             });
+        }
+
+        readonly Dictionary<EntityId, VortexCoordsContainer> strDic = new Dictionary<EntityId, VortexCoordsContainer>();
+        private Coordinates GetEmptyCoordinates(EntityId id, in Coordinates center, List<UnitContainer> containers)
+        {
+            var index = containers.FindIndex(c => c.State == ContainerState.Empty);
+            if (index >= 0) {
+                containers[index].State = ContainerState.Reserved;
+                return containers[index].Pos;
+            }
+
+            VortexCoordsContainer vortex = null;
+            if (strDic.TryGetValue(id, out vortex) == false) {
+                vortex = new VortexCoordsContainer(center, containers.Select(c => c.Pos).ToList(), RangeDictionary.UnitInter);
+                strDic[id] = vortex;
+            }
+
+            index = containers.Count;
+            containers.Add(new UnitContainer() { Pos = vortex.AddPos(), State = ContainerState.Reserved });
+            return containers[index].Pos;
         }
 
         private bool CalcOrderCost(out int resourceCost, out float timeCost,
@@ -343,46 +367,17 @@ namespace AdvancedGears
             finished = true;
         }
 
+        readonly Dictionary<Coordinates,VortexCoordsContainer> vortexDic = new Dictionary<Coordinates, VortexCoordsContainer>();
 
         List<Coordinates> GetCoordinates(in Coordinates coords, int num)
         {
-            if (num <= 0)
-                return null;
-
-            var posList = new List<Coordinates>();
-            var pos = coords;
-            int edge = 1;
-            int index = 0;
-            double inter = RangeDictionary.UnitInter;
-
-            foreach (var i in Enumerable.Range(0, num)) {
-                if (i == 8 * edge + 1) {
-                    edge++;
-                    index = 0;
-                }
-
-                double x = 0, z = 0;
-                if (index == 0) {
-                    x = inter;
-                    z = inter;
-                }
-                else if (index <= 2 * edge)
-                    z = -inter;
-                else if (index <= 4 * edge)
-                    x = -inter;
-                else if (index <= 6 * edge)
-                    z = inter;
-                else if (index <= 8 * edge)
-                    x = inter;
-
-                pos += new Coordinates(x, 0, z);
-                //temp = BaseUnitTemplate.CreateBaseUnitEntityTemplate(side, pos, UnitType.Soldier);
-                //templates.Add((temp, UnitType.Soldier));
-                posList.Add(pos);
-                index++;
+            VortexCoordsContainer container = null;
+            if (vortexDic.TryGetValue(coords, out container) == false) {
+                container = new VortexCoordsContainer(coords);
+                vortexDic.Add(coords, container);
             }
 
-            return posList;
+            return container.GetCoordinates(coords, num, RangeDictionary.UnitInter);
         }
 
         void HandleProductResponse()
@@ -475,6 +470,7 @@ namespace AdvancedGears
             //                                        new CreatedCommanderList { Commanders = kvp.Value.ToList() }));
             //    }
             //}
+            this.CommandSystem.SendCommand(new UnitFactorySystem.SetEmpty.Request(order.strongholdId, order.coords));
         }
 
         //private void SetList(ref Dictionary<EntityId, List<CommanderInfo>> commanders, in EntityId product, uint rank)
@@ -537,4 +533,94 @@ namespace AdvancedGears
             }
         }
     }
+
+    public class VortexCoordsContainer
+    {
+        readonly List<Coordinates> posList = new List<Coordinates>();
+        Coordinates center = Coordinates.Zero;
+        int edge = 1;
+        int index = 0;
+        double inter = 0;
+
+        public VortexCoordsContainer(in Coordinates coords, double inter)
+        {
+            this.inter = inter;
+            Reset(coords);
+        }
+
+        public VortexCoordsContainer(in Coordinates center, List<Coodinates> posList, double inter)
+        {
+            this.center = center;
+            this.posList = posList;
+            this.inter = inter;
+
+            index = posList.Count;
+            edge = 1;
+            while (index > edge * 8) {
+                index -= edge * 8;
+                edge++;
+            }
+        }
+
+        private void Reset(in Coordinates coords)
+        {
+            this.center = coords;
+            edge = 1;
+            index = 0;
+            posList.Clear();
+        }
+
+        public List<Coordinates> GetCoordinates(in Coordinates coords, int num)
+        {
+            if (center != coords) 
+                Reset(coors);
+
+            int count = posList.Count;
+            if (num <= count)
+                return posList.Take(num).ToList();
+
+            foreach(var i in Enumerable.Range(count - num)) {
+                AddPos();
+            }
+
+            return posList;
+        }
+
+        public Coordinates AddPos()
+        {
+            var first = posList.Count;
+
+            Coordinates pos;
+            if (fist == 0)
+                pos = this.center;
+            else
+                pos = posList[first - 1];
+
+            if (index == 8 * edge + 1) {
+                edge++;
+                index = 0;
+            }
+
+            double x = 0, z = 0;
+            if (index == 0) {
+                x = inter;
+                z = inter;
+            }
+            else if (index <= 2 * edge)
+                z = -inter;
+            else if (index <= 4 * edge)
+                x = -inter;
+            else if (index <= 6 * edge)
+                z = inter;
+            else if (index <= 8 * edge)
+                x = inter;
+
+            pos += new Coordinates(x, 0, z);
+            posList.Add(pos);
+            index++;
+
+            return pos;
+        }
+    }
+
 }

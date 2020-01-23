@@ -21,6 +21,9 @@ namespace AdvancedGears
         [SerializeField] private float strategyRangeRate = 100.0f;
         public static float StrategyRangeRate => Instance.strategyRangeRate;
 
+        [SerializeField] private float uiRange = 100.0f;
+        public static float UIRange => Instance.uiRange;
+
         Dictionary<FixedRangeType, float> rangeDic = null;
         Dictionary<FixedRangeType, float> RangeDic
         {

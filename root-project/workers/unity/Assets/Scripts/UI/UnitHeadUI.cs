@@ -22,12 +22,13 @@ namespace AdvancedGears.UI
             }
         }
 
-        public void SetInfo(Vector2 pos, int hp)
+        const string fmt = "{0}/{1}";
+        public void SetInfo(Vector2 pos, int hp, int maxHp)
         {
             if (this.Rect != null)
                 this.Rect.position = pos;
 
-            hpText?.SetText(hp.ToString());
+            hpText?.SetText(string.Format(fmt, hp, maxHp));
         }
     }
 }

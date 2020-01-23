@@ -300,10 +300,21 @@ enum FactoryOrderType {
     Team = 3;
 }
 
+enum ContainerState {
+    Empty = 0;
+    Reserved = 1;
+    Created = 2;
+}
+
+type UnitCotainer {
+    Coordinates pos = 1;
+    ContainerState state = 2;
+}
+
 component UnitFactory {
     id = 20032;
 
-    IntervalChecker interval = 3;
+    transient list<UnitCotainer> containers = 3;
 
     FactoryOrderType current_type = 4;
 
@@ -316,6 +327,7 @@ component UnitFactory {
     command improbable.gdk.core.Empty add_follower_order(FollowerOrder);
     command improbable.gdk.core.Empty add_superior_order(SuperiorOrder);
     command improbable.gdk.core.Empty add_team_order(TeamOrderList);
+    command improbable.gdk.core.Empty set_empty(Coordinates);
 }
 
 component UnitArmyObserver {
