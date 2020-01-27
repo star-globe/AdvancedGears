@@ -19,7 +19,11 @@ namespace AdvancedGears
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     public class UnitFactorySystem : SpatialComponentSystem
     {
-        EntityQuery group;
+        EntityQuery factoryGroup;
+        IntervalChecker factoryInter;
+
+        EntityQuery checkerGroup;
+        IntervalChecker checkerInter;
 
         private class ProductOrderContext
         {
@@ -40,13 +44,11 @@ namespace AdvancedGears
             }
         }
 
-        IntervalChecker inter;
-
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            group = GetEntityQuery(
+            factoryGroup = GetEntityQuery(
                 ComponentType.ReadWrite<UnitFactory.Component>(),
                 ComponentType.ReadOnly<UnitFactory.ComponentAuthority>(),
                 ComponentType.ReadWrite<ResourceComponent.Component>(),
@@ -55,16 +57,39 @@ namespace AdvancedGears
                 ComponentType.ReadOnly<Position.Component>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
-            group.SetFilter(UnitFactory.ComponentAuthority.Authoritative);
-            group.SetFilter(ResourceComponent.ComponentAuthority.Authoritative);
+            factoryGroup.SetFilter(UnitFactory.ComponentAuthority.Authoritative);
+            factoryGroup.SetFilter(ResourceComponent.ComponentAuthority.Authoritative);
 
-            inter = IntervalCheckerInitializer.InitializedChecker(1.0f);
+            factoryInter = IntervalCheckerInitializer.InitializedChecker(1.0f);
+
+            checkerGroup = GetEntityQuery(
+                ComponentType.ReadWrite<UnitFactory.Component>(),
+                ComponentType.ReadOnly<UnitFactory.ComponentAuthority>(),
+                ComponentType.ReadOnly<BaseUnitStatus.Component>(),
+                ComponentType.ReadOnly<Position.Component>()
+            );
+            checkerGroup.SetFilter(UnitFactory.ComponentAuthority.Authoritative);
+
+            checkerInter = IntervalCheckerInitializer.InitializedChecker(1.5f);
         }
 
         protected override void OnUpdate()
         {
+            HandleUnitCheck();
             HandleProductUnit();
             HandleProductResponse();
+        }
+
+        private void HandleUnitCheck()
+        {
+            if (checkerInter.CheckTime() == false)
+                return;
+
+            Entities.With(checkerGroup).ForEach((ref UnitFactory.Component factory,
+                                                 ref BaseUnitStatus.Component status,
+                                                 ref Position.Component position) =>
+            {
+            });
         }
 
         // TODO:getFromSettings;
@@ -72,10 +97,10 @@ namespace AdvancedGears
         const float height_buffer = 5.0f;
         void HandleProductUnit()
         {
-            if (inter.CheckTime() == false)
+            if (factoryInter.CheckTime() == false)
                 return;
 
-            Entities.With(group).ForEach((Unity.Entities.Entity entity,
+            Entities.With(factoryGroup).ForEach((Unity.Entities.Entity entity,
                                           ref UnitFactory.Component factory,
                                           ref ResourceComponent.Component resource,
                                           ref BaseUnitStatus.Component status,
@@ -133,13 +158,13 @@ namespace AdvancedGears
                     resource.Resource -= resourceCost;
                 }
 
-                inter = factory.ProductInterval;
-                if (inter.CheckTime() == false)
+                factoryInter = factory.ProductInterval;
+                if (factoryInter.CheckTime() == false)
                     return;
 
                 Debug.LogFormat("CreateUnit!");
 
-                factory.ProductInterval = inter;
+                factory.ProductInterval = factoryInter;
 
                 //var trans = EntityManager.GetComponentObject<Transform>(entity);
                 //var p = trans.position + RandomLogic.XZRandomCirclePos(range);
