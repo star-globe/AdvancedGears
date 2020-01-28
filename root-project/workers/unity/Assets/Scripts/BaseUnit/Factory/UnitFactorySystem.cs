@@ -17,7 +17,7 @@ namespace AdvancedGears
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
-    public class UnitFactorySystem : SpatialComponentSystem
+    public class UnitFactorySystem : BaseSearchSystem
     {
         EntityQuery factoryGroup;
         IntervalChecker factoryInter;
@@ -89,6 +89,33 @@ namespace AdvancedGears
                                                  ref BaseUnitStatus.Component status,
                                                  ref Position.Component position) =>
             {
+                if (status.State != UnitState.Alive)
+                    return;
+
+                if (status.Type != UnitType.Stronghold)
+                    return;
+
+                var contaners = factory.Containers;
+                int index = -1;
+                var ids = new List<int>();
+                foreach (var c in contaners) {
+                    index++;
+
+                    if (c.State != ContainerState.Created)
+                        continue;
+
+                    var list = getAllyUnits(status.Side, c.Pos.ToWorkerPosition(this.Origin), (float)RangeDictionary.TeamInter, UnitType.Commander);
+                    if (list.Count == 0)
+                        ids.Add(index);
+                }
+
+                if (ids.Count == 0)
+                    return;
+
+                foreach (var i in ids)
+                    contaners.ChangeState(i,ContainerState.Empty);
+
+                factory.Containers = contaners;
             });
         }
 
@@ -218,7 +245,7 @@ namespace AdvancedGears
 
             VortexCoordsContainer vortex = null;
             if (strDic.TryGetValue(id, out vortex) == false) {
-                vortex = new VortexCoordsContainer(center, containers.Select(c => c.Pos.ToCoordinates()).ToList(), RangeDictionary.UnitInter);
+                vortex = new VortexCoordsContainer(center, containers.Select(c => c.Pos.ToCoordinates()).ToList(), RangeDictionary.TeamInter);
                 strDic[id] = vortex;
             }
 

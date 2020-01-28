@@ -15,6 +15,9 @@ namespace AdvancedGears
         [SerializeField] private double unitInter = 3.0;
         public static double UnitInter => Instance.unitInter;
 
+        [SerializeField] private double teamInter = 15.0;
+        public static double TeamInter => Instance.teamInter;
+
         [SerializeField] private float moveRangeRate = 0.7f;
         public static float MoveRangeRate => Instance.moveRangeRate;
 
