@@ -45,6 +45,12 @@ namespace AdvancedGears
             return (vec.X * vec.X) + (vec.Y * vec.Y) + (vec.Z * vec.Z);
         }
 
+        public static void SetUpwards(this Transform transform, Vector3 up)
+        {
+            var f = transform.forward;
+            transform.rotation = Quaternion.LookRotation(f, up);
+        }
+
         public static bool CheckTime(this ref IntervalChecker inter, float current, out float diff)
         {
             diff = inter.Buffer + inter.Interval;

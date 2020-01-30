@@ -631,7 +631,7 @@ namespace AdvancedGears
             if (num <= count)
                 return posList.Take(num).ToList();
 
-            foreach(var i in Enumerable.Range(0,count - num)) {
+            foreach(var i in Enumerable.Range(0,num - count)) {
                 AddPos();
             }
 

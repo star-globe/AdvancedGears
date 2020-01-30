@@ -45,6 +45,7 @@ namespace AdvancedGears
             base.OnCreate();
 
             group = GetEntityQuery(
+                    ComponentType.ReadWrite<Rigidbody>(),
                     ComponentType.ReadOnly<UnitTransform>(),
                     ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                     ComponentType.ReadOnly<SpatialEntityId>()
@@ -78,12 +79,9 @@ namespace AdvancedGears
 
                 var rigidbody = EntityManager.GetComponentObject<Rigidbody>(entity);
 
-                if (isGrounded & isBuilding)
-                    rigidbody.constraints = RigidbodyConstraints.FreezePosition;
-                else
-                    rigidbody.constraints = RigidbodyConstraints.None;
-
-                rigidbody.freezeRotation = isGrounded & (isBuilding | !isNotAlive);
+                if (isGrounded & isBuilding) {
+                    rigidbody.isKinematic = true;
+                }
             });
         }
     }

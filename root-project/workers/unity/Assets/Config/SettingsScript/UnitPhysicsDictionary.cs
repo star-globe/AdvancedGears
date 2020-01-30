@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace AdvancedGears
 {
-    [CreateAssetMenu(menuName = "AdvancedGears/Bullet Config/UnitPhysics Dictionary", order = 0)]
+    [CreateAssetMenu(menuName = "AdvancedGears/BaseUnit Config/UnitPhysics Dictionary", order = 0)]
     public class UnitPhysicsDictionary : DictionarySettings
     {
         public static UnitPhysicsDictionary Instance { private get; set; }
@@ -50,7 +50,6 @@ namespace AdvancedGears
         {
             public UnitType type;
             public bool isBuilding;
-            public float timeCost;
         }
     }
 }
