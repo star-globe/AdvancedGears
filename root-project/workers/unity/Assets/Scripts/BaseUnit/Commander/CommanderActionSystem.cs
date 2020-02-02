@@ -59,21 +59,21 @@ namespace AdvancedGears
 
                 action.Interval = inter;
 
-                var trans = EntityManager.GetComponentObject<Transform>(entity);
-                switch (status.Order)
-                {
-                    case OrderType.Escape:
-                        ProductAlly(trans.position, status.Side, commander, team, entityId, tgt, ref action);
-                        break;
-
-                    case OrderType.Organize:
-                        //
-                        break;
-
-                    default:
-                        action.ActionType = CommandActionType.None;
-                        break;
-                }
+                //var trans = EntityManager.GetComponentObject<Transform>(entity);
+                //switch (status.Order)
+                //{
+                //    case OrderType.Escape:
+                //        ProductAlly(trans.position, status.Side, commander, team, entityId, tgt, ref action);
+                //        break;
+                //
+                //    case OrderType.Organize:
+                //        //
+                //        break;
+                //
+                //    default:
+                //        action.ActionType = CommandActionType.None;
+                //        break;
+                //}
             });
         }
 
@@ -92,19 +92,19 @@ namespace AdvancedGears
             var id = tgt.TargetInfo.TargetId;
             List<UnitFactory.AddFollowerOrder.Request> reqList = new List<UnitFactory.AddFollowerOrder.Request>();
 
-            var n_sol = commander.TeamConfig.Soldiers - GetFollowerCount(team, false);
+            var n_sol = 0;//commander.TeamConfig.Soldiers - GetFollowerCount(team, false);
             if (n_sol > 0) {
                 reqList.Add(new UnitFactory.AddFollowerOrder.Request(id, new FollowerOrder() { Customer = entityId.EntityId,
-                                                                                               HqEntityId = team.HqInfo.EntityId,
+                                                                                               //HqEntityId = team.HqInfo.EntityId,
                                                                                                Number = n_sol,
                                                                                                Type = UnitType.Soldier,
                                                                                                Side = side }));
             }
 
-            var n_com = commander.TeamConfig.Commanders - GetFollowerCount(team,true);
+            var n_com = 0;//commander.TeamConfig.Commanders - GetFollowerCount(team,true);
             if (n_com > 0 && commander.Rank > 0) {
                 reqList.Add(new UnitFactory.AddFollowerOrder.Request(id, new FollowerOrder() { Customer = entityId.EntityId,
-                                                                                               HqEntityId = team.HqInfo.EntityId,
+                                                                                               //HqEntityId = team.HqInfo.EntityId,
                                                                                                Number = n_com,
                                                                                                Type = UnitType.Commander,
                                                                                                Side = side,

@@ -83,6 +83,7 @@ namespace AdvancedGears
             }
         }
 
+        float height = 3.0f;
         void CreatePlayerRequest()
         {
             var system = Worker.World.GetExistingSystem<SendCreatePlayerRequestSystem>();
@@ -91,7 +92,7 @@ namespace AdvancedGears
 
             var pos = startPoint.ToUnityVector();
             var origin = new Vector3(pos.x, FieldDictionary.WorldHeight, pos.z) + this.Worker.Origin;
-            var point = PhysicsUtils.GetGroundPosition(origin);
+            var point = PhysicsUtils.GetGroundPosition(origin) + Vector3.up * height;
             
             system.RequestPlayerCreation(SerializeUtils.SerializeArguments(new PlayerInitInfo(side, point - this.Worker.Origin)));
         }

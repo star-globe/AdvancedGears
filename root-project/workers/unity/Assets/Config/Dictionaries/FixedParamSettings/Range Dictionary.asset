@@ -17,3 +17,9 @@ MonoBehaviour:
     range: 200
   - type: 2
     range: 1000
+  - type: 3
+    range: 500
+  - type: 4
+    range: 1000
+  unitInter: 3
+  moveRangeRate: 0.7

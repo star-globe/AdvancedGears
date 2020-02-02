@@ -62,15 +62,17 @@ namespace AdvancedGears
                 var unit = EntityManager.GetComponentObject<UnitTransform>(entity);
 
                 // check ground
-                if (unit.GetGrounded() == false)
+                if (unit == null || unit.GetGrounded(out var hitInfo) == false)
                     return;
 
                 var rigidbody = EntityManager.GetComponentObject<Rigidbody>(entity);
 
+                // set grounded normal
+                //var normal = hitInfo.normal;
+
                 if (!movement.IsTarget)
                 {
-                    rigidbody.velocity = Vector3.zero;
-                    rigidbody.angularVelocity = Vector3.zero;
+                    rigidbody.Stop();
                     return;
                 }
 
@@ -85,18 +87,19 @@ namespace AdvancedGears
                     tgt = get_nearly_position(pos, tgt, com, target.TargetInfo.AllyRange);
                 }
 
-                int foward = 0;
+                int forward = 0;
                 var diff = tgt - pos;
                 var range = movement.TargetRange;
-                var min_range = range * 0.9f;
+                var min_range = range * RangeDictionary.MoveRangeRate;
                 var mag = diff.sqrMagnitude;
 
                 if (mag > range * range)
-                    foward = 1;
+                    forward = 1;
                 else if (mag < min_range * min_range)
-                    foward = -1;
+                    forward = -1;
 
-                if (rotate(rigidbody.transform, tgt - pos, movement.RotSpeed))
+                bool isRotating = false;
+                if (rotate(rigidbody.transform, tgt - pos, movement.RotSpeed))//, normal))
                 {
                     var inter = posture.Interval;
                     if (posture.Initialized && inter.CheckTime())
@@ -104,9 +107,16 @@ namespace AdvancedGears
                         posture.Interval = inter;
                         posture.Root = rigidbody.transform.rotation.ToCompressedQuaternion();
                     }
+                    isRotating = true;
                 }
 
-                var uVec = rigidbody.transform.forward * movement.MoveSpeed * foward;
+                if (forward == 0)
+                {
+                    rigidbody.Stop(isRotating);
+                    return;
+                }
+
+                var uVec = rigidbody.transform.forward * movement.MoveSpeed * forward;
                 var moveVec = uVec * Time.fixedDeltaTime;
                 rigidbody.MovePosition(pos + moveVec);
 

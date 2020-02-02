@@ -60,7 +60,7 @@ namespace AdvancedGears
 
                 foreach (var order in headQuarter.Orders) {
                     var pos = order.Pos.ToWorkerPosition(this.Origin);
-                    var str = getNearestAlly(status.Side, pos, RangeDictionary.Get(FixedRangeType.RadioRange), UnitType.Stronghold);
+                    var str = getNearestAlly(entityId.EntityId, status.Side, pos, RangeDictionary.Get(FixedRangeType.RadioRange), UnitType.Stronghold);
                     if (str == null)
                         continue;
 
@@ -98,7 +98,7 @@ namespace AdvancedGears
 
             upper_rank = rank + 1;
             var request = new UnitFactory.AddSuperiorOrder.Request(id, new SuperiorOrder() { Followers = info.Followers.ToList(),
-                                                                                             HqEntityId = entityId,
+                                                                                             //HqEntityId = entityId,
                                                                                              Side = side,
                                                                                              Rank = rank + 1 });
             Entity entity;

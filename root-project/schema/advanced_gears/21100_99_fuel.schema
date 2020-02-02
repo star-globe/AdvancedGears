@@ -17,6 +17,10 @@ type FuelModifier {
     int32 amount = 2;
 }
 
+type FuelDiff {
+    int32 diff = 1;
+}
+
 component FuelComponent {
     id = 21100;
 
@@ -25,7 +29,10 @@ component FuelComponent {
 
     command improbable.gdk.core.Empty modify_fuel(FuelModifier);
     event FuelModifier fuel_modified;
+    event FuelDiff fuel_diffed;
 }
+
+//----old supply----
 
 component FuelServer {
     id = 21101;
@@ -93,6 +100,8 @@ component FuelSupplyManager {
     command improbable.gdk.core.Empty add_supply_points(SupplyPoint);
 }
 
+//----new supply----
+
 //---------------------------------
 // domination:21120~21129
 enum DominationDeviceType {
@@ -116,4 +125,53 @@ component DominationStamina {
     float max_stamina = 3;
 
     map<UnitSide,float> side_staminas = 4;
+}
+
+//---------------------------------
+// resource:21130~21139
+type ResourceModifier {
+    int32 amount = 1;
+}
+
+component ResourceComponent {
+    id = 21130;
+
+    int32 resource = 2;
+    int32 resource_max = 3;
+
+    command improbable.gdk.core.Empty modify_resource(ResourceModifier);
+}
+
+component ResourceSupplyer {
+    id = 21131;
+
+    float resource_fraction = 3;
+    float recovery_rate = 4;
+    float checked_time = 5;
+}
+
+component ResourceTransporter {
+    id = 21132;
+
+    float range = 1;
+    EntityId base_stronghold_id = 4;
+}
+
+//---------------------------------
+// recovery:21140~21149
+enum RecoveryState {
+    None = 0;
+    Supplying = 1;
+    Reducing = 2;
+    Stopped = 3;
+}
+
+component RecoveryComponent {
+    id = 21140;
+
+    RecoveryState state = 1;
+    float range = 2;
+    float recovery_rate = 3;
+    float checked_time = 4;
+    float end_time = 5;
 }

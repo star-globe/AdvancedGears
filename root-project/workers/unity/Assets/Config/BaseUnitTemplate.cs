@@ -22,8 +22,8 @@ namespace AdvancedGears
         {
             { UnitType.Soldier, OrderType.Idle },
             { UnitType.Commander, OrderType.Attack },
-            { UnitType.Stronghold, OrderType.Organize },
-            { UnitType.HeadQuarter, OrderType.Organize },
+            { UnitType.Stronghold, OrderType.Idle },
+            { UnitType.HeadQuarter, OrderType.Attack },
         };
 
         public static EntityTemplate CreateBaseUnitEntityTemplate(UnitSide side, Coordinates coords, UnitType type, OrderType? order = null)
@@ -71,33 +71,52 @@ namespace AdvancedGears
                     template.AddComponent(new CommanderSight.Snapshot { WarPowers = new List<WarPower>() }, writeAccess);
                     template.AddComponent(new CommanderAction.Snapshot { ActionType = CommandActionType.None }, writeAccess);
                     template.AddComponent(new BaseUnitPosture.Snapshot { Posture = new PostureInfo { Datas = new Dictionary<PosturePoint, PostureData>() } }, writeAccess);
-                    template.AddComponent(new DominationDevice.Snapshot { Type = DominationDeviceType.Capturing, Speed = 0.0f, }, writeAccess);
+                    template.AddComponent(new DominationDevice.Snapshot { Type = DominationDeviceType.Capturing, Speed = 0.5f, }, writeAccess);
+                    break;
+
+                case UnitType.Supply:
+                    template.AddComponent(new BulletComponent.Snapshot(), writeAccess);
+                    template.AddComponent(new BaseUnitPosture.Snapshot { Posture = new PostureInfo { Datas = new Dictionary<PosturePoint, PostureData>() } }, writeAccess);
+                    template.AddComponent(new ResourceComponent.Snapshot(), writeAccess);
+                    template.AddComponent(new ResourceTransporter.Snapshot(), writeAccess);
                     break;
 
                 case UnitType.Stronghold:
-                    template.AddComponent(new StrongholdUnitStatus.Snapshot(), writeAccess);
-                    template.AddComponent(new UnitFactory.Snapshot { FollowerOrders = new List<FollowerOrder>(), SuperiorOrders = new List<SuperiorOrder>() }, writeAccess);
-                    template.AddComponent(new UnitArmyObserver.Snapshot(), writeAccess);
+                    template.AddComponent(new StrongholdStatus.Snapshot { Rank = 1, }, writeAccess);
+                    template.AddComponent(new StrongholdSight.Snapshot(), writeAccess);
+                    template.AddComponent(new UnitFactory.Snapshot { Containers = new List<UnitContainer>(),
+                                                                     FollowerOrders = new List<FollowerOrder>(),
+                                                                     SuperiorOrders = new List<SuperiorOrder>(),
+                                                                     TeamOrders = new List<TeamOrder>() }, writeAccess);
+                    //template.AddComponent(new UnitArmyObserver.Snapshot(), writeAccess);
                     template.AddComponent(new DominationStamina.Snapshot { SideStaminas = new Dictionary<UnitSide,float>() }, writeAccess);
+                    template.AddComponent(new ResourceComponent.Snapshot(), writeAccess);
+                    template.AddComponent(new ResourceSupplyer.Snapshot(), writeAccess);
+                    template.AddComponent(new RecoveryComponent.Snapshot { State = RecoveryState.Supplying }, writeAccess);
                     template.AddComponent(new SpawnPoint.Snapshot { Type = SpawnType.Revive }, writeAccess);
+                    var commandersQuery = InterestQuery.Query(Constraint.Component<CommanderStatus.Component>())
+                                            .FilterResults(Position.ComponentId, BaseUnitStatus.ComponentId);
+                    var commanderInterest = InterestTemplate.Create().AddQueries<StrongholdStatus.Component>(commandersQuery);
+                    template.AddComponent(commanderInterest.ToSnapshot(), writeAccess);
                     break;
 
                 case UnitType.HeadQuarter:
                     //template.AddComponent(new HeadQuarters.Snapshot { UpperRank = 0,
                     //                                                 FactoryDatas = new FactoryMap { Reserves = new Dictionary<EntityId,ReserveMap>() },
                     //                                                 Orders = new List<OrganizeOrder>() }, writeAccess);
-                    template.AddComponent(new CommandersManager.Snapshot { State = CommanderManagerState.None,
-                                                                           CommanderDatas = new Dictionary<EntityId, TeamInfo>() }, writeAccess);
-                    var strongholdQuery = InterestQuery.Query(Constraint.Component<StrongholdUnitStatus.Component>())
+                    //template.AddComponent(new CommandersManager.Snapshot { State = CommanderManagerState.None,
+                    //                                                       CommanderDatas = new Dictionary<EntityId, TeamInfo>() }, writeAccess);
+                    template.AddComponent(new StrategyOrderManager.Snapshot { }, writeAccess);
+                    var strongholdQuery = InterestQuery.Query(Constraint.Component<StrongholdStatus.Component>())
                                           .FilterResults(Position.ComponentId, BaseUnitStatus.ComponentId);
-                    var interestTemplate = InterestTemplate.Create().AddQueries<CommandersManager.Component>(strongholdQuery);
-                    template.AddComponent(interestTemplate.ToSnapshot(), writeAccess);
+                    var strongholdInterest = InterestTemplate.Create().AddQueries<StrategyOrderManager.Component>(strongholdQuery);
+                    template.AddComponent(strongholdInterest.ToSnapshot(), writeAccess);
                     template.AddComponent(new SpawnPoint.Snapshot { Type = SpawnType.Start }, writeAccess);
                     break;
             }
         }
 
-        public static EntityTemplate CreateCommanderUnitEntityTemplate(UnitSide side, Coordinates coords, uint rank, EntityId? superiorId, EntityId? hqId)
+        public static EntityTemplate CreateCommanderUnitEntityTemplate(UnitSide side, Coordinates coords, uint rank, EntityId? superiorId)
         {
             var template = CreateBaseUnitEntityTemplate(side, coords, UnitType.Commander);
             var status = template.GetComponent<CommanderStatus.Snapshot>();
@@ -114,9 +133,6 @@ namespace AdvancedGears
 
                 if (superiorId != null)
                     t.SuperiorInfo.EntityId = superiorId.Value;
-
-                if (hqId != null)
-                    t.HqInfo.EntityId = hqId.Value;
 
                 template.SetComponent(t);
             }

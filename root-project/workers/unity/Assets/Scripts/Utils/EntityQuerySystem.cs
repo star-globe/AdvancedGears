@@ -17,9 +17,9 @@ namespace AdvancedGears
     public abstract class EntityQuerySystem : BaseEntitySearchSystem
     {
         IntervalChecker inter;
+        IntervalChecker retryInter;
         private int queryRetries;
         private long? entityQueryId;
-        private readonly Dictionary<EntityId, List<EntitySnapshot>> snapShots = new Dictionary<EntityId, List<EntitySnapshot>>();
 
         public event Action OnQueriedEvent;
 
@@ -34,14 +34,22 @@ namespace AdvancedGears
         {
             base.OnCreate();
 
-            inter =  IntervalCheckerInitializer.InitializedChecker(IntervalTime, setChecked: true);
+            inter = IntervalCheckerInitializer.InitializedChecker(IntervalTime, setChecked: true);
+            retryInter = IntervalCheckerInitializer.InitializedChecker(1.0f, setChecked: true);
         }
 
         protected override void OnUpdate()
         {
+            if (this.CommandSystem == null)
+                return;
+
             if (entityQueryId != null)
             {
-                HandleEntityQueryResponses();
+                if (retryInter.CheckTime() == false)
+                    HandleEntityQueryResponses();
+                else
+                    SendEntityQuery();
+
                 return;
             }
 
@@ -66,23 +74,34 @@ namespace AdvancedGears
             {
                 EntityQuery = entityQuery
             });
+
+            DebugUtils.LogFormatColor(UnityEngine.Color.magenta, "Request.QueryID:{0}", entityQueryId);
+
+            retryInter.UpdateLastChecked();
         }
 
         private void HandleEntityQueryResponses()
         {
             var entityQueryResponses = this.CommandSystem.GetResponses<WorldCommands.EntityQuery.ReceivedResponse>();
+            var name = this.GetType().ToString();
+            var time = Time.time;
+
+            //DebugUtils.LogFormatColor(UnityEngine.Color.magenta, "Name:{0} EntityQueryResponses.Count:{1} Time:{2}", name, entityQueryResponses.Count, time);
             for (var i = 0; i < entityQueryResponses.Count; i++)
             {
                 ref readonly var response = ref entityQueryResponses[i];
-                if (response.RequestId != entityQueryId)
+                if (entityQueryId == null || response.RequestId != entityQueryId.Value)
                 {
                     continue;
                 }
+
+                DebugUtils.LogFormatColor(UnityEngine.Color.magenta, "Name:{0} Response.RequestId:{1} Time:{2}", name, response.RequestId, time);
 
                 entityQueryId = null;
 
                 if (response.StatusCode == StatusCode.Success)
                 {
+                    var snapShots = new Dictionary<EntityId, List<EntitySnapshot>>();
                     foreach (var kvp in response.Result) {
                         List<EntitySnapshot> list;
                         if (snapShots.ContainsKey(kvp.Key))
@@ -100,6 +119,8 @@ namespace AdvancedGears
 
                     OnQueriedEvent?.Invoke();
                     OnQueriedEvent = null;
+
+                    queryRetries = 0;
                 }
                 else if (queryRetries < MaxQueryRetries)
                 {
@@ -117,8 +138,6 @@ namespace AdvancedGears
                         string.Format("Unable to get {0} query, after {1} attempts.", this.GetType().Name, queryRetries)
                     ));
                 }
-
-                break;
             }
         }
 

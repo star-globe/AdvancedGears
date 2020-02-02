@@ -19,7 +19,6 @@ namespace AdvancedGears
     public class FieldQueryServerSystem : FieldQueryBaseSystem
     {
         protected override Vector3? BasePosition => this.WorkerSystem.Origin;
-        protected override float SearchRadius => 1000.0f;
         protected override bool CheckRegularly => false;
         protected override FieldWorkerType FieldWorkerType => FieldWorkerType.GameLogic;
     }
@@ -31,10 +30,9 @@ namespace AdvancedGears
     {
         Vector3? playerPosition = null;
         protected override Vector3? BasePosition => playerPosition;
-        protected override float SearchRadius => 500.0f;
         protected override bool CheckRegularly => true;
-        protected override FieldWorkerType FieldWorkerType => FieldWorkerType.Client; 
-        IntervalChecker inter = IntervalCheckerInitializer.InitializedChecker(3.0f, setChecked:true);
+        protected override FieldWorkerType FieldWorkerType => FieldWorkerType.Client;
+        IntervalChecker inter;
         private Unity.Entities.EntityQuery group;
 
         protected override void OnCreate()
@@ -46,10 +44,14 @@ namespace AdvancedGears
                 ComponentType.ReadOnly<Position.Component>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
+
+            inter = IntervalCheckerInitializer.InitializedChecker(this.IntervalTime, setChecked: true);
         }
 
         protected override void OnUpdate()
         {
+            base.OnUpdate();
+
             if (inter.CheckTime())
             {
                 Entities.With(group).ForEach((Unity.Entities.Entity entity,
@@ -59,11 +61,10 @@ namespace AdvancedGears
                     if (playerInfo.ClientWorkerId.Equals(this.WorkerSystem.WorkerId) == false)
                         return;
 
-                    playerPosition = position.Coords.ToUnityVector() + this.Origin;
+                    var pos = position.Coords.ToUnityVector();
+                    playerPosition = new Vector3(pos.x, 0, pos.z);//position.Coords.ToUnityVector() + this.Origin;
                 });
             }
-
-            base.OnUpdate();
         }
 
         public void SetXZPosition(float x, float z)
@@ -80,9 +81,17 @@ namespace AdvancedGears
         public FieldCreator FieldCreator { get; private set; }
 
         protected abstract Vector3? BasePosition { get; }
-        protected abstract float SearchRadius { get; }
         protected abstract bool CheckRegularly { get; }
         protected abstract FieldWorkerType FieldWorkerType { get;}
+        protected override float IntervalTime
+        {
+            get { return Settings == null ? 1.0f: Settings.UpdateInterval; }
+        }
+
+        public FieldSettings Settings
+        {
+            get { return FieldDictionary.Get(FieldWorkerType); }
+        }
 
         protected override bool IsCheckTime
         {
@@ -98,6 +107,12 @@ namespace AdvancedGears
                     var diff = checkedPosition.Value - BasePosition.Value;
                     if (diff.sqrMagnitude < checkRange * checkRange)
                         return false;
+
+                    if (FieldCreator.CheckNeedRealize(this.BasePosition.Value) == false)
+                        return false;
+
+                    DebugUtils.LogFormatColor(UnityEngine.Color.red, "BasePosition:{0} CheckedPosition:{1} Diff:{2}",
+                                              BasePosition.Value, checkedPosition.Value, diff);
                 }
 
                 return  true;
@@ -127,11 +142,14 @@ namespace AdvancedGears
 
         protected override void SendEntityQuery()
         {
-            checkedPosition = BasePosition;
+            if (BasePosition == null)
+                checkedPosition = null;
+            else
+                checkedPosition = BasePosition.Value;
 
             base.SendEntityQuery();
 
-            Debug.LogFormat("SendFieldQuery. WorkerId:{0}", this.WorkerSystem.WorkerId);
+            DebugUtils.LogFormatColor(UnityEngine.Color.magenta, "SendFieldQuery. WorkerId:{0}", this.WorkerSystem.WorkerId);
         }
 
         protected override ImprobableEntityQuery EntityQuery
@@ -181,6 +199,9 @@ namespace AdvancedGears
 
                 FieldCreator.RealizeField(field.TerrainPoints, position.Coords, this.BasePosition);
             }
+
+            DebugUtils.LogFormatColor(UnityEngine.Color.red,"FieldWorkerType:{0} snapShots.Count:{1}",
+                                      this.FieldWorkerType, snapShots.Count);
 
             FieldCreator.RemoveFields();
         }

@@ -6,7 +6,7 @@ using Improbable;
 using Improbable.Gdk.Core;
 using Improbable.Gdk.Core.Commands;
 using Improbable.Gdk.Subscriptions;
-using Improbable.Gdk.Standardtypes;
+using Improbable.Gdk.TransformSynchronization;
 using Improbable.Worker.CInterop;
 using Unity.Collections;
 using Unity.Entities;
@@ -28,7 +28,6 @@ namespace AdvancedGears
             group = GetEntityQuery(
                 ComponentType.ReadWrite<DominationStamina.Component>(),
                 ComponentType.ReadOnly<DominationStamina.ComponentAuthority>(),
-                ComponentType.ReadOnly<FuelComponent.Component>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<Transform>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
@@ -46,14 +45,11 @@ namespace AdvancedGears
         {
             Entities.With(group).ForEach((Unity.Entities.Entity entity,
                                           ref DominationStamina.Component domination,
-                                          ref FuelComponent.Component fuel,
                                           ref BaseUnitStatus.Component status,
                                           ref SpatialEntityId entityId) =>
             {
-                if (status.State != UnitState.Dead)
-                    return;
-
-                if (status.Side != UnitSide.None)
+                if (status.State != UnitState.Dead &&
+                    status.Side != UnitSide.None)
                     return;
 
                 if (status.Type != UnitType.Stronghold)
@@ -61,19 +57,19 @@ namespace AdvancedGears
 
                 var time = Time.time;
                 var inter = domination.Interval;
-                float diff;
-                if (inter.CheckTime(time, out diff) == false)
+                if (inter.CheckTime() == false)
                     return;
 
                 domination.Interval = inter;
 
                 float range = domination.Range;
-                //var f_comp = fuel;
                 var staminas = domination.SideStaminas;
 
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
                 var pos = trans.position;
-                var list = getUnits(status.Side, pos, range, null, false, UnitType.Commander, UnitType.Advanced);
+                var list = getAllUnits(pos, range, UnitType.Commander, UnitType.Advanced);
+
+                var sumsDic = new Dictionary<UnitSide,float>();
                 foreach (var unit in list)
                 {
                     DominationDevice.Component? comp = null;
@@ -83,54 +79,79 @@ namespace AdvancedGears
                     switch(comp.Value.Type)
                     {
                         case DominationDeviceType.Capturing:
-                            AffectCapture(unit.side, comp.Value.Speed, staminas);
+                            AffectCapture(unit.side, comp.Value.Speed, sumsDic);
                             break;
 
                         case DominationDeviceType.Jamming:
-                            AffectJamming(unit.side, comp.Value.Speed, staminas);
+                            AffectJamming(unit.side, comp.Value.Speed, sumsDic);
                             break;
                     }
                 }
 
                 // check over
-                var max = staminas.OrderByDescending(kvp => kvp.Value).First();
-                if (max.Value >= domination.MaxStamina) {
-                    this.CommandSystem.SendCommand(new BaseUnitStatus.ForceState.Request(
-                        entityId.EntityId,
-                        new ForceStateChange(max.Key, UnitState.Alive))
-                    );
+                var orderedList = sumsDic.OrderByDescending(kvp => kvp.Value).ToList();
+                if (orderedList.Count == 0)
+                    return;
+                    
+                var first = orderedList[0];
+                var underSum = orderedList.Skip(1).Sum(kvp => kvp.Value);
 
-                    staminas.Clear();
-                }
-                // check minus
-                else {
-                    var keys = staminas.Keys;
-                    foreach(var k in keys) {
-                        if (staminas[k] < 0.0f)
-                            staminas[k] = 0.0f;
+                if (first.Value <= underSum)
+                    return;
+                
+                var over = first.Value - underSum;
+                if (staminas.ContainsKey(first.Key) == false)
+                    staminas[first.Key] = over;
+                else
+                    staminas[first.Key] += over;
+
+                foreach (var k in staminas.Keys) {
+                    if (k != first.Key) {
+                        var val = staminas[k];
+                        staminas[k] = Mathf.Max(0.0f, val - over);
                     }
                 }
+
+                // capture
+                if (staminas[first.Key] >= domination.MaxStamina) {
+                    Capture(entityId.EntityId, first.Key);
+                    staminas.Clear();
+                }
+
+                domination.SideStaminas = staminas;
             });
         }
 
-        private void AffectCapture(UnitSide side, float speed, Dictionary<UnitSide,float> staminas)
+        private void AffectCapture(UnitSide side, float speed, Dictionary<UnitSide,float> sumsDic)
         {
-            if (staminas.ContainsKey(side) == false)
-                staminas.Add(side, 0.0f);
+            if (sumsDic.ContainsKey(side) == false)
+                sumsDic.Add(side, 0.0f);
 
-            staminas[side] += speed;
+            sumsDic[side] += speed;
         }
 
-        private void AffectJamming(UnitSide side, float speed, Dictionary<UnitSide,float> staminas)
+        private void AffectJamming(UnitSide side, float speed, Dictionary<UnitSide,float> sumsDic)
         {
-            var keys = staminas.Keys;
+            var keys = sumsDic.Keys;
             foreach(var k in keys)
             {
                 if (k == side)
                     continue;
 
-                staminas[k] -= speed;
+                sumsDic[k] -= speed;
             }
+        }
+
+        private void Capture(EntityId id, UnitSide side)
+        {
+            this.CommandSystem.SendCommand(new BaseUnitStatus.ForceState.Request(
+                id,
+                new ForceStateChange(side, UnitState.Alive))
+            );
+            this.CommandSystem.SendCommand(new StrongholdSight.SetStrategyVector.Request(
+                id,
+                new StrategyVector(side, FixedPointVector3.FromUnityVector(Vector3.zero)))
+            );
         }
     }
 }

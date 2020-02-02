@@ -25,9 +25,30 @@ namespace AdvancedGears
             return (pos - origin).ToFixedPointVector3();
         }
 
+        public static Coordinates ToCoordinates(this Vector3 pos)
+        {
+            return new Coordinates(pos.x, pos.y, pos.z);
+        }
+
+        public static Coordinates ToCoordinates(this FixedPointVector3 pos)
+        {
+            return pos.ToUnityVector().ToCoordinates();
+        }
+
+        public static FixedPointVector3 ToFixedPointVector3(this Coordinates coords)
+        {
+            return coords.ToUnityVector().ToFixedPointVector3();
+        }
+
         public static float SqrMagnitude (this FixedPointVector3 vec)
         {
             return (vec.X * vec.X) + (vec.Y * vec.Y) + (vec.Z * vec.Z);
+        }
+
+        public static void SetUpwards(this Transform transform, Vector3 up)
+        {
+            var f = transform.forward;
+            transform.rotation = Quaternion.LookRotation(f, up);
         }
 
         public static bool CheckTime(this ref IntervalChecker inter, float current, out float diff)
@@ -49,6 +70,11 @@ namespace AdvancedGears
             inter.LastChecked = current;
             inter.Buffer = RandomInterval.GetRandom(inter.Interval);
             return true;
+        }
+
+        public static void UpdateLastChecked(this ref IntervalChecker inter)
+        {
+            inter.LastChecked = Time.time;
         }
 
         public static OrderPair Self(this OrderPair pair, OrderType self)
@@ -211,6 +237,72 @@ namespace AdvancedGears
             }
 
             return heights;
+        }
+
+        public static List<EntityId> GetAllFollowers(this FollowerInfo info)
+        {
+            var list = new List<EntityId>();
+            list.AddRange(info.Followers);
+            list.AddRange(info.UnderCommanders);
+            return list;
+        }
+
+        /// <summary>
+        /// RigidBodyの停止
+        /// </summary>
+        /// <param name="rigidbody"></param>
+        public static void Stop(this Rigidbody rigidbody, bool isRotating = false)
+        {
+            rigidbody.velocity = Vector3.zero;
+            if (isRotating == false)
+                rigidbody.angularVelocity = Vector3.zero;
+        }
+
+        //----CheckPoor----
+        public static bool IsPoor(this BaseUnitHealth.Component health)
+        {
+            return health.Health < health.MaxHealth;
+        }
+
+        public static bool IsPoor(this FuelComponent.Component fuel)
+        {
+            return fuel.Fuel < fuel.MaxFuel;
+        }
+
+        public static bool IsPoor(this GunInfo gun)
+        {
+            return gun.StockBullets < gun.StockMax;
+        }
+
+        public static bool IsPoor(this GunComponent.Component gun, out List<GunInfo> emptyList)
+        {
+            emptyList = null;
+            bool isEmpty = false;
+            foreach (var kvp in gun.GunsDic) {
+                if (kvp.Value.IsPoor() == false)
+                    continue;
+
+                emptyList = emptyList ?? new List<GunInfo>();
+                emptyList.Add(kvp.Value);
+                isEmpty |= true;
+            }
+
+            return isEmpty;
+        }
+
+        public static void AddBullets(ref this GunInfo gun, int num)
+        {
+            gun.StockBullets = Mathf.Clamp(gun.StockBullets + num, 0, gun.StockMax);
+        }
+
+        public static void ChangeState(this List<UnitContainer> containers, int index, ContainerState state)
+        {
+            if (containers == null || containers.Count <= index)
+                return;
+
+            var c = containers[index];
+            c.State = state;
+            containers[index] = c;
         }
     }
 

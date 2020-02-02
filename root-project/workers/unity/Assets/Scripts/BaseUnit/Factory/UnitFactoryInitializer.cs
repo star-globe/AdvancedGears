@@ -9,7 +9,8 @@ namespace AdvancedGears
     public class UnitFactoryInitializer : MonoBehaviour
     {
         [Require] UnitFactoryWriter factoryWriter;
-        [Require] UnitArmyObserverWriter observerWriter;
+        [Require] ResourceComponentWriter resourceWriter;
+        [Require] ResourceSupplyerWriter supplyerWriter;
 
         [SerializeField]
         UnitFactoryInitSettings settings;
@@ -18,15 +19,15 @@ namespace AdvancedGears
         {
             Assert.IsNotNull(settings);
 
-            factoryWriter.SendUpdate(new UnitFactory.Update
+            resourceWriter.SendUpdate(new ResourceComponent.Update
             {
-                Interval = IntervalCheckerInitializer.InitializedChecker(settings.Inter),
                 ResourceMax = settings.ResourceMax,
+                Resource = settings.ResourceMax,
             });
 
-            observerWriter.SendUpdate(new UnitArmyObserver.Update
+            supplyerWriter.SendUpdate(new ResourceSupplyer.Update
             {
-                Interval = IntervalCheckerInitializer.InitializedChecker(settings.Inter),
+                RecoveryRate = settings.RecoveryRate,
             });
         }
     }

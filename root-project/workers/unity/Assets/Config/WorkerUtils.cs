@@ -1,4 +1,4 @@
-using Improbable.Gdk;
+using Improbable.Gdk.Core;
 using Improbable.Gdk.GameObjectCreation;
 using Improbable.Gdk.PlayerLifecycle;
 using Improbable.Gdk.TransformSynchronization;
@@ -36,6 +36,7 @@ namespace AdvancedGears
             world.GetOrCreateSystem<MetricSendSystem>();
             world.GetOrCreateSystem<BulletMovementSystem>();
             world.GetOrCreateSystem<FieldQueryClientSystem>();
+            world.GetOrCreateSystem<SpawnPointQuerySystem>();
         }
 
         public static void AddGameLogicSystems(World world, UnityEngine.GameObject gameObject)
@@ -50,17 +51,30 @@ namespace AdvancedGears
             world.GetOrCreateSystem<ProcessScoresSystem>();
             world.GetOrCreateSystem<CollisionProcessSystem>();
             world.GetOrCreateSystem<BaseUnitMovementSystem>();
+            world.GetOrCreateSystem<BaseUnitPhysicsSystem>();
             world.GetOrCreateSystem<BaseUnitSearchSystem>();
             world.GetOrCreateSystem<BaseUnitActionSystem>();
             world.GetOrCreateSystem<CommanderUnitSearchSystem>();
             world.GetOrCreateSystem<CommanderActionSystem>();
             world.GetOrCreateSystem<UnitFactorySystem>();
+            world.GetOrCreateSystem<StrategyOrderManagerSystem>();
+            world.GetOrCreateSystem<ResourceSupplyManagerSystem>();
             //world.GetOrCreateSystem<HQOrganizeSystem>();
             //world.GetOrCreateSystem<UnitArmyObserveSystem>();
-            world.GetOrCreateSystem<CommandersManagerSystem>();
+            //world.GetOrCreateSystem<CommandersManagerSystem>();
+            world.GetOrCreateSystem<StrongholdSearchSystem>();
+            world.GetOrCreateSystem<StrongholdActionSystem>();
             world.GetOrCreateSystem<BulletMovementSystem>();
             world.GetOrCreateSystem<BaseUnitReviveTimerSystem>();
             world.GetOrCreateSystem<FieldQueryServerSystem>();
+        }
+    }
+
+    public static class Utils
+    {
+        public static EntityId EmptyEntityId
+        {
+            get { return new EntityId(0); }
         }
     }
 }

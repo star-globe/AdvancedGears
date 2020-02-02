@@ -49,7 +49,7 @@ namespace AdvancedGears
             commanderGroup.SetFilter(CommandersManager.ComponentAuthority.Authoritative);
 
             strongholdGroup = GetEntityQuery(
-                ComponentType.ReadOnly<StrongholdUnitStatus.Component>(),
+                ComponentType.ReadOnly<StrongholdStatus.Component>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<Position.Component>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
@@ -100,23 +100,23 @@ namespace AdvancedGears
                 var dic = manager.CommanderDatas.ToList();
                 foreach (var kvp in dic)
                 {
-                    if (kvp.Value.State != UnitState.Alive)
-                        continue;
+                    //if (kvp.Value.State != UnitState.Alive)
+                    //    continue;
 
                     var r = kvp.Value.Rank;
                     if (r > rank)
                         rank = r;
 
                     var team = kvp.Value;
-                    if (SelectTarget(ref enemyIndex, ref team.TargetStronghold, enemies))
+                    if (SelectTarget(ref enemyIndex, ref team.TargetEntityId, enemies))
                     {
                         manager.CommanderDatas[kvp.Key] = team;
 
-                        var info = strongDic[team.TargetStronghold];
+                        var info = strongDic[team.TargetEntityId];
 
                         var request = new CommanderTeam.SetTargetStroghold.Request(kvp.Key, new TargetStrongholdInfo()
                         {
-                            TargetStronghold = team.TargetStronghold,
+                            StrongholdId = team.TargetEntityId,
                             Position = info.coords,
                             Side = info.side,
                         });
@@ -141,7 +141,7 @@ namespace AdvancedGears
                         var request = new UnitFactory.AddSuperiorOrder.Request(factoryId, new SuperiorOrder()
                         {
                             Followers = new List<EntityId>(),
-                            HqEntityId = id,
+                            //HqEntityId = id,
                             Side = status.Side,
                             Rank = rank + 1
                         });
@@ -161,7 +161,7 @@ namespace AdvancedGears
             strongDic = strongDic ?? new Dictionary<EntityId, StrongInfo>();
 
             Entities.With(strongholdGroup).ForEach((Entity entity,
-                                  ref StrongholdUnitStatus.Component stronghold,
+                                  ref StrongholdStatus.Component stronghold,
                                   ref BaseUnitStatus.Component status,
                                   ref Position.Component position,
                                   ref SpatialEntityId spatialEntityId) =>

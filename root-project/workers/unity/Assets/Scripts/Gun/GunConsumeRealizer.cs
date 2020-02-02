@@ -16,6 +16,7 @@ namespace AdvancedGears
         {
             gunWriter.OnFireTriggeredEvent += OnTarget;
             gunWriter.OnBulletSuppliedEvent += OnSupply;
+            gunWriter.OnBulletDiffedEvent += OnDiffed;
         }
 
         private void OnTarget(AttackTargetInfo info)
@@ -28,6 +29,27 @@ namespace AdvancedGears
             CommonUpdate(info.Attached, info.Amount);
         }
 
+        private void OnDiffed(BulletDiffList list)
+        {
+            var dic = gunWriter.Data.GunsDic;
+            foreach(var key in dic.Keys) {
+                var index = list.Diffs.FindIndex(diff => diff.GunId == dic[key].GunId);
+                if (index < 0)
+                    continue;
+
+                var num = list.Diffs[index].Diff;
+                var gun = dic[key];
+
+                gun.AddBullets(num);
+                dic[key] = gun;
+            }
+
+            gunWriter.SendUpdate(new GunComponent.Update
+            {
+                GunsDic = dic
+            });
+        }
+
         void CommonUpdate(PosturePoint attached, int num)
         {
             var dic = gunWriter.Data.GunsDic;
@@ -35,7 +57,8 @@ namespace AdvancedGears
             if (dic.TryGetValue(attached, out gun) == false)
                 return;
 
-            gun.StockBullets = Mathf.Clamp(gun.StockBullets + num, 0, gun.StockMax);
+            gun.AddBullets(num);
+            dic[attached] = gun;
 
             gunWriter.SendUpdate(new GunComponent.Update
             {

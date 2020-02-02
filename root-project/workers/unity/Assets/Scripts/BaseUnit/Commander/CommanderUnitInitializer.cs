@@ -31,7 +31,7 @@ namespace AdvancedGears
             commander.SendUpdate(new CommanderStatus.Update
             {
                 AllyRange = settings.AllyRange,
-                TeamConfig = settings.TeamConfig,
+                //TeamConfig = settings.TeamConfig,
             });
 
             action.SendUpdate(new CommanderAction.Update
