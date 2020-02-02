@@ -12,10 +12,38 @@ namespace AdvancedGears
 {
     public class FieldCreator : MonoBehaviour
     {
+        struct IndexXY
+        {
+            public int x;
+            public int y;
+
+            public IndexXY(int x, int y)
+            {
+                this.x = x;
+                this.y = y;
+            }
+
+            public static bool CheckAndRenew(Vector3 pos, float size, ref IndexXY? xy)
+            {
+                int x = Mathf.FloorToInt((pos.x + size / 2) / size);
+                int y = Mathf.FloorToInt((pos.z + size / 2) / size);
+
+                if (xy == null || xy.Value.x != x || xy.Value.y != y)
+                {
+                    xy = new IndexXY(x, y);
+                    return true;
+                }
+
+                return false;
+            }
+        }
+
         World world;
         Vector3 Origin;
         string WorkerId;
         FieldWorkerType workerType;
+
+        IndexXY? indexXY = null;
 
         readonly Dictionary<int,Dictionary<int,FieldRealizer>> realizedDic = new Dictionary<int, Dictionary<int, FieldRealizer>>();
         readonly Queue<GameObject> objectQueue = new Queue<GameObject>();
@@ -120,22 +148,38 @@ namespace AdvancedGears
             Debug.LogFormat("Coords:{0}", coords);
 
             Vector3 pos = getPos(center);
-            GetRealizer(pos).Realize(pos, terrainPoints, coords.ToUnityVector() + this.Origin);
+            var realizer = GetRealizer(pos, out var c);
+            realizer.Realize(c, terrainPoints, coords.ToUnityVector() + this.Origin);
             IsSetDatas = true;
         }
 
         public void RealizeEmptyField(Vector3? center = null)
         {
             Vector3 pos = getPos(center);
-            GetRealizer(pos).Realize(pos);
+            var realizer = GetRealizer(pos, out var c);
+            realizer.Realize(c);
             IsSetDatas = true;
         }
 
-        FieldRealizer GetRealizer(Vector3 pos)
+        public bool CheckNeedRealize(Vector3 center)
         {
-            var size = this.Settings.FieldSize;
-            int x = (int)(pos.x / size);
-            int y = (int)(pos.z / size);
+            if (indexXY == null)
+                return true;
+
+            Vector3 pos = getPos(center);
+            return IndexXY.CheckAndRenew(pos, ChunkRange, ref indexXY);
+        }
+
+        private float ChunkRange => this.Settings.FieldSize * FieldDictionary.ChunkRangeRate;
+
+        FieldRealizer GetRealizer(Vector3 pos, out Vector3 center)
+        {
+            IndexXY.CheckAndRenew(pos, ChunkRange, ref indexXY);
+
+            var x = indexXY.Value.x;
+            var y = indexXY.Value.y;
+
+            DebugUtils.LogFormatColor(UnityEngine.Color.blue, "realize Indexies :[{0}][{1}] postion:{2}", x, y, pos);
 
             Dictionary<int,FieldRealizer> dic;
             if (realizedDic.ContainsKey(y))
@@ -151,6 +195,9 @@ namespace AdvancedGears
 
             dic[x] = realizer;
             realizedDic[y] = dic;
+
+            var size = ChunkRange;
+            center = new Vector3(x * size, 0 , y * size) + this.Origin;
 
             return realizer;
         }

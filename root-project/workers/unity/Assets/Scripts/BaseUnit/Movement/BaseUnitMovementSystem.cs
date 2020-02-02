@@ -68,12 +68,11 @@ namespace AdvancedGears
                 var rigidbody = EntityManager.GetComponentObject<Rigidbody>(entity);
 
                 // set grounded normal
-                var normal = hitInfo.normal;
+                //var normal = hitInfo.normal;
 
                 if (!movement.IsTarget)
                 {
                     rigidbody.Stop();
-                    rigidbody.transform.SetUpwards(normal);
                     return;
                 }
 
@@ -100,7 +99,7 @@ namespace AdvancedGears
                     forward = -1;
 
                 bool isRotating = false;
-                if (rotate(rigidbody.transform, tgt - pos, movement.RotSpeed, normal))
+                if (rotate(rigidbody.transform, tgt - pos, movement.RotSpeed))//, normal))
                 {
                     var inter = posture.Interval;
                     if (posture.Initialized && inter.CheckTime())
@@ -138,7 +137,7 @@ namespace AdvancedGears
             return Mathf.Asin(rot.magnitude) < Mathf.Deg2Rad * range;
         }
 
-        bool rotate(Transform transform, Vector3 diff, float rot_speed, Vector3 normal)
+        bool rotate(Transform transform, Vector3 diff, float rot_speed)
         {
             Vector3 rot;
             Vector3 foward = diff.normalized;
@@ -146,7 +145,6 @@ namespace AdvancedGears
             if (in_range(transform.forward, foward, angle, out rot) == false)
             {
                 RotateLogic.Rotate(transform, foward, angle);
-                transform.SetUpwards(normal);
                 return true;
             }
 

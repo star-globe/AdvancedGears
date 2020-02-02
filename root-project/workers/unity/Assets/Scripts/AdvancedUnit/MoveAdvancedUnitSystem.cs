@@ -94,20 +94,20 @@ namespace AdvancedGears
                 var inputDir = new Vector2(controller.Horizontal, controller.Vertical).normalized;
                 if (inputDir.x * inputDir.x > 0.0f) {
                     var trans = rigidbody.transform;
-                    trans.Rotate(trans.up, inputDir.x);
+                    trans.Rotate(Vector3.up, inputDir.x);//(trans.up, inputDir.x);
 
                     //Debug.LogFormat("x:{0} y:{1}", inputDir.x, inputDir.y);
                     //rigidbody.transform.eulerAngles = rigidbody.transform.up * Mathf.SmoothDampAngle(
                     //    rigidbody.transform.eulerAngles.y, targetRotation,
                     //    ref turnSmoothVelocity, TurnSmoothTime);
                 }
-                else
-                {
-                    var rotation = rigidbody.transform.rotation;
-                    var angles = rotation.eulerAngles;
-                    rotation.eulerAngles = new Vector3(0.0f, angles.y, angles.z);
-                    rigidbody.transform.rotation = rotation;
-                }
+                //else
+                //{
+                //    var rotation = rigidbody.transform.rotation;
+                //    var angles = rotation.eulerAngles;
+                //    rotation.eulerAngles = new Vector3(0.0f, angles.y, angles.z);
+                //    rigidbody.transform.rotation = rotation;
+                //}
 
                 var x = rigidbody.velocity.x;
                 var z = rigidbody.velocity.z;

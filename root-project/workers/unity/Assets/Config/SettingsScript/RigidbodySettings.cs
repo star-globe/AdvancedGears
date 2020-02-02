@@ -21,6 +21,7 @@ namespace AdvancedGears
         [SerializeField] private float angularDrag;
         [SerializeField] private Vector3 centerOfMass;
         [SerializeField] private bool useGravity;
+        [SerializeField] private RigidbodyConstraints[] constraints;
 
         public void SetRigid(Rigidbody rigid)
         {
@@ -32,6 +33,14 @@ namespace AdvancedGears
             rigid.useGravity = useGravity;
 
             rigid.centerOfMass = centerOfMass;
+
+            var cst = RigidbodyConstraints.None;
+            if (constraints != null) {
+                foreach (var c in constraints)
+                    cst |= c;
+            }
+
+            rigid.constraints = cst;
         }
     }
 }

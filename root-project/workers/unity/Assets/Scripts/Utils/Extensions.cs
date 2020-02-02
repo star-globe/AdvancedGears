@@ -72,6 +72,11 @@ namespace AdvancedGears
             return true;
         }
 
+        public static void UpdateLastChecked(this ref IntervalChecker inter)
+        {
+            inter.LastChecked = Time.time;
+        }
+
         public static OrderPair Self(this OrderPair pair, OrderType self)
         {
             pair.Self = self;

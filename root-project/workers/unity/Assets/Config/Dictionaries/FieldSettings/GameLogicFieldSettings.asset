@@ -16,3 +16,4 @@ MonoBehaviour:
     type: 3}
   workerType: 2
   fieldSize: 1000
+  updateInterval: 5
