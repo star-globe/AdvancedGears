@@ -75,8 +75,6 @@ namespace AdvancedGears
                 EntityQuery = entityQuery
             });
 
-            DebugUtils.LogFormatColor(UnityEngine.Color.magenta, "Request.QueryID:{0}", entityQueryId);
-
             retryInter.UpdateLastChecked();
         }
 
@@ -86,7 +84,6 @@ namespace AdvancedGears
             var name = this.GetType().ToString();
             var time = Time.time;
 
-            //DebugUtils.LogFormatColor(UnityEngine.Color.magenta, "Name:{0} EntityQueryResponses.Count:{1} Time:{2}", name, entityQueryResponses.Count, time);
             for (var i = 0; i < entityQueryResponses.Count; i++)
             {
                 ref readonly var response = ref entityQueryResponses[i];
@@ -94,8 +91,6 @@ namespace AdvancedGears
                 {
                     continue;
                 }
-
-                DebugUtils.LogFormatColor(UnityEngine.Color.magenta, "Name:{0} Response.RequestId:{1} Time:{2}", name, response.RequestId, time);
 
                 entityQueryId = null;
 
