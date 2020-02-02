@@ -21,5 +21,8 @@ MonoBehaviour:
     range: 500
   - type: 4
     range: 1000
-  unitInter: 3
+  unitInter: 5
+  teamInter: 30
   moveRangeRate: 0.7
+  strategyRangeRate: 100
+  uiRange: 100
