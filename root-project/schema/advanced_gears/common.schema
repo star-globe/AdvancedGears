@@ -58,6 +58,8 @@ enum FixedRangeType
     RadioRange = 2;
     StrongholdRange = 3;
     HeadQuarterRange = 4;
+    PlatoonRange = 5;
+    CommanderRange = 6;
 }
 
 //type Som

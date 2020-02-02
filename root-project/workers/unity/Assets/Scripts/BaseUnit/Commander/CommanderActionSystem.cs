@@ -59,7 +59,9 @@ namespace AdvancedGears
 
                 action.Interval = inter;
 
-                //var trans = EntityManager.GetComponentObject<Transform>(entity);
+                var trans = EntityManager.GetComponentObject<Transform>(entity);
+                ApplyOrder(trans.position, status.Side, status.Order, commander.Rank, tgt);
+                
                 //switch (status.Order)
                 //{
                 //    case OrderType.Escape:
@@ -75,6 +77,22 @@ namespace AdvancedGears
                 //        break;
                 //}
             });
+        }
+
+        // boids commander
+        void ApplyOrder(in Vector3 pos, UnitSide side, OrderType order, uint rank, in BaseUnitTarget.Component tgt)
+        {
+            var units = getAllyUnits(side, pos, RangeDictionary.Get(FixedRangeType.PlatoonRange), UnitType.Soldier);
+            foreach (var u in units) {
+                SetCommand(u.id, tgt.TargetInfo, order);
+            }
+        }
+
+        // add boids information
+        private void SetCommand(EntityId id, in TargetInfo targetInfo, OrderType order)
+        {
+            base.SetCommand(id, order);
+            this.CommandSystem.SendCommand(new BaseUnitTarget.SetTarget.Request(id, targetInfo));
         }
 
         void ProductAlly(in Vector3 pos, UnitSide side,

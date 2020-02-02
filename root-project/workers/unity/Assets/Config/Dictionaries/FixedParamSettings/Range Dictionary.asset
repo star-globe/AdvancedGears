@@ -21,6 +21,10 @@ MonoBehaviour:
     range: 500
   - type: 4
     range: 1000
+  - type: 5
+    range: 30
+  - type: 6
+    range: 60
   unitInter: 5
   teamInter: 30
   moveRangeRate: 0.7
