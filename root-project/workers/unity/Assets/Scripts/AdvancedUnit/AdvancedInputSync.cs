@@ -75,7 +75,7 @@ namespace AdvancedGears
                 unMannedInput.Interval = inter;
                 var x = UnityEngine.Random.Range(-1.0f, 1.0f);
                 var z = UnityEngine.Random.Range(-1.0f, 1.0f);
-                var isShiftDown = false;//Input.GetKey(KeyCode.LeftShift);
+                var isShiftDown = Input.GetKey(KeyCode.LeftShift);
                 var controller = unMannedInput.LocalController;
                 CommonUpdate(new Vector3(x, 0, z), isShiftDown, entityId, ref controller);
                 unMannedInput.LocalController = controller;
