@@ -148,6 +148,22 @@ component BaseUnitPosture {
     event PostureData posture_changed;
 }
 
+type BoidWeight {
+    improbable.gdk.transform_synchronization.FixedPointVector3 vector = 1;
+    float weight = 2;
+}
+
+component BoidComponent {
+    id = 20015;
+
+    float range = 1;
+    improbable.gdk.transform_synchronization.FixedPointVector3 center = 2;
+
+    BoidWeight separete = 4;
+    BoidWeight alignment = 5;
+    BoidWeight cohesion = 6;
+}
+
 // commander:20020~
 type FollowerInfo {
     list<EntityId> followers = 1;
