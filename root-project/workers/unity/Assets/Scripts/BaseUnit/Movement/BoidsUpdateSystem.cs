@@ -30,9 +30,6 @@ namespace AdvancedGears
             group.SetFilter(BoidComponent.ComponentAuthority.Authoritative);
         }
 
-        Ray vertical = new Ray();
-        //readonly int layer = //LayerMask.//LayerMask.GetMask("Ground");
-
         protected override void OnUpdate()
         {
             Entities.With(group).ForEach((Entity entity,
@@ -62,7 +59,7 @@ namespace AdvancedGears
                         continue;
 
                     center += unit.pos;
-                    vector += rigid.velocity;
+                    vector += rigid.velocity.normalized;
 
                     positions.Add(unit.pos);
                 }
@@ -80,7 +77,7 @@ namespace AdvancedGears
                     boidVec += vector;
                     boidVec += (center - unit.pos).normalized;
 
-                    //this.
+                    this.UpdateSystem.SendEvent(new BaseUnitMovement.BoidDiffed.Event(boidVec.ToFixedVector3()), unit.id);
                 }
             });
         }

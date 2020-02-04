@@ -155,11 +155,6 @@ component BaseUnitPosture {
     event PostureData posture_changed;
 }
 
-type Flockmate {
-    improbable.gdk.transform_synchronization.FixedPointVector3 position = 1;
-    improbable.gdk.transform_synchronization.FixedPointVector3 vector = 1;
-}
-
 component BoidComponent {
     id = 20015;
 
