@@ -29,12 +29,14 @@ namespace AdvancedGears
                 ComponentType.ReadOnly<BaseUnitAction.ComponentAuthority>(),
                 ComponentType.ReadWrite<BaseUnitSight.Component>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
-                ComponentType.ReadOnly<BaseUnitTarget.Component>(),
+                ComponentType.ReadWrite<BaseUnitTarget.Component>(),
+                ComponentType.ReadOnly<BaseUnitTarget.ComponentAuthority>(),
                 ComponentType.ReadOnly<GunComponent.Component>(),
                 ComponentType.ReadOnly<Transform>()
             );
 
             group.SetFilter(BaseUnitAction.ComponentAuthority.Authoritative);
+            group.SetFilter(BaseUnitTarget.ComponentAuthority.Authoritative);
         }
 
         protected override void OnUpdate()
@@ -64,8 +66,7 @@ namespace AdvancedGears
                 sight.Interval = inter;
 
                 // initial
-                movement.IsTarget = false;
-                action.IsTarget = false;
+                target.State = TargetState.None;
                 action.EnemyPositions.Clear();
 
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
@@ -80,13 +81,18 @@ namespace AdvancedGears
                     if (target.TargetInfo.IsTarget)
                     {
                         movement.TargetPosition = target.TargetInfo.Position;
-                        movement.IsTarget = true;
+
+                        var diff = movement.TargetPosition.ToUnityVector() - pos;
+                        var s_range = RangeDictionary.SightRangeRate * sight.Range;
+                        if (diff.sqrMagnitude <= s_range * s_range)
+                            target.State = TargetState.MovementTarget;
+                        else
+                            target.State = TargetState.OutOfRange;
                     }
                 }
                 else
                 {
-                    movement.IsTarget = true;
-                    action.IsTarget = true;
+                    target.State = TargetState.ActionTarget;
                     var epos = enemy.pos.ToWorldPosition(this.Origin);
 
                     movement.TargetPosition = epos;

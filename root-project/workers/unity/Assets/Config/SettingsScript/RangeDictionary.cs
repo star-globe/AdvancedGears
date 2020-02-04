@@ -21,6 +21,9 @@ namespace AdvancedGears
         [SerializeField] private float moveRangeRate = 0.7f;
         public static float MoveRangeRate => Instance.moveRangeRate;
 
+        [SerializeField] private float sightRangeRate = 1.5f;
+        public static float SightRangeRate => Instance.sightRangeRate;
+
         [SerializeField] private float strategyRangeRate = 100.0f;
         public static float StrategyRangeRate => Instance.strategyRangeRate;
 
@@ -28,10 +31,10 @@ namespace AdvancedGears
         public static float UIRange => Instance.uiRange;
 
         [SerializeField] private float baseBoidsRange = 30.0f;
-        public static float BaseBoidsRange => baseBoidsRange;
+        public static float BaseBoidsRange => Instance.baseBoidsRange;
 
         [SerializeField] private float boidsRankRate = 3.0f;
-        public static float BoidsRankRate => boidsRankRate;
+        public static float BoidsRankRate => Instance.boidsRankRate;
 
         Dictionary<FixedRangeType, float> rangeDic = null;
         Dictionary<FixedRangeType, float> RangeDic
@@ -69,11 +72,11 @@ namespace AdvancedGears
 
         public static float GetBoidsRange(uint rank)
         {
-            var baseRange = Instance.BaseBoidsRange;
+            var baseRange = BaseBoidsRange;
             if (rank == 0)
                 return baseRange;
 
-            return baseRange * Mathf.Pow(Instance.BoidsRankRate, rank - 1);
+            return baseRange * Mathf.Pow(BoidsRankRate, rank - 1);
         }
 
         [Serializable]

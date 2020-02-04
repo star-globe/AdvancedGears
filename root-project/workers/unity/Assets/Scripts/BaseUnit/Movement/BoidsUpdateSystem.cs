@@ -1,4 +1,4 @@
-using System;
+using System.Collections.Generic;
 using Improbable;
 using Improbable.Gdk.Core;
 using Improbable.Gdk.TransformSynchronization;
@@ -15,6 +15,8 @@ namespace AdvancedGears
     {
         EntityQuery group;
 
+        IntervalChecker inter;
+
         protected override void OnCreate()
         {
             base.OnCreate();
@@ -24,18 +26,24 @@ namespace AdvancedGears
                     ComponentType.ReadOnly<BoidComponent.ComponentAuthority>(),
                     ComponentType.ReadOnly<Transform>(),
                     ComponentType.ReadOnly<BaseUnitStatus.Component>(),
-                    ComponentType.ReadOnly<CommanderStatus.Component>()
+                    ComponentType.ReadOnly<CommanderStatus.Component>(),
+                    ComponentType.ReadOnly<SpatialEntityId>()
             );
 
             group.SetFilter(BoidComponent.ComponentAuthority.Authoritative);
+            inter = IntervalCheckerInitializer.InitializedChecker(0.5f);
         }
 
         protected override void OnUpdate()
         {
+            if (inter.CheckTime() == false)
+                return;
+
             Entities.With(group).ForEach((Entity entity,
                                           ref BoidComponent.Component boid,
                                           ref BaseUnitStatus.Component status,
-                                          ref CommanderStatus.Component commander) =>
+                                          ref CommanderStatus.Component commander,
+                                          ref SpatialEntityId entityId) =>
             {
                 if (status.State != UnitState.Alive)
                     return;
@@ -70,14 +78,16 @@ namespace AdvancedGears
                 foreach(var unit in allies) {
                     var boidVec = Vector3.zero;
 
-                    foreach(var p in positions)
-                        boidVec += (p - unit.pos).normalized;
+                    if (unit.id != entityId.EntityId) {
+                        foreach (var p in positions)
+                            boidVec += (p - unit.pos).normalized * boid.SepareteWeight;
 
-                    boidVec /= alliesCount;
-                    boidVec += vector;
-                    boidVec += (center - unit.pos).normalized;
+                        boidVec /= alliesCount;
+                        boidVec += vector * boid.AlignmentWeight;
+                        boidVec += (center - unit.pos).normalized * boid.CohesionWeight;
+                    }
 
-                    this.UpdateSystem.SendEvent(new BaseUnitMovement.BoidDiffed.Event(boidVec.ToFixedVector3()), unit.id);
+                    this.UpdateSystem.SendEvent(new BaseUnitMovement.BoidDiffed.Event(new BoidVector(boidVec.ToFixedPointVector3())), unit.id);
                 }
             });
         }

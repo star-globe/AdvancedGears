@@ -35,8 +35,7 @@ namespace AdvancedGears
             group.SetFilter(FuelComponent.ComponentAuthority.Authoritative);
         }
 
-        Ray vertical = new Ray();
-        //readonly int layer = //LayerMask.//LayerMask.GetMask("Ground");
+        const float boidRangeRate = 10.0f;
 
         protected override void OnUpdate()
         {
@@ -45,7 +44,6 @@ namespace AdvancedGears
                                           ref BaseUnitMovement.Component movement,
                                           ref BaseUnitTarget.Component target,
                                           ref BaseUnitStatus.Component status,
-                                          ref BaseUnitAction.Component action,
                                           ref FuelComponent.Component fuel) =>
             {
                 if (status.State != UnitState.Alive)
@@ -67,10 +65,7 @@ namespace AdvancedGears
 
                 var rigidbody = EntityManager.GetComponentObject<Rigidbody>(entity);
 
-                // set grounded normal
-                //var normal = hitInfo.normal;
-
-                if (!movement.IsTarget)
+                if (target.State == TargetState.None)
                 {
                     rigidbody.Stop();
                     return;
@@ -78,13 +73,14 @@ namespace AdvancedGears
 
                 var pos = rigidbody.position;
 
-                var tgt = movement.TargetPosition.ToWorkerPosition(this.Origin);
-
-                // modify target
-                if (action.IsTarget == false && target.TargetInfo.CommanderId.IsValid())
+                Vector3 tgt;
+                if (target.State == TargetState.OutOfRange && movement.BoidVector != FixedPointVector3.Zero)
                 {
-                    var com = movement.CommanderPosition.ToWorkerPosition(this.Origin);
-                    tgt = get_nearly_position(pos, tgt, com, target.TargetInfo.AllyRange);
+                    tgt = pos + movement.BoidVector.ToUnityVector() * movement.TargetRange * boidRangeRate;
+                }
+                else
+                {
+                    tgt = movement.TargetPosition.ToWorkerPosition(this.Origin);
                 }
 
                 int forward = 0;

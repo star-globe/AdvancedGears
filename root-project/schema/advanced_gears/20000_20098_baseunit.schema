@@ -77,7 +77,6 @@ component BaseUnitMovement {
     float move_speed = 1;
     float rot_speed = 2;
 
-    bool is_target = 3;
     improbable.gdk.transform_synchronization.FixedPointVector3 target_position = 4;
     float target_range = 5;
     
@@ -104,7 +103,6 @@ component BaseUnitAction {
 
     float angle_speed = 5;
 
-    bool is_target = 6;
     list<improbable.gdk.transform_synchronization.FixedPointVector3> enemy_positions = 7;
 }
 
@@ -126,10 +124,18 @@ type TargetInfo {
     float ally_range = 7;
 }
 
+enum TargetState {
+    None = 0;
+    MovementTarget = 1;
+    ActionTarget = 2;
+    OutOfRange = 3;
+}
+
 component BaseUnitTarget {
     id = 20013;
 
-    TargetInfo target_info = 1;
+    TargetState state = 1;
+    TargetInfo target_info = 2;
 
     command improbable.gdk.core.Empty set_target(TargetInfo);
 }

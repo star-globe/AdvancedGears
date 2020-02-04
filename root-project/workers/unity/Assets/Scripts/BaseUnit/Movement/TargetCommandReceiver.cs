@@ -10,10 +10,13 @@ namespace AdvancedGears
     {
         [Require] BaseUnitTargetCommandReceiver targetCommandReceiver;
         [Require] BaseUnitTargetWriter targetWriter;
+        [Require] BaseUnitMovementReader movementReader;
+        [Require] BaseUnitMovementWriter movementWriter;
 
         public void OnEnable()
         {
             targetCommandReceiver.OnSetTargetRequestReceived += OnSetTargetRequest;
+            movementReader.OnBoidDiffedEvent += OnBoidDiffed;
         }
 
         private void OnSetTargetRequest(BaseUnitTarget.SetTarget.ReceivedRequest request)
@@ -23,6 +26,14 @@ namespace AdvancedGears
             targetWriter.SendUpdate(new BaseUnitTarget.Update()
             {
                 TargetInfo = request.Payload,
+            });
+        }
+
+        private void OnBoidDiffed(BoidVector vector)
+        {
+            movementWriter.SendUpdate(new BaseUnitMovement.Update()
+            {
+                BoidVector = vector.Vector,
             });
         }
     }

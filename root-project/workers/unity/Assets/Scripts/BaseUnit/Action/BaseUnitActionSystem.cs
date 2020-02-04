@@ -27,6 +27,7 @@ namespace AdvancedGears
                 ComponentType.ReadWrite<BaseUnitPosture.Component>(),
                 ComponentType.ReadOnly<BaseUnitPosture.ComponentAuthority>(),
                 ComponentType.ReadWrite<GunComponent.Component>(),
+                ComponentType.ReadOnly<BaseUnitTarget.Component>(),
                 ComponentType.ReadOnly<UnitTransform>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
@@ -41,13 +42,14 @@ namespace AdvancedGears
                                           ref BaseUnitAction.Component action,
                                           ref BaseUnitPosture.Component posture,
                                           ref GunComponent.Component gun,
+                                          ref BaseUnitTarget.Component target,
                                           ref BaseUnitStatus.Component status,
                                           ref SpatialEntityId entityId) =>
             {
                 if (status.State != UnitState.Alive)
                     return;
 
-                if (!action.IsTarget)
+                if (target.State != TargetState.ActionTarget)
                     return;
 
                 var time = Time.time;
