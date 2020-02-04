@@ -49,22 +49,46 @@ namespace AdvancedGears
                 var range = RangeDictionary.GetBoidsRange(commander.Rank);
                 var allies = getAllyUnits(status.Side, pos, range, UnitType.Soldier);
 
-                var mates = new List<Flockmate>();
+                var alliesCount = allies.Count;
+                if (alliesCount == 0)
+                    return;
+
+                var positions = new List<Vector3>();
+                var center = Vector3.zero;
+                var vector = Vector3.zero;
+
                 foreach(var unit in allies) {
                     if (TryGetComponentObject<Rigidbody>(unit.id, out var rigid) == false)
                         continue;
 
-                    var flock = new Flockmate()
-                    {
-                        Position = unit.pos.ToWorldPosition(this.Origin),
-                        Vector = rigid.velocity.ToFixedPointVector3(),
-                    };
+                    center += unit.pos;
+                    vector += rigid.velocity;
 
-                    mates.Add(flock);
+                    positions.Add(unit.pos);
                 }
 
-                boid.FlockMates = mates;
+                center /= alliesCount;
+                vector /= alliesCount;
+
+                foreach(var unit in allies) {
+                    var boidVec = Vector3.zero;
+
+                    foreach(var p in positions)
+                        boidVec += (p - unit.pos).normalized;
+
+                    boidVec /= alliesCount;
+                    boidVec += vector;
+                    boidVec += (center - unit.pos).normalized;
+
+                    //this.
+                }
             });
         }
+    }
+
+    public struct Flockmate
+    {
+        public Vector3 position;
+        public Vector3 vector;
     }
 }
