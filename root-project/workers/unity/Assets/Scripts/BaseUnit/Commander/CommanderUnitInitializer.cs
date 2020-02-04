@@ -14,6 +14,7 @@ namespace AdvancedGears
         [Require] CommanderSightWriter sight;
         [Require] CommanderStatusWriter commander;
         [Require] CommanderActionWriter action;
+        [Require] BoidComponentWriter boid;
         [Require] BaseUnitStatusReader status;
         [Require] World world;
 
@@ -37,6 +38,13 @@ namespace AdvancedGears
             action.SendUpdate(new CommanderAction.Update
             {
                 Interval = IntervalCheckerInitializer.InitializedChecker(settings.Inter),
+            });
+
+            boid.SendUpdate(new BoidComponent.Update
+            {
+                SepareteWeight = settings.SepareteWeight,
+                AlignmentWeight = settings.AlignmentWeight,
+                CohesionWeight = settings.CohesionWeight,
             });
 
             //Invoke("DelayMethod", 3.5f);

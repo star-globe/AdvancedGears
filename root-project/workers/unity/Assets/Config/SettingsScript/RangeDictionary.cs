@@ -27,6 +27,12 @@ namespace AdvancedGears
         [SerializeField] private float uiRange = 100.0f;
         public static float UIRange => Instance.uiRange;
 
+        [SerializeField] private float baseBoidsRange = 30.0f;
+        public static float BaseBoidsRange => baseBoidsRange;
+
+        [SerializeField] private float boidsRankRate = 3.0f;
+        public static float BoidsRankRate => boidsRankRate;
+
         Dictionary<FixedRangeType, float> rangeDic = null;
         Dictionary<FixedRangeType, float> RangeDic
         {
@@ -59,6 +65,15 @@ namespace AdvancedGears
             Instance.RangeDic.TryGetValue(rangeType, out range);
 
             return range;
+        }
+
+        public static float GetBoidsRange(uint rank)
+        {
+            var baseRange = Instance.BaseBoidsRange;
+            if (rank == 0)
+                return baseRange;
+
+            return baseRange * Mathf.Pow(Instance.BoidsRankRate, rank - 1);
         }
 
         [Serializable]

@@ -66,6 +66,10 @@ component BaseUnitReviveTimer {
     float rest_time = 2;
 }
 
+type BoidVector {
+    improbable.gdk.transform_synchronization.FixedPointVector3 vector = 1;
+}
+
 // move:20010~20019
 component BaseUnitMovement {
     id = 20010;
@@ -78,8 +82,11 @@ component BaseUnitMovement {
     float target_range = 5;
     
     improbable.gdk.transform_synchronization.FixedPointVector3 commander_position = 6;
+    improbable.gdk.transform_synchronization.FixedPointVector3 boid_vector = 7;
 
-    float consume_rate = 7;
+    float consume_rate = 8;
+
+    event BoidVector boid_diffed;
 }
 
 component BaseUnitSight {
@@ -155,9 +162,6 @@ type Flockmate {
 
 component BoidComponent {
     id = 20015;
-
-    float range = 1;
-    list<Flockmate> flockmates = 2;
 
     float separete_weight = 4;
     float alignment_weight = 5;

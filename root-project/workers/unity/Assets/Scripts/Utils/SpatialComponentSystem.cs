@@ -72,6 +72,17 @@ namespace AdvancedGears
 
     public abstract class BaseEntitySearchSystem : SpatialComponentSystem
     {
+        protected bool TryGetComponentObject<T>(EntityId id, out T comp) where T : UnityEngine.Component
+        {
+            comp = null;
+            Entity entity;
+            if (!this.TryGetEntity(id, out entity))
+                return false;
+
+            comp = EntityManager.GetComponentObject<T>(entity);
+            return comp != null;
+        }
+
         protected bool TryGetComponent<T>(in Entity entity, out T? comp) where T : struct, IComponentData
         {
             comp = null;

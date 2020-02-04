@@ -72,6 +72,7 @@ namespace AdvancedGears
                     template.AddComponent(new CommanderAction.Snapshot { ActionType = CommandActionType.None }, writeAccess);
                     template.AddComponent(new BaseUnitPosture.Snapshot { Posture = new PostureInfo { Datas = new Dictionary<PosturePoint, PostureData>() } }, writeAccess);
                     template.AddComponent(new DominationDevice.Snapshot { Type = DominationDeviceType.Capturing, Speed = 0.5f, }, writeAccess);
+                    template.AddComponent(new BoidComponent.Snapshot(), writeAccess);
                     break;
 
                 case UnitType.Supply:

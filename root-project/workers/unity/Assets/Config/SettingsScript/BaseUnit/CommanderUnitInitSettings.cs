@@ -9,16 +9,21 @@ namespace AdvancedGears
     public class CommanderUnitInitSettings : ScriptableObject
     {
         [SerializeField] float sightRange = 100.0f;
-        [SerializeField] float allyRange = 50.0f;
-        [SerializeField] float inter = 3.0f;
-
-        [SerializeField] TeamInfo team;
-
         public float SightRange => sightRange;
+        [SerializeField] float allyRange = 50.0f;
         public float AllyRange => allyRange;
+        [SerializeField] float inter = 3.0f;
         public float Inter => inter;
 
+        [SerializeField] TeamInfo team;
         public TeamConfig TeamConfig => team.GetConfig();
+
+        [SerializeField] float separeteWeight = 1.0f;
+        public float SepareteWeight => separeteWeight;
+        [SerializeField] float alignmentWeight = 1.0f;
+        public float AlignmentWeight => alignmentWeight;
+        [SerializeField] float cohesionWeight = 1.0f;
+        public float CohesionWeight => cohesionWeight;
 
         [Serializable]
         class TeamInfo
