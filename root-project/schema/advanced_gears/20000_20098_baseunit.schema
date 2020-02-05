@@ -112,6 +112,7 @@ type TargetBaseInfo {
     improbable.gdk.transform_synchronization.FixedPointVector3 position = 3;
     UnitType type = 4;
     UnitSide side = 5;
+    UnitState state = 6;
 }
 
 type TargetInfo {
@@ -120,8 +121,9 @@ type TargetInfo {
     improbable.gdk.transform_synchronization.FixedPointVector3 position = 3;
     UnitType type = 4;
     UnitSide side = 5;
-    EntityId commander_id = 6;
-    float ally_range = 7;
+    UnitState state = 6;
+    EntityId commander_id = 7;
+    float ally_range = 8;
 }
 
 enum TargetState {

@@ -76,10 +76,8 @@ namespace AdvancedGears
                 //if (status.Order != OrderType.Escape)
                 enemy = getNearestEnemey(status.Side, pos, sight.Range);
 
-                if (enemy == null)
-                {
-                    if (target.TargetInfo.IsTarget)
-                    {
+                if (enemy == null) {
+                    if (target.TargetInfo.IsTarget) {
                         movement.TargetPosition = target.TargetInfo.Position;
 
                         var diff = movement.TargetPosition.ToUnityVector() - pos;
@@ -90,8 +88,7 @@ namespace AdvancedGears
                             target.State = TargetState.OutOfRange;
                     }
                 }
-                else
-                {
+                else {
                     target.State = TargetState.ActionTarget;
                     var epos = enemy.pos.ToWorldPosition(this.Origin);
 
@@ -99,22 +96,22 @@ namespace AdvancedGears
                     action.EnemyPositions.Add(epos);
                 }
 
-                var entityId = target.TargetInfo.CommanderId;
+                var targetInfo = target.TargetInfo;
+                var entityId = targetInfo.CommanderId;
                 Position.Component? comp = null;
                 if (entityId.IsValid() && base.TryGetComponent<Position.Component>(entityId, out comp))
-                {
                     movement.CommanderPosition = comp.Value.Coords.ToUnityVector().ToFixedPointVector3();
-                }
                 else
                     movement.CommanderPosition = FixedPointVector3.Zero;
 
                 var range = gun.GetAttackRange();
-                if (status.Type == UnitType.Commander && target.TargetInfo.Side != status.Side)
-                {
-                    switch (target.TargetInfo.Type)
-                    {
-                        case UnitType.Commander:
-                        case UnitType.Stronghold: range += target.TargetInfo.AllyRange; break;
+                if (status.Type == UnitType.Commander && targetInfo.Side != status.Side) {
+                    if (targetInfo.Type == UnitType.Stronghold &&
+                        (targetInfo.Side == UnitSide.None || targetInfo.State == UnitState.Dead)) {
+                        range = GetDominationRange(targetInfo.TargetId);
+                    }
+                    else {
+                        range += targetInfo.AllyRange;
                     }
                 }
 
@@ -129,10 +126,44 @@ namespace AdvancedGears
                 movement.TargetRange = range;
             });
         }
+
+        readonly Dictionary<EntityId,float> dominationRangeDic = new Dictionary<EntityId, float>();
+        private float GetDominationRange(EntityId entityId)
+        {
+            if (dominationRangeDic.ContainsKey(entityId) == false) {
+                if (TryGetComponent<DominationStamina.Component>(entityId, out var comp) == false)
+                    return 1.0f;
+
+                dominationRangeDic.Add(entityId, comp.Value.Range);
+            }
+
+            return dominationRangeDic[entityId];
+        }
     }
 
     public abstract class BaseSearchSystem : BaseEntitySearchSystem
     {
+        protected UnitInfo getUnitInfo(EntityId entityId)
+        {
+            BaseUnitStatus.Component? unit;
+            if (TryGetComponent(entityId, out unit) == false)
+                return null;
+
+            Transform trans;
+            if (TryGetComponentObject(entityId, out trans) == false)
+                return null;
+
+            var info = new UnitInfo();
+            info.id = entityId;
+            info.pos = trans.position;
+            info.type = unit.Value.Type;
+            info.side = unit.Value.Side;
+            info.order = unit.Value.Order;
+            info.state = unit.Value.State;
+
+            return info;
+        }
+
         protected UnitInfo getNearestEnemey(UnitSide self_side, in Vector3 pos, float length, params UnitType[] types)
         {
             return getNearestUnit(self_side, pos, length, true, null, types);
@@ -143,7 +174,7 @@ namespace AdvancedGears
             return getNearestUnit(self_side, pos, length, false, selfId, types);
         }
 
-        protected UnitInfo getNearestUnit(UnitSide self_side, in Vector3 pos, float length, bool isEnemy, EntityId? selfId, params UnitType[] types)
+        protected UnitInfo getNearestUnit(UnitSide self_side, in Vector3 pos, float length, bool isEnemy, EntityId? selfId, bool allowDead, params UnitType[] types)
         {
             float len = float.MaxValue;
             UnitInfo info = null;
@@ -162,7 +193,7 @@ namespace AdvancedGears
                 BaseUnitStatus.Component? unit;
                 if (TryGetComponent(comp.EntityId, out unit))
                 {
-                    if (unit.Value.State == UnitState.Dead)
+                    if (unit.Value.State == UnitState.Dead && allowDead == false)
                         continue;
 
                     if ((unit.Value.Side == self_side) == isEnemy)
@@ -181,6 +212,7 @@ namespace AdvancedGears
                         info.pos = t_pos;
                         info.type = unit.Value.Type;
                         info.side = unit.Value.Side;
+                        info.state = unit.Value.State;
                     }
                 }
             }
@@ -236,6 +268,7 @@ namespace AdvancedGears
                     info.type = unit.Value.Type;
                     info.side = unit.Value.Side;
                     info.order = unit.Value.Order;
+                    info.state = unit.Value.State;
 
                     unitList.Add(info);
                 }
@@ -276,6 +309,7 @@ namespace AdvancedGears
         public UnitType type;
         public UnitSide side;
         public OrderType order;
+        public UnitState state;
     }
 
     public static class RandomInterval

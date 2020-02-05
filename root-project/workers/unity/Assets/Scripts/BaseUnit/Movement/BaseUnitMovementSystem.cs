@@ -75,13 +75,9 @@ namespace AdvancedGears
 
                 Vector3 tgt;
                 if (target.State == TargetState.OutOfRange && movement.BoidVector != FixedPointVector3.Zero)
-                {
                     tgt = pos + movement.BoidVector.ToUnityVector().normalized * movement.TargetRange;
-                }
                 else
-                {
                     tgt = movement.TargetPosition.ToWorkerPosition(this.Origin);
-                }
 
                 float forward = 0.0f;
                 var diff = tgt - pos;

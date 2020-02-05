@@ -151,6 +151,7 @@ namespace AdvancedGears
             var tpos = FixedPointVector3.Zero;
             var type = UnitType.None;
             var side = UnitSide.None;
+            var state = UnitState.None;
             var id = new EntityId();
             if (baseInfo.IsTarget)
             {
@@ -158,12 +159,14 @@ namespace AdvancedGears
                 tpos = tgt.pos.ToWorldPosition(this.Origin);
                 type = tgt.type;
                 side = tgt.side;
+                state = tgt.state;
             }
 
             baseInfo.TargetId = id;
             baseInfo.Position = tpos;
             baseInfo.Type = type;
             baseInfo.Side = side;
+            baseInfo.State = state;
 
             sight.TargetInfo = baseInfo;
 
@@ -172,6 +175,7 @@ namespace AdvancedGears
                                         baseInfo.Position,
                                         baseInfo.Type,
                                         baseInfo.Side,
+                                        baseInfo.State,
                                         entityId.EntityId,
                                         commander.AllyRange);
         }
@@ -199,12 +203,7 @@ namespace AdvancedGears
             UnitInfo tgt;
             var info = team.TargetStronghold;
             if (info.StrongholdId.IsValid()) {
-                tgt = new UnitInfo() {
-                    id = info.StrongholdId,
-                    pos = info.Position.ToUnityVector() + this.Origin,
-                    side = info.Side,
-                    type = UnitType.Stronghold
-                };
+                tgt = getUnitInfo(info.StrongholdId);
 
                 Debug.LogFormat("TargetStronghold is Valid. Side:{0} Position:{1}", status.Side, tgt.pos);
             }
