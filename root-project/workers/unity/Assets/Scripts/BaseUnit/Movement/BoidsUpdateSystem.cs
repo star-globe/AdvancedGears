@@ -34,6 +34,7 @@ namespace AdvancedGears
             inter = IntervalCheckerInitializer.InitializedChecker(0.5f);
         }
 
+        float diffMin = 0.1f;
         protected override void OnUpdate()
         {
             if (inter.CheckTime() == false)
@@ -59,23 +60,24 @@ namespace AdvancedGears
                     return;
 
                 var positions = new List<Vector3>();
-                var center = Vector3.zero;
+                var center = pos + trans.forward * boid.ForwardLength;
                 var vector = Vector3.zero;
 
                 foreach(var unit in allies) {
-                    if (TryGetComponentObject<Rigidbody>(unit.id, out var rigid) == false)
+                    if (TryGetComponentObject<Transform>(unit.id, out var trans) == false)
                         continue;
 
-                    center += unit.pos;
-                    vector += rigid.velocity.normalized;
-
+                    vector += trans.forward;
                     positions.Add(unit.pos);
                 }
 
-                center /= alliesCount;
                 vector /= alliesCount;
 
                 foreach(var unit in allies) {
+                    if (TryGetComponent<BaseUnitMovement.Component>(unit.id, out var movement) == false)
+                        continue;
+                    
+                    var baseVec = movement.BoidVector;
                     var boidVec = Vector3.zero;
 
                     if (unit.id != entityId.EntityId) {
@@ -86,6 +88,10 @@ namespace AdvancedGears
                         boidVec += vector * boid.AlignmentWeight;
                         boidVec += (center - unit.pos).normalized * boid.CohesionWeight;
                     }
+
+                    var diff = boidVec - baseVec;
+                    if (diff.sqrMagnitude < diffMin * diffMin)
+                        continue;
 
                     this.UpdateSystem.SendEvent(new BaseUnitMovement.BoidDiffed.Event(new BoidVector(boidVec.ToFixedPointVector3())), unit.id);
                 }

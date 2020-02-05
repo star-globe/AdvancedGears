@@ -18,8 +18,8 @@ namespace AdvancedGears
         [SerializeField] private double teamInter = 15.0;
         public static double TeamInter => Instance.teamInter;
 
-        [SerializeField] private float moveRangeRate = 0.7f;
-        public static float MoveRangeRate => Instance.moveRangeRate;
+        [SerializeField] private float moveBufferRate = 0.2f;
+        public static float MoveBufferRate => Instance.moveBufferRate;
 
         [SerializeField] private float sightRangeRate = 1.5f;
         public static float SightRangeRate => Instance.sightRangeRate;

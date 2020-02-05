@@ -76,26 +76,30 @@ namespace AdvancedGears
                 Vector3 tgt;
                 if (target.State == TargetState.OutOfRange && movement.BoidVector != FixedPointVector3.Zero)
                 {
-                    tgt = pos + movement.BoidVector.ToUnityVector() * movement.TargetRange * boidRangeRate;
+                    tgt = pos + movement.BoidVector.ToUnityVector().normalized * movement.TargetRange;
                 }
                 else
                 {
                     tgt = movement.TargetPosition.ToWorkerPosition(this.Origin);
                 }
 
-                int forward = 0;
+                float forward = 0.0f;
                 var diff = tgt - pos;
                 var range = movement.TargetRange;
-                var min_range = range * RangeDictionary.MoveRangeRate;
-                var mag = diff.sqrMagnitude;
+                var buffer = range * RangeDictionary.MoveBuffferRate;
+                var mag = diff.magnitude;
 
-                if (mag > range * range)
-                    forward = 1;
-                else if (mag < min_range * min_range)
-                    forward = -1;
+                var rate = (mag - avg)/(range - avg);
+                forward = mathf.Clamp(rate, -1.0f, 1.0f);
+                if (mag > range) {
+                    forward = Mathf.Min((mag - range) / buffer, 1.0f);
+                }
+                else if (mag < range - buffer) {
+                    forward = Mathf.Max((mag - range + buffer) / buffer , -1.0f);
+                }
 
                 bool isRotating = false;
-                if (rotate(rigidbody.transform, tgt - pos, movement.RotSpeed))//, normal))
+                if (rotate(rigidbody.transform, tgt - pos, movement.RotSpeed))
                 {
                     var inter = posture.Interval;
                     if (posture.Initialized && inter.CheckTime())
@@ -106,7 +110,7 @@ namespace AdvancedGears
                     isRotating = true;
                 }
 
-                if (forward == 0)
+                if (forward = 0.0f)
                 {
                     rigidbody.Stop(isRotating);
                     return;

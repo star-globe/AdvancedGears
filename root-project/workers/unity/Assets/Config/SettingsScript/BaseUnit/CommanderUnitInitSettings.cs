@@ -18,6 +18,9 @@ namespace AdvancedGears
         [SerializeField] TeamInfo team;
         public TeamConfig TeamConfig => team.GetConfig();
 
+        [SerializeField] float fowardLength = 10.0f;
+        public float FowardLength => fowardLength;
+
         [SerializeField] float separeteWeight = 1.0f;
         public float SepareteWeight => separeteWeight;
         [SerializeField] float alignmentWeight = 1.0f;

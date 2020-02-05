@@ -42,6 +42,7 @@ namespace AdvancedGears
 
             boid.SendUpdate(new BoidComponent.Update
             {
+                FowardLength = settings.FowardLength,
                 SepareteWeight = settings.SepareteWeight,
                 AlignmentWeight = settings.AlignmentWeight,
                 CohesionWeight = settings.CohesionWeight,
