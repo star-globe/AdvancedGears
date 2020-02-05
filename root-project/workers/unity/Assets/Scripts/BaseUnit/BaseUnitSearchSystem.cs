@@ -230,12 +230,12 @@ namespace AdvancedGears
         /// <returns></returns>
         protected List<UnitInfo> getAllyUnits(UnitSide self_side, in Vector3 pos, float length, params UnitType[] types)
         {
-            return getUnits(self_side, pos, length, false, false, types);
+            return getUnits(self_side, pos, length, isEnemy:false, allowDead:false, types);
         }
 
         protected List<UnitInfo> getAllUnits(in Vector3 pos, float length, params UnitType[] types)
         {
-            return getUnits(UnitSide.None, pos, length, null, false, types);
+            return getUnits(UnitSide.None, pos, length, isEnemy: null, allowDead: false, types);
         }
 
         protected List<UnitInfo> getUnits(UnitSide self_side, in Vector3 pos, float length, bool? isEnemy, bool allowDead, params UnitType[] types)

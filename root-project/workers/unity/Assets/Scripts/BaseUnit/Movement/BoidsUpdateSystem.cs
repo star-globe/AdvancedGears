@@ -53,7 +53,7 @@ namespace AdvancedGears
                 var pos = trans.position;
 
                 var range = RangeDictionary.GetBoidsRange(commander.Rank);
-                var allies = getAllyUnits(status.Side, pos, range, UnitType.Soldier);
+                var allies = getAllyUnits(status.Side, pos, range, UnitType.Soldier, UnitType.Commander);
 
                 var alliesCount = allies.Count;
                 if (alliesCount == 0)
@@ -81,11 +81,11 @@ namespace AdvancedGears
                     var boidVec = Vector3.zero;
 
                     var inter = RangeDictionary.UnitInter;
-                    if (unit.id != entityId.EntityId) {
+                    if (unit.type != UnitType.Commander) {
                         foreach (var p in positions) {
                             var sep = unit.pos - p;
 
-                            boidVec += sep; //* ((float)(inter * inter) / sep.sqrMagnitude);//(p - unit.pos).normalized * boid.SepareteWeight;
+                            boidVec += sep;
                         }
 
                         boidVec = (boidVec / alliesCount) * boid.SepareteWeight;
