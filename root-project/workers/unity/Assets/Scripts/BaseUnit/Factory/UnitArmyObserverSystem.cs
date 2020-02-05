@@ -63,7 +63,7 @@ namespace AdvancedGears
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
                 var pos = trans.position;
 
-                var hq = getNearestAlly(entityId.EntityId, status.Side, pos, RangeDictionary.Get(FixedRangeType.RadioRange), UnitType.HeadQuarter);
+                var hq = getNearestAlly(entityId.EntityId, status.Side, pos, RangeDictionary.Get(FixedRangeType.RadioRange), allowDead:false, UnitType.HeadQuarter);
                 if (hq == null)
                     return;
 

@@ -64,10 +64,10 @@ namespace AdvancedGears
                 var vector = Vector3.zero;
 
                 foreach(var unit in allies) {
-                    if (TryGetComponentObject<Transform>(unit.id, out var trans) == false)
+                    if (TryGetComponentObject<Transform>(unit.id, out var t) == false)
                         continue;
 
-                    vector += trans.forward;
+                    vector += t.forward;
                     positions.Add(unit.pos);
                 }
 
@@ -77,7 +77,7 @@ namespace AdvancedGears
                     if (TryGetComponent<BaseUnitMovement.Component>(unit.id, out var movement) == false)
                         continue;
                     
-                    var baseVec = movement.BoidVector;
+                    var baseVec = movement.Value.BoidVector.ToUnityVector();
                     var boidVec = Vector3.zero;
 
                     if (unit.id != entityId.EntityId) {

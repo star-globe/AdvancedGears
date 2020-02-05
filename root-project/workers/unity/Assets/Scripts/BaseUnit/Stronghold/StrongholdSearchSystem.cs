@@ -74,13 +74,13 @@ namespace AdvancedGears
 
             var strategyVector = vector;// * RangeDictionary.StrategyRangeRate;
             var range = strategyVector.magnitude;
-            var unit = getNearestEnemey(side, pos, range, UnitType.Stronghold);
+            var unit = getNearestEnemey(side, pos, range, allowDead:true, UnitType.Stronghold);
             if (unit != null) {
                 order = OrderType.Attack;
             }
             else {
                 var newCenter = pos + strategyVector;
-                unit = getNearestAlly(selfId, side, newCenter, range, UnitType.Stronghold);
+                unit = getNearestAlly(selfId, side, newCenter, range, allowDead: true,UnitType.Stronghold);
                 if (unit != null)
                     order = OrderType.Supply;
             }

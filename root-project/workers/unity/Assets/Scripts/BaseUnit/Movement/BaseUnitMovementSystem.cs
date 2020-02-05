@@ -82,11 +82,9 @@ namespace AdvancedGears
                 float forward = 0.0f;
                 var diff = tgt - pos;
                 var range = movement.TargetRange;
-                var buffer = range * RangeDictionary.MoveBuffferRate;
+                var buffer = range * RangeDictionary.MoveBufferRate;
                 var mag = diff.magnitude;
 
-                var rate = (mag - avg)/(range - avg);
-                forward = mathf.Clamp(rate, -1.0f, 1.0f);
                 if (mag > range) {
                     forward = Mathf.Min((mag - range) / buffer, 1.0f);
                 }
@@ -106,7 +104,7 @@ namespace AdvancedGears
                     isRotating = true;
                 }
 
-                if (forward = 0.0f)
+                if (forward == 0.0f)
                 {
                     rigidbody.Stop(isRotating);
                     return;

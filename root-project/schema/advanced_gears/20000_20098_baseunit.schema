@@ -166,7 +166,7 @@ component BaseUnitPosture {
 component BoidComponent {
     id = 20015;
 
-    float foward_length = 3;
+    float forward_length = 3;
     float separete_weight = 4;
     float alignment_weight = 5;
     float cohesion_weight = 6;

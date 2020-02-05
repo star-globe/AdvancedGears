@@ -164,17 +164,17 @@ namespace AdvancedGears
             return info;
         }
 
-        protected UnitInfo getNearestEnemey(UnitSide self_side, in Vector3 pos, float length, params UnitType[] types)
+        protected UnitInfo getNearestEnemey(UnitSide self_side, in Vector3 pos, float length, bool allowDead = false, params UnitType[] types)
         {
-            return getNearestUnit(self_side, pos, length, true, null, types);
+            return getNearestUnit(self_side, pos, length, true, null, allowDead, types);
         }
 
-        protected UnitInfo getNearestAlly(EntityId selfId, UnitSide self_side, in Vector3 pos, float length, params UnitType[] types)
+        protected UnitInfo getNearestAlly(EntityId selfId, UnitSide self_side, in Vector3 pos, float length, bool allowDead = false, params UnitType[] types)
         {
-            return getNearestUnit(self_side, pos, length, false, selfId, types);
+            return getNearestUnit(self_side, pos, length, false, selfId, allowDead, types);
         }
 
-        protected UnitInfo getNearestUnit(UnitSide self_side, in Vector3 pos, float length, bool isEnemy, EntityId? selfId, bool allowDead, params UnitType[] types)
+        protected UnitInfo getNearestUnit(UnitSide self_side, in Vector3 pos, float length, bool isEnemy, EntityId? selfId, bool allowDead = false, params UnitType[] types)
         {
             float len = float.MaxValue;
             UnitInfo info = null;

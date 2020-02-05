@@ -208,7 +208,7 @@ namespace AdvancedGears
                 Debug.LogFormat("TargetStronghold is Valid. Side:{0} Position:{1}", status.Side, tgt.pos);
             }
             else
-                tgt = getNearestEnemey(status.Side, pos, sight.Range, UnitType.Stronghold, UnitType.Commander);
+                tgt = getNearestEnemey(status.Side, pos, sight.Range, allowDead:true, UnitType.Stronghold, UnitType.Commander);
 
             TargetInfo targetInfo;
             commonTargeting(tgt, entityId, commander, ref sight, out targetInfo);
