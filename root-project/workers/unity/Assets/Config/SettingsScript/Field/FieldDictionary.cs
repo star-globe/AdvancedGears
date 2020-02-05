@@ -25,10 +25,8 @@ namespace AdvancedGears
         public float MaxRange => maxRange;
 
         [SerializeField] private float queryRangeRate = 3.0f;
-        [SerializeField] private float checkRangeRate = 0.5f;
         [SerializeField] private float chunkRangeRate = 0.5f;
 
-        public static float CheckRangeRate => Instance.checkRangeRate;
         public static float QueryRange => Instance.MaxRange * Instance.queryRangeRate;
         public static float ChunkRangeRate => Instance.chunkRangeRate;
 

@@ -75,8 +75,8 @@ namespace AdvancedGears
 
     public abstract class FieldQueryBaseSystem : EntityQuerySystem
     {
-        float checkRange;
-        Vector3? checkedPosition = null;
+        //float checkRange;
+        //Vector3? checkedPosition = null;
 
         public FieldCreator FieldCreator { get; private set; }
 
@@ -102,17 +102,16 @@ namespace AdvancedGears
         {
             get
             {
-                if (checkedPosition != null && BasePosition != null)
+                if (this.BasePosition != null)//checkedPosition != null && BasePosition != null)
                 {
-                    var diff = checkedPosition.Value - BasePosition.Value;
-                    if (diff.sqrMagnitude < checkRange * checkRange)
-                        return false;
+                    //var diff = checkedPosition.Value - BasePosition.Value;
+                    //if (diff.sqrMagnitude < checkRange * checkRange)
+                    //    return false;
 
                     if (FieldCreator.CheckNeedRealize(this.BasePosition.Value) == false)
                         return false;
 
-                    DebugUtils.LogFormatColor(UnityEngine.Color.red, "BasePosition:{0} CheckedPosition:{1} Diff:{2}",
-                                              BasePosition.Value, checkedPosition.Value, diff);
+                    DebugUtils.LogFormatColor(UnityEngine.Color.red, "BasePosition:{0}", BasePosition.Value);
                 }
 
                 return  true;
@@ -126,10 +125,6 @@ namespace AdvancedGears
             var go = new GameObject("FieldCreator");
             FieldCreator = go.AddComponent<FieldCreator>();
             FieldCreator.Setup(this.WorkerSystem.World, this.WorkerSystem.Origin, this.WorkerSystem.WorkerId, FieldWorkerType);
-
-            var settings = FieldCreator.Settings;
-            checkRange = settings != null ? settings.FieldSize / 2 : 0;
-            checkRange *= FieldDictionary.CheckRangeRate;
         }
 
         protected override void OnUpdate()
@@ -142,11 +137,6 @@ namespace AdvancedGears
 
         protected override void SendEntityQuery()
         {
-            if (BasePosition == null)
-                checkedPosition = null;
-            else
-                checkedPosition = BasePosition.Value;
-
             base.SendEntityQuery();
 
             DebugUtils.LogFormatColor(UnityEngine.Color.magenta, "SendFieldQuery. WorkerId:{0}", this.WorkerSystem.WorkerId);

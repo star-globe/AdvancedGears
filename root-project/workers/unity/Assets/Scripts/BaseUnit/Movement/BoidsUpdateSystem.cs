@@ -93,6 +93,7 @@ namespace AdvancedGears
                     if (diff.sqrMagnitude < diffMin * diffMin)
                         continue;
 
+                    DebugUtils.LogFormatColor(UnityEngine.Color.blue, "SendFieldQuery. BoidVector:{0}", boidVec);
                     this.UpdateSystem.SendEvent(new BaseUnitMovement.BoidDiffed.Event(new BoidVector(boidVec.ToFixedPointVector3())), unit.id);
                 }
             });
