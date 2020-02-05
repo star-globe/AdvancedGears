@@ -31,7 +31,7 @@ namespace AdvancedGears
             );
 
             group.SetFilter(BoidComponent.ComponentAuthority.Authoritative);
-            inter = IntervalCheckerInitializer.InitializedChecker(0.5f);
+            inter = IntervalCheckerInitializer.InitializedChecker(1.0f);
         }
 
         float diffMin = 0.1f;
@@ -80,20 +80,23 @@ namespace AdvancedGears
                     var baseVec = movement.Value.BoidVector.ToUnityVector();
                     var boidVec = Vector3.zero;
 
+                    var inter = RangeDictionary.UnitInter;
                     if (unit.id != entityId.EntityId) {
-                        foreach (var p in positions)
-                            boidVec += (p - unit.pos).normalized * boid.SepareteWeight;
+                        foreach (var p in positions) {
+                            var sep = unit.pos - p;
 
-                        boidVec /= alliesCount;
+                            boidVec += sep; //* ((float)(inter * inter) / sep.sqrMagnitude);//(p - unit.pos).normalized * boid.SepareteWeight;
+                        }
+
+                        boidVec = (boidVec / alliesCount) * boid.SepareteWeight;
                         boidVec += vector * boid.AlignmentWeight;
-                        boidVec += (center - unit.pos).normalized * boid.CohesionWeight;
+                        boidVec += (center - unit.pos) * boid.CohesionWeight;
                     }
 
                     var diff = boidVec - baseVec;
                     if (diff.sqrMagnitude < diffMin * diffMin)
                         continue;
 
-                    DebugUtils.LogFormatColor(UnityEngine.Color.blue, "SendFieldQuery. BoidVector:{0}", boidVec);
                     this.UpdateSystem.SendEvent(new BaseUnitMovement.BoidDiffed.Event(new BoidVector(boidVec.ToFixedPointVector3())), unit.id);
                 }
             });

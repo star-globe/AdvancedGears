@@ -18,3 +18,7 @@ MonoBehaviour:
   team:
     soldiers: 5
     commanders: 3
+  forwardLength: 5
+  separeteWeight: 10
+  alignmentWeight: 1
+  cohesionWeight: 1

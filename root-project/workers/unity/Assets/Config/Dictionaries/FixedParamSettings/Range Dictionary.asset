@@ -25,8 +25,11 @@ MonoBehaviour:
     range: 30
   - type: 6
     range: 60
-  unitInter: 5
-  teamInter: 30
+  unitInter: 10
+  teamInter: 40
   moveBufferRate: 0.2
+  sightRangeRate: 1.5
   strategyRangeRate: 100
   uiRange: 100
+  baseBoidsRange: 30
+  boidsRankRate: 3
