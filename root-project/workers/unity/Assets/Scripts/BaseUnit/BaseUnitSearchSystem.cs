@@ -206,7 +206,7 @@ namespace AdvancedGears
                 if (selfId != null && selfId.Value.Equals(comp.EntityId))
                     continue;
 
-                if (isPlayer && !TryGetComponent(comp.EntityId, out var player))
+                if (isPlayer && !TryGetComponent<PlayerInfo.Component>(comp.EntityId, out var player))
                     continue;
 
                 BaseUnitStatus.Component? unit;

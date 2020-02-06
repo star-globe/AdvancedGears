@@ -54,7 +54,7 @@ namespace AdvancedGears
 
                 var boidRange = RangeDictionary.GetBoidsRange(commander.Rank);
                 var range = boidRange * sightRate;
-                var unit = getNearestPlayer(pos, range, UnitType.Advanced);
+                var unit = getNearestPlayer(pos, range, selfId:null, UnitType.Advanced);
 
                 if ((unit == null) == troop.IsActive)
                     return;
