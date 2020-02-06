@@ -29,7 +29,7 @@ component ArmyCloud {
 
 type SimpleUnit {
     improbable.gdk.transform_synchronization.FixedPointVector3 relative_pos = 2;
-    improbable.gdk.transform_synchronization.CompressedQuaternion relative_root = 3;
+    improbable.gdk.transform_synchronization.CompressedQuaternion relative_rot = 3;
     int32 health = 4;
     int32 attack = 5;
     float attack_range = 6;

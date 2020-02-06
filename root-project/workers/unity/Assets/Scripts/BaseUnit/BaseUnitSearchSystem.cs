@@ -156,6 +156,7 @@ namespace AdvancedGears
             var info = new UnitInfo();
             info.id = entityId;
             info.pos = trans.position;
+            info.rot = trans.rotation;
             info.type = unit.Value.Type;
             info.side = unit.Value.Side;
             info.order = unit.Value.Order;
@@ -220,14 +221,14 @@ namespace AdvancedGears
                     if (types.Length != 0 && types.Contains(unit.Value.Type) == false)
                         continue;
 
-                    var t_pos = col.transform.position;
-                    var l = (t_pos - pos).sqrMagnitude;
+                    var l = (col.transform.position - pos).sqrMagnitude;
                     if (l < len)
                     {
                         len = l;
                         info = info ?? new UnitInfo();
                         info.id = comp.EntityId;
-                        info.pos = t_pos;
+                        info.pos = col.transform.position;
+                        info.rot = col.transform.rotation;
                         info.type = unit.Value.Type;
                         info.side = unit.Value.Side;
                         info.state = unit.Value.State;
@@ -283,6 +284,7 @@ namespace AdvancedGears
                     var info = new UnitInfo();
                     info.id = comp.EntityId;
                     info.pos = col.transform.position;
+                    info.rot = col.transform.rotation;
                     info.type = unit.Value.Type;
                     info.side = unit.Value.Side;
                     info.order = unit.Value.Order;
@@ -324,6 +326,7 @@ namespace AdvancedGears
     {
         public EntityId id;
         public Vector3 pos;
+        public Quaternion rot;
         public UnitType type;
         public UnitSide side;
         public OrderType order;

@@ -62,34 +62,36 @@ namespace AdvancedGears
                 troop.IsActive = unit == null;
 
                 if (troop.IsActive) {
-                    Virtualize(status.Side, pos, boidRange, troop.SimpleUnits);
+                    Virtualize(status.Side, trans, boidRange, troop.SimpleUnits);
                 }
                 else {
-                    Realize(pos, troop.SimpleUnits);
+                    Realize(trans, troop.SimpleUnits);
                 }
             });
         }
 
-        private void Virtualize(UnitSide side, in Vector3 pos, float range, Dictionary<EntityId,SimpleUnit> dic)
+        private void Virtualize(UnitSide side, Transform trans, float range, Dictionary<EntityId,SimpleUnit> dic)
         {
             dic.Clear();
 
-            var allies = getAllyUnits(side, pos, range, UnitType.Soldier);
+            var allies = getAllyUnits(side, trans.position, range, UnitType.Soldier);
             foreach(var u in allies) {
+                this.TryGetComponent<BaseUnitHealth.Component>(u.id, out var health);
+                this.TryGetComponent<GunComponent.Component>(u.id, out var gun);
 
-                //var rePos = u.pos - pos;
-                //dic.Add(u.id, new SimpleUnit(rePos.ToFixedPointVector3(),
-                                            // ,,));
+                var simple = new SimpleUnit();
+                simple.RelativePos = (u.pos - trans.position).ToFixedPointVector3();
+                simple.RelativeRot = (u.rot - trans.rotation).ToCompressedQuaternion();
+                simple.Health = health == null ? 0: health.Value.Health;
+                // todo calc attack and range from GunComponent;
 
-                //relative_pos = 2;
-                //improbable.gdk.transform_synchronization.CompressedQuaternion relative_root = 3;
-                //int32 health = 4;
                 //int32 attack = 5;
                 //float attack_range = 6;
+                dic.Add(u.id, simple);
             }
         }
 
-        private void Realize(in Vector3 pos, Dictionary<EntityId,SimpleUnit> dic)
+        private void Realize(Transform trans, Dictionary<EntityId,SimpleUnit> dic)
         {
             foreach(var kvp in dic) {
 
