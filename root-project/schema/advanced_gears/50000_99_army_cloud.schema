@@ -26,3 +26,26 @@ component ArmyCloud {
     command improbable.gdk.core.Empty set_realize(ArmyRealizeInfo);
     command improbable.gdk.core.Empty set_followers(RealizedFollowersInfo);
 }
+
+type SimpleUnit {
+    improbable.gdk.transform_synchronization.FixedPointVector3 relative_pos = 2;
+    improbable.gdk.transform_synchronization.CompressedQuaternion relative_root = 3;
+    int32 health = 4;
+    int32 attack = 5;
+    float attack_range = 6;
+}
+
+type TotalHealthDiff {
+    int32 health_diff = 1;
+}
+
+component VirtualTroop {
+    id = 50001;
+
+    bool is_active = 1;
+    map<EntityId,SimpleUnit> simple_units = 2;
+
+    IntervalChecker attack_inter = 3;
+
+    event TotalHealthDiff total_health_diff;
+}

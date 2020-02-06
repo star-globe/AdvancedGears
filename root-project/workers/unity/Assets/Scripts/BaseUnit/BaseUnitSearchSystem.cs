@@ -176,6 +176,21 @@ namespace AdvancedGears
 
         protected UnitInfo getNearestUnit(UnitSide self_side, in Vector3 pos, float length, bool isEnemy, EntityId? selfId, bool allowDead = false, params UnitType[] types)
         {
+            return getNearestUnit(self_side, pos, length, isEnemy, selfId, allowDead, isPlayer:false, types);
+        }
+
+        protected UnitInfo getNearestPlayer(UnitSide self_side, in Vector3 pos, float length, bool isEnemy, EntityId? selfId = null, bool allowDead = false, params UnitType[] types)
+        {
+            return getNearestUnit(self_side, pos, length, isEnemy, selfId, allowDead, isPlayer:true, types);
+        }
+
+        protected UnitInfo getNearestPlayer(in Vector3 pos, float length, EntityId? selfId = null, params UnitType[] types)
+        {
+            return getNearestUnit(null, pos, length, false, selfId, allowDead:true, isPlayer:true, types);
+        }
+
+        protected UnitInfo getNearestUnit(UnitSide? self_side, in Vector3 pos, float length, bool isEnemy, EntityId? selfId, bool allowDead, bool isPlayer, params UnitType[] types)
+        {
             float len = float.MaxValue;
             UnitInfo info = null;
 
@@ -190,13 +205,16 @@ namespace AdvancedGears
                 if (selfId != null && selfId.Value.Equals(comp.EntityId))
                     continue;
 
+                if (isPlayer && !TryGetComponent(comp.EntityId, out var player))
+                    continue;
+
                 BaseUnitStatus.Component? unit;
                 if (TryGetComponent(comp.EntityId, out unit))
                 {
                     if (unit.Value.State == UnitState.Dead && allowDead == false)
                         continue;
 
-                    if ((unit.Value.Side == self_side) == isEnemy)
+                    if (self_side != null && ((unit.Value.Side == self_side.Value) == isEnemy))
                         continue;
 
                     if (types.Length != 0 && types.Contains(unit.Value.Type) == false)
