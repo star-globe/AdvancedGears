@@ -81,7 +81,7 @@ namespace AdvancedGears
 
                 var simple = new SimpleUnit();
                 simple.RelativePos = (u.pos - trans.position).ToFixedPointVector3();
-                simple.RelativeRot = (u.rot - trans.rotation).ToCompressedQuaternion();
+                simple.RelativeRot = (u.rot * Quaternion.Inverse(trans.rotation)).ToCompressedQuaternion();
                 simple.Health = health == null ? 0: health.Value.Health;
                 // todo calc attack and range from GunComponent;
 
