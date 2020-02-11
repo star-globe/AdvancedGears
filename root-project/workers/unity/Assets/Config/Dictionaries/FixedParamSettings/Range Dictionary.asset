@@ -31,5 +31,5 @@ MonoBehaviour:
   sightRangeRate: 1.5
   strategyRangeRate: 100
   uiRange: 100
-  baseBoidsRange: 30
+  baseBoidsRange: 50
   boidsRankRate: 3

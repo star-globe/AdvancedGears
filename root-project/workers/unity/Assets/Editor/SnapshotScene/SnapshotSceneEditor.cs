@@ -28,6 +28,10 @@ namespace AdvancedGears.Editor
             {
                 outputPath = SnapshotGenerator.DefaultSnapshotRelativePath;
             }
+            else if (GUILayout.Button("Set Cloud Path"))
+            {
+                outputPath = SnapshotGenerator.CloudSnapshotRelativePath;
+            }
 
             outputPath = EditorGUILayout.TextField(outputPath);
 
@@ -51,7 +55,7 @@ namespace AdvancedGears.Editor
 
             var arguments = new SnapshotGenerator.Arguments
             {
-                OutputPath = SnapshotGenerator.GetDefaultSnapshotPath(outputPath)
+                OutputPath = SnapshotGenerator.GetSnapshotPath(outputPath)
             };
 
             SnapshotGenerator.Generate(arguments, scene.WorldSize, scene.GetHeight, scene.Units, scene.Fields);

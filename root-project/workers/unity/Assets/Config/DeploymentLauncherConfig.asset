@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AssemblyConfig:
     ProjectName: beta_eighteen_pluto_911
-    AssemblyName: unity_advanced_gears_0826_0338
-    ShouldForceUpload: 0
+    AssemblyName: unity_advanced_gears_0211_1944
+    ShouldForceUpload: 1
   DeploymentConfigs:
   - ProjectName: beta_eighteen_pluto_911
-    AssemblyName: unity_advanced_gears_0826_0338
+    AssemblyName: unity_advanced_gears_0211_1944
     Deployment:
       Name: blank_deployment
       SnapshotPath: snapshots/default.snapshot

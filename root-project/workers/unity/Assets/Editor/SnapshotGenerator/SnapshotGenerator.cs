@@ -20,14 +20,27 @@ namespace AdvancedGears.Editor
             public string OutputPath;
         }
 
-        public static string DefaultSnapshotRelativePath = Path.Combine(
+        private static string GetRelativePath(string snapshotName)
+        {
+            return Path.Combine(
                 "..",
                 "..",
                 "..",
                 "snapshots",
-                "default.snapshot");
+                snapshotName);
+        }
 
-        public static string GetDefaultSnapshotPath(string relativePath = null)
+        public static string DefaultSnapshotRelativePath
+        {
+            get { return GetRelativePath("default.snapshot"); }
+        }
+
+        public static string CloudSnapshotRelativePath
+        {
+            get { return GetRelativePath("cloud_launch.snapshot"); }
+        }
+
+        public static string GetSnapshotPath(string relativePath = null)
         {
             var path = Path.Combine(Application.dataPath, relativePath ?? DefaultSnapshotRelativePath);
             return Path.GetFullPath(path);
