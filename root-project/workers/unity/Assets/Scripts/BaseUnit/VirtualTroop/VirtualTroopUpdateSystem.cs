@@ -95,16 +95,17 @@ namespace AdvancedGears
         private void Realize(Transform trans, Dictionary<EntityId,SimpleUnit> dic)
         {
             var pos = trans.position;
-            var rot = trans.rot;
+            var rot = trans.rotation;
             foreach(var kvp in dic) {
-                if (this.TryGetComponentObject<Transform>(kvp.Key, out var t)) {
-                    t.position = trans.position + rot * kvp.Value.RelativePos;
-                    t.rot = kvp.Value.RelativeRot * rot;
+                var id = kvp.Key;
+                if (this.TryGetComponentObject<Transform>(id, out var t)) {
+                    t.position = trans.position + rot * kvp.Value.RelativePos.ToUnityVector();
+                    t.rotation = kvp.Value.RelativeRot.ToUnityQuaternion() * rot;
                 }
 
-                if (this.TryGetComponent<BaseUnitHealth.Component>(kvp.Key, out health)) {
+                if (this.TryGetComponent<BaseUnitHealth.Component>(id, out var health)) {
                     var diff = kvp.Value.Health - health.Value.Health;
-                    this.UpdateSystem.SendEvent(new BaseUnitHealth.HealthDiffed.Event(new HealthDiff { Diff = diff }));
+                    this.UpdateSystem.SendEvent(new BaseUnitHealth.HealthDiffed.Event(new HealthDiff { Diff = diff }), id);
                 }
             }
         }

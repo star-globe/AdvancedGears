@@ -72,7 +72,7 @@ namespace AdvancedGears
                 var pos = rigidbody.position;
 
                 Vector3 tgt;
-                if (target.State == TargetState.OutOfRange && movement.BoidVector != FixedPointVector3.Zero) {
+                if (target.State == TargetState.OutOfRange && movement.BoidVector.Vector != FixedPointVector3.Zero) {
                     var boidVec = movement.BoidVector.GetVector3(movement.TargetRange);
                     tgt = pos + boidVec;
                 }

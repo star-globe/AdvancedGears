@@ -305,9 +305,9 @@ namespace AdvancedGears
             containers[index] = c;
         }
 
-        public Vector3 GetVector3(this BoidVector boidVector, float range)
+        public static Vector3 GetVector3(this BoidVector boidVector, float range)
         {
-            var norm = boidVector.Vector3.ToUnityVector().normalized;
+            var norm = boidVector.Vector.ToUnityVector().normalized;
             return norm * range * (1.0f + boidVector.BufferRate);
         }
     }
