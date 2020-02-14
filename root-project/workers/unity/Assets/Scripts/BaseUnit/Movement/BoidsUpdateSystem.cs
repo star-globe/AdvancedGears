@@ -26,6 +26,7 @@ namespace AdvancedGears
                     ComponentType.ReadOnly<BoidComponent.ComponentAuthority>(),
                     ComponentType.ReadOnly<Transform>(),
                     ComponentType.ReadOnly<BaseUnitStatus.Component>(),
+                    ComponentType.ReadOnly<BaseUnitTarget.Component>(),
                     ComponentType.ReadOnly<CommanderStatus.Component>(),
                     ComponentType.ReadOnly<SpatialEntityId>()
             );
@@ -43,6 +44,7 @@ namespace AdvancedGears
             Entities.With(group).ForEach((Entity entity,
                                           ref BoidComponent.Component boid,
                                           ref BaseUnitStatus.Component status,
+                                          ref BaseUnitTarget.Component target,
                                           ref CommanderStatus.Component commander,
                                           ref SpatialEntityId entityId) =>
             {
@@ -58,6 +60,14 @@ namespace AdvancedGears
                 var alliesCount = allies.Count;
                 if (alliesCount == 0)
                     return;
+
+                float bufferRate = 1.0f;
+                switch(target.State)
+                {
+                    case TargetState.MovementTarget:    bufferRate = 0.5f;  break;
+                    case TargetState.OutOfRange:        bufferRate = 1.0f;  break;
+                    case TargetState.ActionTarget:      bufferRate = -0.3f; break;
+                }
 
                 var positions = new List<Vector3>();
                 var center = pos + trans.forward * boid.ForwardLength;
@@ -77,7 +87,7 @@ namespace AdvancedGears
                     if (TryGetComponent<BaseUnitMovement.Component>(unit.id, out var movement) == false)
                         continue;
                     
-                    var baseVec = movement.Value.BoidVector.ToUnityVector();
+                    var baseVec = movement.Value.BoidVector.Vector.ToUnityVector();
                     var boidVec = Vector3.zero;
 
                     var inter = RangeDictionary.UnitInter;
@@ -97,7 +107,8 @@ namespace AdvancedGears
                     if (diff.sqrMagnitude < diffMin * diffMin)
                         continue;
 
-                    this.UpdateSystem.SendEvent(new BaseUnitMovement.BoidDiffed.Event(new BoidVector(boidVec.ToFixedPointVector3())), unit.id);
+                    var boidVector = new BoidVector(boidVec.ToFixedPointVector3(), bufferRate);
+                    this.UpdateSystem.SendEvent(new BaseUnitMovement.BoidDiffed.Event(boidVector), unit.id);
                 }
             });
         }

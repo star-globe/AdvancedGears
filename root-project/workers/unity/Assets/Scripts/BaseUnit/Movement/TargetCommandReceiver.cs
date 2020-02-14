@@ -33,7 +33,7 @@ namespace AdvancedGears
         {
             movementWriter.SendUpdate(new BaseUnitMovement.Update()
             {
-                BoidVector = vector.Vector,
+                BoidVector = vector,
             });
         }
     }

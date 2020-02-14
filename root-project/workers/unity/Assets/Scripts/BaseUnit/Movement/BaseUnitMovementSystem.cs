@@ -35,8 +35,6 @@ namespace AdvancedGears
             group.SetFilter(FuelComponent.ComponentAuthority.Authoritative);
         }
 
-        const float boidRangeRate = 10.0f;
-
         protected override void OnUpdate()
         {
             Entities.With(group).ForEach((Entity entity,
@@ -75,7 +73,7 @@ namespace AdvancedGears
 
                 Vector3 tgt;
                 if (target.State == TargetState.OutOfRange && movement.BoidVector != FixedPointVector3.Zero) {
-                    var boidVec = movement.BoidVector.ToUnityVector().normalized * movement.TargetRange * boidRangeRate;
+                    var boidVec = movement.BoidVector.GetVector3(movement.TargetRange);
                     tgt = pos + boidVec;
                 }
                 else

@@ -304,6 +304,12 @@ namespace AdvancedGears
             c.State = state;
             containers[index] = c;
         }
+
+        public Vector3 GetVector3(this BoidVector boidVector, float range)
+        {
+            var norm = boidVector.Vector3.ToUnityVector().normalized;
+            return norm * range * (1.0f + boidVector.BufferRate);
+        }
     }
 
     public static class IntervalCheckerInitializer
