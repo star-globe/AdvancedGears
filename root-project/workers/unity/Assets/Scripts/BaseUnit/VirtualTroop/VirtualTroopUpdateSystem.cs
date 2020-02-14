@@ -80,8 +80,9 @@ namespace AdvancedGears
                 this.TryGetComponent<GunComponent.Component>(u.id, out var gun);
 
                 var simple = new SimpleUnit();
-                simple.RelativePos = (u.pos - trans.position).ToFixedPointVector3();
-                simple.RelativeRot = (u.rot * Quaternion.Inverse(trans.rotation)).ToCompressedQuaternion();
+                var inverse = Quaternion.Inverse(trans.rotation);
+                simple.RelativePos = (inverse * (u.pos - trans.position)).ToFixedPointVector3();
+                simple.RelativeRot = (u.rot * inverse).ToCompressedQuaternion();
                 simple.Health = health == null ? 0: health.Value.Health;
                 // todo calc attack and range from GunComponent;
 
@@ -93,8 +94,18 @@ namespace AdvancedGears
 
         private void Realize(Transform trans, Dictionary<EntityId,SimpleUnit> dic)
         {
+            var pos = trans.position;
+            var rot = trans.rot;
             foreach(var kvp in dic) {
+                if (this.TryGetComponentObject<Transform>(kvp.Key, out var t)) {
+                    t.position = trans.position + rot * kvp.Value.RelativePos;
+                    t.rot = kvp.Value.RelativeRot * rot;
+                }
 
+                if (this.TryGetComponent<BaseUnitHealth.Component>(kvp.Key, out health)) {
+                    var diff = kvp.Value.Health - health.Value.Health;
+                    this.UpdateSystem.SendEvent(new BaseUnitHealth.HealthDiffed.Event(new HealthDiff { Diff = diff }));
+                }
             }
         }
     }
