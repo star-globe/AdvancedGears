@@ -20,7 +20,9 @@ namespace AdvancedGears
     public class DominationSystem : BaseSearchSystem
     {
         EntityQuery group;
- 
+
+        IntervalChecker inter;
+
         protected override void OnCreate()
         {
             base.OnCreate();
@@ -34,6 +36,8 @@ namespace AdvancedGears
             );
 
             group.SetFilter(DominationStamina.ComponentAuthority.Authoritative);
+
+            inter = IntervalCheckerInitializer.InitializedChecker(1.0f);
         }
 
         protected override void OnUpdate()
@@ -43,6 +47,9 @@ namespace AdvancedGears
 
         void HandleCaputuring()
         {
+            if (inter.CheckTime() == false)
+                return;
+
             Entities.With(group).ForEach((Unity.Entities.Entity entity,
                                           ref DominationStamina.Component domination,
                                           ref BaseUnitStatus.Component status,
@@ -54,13 +61,6 @@ namespace AdvancedGears
 
                 if (status.Type != UnitType.Stronghold)
                     return;
-
-                var time = Time.time;
-                var inter = domination.Interval;
-                if (inter.CheckTime() == false)
-                    return;
-
-                domination.Interval = inter;
 
                 float range = domination.Range;
                 var staminas = domination.SideStaminas;

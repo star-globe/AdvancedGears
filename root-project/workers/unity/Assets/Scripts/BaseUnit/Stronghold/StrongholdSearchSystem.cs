@@ -59,41 +59,43 @@ namespace AdvancedGears
 
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
 
-                var target = sight.TargetStronghold;
+                var targets = sight.TargetStrongholds;
                 var vector = sight.StrategyVector.Vector.ToUnityVector();
-                var order = GetTargetStronghold(trans.position, status.Side, vector, entityId.EntityId, ref target);
+                var order = GetTargetStronghold(trans.position, status.Side, vector, entityId.EntityId, targets);
 
-                sight.TargetStronghold = target;
+                sight.TargetStrongholds = targets;
                 status.Order = order;
             });
         }
 
-        private OrderType GetTargetStronghold(in Vector3 pos, UnitSide side, in Vector3 vector, EntityId selfId, ref TargetStrongholdInfo target)
+        private OrderType GetTargetStronghold(in Vector3 pos, UnitSide side, in Vector3 vector, EntityId selfId, Dictionary<EntityId,TargetStrongholdInfo> targets)
         {
             OrderType order = OrderType.Idle;
 
             var strategyVector = vector;// * RangeDictionary.StrategyRangeRate;
             var range = strategyVector.magnitude;
-            var unit = getNearestEnemey(side, pos, range, allowDead:true, UnitType.Stronghold);
-            if (unit != null) {
+            var units = getEnemyUnits(side, pos, range, allowDead:true, UnitType.Stronghold);
+            if (units != null) {
                 order = OrderType.Attack;
             }
             else {
                 var newCenter = pos + strategyVector;
-                unit = getNearestAlly(selfId, side, newCenter, range, allowDead: true,UnitType.Stronghold);
-                if (unit != null)
+                units = getAllyUnits(side, newCenter, range, allowDead:true, UnitType.Stronghold);
+                if (units != null)
+                    units.RemoveAll(u => u.id == selfId);
+
+                if (units != null || units.Count > 0)
                     order = OrderType.Supply;
             }
 
-            if (unit != null) {
-                target.StrongholdId = unit.id;
-                target.Side = unit.side;
-                target.Position = unit.pos.ToWorldPosition(this.Origin).ToCoordinates();
+            targets.Clear();
+            if (units != null && units.Count > 0) {
+                foreach (var u in units) {
+                    targets.Add(u.id, new TargetStrongholdInfo(u.id, u.side, u.pos.ToWorldPosition(this.Origin).ToCoordinates()));
+                }
             }
             else {
-                target.StrongholdId = selfId;
-                target.Side = side;
-                target.Position = pos.ToWorldPosition(this.Origin).ToCoordinates();
+                targets.Add(selfId, new TargetStrongholdInfo(selfId, side, pos.ToWorldPosition(this.Origin).ToCoordinates()));
                 order = OrderType.Keep;
             }
 

@@ -125,7 +125,7 @@ namespace AdvancedGears
                 team.FollowerInfo.UnderCommanders.Clear();
 
                 var rank = commander.Rank - 1;
-                var allies = getAllyUnits(status.Side, pos, sight.Range, UnitType.Commander);
+                var allies = getAllyUnits(status.Side, pos, sight.Range, allowDead:false, UnitType.Commander);
                 foreach(var unit in allies) {
                     if (unit.id == entityId.EntityId)
                         continue;

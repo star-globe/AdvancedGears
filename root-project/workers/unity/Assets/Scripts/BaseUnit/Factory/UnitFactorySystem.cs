@@ -104,7 +104,7 @@ namespace AdvancedGears
                     if (c.State != ContainerState.Created)
                         continue;
 
-                    var list = getAllyUnits(status.Side, c.Pos.ToWorkerPosition(this.Origin), (float)RangeDictionary.TeamInter, UnitType.Commander);
+                    var list = getAllyUnits(status.Side, c.Pos.ToWorkerPosition(this.Origin), (float)RangeDictionary.TeamInter, allowDead:false, UnitType.Commander);
                     if (list.Count == 0)
                         ids.Add(index);
                 }

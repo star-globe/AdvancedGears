@@ -13,6 +13,7 @@ namespace AdvancedGears
     {
         [Require] StrongholdSightWriter sight;
         [Require] StrongholdStatusWriter status;
+        [Require] DominationStaminaWriter stamina;
 
         [SerializeField]
         StrongholdUnitInitSettings settings;
@@ -27,6 +28,12 @@ namespace AdvancedGears
             status.SendUpdate(new StrongholdStatus.Update
             {
                 Interval = IntervalCheckerInitializer.InitializedChecker(settings.Inter),
+            });
+
+            stamina.SendUpdate(new DominationStamina.Update
+            {
+                Range = settings.DominationRange,
+                MaxStamina = settings.MaxStamina,
             });
         }
     }

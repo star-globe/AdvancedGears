@@ -9,16 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 37cb6d2bdd35aee42b301ab1cf3b20a3, type: 3}
-  m_Name: CommanderUnitInitSettings
+  m_Script: {fileID: 11500000, guid: 8f5c93dafb7c37f4dbbb9766f2db1576, type: 3}
+  m_Name: UIObjectDictionary
   m_EditorClassIdentifier: 
-  sightRange: 130
-  allyRange: 50
-  inter: 3
-  team:
-    soldiers: 5
-    commanders: 3
-  forwardLength: 10
-  separeteWeight: 1.2
-  alignmentWeight: 1
-  cohesionWeight: 1.5
+  uiSettings:
+  - type: 100
+    uiObject: {fileID: 1145548588463608764, guid: 31367de30f2b0764ba1a7be2acf71641,
+      type: 3}

@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: -4913009226579810292}
   - component: {fileID: 184506797206315374}
   - component: {fileID: 6219044561266868164}
+  - component: {fileID: 526124300522231972}
   m_Layer: 11
   m_Name: HeadQuarterUnit
   m_TagString: Untagged
@@ -223,6 +224,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   components:
   - {fileID: 184506797206315374}
+--- !u!114 &526124300522231972
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7541166145706494584}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5006a44182c46174eaf68783a58dcd75, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &5766174824716151420
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -4,6 +4,7 @@ using Improbable.Gdk.PlayerLifecycle;
 using Improbable.Gdk.TransformSynchronization;
 using Unity.Entities;
 using System.Collections.Generic;
+using AdvancedGears.UI;
 
 namespace AdvancedGears
 {
@@ -37,6 +38,7 @@ namespace AdvancedGears
             world.GetOrCreateSystem<BulletMovementSystem>();
             world.GetOrCreateSystem<FieldQueryClientSystem>();
             world.GetOrCreateSystem<SpawnPointQuerySystem>();
+            world.GetOrCreateSystem<UnitUIInfoSystem>();
         }
 
         public static void AddGameLogicSystems(World world, UnityEngine.GameObject gameObject)
@@ -63,6 +65,7 @@ namespace AdvancedGears
             //world.GetOrCreateSystem<HQOrganizeSystem>();
             //world.GetOrCreateSystem<UnitArmyObserveSystem>();
             //world.GetOrCreateSystem<CommandersManagerSystem>();
+            world.GetOrCreateSystem<DominationSystem>();
             world.GetOrCreateSystem<StrongholdSearchSystem>();
             world.GetOrCreateSystem<StrongholdActionSystem>();
             world.GetOrCreateSystem<BulletMovementSystem>();

@@ -55,7 +55,7 @@ namespace AdvancedGears
                 var pos = trans.position;
 
                 var range = RangeDictionary.GetBoidsRange(commander.Rank);
-                var allies = getAllyUnits(status.Side, pos, range, UnitType.Soldier, UnitType.Commander);
+                var allies = getAllyUnits(status.Side, pos, range, allowDead: false, UnitType.Soldier, UnitType.Commander);
 
                 var alliesCount = allies.Count;
                 if (alliesCount == 0)
@@ -66,10 +66,9 @@ namespace AdvancedGears
                 {
                     case TargetState.MovementTarget:    bufferRate = 0.5f;  break;
                     case TargetState.OutOfRange:        bufferRate = 1.0f;  break;
-                    case TargetState.ActionTarget:      bufferRate = -0.3f; break;
+                    case TargetState.ActionTarget:      bufferRate = 0.1f; break;
                 }
 
-                var positions = new List<Vector3>();
                 var center = pos + trans.forward * boid.ForwardLength;
                 var vector = Vector3.zero;
 
@@ -77,8 +76,9 @@ namespace AdvancedGears
                     if (TryGetComponentObject<Transform>(unit.id, out var t) == false)
                         continue;
 
-                    vector += t.forward;
-                    positions.Add(unit.pos);
+                    float rate = unit.type != UnitType.Commander ? 1.0f: 5.0f;
+
+                    vector += t.forward * rate;
                 }
 
                 vector /= alliesCount;
@@ -89,11 +89,16 @@ namespace AdvancedGears
                     
                     var baseVec = movement.Value.BoidVector.Vector.ToUnityVector();
                     var boidVec = Vector3.zero;
+                    var rate = 1.0f;
 
                     var inter = RangeDictionary.UnitInter;
                     if (unit.type != UnitType.Commander) {
-                        foreach (var p in positions) {
-                            var sep = unit.pos - p;
+                        foreach (var other in allies) {
+                            if (other.id == unit.id)
+                                continue;
+
+                            var sep = unit.pos - other.pos;
+                            sep *= other.type != UnitType.Commander ? 1.0f: 3.0f; 
 
                             boidVec += sep;
                         }
@@ -101,13 +106,15 @@ namespace AdvancedGears
                         boidVec = (boidVec / alliesCount) * boid.SepareteWeight;
                         boidVec += vector * boid.AlignmentWeight;
                         boidVec += (center - unit.pos) * boid.CohesionWeight;
+
+                        rate = bufferRate * (center - unit.pos).sqrMagnitude / 100.0f;
                     }
 
                     var diff = boidVec - baseVec;
                     if (diff.sqrMagnitude < diffMin * diffMin)
                         continue;
 
-                    var boidVector = new BoidVector(boidVec.ToFixedPointVector3(), bufferRate);
+                    var boidVector = new BoidVector(boidVec.ToFixedPointVector3(), rate);
                     this.UpdateSystem.SendEvent(new BaseUnitMovement.BoidDiffed.Event(boidVector), unit.id);
                 }
             });

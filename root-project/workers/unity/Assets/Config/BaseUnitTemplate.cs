@@ -71,7 +71,7 @@ namespace AdvancedGears
                     template.AddComponent(new CommanderSight.Snapshot { WarPowers = new List<WarPower>() }, writeAccess);
                     template.AddComponent(new CommanderAction.Snapshot { ActionType = CommandActionType.None }, writeAccess);
                     template.AddComponent(new BaseUnitPosture.Snapshot { Posture = new PostureInfo { Datas = new Dictionary<PosturePoint, PostureData>() } }, writeAccess);
-                    template.AddComponent(new DominationDevice.Snapshot { Type = DominationDeviceType.Capturing, Speed = 0.5f, }, writeAccess);
+                    template.AddComponent(new DominationDevice.Snapshot { Type = DominationDeviceType.Capturing }, writeAccess);
                     template.AddComponent(new BoidComponent.Snapshot(), writeAccess);
                     break;
 
@@ -84,7 +84,7 @@ namespace AdvancedGears
 
                 case UnitType.Stronghold:
                     template.AddComponent(new StrongholdStatus.Snapshot { Rank = 1, }, writeAccess);
-                    template.AddComponent(new StrongholdSight.Snapshot(), writeAccess);
+                    template.AddComponent(new StrongholdSight.Snapshot { TargetStrongholds = new Dictionary<EntityId, TargetStrongholdInfo>() }, writeAccess);
                     template.AddComponent(new UnitFactory.Snapshot { Containers = new List<UnitContainer>(),
                                                                      FollowerOrders = new List<FollowerOrder>(),
                                                                      SuperiorOrders = new List<SuperiorOrder>(),

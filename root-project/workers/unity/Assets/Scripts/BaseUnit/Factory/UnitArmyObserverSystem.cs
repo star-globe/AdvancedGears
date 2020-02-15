@@ -71,7 +71,7 @@ namespace AdvancedGears
                 if (TryGetEntity(hq.id, out hqEntity) == false)
                     return;
 
-                var list = getAllyUnits(status.Side, pos, RangeDictionary.Get(FixedRangeType.BaseRange), UnitType.Commander);
+                var list = getAllyUnits(status.Side, pos, RangeDictionary.Get(FixedRangeType.BaseRange), allowDead:false, UnitType.Commander);
                 foreach (var unit in list) {
 
                     CommanderStatus.Component? comp;

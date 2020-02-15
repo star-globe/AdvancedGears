@@ -120,7 +120,6 @@ component DominationDevice {
 component DominationStamina {
     id = 21121;
 
-    IntervalChecker interval = 1;
     float range = 2;
     float max_stamina = 3;
 

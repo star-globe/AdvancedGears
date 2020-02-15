@@ -23,6 +23,7 @@ namespace AdvancedGears
         private void OnEnable()
         {
             reader.OnStateUpdate += UpdateState;
+            reader.OnSideUpdate += UpdateSide;
             UpdateState(reader.Data.State);
             UpdateSide(reader.Data.Side);
         }

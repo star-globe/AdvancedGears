@@ -62,7 +62,7 @@ namespace AdvancedGears
 
         private void RecoveryResource(float current, ref ResourceComponent.Component resource, ref ResourceSupplyer.Component supplyer)
         {
-            Debug.LogFormat("CurrentResource:{0}", resource.Resource);
+            //Debug.LogFormat("CurrentResource:{0}", resource.Resource);
 
             if (resource.Resource >= resource.ResourceMax) {
                 resource.Resource = resource.ResourceMax;

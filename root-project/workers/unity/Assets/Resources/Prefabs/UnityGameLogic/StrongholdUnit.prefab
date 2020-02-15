@@ -23,6 +23,7 @@ GameObject:
   - component: {fileID: 625205394078282003}
   - component: {fileID: 287512054483124519}
   - component: {fileID: 8525274799260527892}
+  - component: {fileID: 5626431488711200078}
   m_Layer: 11
   m_Name: StrongholdUnit
   m_TagString: Untagged
@@ -237,6 +238,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   components:
   - {fileID: 287512054483124519}
+--- !u!114 &5626431488711200078
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7117998853217099108}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5006a44182c46174eaf68783a58dcd75, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &4419458866152112006
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -28,6 +28,9 @@ namespace AdvancedGears
         [SerializeField] float cohesionWeight = 1.0f;
         public float CohesionWeight => cohesionWeight;
 
+        [SerializeField] float captureSpeed = 1.5f;
+        public float CaptureSpeed => captureSpeed;
+
         [Serializable]
         class TeamInfo
         {

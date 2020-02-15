@@ -67,18 +67,17 @@ namespace AdvancedGears
                     entityId = enemy.id;
 
                 var target = manager.TargetHq;
-                if (target.HeadQuarterId == entityId)
-                    return;
-
-                manager.TargetHq = new TargetHeadQuartersInfo()
-                {
-                    HeadQuarterId = enemy.id,
-                    Side = enemy.side,
-                    Position = enemy.pos.ToCoordinates(),
-                };
+                if (target.HeadQuarterId != entityId) {
+                    manager.TargetHq = new TargetHeadQuartersInfo()
+                    {
+                        HeadQuarterId = enemy.id,
+                        Side = enemy.side,
+                        Position = enemy.pos.ToCoordinates(),
+                    };
+                }
 
                 var st_range = RangeDictionary.Get(FixedRangeType.StrongholdRange);
-                var allies = getAllyUnits(status.Side, trans.position, st_range, UnitType.Stronghold);
+                var allies = getAllyUnits(status.Side, trans.position, st_range, allowDead: false, UnitType.Stronghold);
                 foreach(var unit in allies) {
                     var diff = (enemy.pos - unit.pos).normalized;
                     SendCommand(unit.id, enemy.side, diff * st_range);

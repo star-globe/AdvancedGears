@@ -9,9 +9,9 @@ using AdvancedGears;
 
 namespace AdvancedGears.UI
 {
-    public class UnitUICreator : MonoBehaviour
+    public class UnitUICreator : SingletonMonobehaviour<UnitUICreator>
     {
-        struct UnitHeadUIChache
+        class UnitHeadUIChache
         {
             UnitHeadUI ui;
             public bool isChecked { get; private set; }
@@ -34,8 +34,6 @@ namespace AdvancedGears.UI
             }
         }
 
-        [Require] World world;
- 
         [SerializeField]
         Canvas canvas;
 
@@ -56,22 +54,17 @@ namespace AdvancedGears.UI
         readonly Dictionary<EntityId,UnitHeadUIChache> headUIDic = new Dictionary<EntityId, UnitHeadUIChache>();
         readonly Queue<UnitHeadUI> sleepUIList = new Queue<UnitHeadUI>();
 
-        private void Start()
-        {
-            var system = world.GetExistingSystem<UnitUIInfoSystem>();
-            if (system != null)
-                system.UnitUICreator = this;
-        }
-
         public void ResetAll()
         {
             foreach(var kvp in headUIDic)
                 kvp.Value.Reset();
         }
 
+        HashSet<EntityId> ids = new HashSet<EntityId>();
+
         public void SleepAllUnused()
         {
-            var ids = new HashSet<EntityId>();
+            ids.Clear();
             foreach(var kvp in headUIDic) {
                 if (kvp.Value.isChecked == false)
                     ids.Add(kvp.Key);
@@ -79,6 +72,9 @@ namespace AdvancedGears.UI
 
             foreach(var i in ids)
                 SleepUI(i);
+
+            foreach (var u in sleepUIList)
+                u.gameObject.SetActive(false);
         }
 
         public UnitHeadUI GetOrCreateHeadUI(EntityId id)
@@ -107,7 +103,9 @@ namespace AdvancedGears.UI
             if (headUIDic.ContainsKey(id) == false)
                 return;
 
-            sleepUIList.Enqueue(headUIDic[id].GetUI());
+            var ui = headUIDic[id].GetUI();
+            ui.gameObject.SetActive(false);
+            sleepUIList.Enqueue(ui);
             headUIDic.Remove(id);
         }
     }

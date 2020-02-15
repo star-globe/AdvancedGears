@@ -74,7 +74,7 @@ namespace AdvancedGears
         {
             dic.Clear();
 
-            var allies = getAllyUnits(side, trans.position, range, UnitType.Soldier);
+            var allies = getAllyUnits(side, trans.position, range, allowDead:false, UnitType.Soldier);
             foreach(var u in allies) {
                 this.TryGetComponent<BaseUnitHealth.Component>(u.id, out var health);
                 this.TryGetComponent<GunComponent.Component>(u.id, out var gun);

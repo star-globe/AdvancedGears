@@ -18,17 +18,9 @@ namespace AdvancedGears.UI
     {
         private EntityQuery group;
 
-        UnitUICreator unitUICreator = null;
-        public UnitUICreator UnitUICreator
+        UnitUICreator UnitUICreator
         {
-            private get { return unitUICreator; }
-            set
-            {
-                if (value == null || unitUICreator != null)
-                    return;
-
-                unitUICreator = value;
-            }
+            get { return UnitUICreator.Instance; }
         }
 
         protected override void OnCreate()
@@ -42,6 +34,10 @@ namespace AdvancedGears.UI
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
         }
+
+        const float size = 1.1f;
+        const float depth = 1000.0f;
+        Bounds viewBounds = new Bounds(new Vector3(0.5f,0.5f, depth/2), new Vector3(size,size, depth));
 
         protected override void OnUpdate()
         {
@@ -64,11 +60,16 @@ namespace AdvancedGears.UI
                 if (diff.sqrMagnitude > range * range)
                     return;
 
+                var camera = Camera.main;
+                var view = camera.WorldToViewportPoint(trans.position);
+                if (viewBounds.Contains(view) == false)
+                    return;
+
                 var ui = this.UnitUICreator.GetOrCreateHeadUI(entityId.EntityId);
                 if (ui == null)
                     return;
 
-                var pos = RectTransformUtility.WorldToScreenPoint(Camera.main, trans.position + ui.Offset);
+                var pos = RectTransformUtility.WorldToScreenPoint(camera, trans.position + ui.Offset);
                 ui.SetInfo(pos, health.Health, health.MaxHealth);
             });
 

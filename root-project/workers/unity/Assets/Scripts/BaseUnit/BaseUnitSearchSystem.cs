@@ -108,7 +108,7 @@ namespace AdvancedGears
                 if (status.Type == UnitType.Commander && targetInfo.Side != status.Side) {
                     if (targetInfo.Type == UnitType.Stronghold &&
                         (targetInfo.Side == UnitSide.None || targetInfo.State == UnitState.Dead)) {
-                        range = GetDominationRange(targetInfo.TargetId);
+                        range = GetDominationRange(targetInfo.TargetId) / 2;
                     }
                     else {
                         range += targetInfo.AllyRange;
@@ -247,9 +247,22 @@ namespace AdvancedGears
         /// <param name="length"></param>
         /// <param name="types"></param>
         /// <returns></returns>
-        protected List<UnitInfo> getAllyUnits(UnitSide self_side, in Vector3 pos, float length, params UnitType[] types)
+        protected List<UnitInfo> getAllyUnits(UnitSide self_side, in Vector3 pos, float length, bool allowDead = false, params UnitType[] types)
         {
-            return getUnits(self_side, pos, length, isEnemy:false, allowDead:false, types);
+            return getUnits(self_side, pos, length, isEnemy:false, allowDead, types);
+        }
+
+        /// <summary>
+        /// Get Ally UnitsInfo. allowDead = false;
+        /// </summary>
+        /// <param name="self_side"></param>
+        /// <param name="pos"></param>
+        /// <param name="length"></param>
+        /// <param name="types"></param>
+        /// <returns></returns>
+        protected List<UnitInfo> getEnemyUnits(UnitSide self_side, in Vector3 pos, float length, bool allowDead = false, params UnitType[] types)
+        {
+            return getUnits(self_side, pos, length, isEnemy: true, allowDead, types);
         }
 
         protected List<UnitInfo> getAllUnits(in Vector3 pos, float length, params UnitType[] types)

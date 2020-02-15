@@ -19,9 +19,11 @@ namespace AdvancedGears
         private EntityQuery newAdvancedGroup;
         private EntityQuery advancedInputGroup;
 
-        private const float WalkSpeed = 12.0f;
+        private const float WalkSpeed = 16.0f;
         private const float RunSpeed = 20.0f;
         private const float MaxSpeed = 25.0f;
+
+        private const float TurnSpeed = 2.0f;
 
         private const float TurnSmoothTime = 0.2f;
         private float turnSmoothVelocity;
@@ -95,7 +97,7 @@ namespace AdvancedGears
 
                 var trans = rigidbody.transform;
                 if (inputDir.x * inputDir.x > 0.0f) {
-                    trans.Rotate(Vector3.up, inputDir.x);//(trans.up, inputDir.x);
+                    trans.Rotate(Vector3.up, inputDir.x * TurnSpeed);//(trans.up, inputDir.x);
 
                     //Debug.LogFormat("x:{0} y:{1}", inputDir.x, inputDir.y);
                     //rigidbody.transform.eulerAngles = rigidbody.transform.up * Mathf.SmoothDampAngle(

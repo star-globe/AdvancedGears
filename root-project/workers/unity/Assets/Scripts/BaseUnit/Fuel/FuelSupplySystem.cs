@@ -75,7 +75,7 @@ namespace AdvancedGears
                 var pos = trans.position;
 
                 var id = supply.Order.Point.StrongholdId;
-                var unit = getAllyUnits(status.Side, pos, range, UnitType.Stronghold).FirstOrDefault(u => u.id == id);
+                var unit = getAllyUnits(status.Side, pos, range, allowDead:false, UnitType.Stronghold).FirstOrDefault(u => u.id == id);
                 if (unit != null)
                 {
                     FuelModifyType type = FuelModifyType.None;

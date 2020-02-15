@@ -70,8 +70,6 @@ namespace AdvancedGears
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
                 CheckAlive(trans.position, status.Side, out var datas);
 
-                Debug.LogFormat("TeamDatas.Count:{0}", datas.Count);
-
                 // number check
                 var id = entityId.EntityId;
                 if (factory.TeamOrders.Count == 0) {
@@ -81,7 +79,7 @@ namespace AdvancedGears
                 }
 
                 // order check
-                CheckOrder(status.Order, sight.TargetStronghold, datas);
+                CheckOrder(status.Order, sight.TargetStrongholds, datas);
             });
         }
 
@@ -101,7 +99,7 @@ namespace AdvancedGears
         {
             datas = new Dictionary<EntityId, TeamInfo>();
 
-            var units = getAllyUnits(side, pos, RangeDictionary.Get(FixedRangeType.StrongholdRange), UnitType.Commander);
+            var units = getAllyUnits(side, pos, RangeDictionary.Get(FixedRangeType.StrongholdRange), allowDead: false, UnitType.Commander);
 
             foreach (var u in units) {
                 if (TryGetComponent<CommanderStatus.Component>(u.id, out var comd) == false)
@@ -170,19 +168,26 @@ namespace AdvancedGears
             this.CommandSystem.SendCommand(new CommanderTeam.SetTargetStroghold.Request(id, targetInfo));
         }
 
-        private void CheckOrder(OrderType order, in TargetStrongholdInfo target, Dictionary<EntityId,TeamInfo> datas)
+        readonly Dictionary<EntityId, List<EntityId>> entityIds = new Dictionary<EntityId, List<EntityId>>();
+        private void CheckOrder(OrderType order, Dictionary<EntityId,TargetStrongholdInfo> targets, Dictionary<EntityId,TeamInfo> datas)
         {
-            List<EntityId> entityIds = null;
+            entityIds.Clear();
             foreach(var kvp in datas) {
-                if (kvp.Value.Order != order ||
-                    kvp.Value.TargetEntityId != target.StrongholdId) {
-                    entityIds = entityIds ?? new List<EntityId>();
-                    entityIds.Add(kvp.Key);
-                }
+                 if(targets.ContainsKey(kvp.Value.TargetEntityId) == false) {
+                    var count = targets.Count;
+                    var key = targets.Keys.ElementAt(UnityEngine.Random.Range(0,count));
+
+                    if (entityIds.ContainsKey(key) == false)
+                        entityIds[key] = new List<EntityId>();
+
+                    entityIds[key].Add(kvp.Key);
+                 }
             }
 
-            if (entityIds != null) {
-                foreach(var id in entityIds) {
+            foreach (var kvp in entityIds)
+            {
+                var target = targets[kvp.Key];
+                foreach (var id in kvp.Value) {
                     SetCommand(id, target, order);
                 }
             }
