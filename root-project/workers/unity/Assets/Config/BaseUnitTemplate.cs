@@ -162,6 +162,7 @@ namespace AdvancedGears
             if (isPlayer) {
                 template.AddComponent(new AdvancedPlayerInput.Snapshot(), controllAttribute);
                 template.AddComponent(new PlayerInfo.Snapshot { ClientWorkerId = workerId }, controllAttribute);
+                template.AddComponent(CreateSelfPlayerMinimapInterestTemplate().ToSnapshot(), controllAttribute);
             }
             else { 
                 template.AddComponent(new AdvancedUnmannedInput.Snapshot(), controllAttribute);
@@ -176,6 +177,28 @@ namespace AdvancedGears
             template.SetComponentWriteAccess(EntityAcl.ComponentId, WorkerUtils.UnityGameLogic);
 
             return template;
+        }
+
+        static InterestTemplate CreateSelfPlayerMinimapInterestTemplate()
+        {
+            var playerQuery = InterestQuery.Query(
+                Constraint.All(
+                    Constraint.Component<PlayerInfo.Component>(),
+                    Constraint.RelativeSphere(FixedParams.PlayerInterestLimit)))
+                .FilterResults(Position.ComponentId, PlayerInfo.ComponentId)
+                .WithMaxFrequencyHz(FixedParams.PlayerInterestFrequency);
+
+            var unitQuery = InterestQuery.Query(
+                Constraint.All(
+                    Constraint.Component<CommanderStatus.Component>(),
+                    Constraint.Component<StrongholdStatus.Component>(),
+                    Constraint.Component<HeadQuarters.Component>(),
+                    Constraint.RelativeSphere(FixedParams.PlayerInterestLimit)))
+                .FilterResults(Position.ComponentId, BaseUnitStatus.ComponentId)
+                .WithMaxFrequencyHz(FixedParams.PlayerInterestFrequency);
+
+            return InterestTemplate.Create()
+                .AddQueries<PlayerInfo.Component>(playerQuery, unitQuery);
         }
     }
 }

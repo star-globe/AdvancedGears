@@ -39,6 +39,7 @@ namespace AdvancedGears
             world.GetOrCreateSystem<FieldQueryClientSystem>();
             world.GetOrCreateSystem<SpawnPointQuerySystem>();
             world.GetOrCreateSystem<UnitUIInfoSystem>();
+            world.GetOrCreateSystem<MiniMapUISystem>();
         }
 
         public static void AddGameLogicSystems(World world, UnityEngine.GameObject gameObject)
