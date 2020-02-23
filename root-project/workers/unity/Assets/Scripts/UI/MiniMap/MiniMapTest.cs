@@ -28,7 +28,8 @@ namespace AdvancedGears
                 ).FilterResults(Position.ComponentId, MinimapRepresentaion.ComponentId);
 
             var interestTemplate = InterestTemplate.Create()
-                .AddQueries<PlayerControls.Component>(playerQuery, minimapQuery);
+                .AddQueries<PlayerControls.Component>(playerQuery, minimapQuery)
+                .AddQueries<PlayerInput.Component>(playerQuery);
 
             var playerTemplate = new EntityTemplate();
             playerTemplate.AddComponent(interestTemplate.ToSnapshot(), WorkerUtils.UnityGameLogic);

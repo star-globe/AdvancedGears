@@ -36,6 +36,9 @@ namespace AdvancedGears
         [SerializeField] private float boidsRankRate = 3.0f;
         public static float BoidsRankRate => Instance.boidsRankRate;
 
+        [SerializeField] private float minimapRange = 1000.0f;
+        public static float MiniMapRange => Instance.minimapRange;
+
         Dictionary<FixedRangeType, float> rangeDic = null;
         Dictionary<FixedRangeType, float> RangeDic
         {

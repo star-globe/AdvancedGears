@@ -12,25 +12,27 @@ namespace AdvancedGears.UI
         public static UIObjectDictionary Instance { private get; set; }
 
         [SerializeField] private UIObjectSettings[] uiSettings;
+        [SerializeField] private UnitSpriteSettings[] spriteSettings;
 
-        Dictionary<UIType, UIObjectSettings> uiDic = null;
-        Dictionary<UIType, UIObjectSettings> UIDic
+        [SerializeField] private BaseUnitStateColorSettings colorSettings;
+
+        Dictionary<UIType, GameObject> uiDic = null;
+        Dictionary<UIType, GameObject> UIDic
         {
             get
             {
-                if (uiDic == null) {
-                    uiDic = new Dictionary<UIType, UIObjectSettings>();
-
-                    foreach (var set in uiSettings)
-                    {
-                        if (uiDic.ContainsKey(set.type))
-                            continue;
-
-                       uiDic.Add(set.type, set);
-                    }
-                }
-
+                uiDic = uiDic ?? UIObjectSettings.GetDictionary(uiSettings);
                 return uiDic;
+            }
+        }
+
+        Dictionary<UnitType, Sprite> unitDic = null;
+        Dictionary<UnitType, Sprite> UnitDic
+        {
+            get
+            {
+                unitDic = unitDic ?? UnitSpriteSettings.GetDictionary(spriteSettings);
+                return unitDic;
             }
         }
 
@@ -41,18 +43,75 @@ namespace AdvancedGears.UI
 
         public static GameObject GetUIObject(UIType uiType)
         {
-            if (Instance.UIDic.TryGetValue(uiType, out var set)) {
-                return set.uiObject;
+            if (Instance.UIDic.TryGetValue(uiType, out var uiObject)) {
+                return uiObject;
             }
 
             return null;
         }
 
-        [Serializable]
-        public class UIObjectSettings
+        public static UnityEngine.Color GetSideColor(UnitSide side)
         {
-            public UIType type;
-            public GameObject uiObject;
+            if (Instance.colorSettings == null)
+                return UnityEngine.Color.white;
+
+            return Instance.colorSettings.GetSideColor(side);
+        }
+
+        public static Sprite GetUnitSprite(UnitType type)
+        {
+            if (Instance.UnitDic.TryGetValue(type, out var sprite) == false)
+                return null;
+
+            return sprite;
+        }
+
+
+        [Serializable]
+        public abstract class UISettings<Key,Value>
+        {
+            public abstract Key key { get; }
+            public abstract Value value { get; }
+
+            public static Dictionary<Key,Value> GetDictionary(UISettings<Key, Value>[] settings)
+            {
+                var dic = new Dictionary<Key, Value>();
+
+                foreach (var set in settings)
+                {
+                    if (dic.ContainsKey(set.key))
+                        continue;
+
+                    dic.Add(set.key, set.value);
+                }
+
+                return dic;
+            }
+        }
+
+
+        [Serializable]
+        public class UIObjectSettings : UISettings<UIType, GameObject>
+        {
+            [SerializeField]
+            UIType type;
+            public override UIType key => type;
+
+            [SerializeField]
+            GameObject uiObject;
+            public override GameObject value => uiObject;
+        }
+
+        [Serializable]
+        public class UnitSpriteSettings : UISettings<UnitType, Sprite>
+        {
+            [SerializeField]
+            UnitType type;
+            public override UnitType key => type;
+
+            [SerializeField]
+            Sprite sprite;
+            public override Sprite value => sprite;
         }
     }
 }

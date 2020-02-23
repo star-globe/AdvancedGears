@@ -4,7 +4,7 @@ using TMPro;
 
 namespace AdvancedGears.UI
 {
-    public class UnitHeadUI : MonoBehaviour
+    public class UnitHeadUI : BaseUIObject
     {
         [SerializeField]
         Vector3 offset;
@@ -13,15 +13,6 @@ namespace AdvancedGears.UI
         [SerializeField]
         TextMeshProUGUI hpText;
 
-        RectTransform rect = null;
-        RectTransform Rect
-        {
-            get {
-                rect = rect ?? GetComponent<RectTransform>();
-                return rect;
-            }
-        }
-
         const string fmt = "{0}/{1}";
         public void SetInfo(Vector2 pos, int hp, int maxHp)
         {
@@ -29,6 +20,29 @@ namespace AdvancedGears.UI
                 this.Rect.position = pos;
 
             hpText?.SetText(string.Format(fmt, hp, maxHp));
+        }
+    }
+
+    public abstract class BaseUIObject : MonoBehaviour,IUIObject
+    {
+        RectTransform rect = null;
+        public RectTransform Rect
+        {
+            get
+            {
+                rect = rect ?? GetComponent<RectTransform>();
+                return rect;
+            }
+        }
+
+        public virtual void Sleep()
+        {
+            this.gameObject.SetActive(false);
+        }
+
+        public virtual void WakeUp()
+        {
+            this.gameObject.SetActive(true);
         }
     }
 }

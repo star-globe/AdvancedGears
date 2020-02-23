@@ -13,5 +13,9 @@ namespace AdvancedGears.UI
 
         // Battle
         HeadStatus = 100,
+
+        // MiniMap
+        MiniMapDisplay = 200,
+        MiniMapObject,
     }
 }

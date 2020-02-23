@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.UI;
 using Unity.Entities;
 using Improbable.Gdk.Core;
@@ -11,12 +12,103 @@ namespace AdvancedGears.UI
 {
     public class UnitUICreator : SingletonMonobehaviour<UnitUICreator>
     {
-        class UnitHeadUIChache
+        interface IUIContainer
         {
-            UnitHeadUI ui;
+            void ResetAll();
+            void SleepAllUnused();
+            Component GetOrCreateUI(EntityId id, Transform parent);
+        }
+
+        class UIContainer<T> : IUIContainer where T : Component, IUIObject
+        {
+            public UIType uiType { get; private set; }
+
+            public UIContainer (UIType type)
+            {
+                this.uiType = type;
+            }
+
+            T baseUI = null;
+            T BaseUI
+            {
+                get
+                {
+                    if (baseUI == null)
+                    {
+                        var uiObject = UIObjectDictionary.GetUIObject(uiType);
+                        if (uiObject != null)
+                            baseUI = uiObject.GetComponent<T>();
+                    }
+
+                    return baseUI;
+                }
+            }
+
+            readonly Dictionary<EntityId, UIChache<T>> uiDic = new Dictionary<EntityId, UIChache<T>>();
+            readonly Queue<T> sleepUIList = new Queue<T>();
+
+            public void ResetAll()
+            {
+                foreach (var kvp in uiDic)
+                    kvp.Value.Reset();
+            }
+
+            HashSet<EntityId> ids = new HashSet<EntityId>();
+
+            public void SleepAllUnused()
+            {
+                ids.Clear();
+                foreach (var kvp in uiDic)
+                {
+                    if (kvp.Value.isChecked == false)
+                        ids.Add(kvp.Key);
+                }
+
+                foreach (var i in ids)
+                    SleepUI(i);
+            }
+
+            public void SleepUI(EntityId id)
+            {
+                if (uiDic.ContainsKey(id) == false)
+                    return;
+
+                var ui = uiDic[id].GetUI();
+                ui.Sleep();
+                sleepUIList.Enqueue(ui);
+                uiDic.Remove(id);
+            }
+
+            public Component GetOrCreateUI(EntityId id, Transform parent)
+            {
+                if (uiDic.ContainsKey(id))
+                    return uiDic[id].GetUI();
+
+                T ui = null;
+                if (sleepUIList.Count > 0)
+                {
+                    ui = sleepUIList.Dequeue();
+                    ui.WakeUp();
+                }
+                else
+                {
+                    var go = Instantiate(this.BaseUI.gameObject, parent);
+                    ui = go.GetComponent<T>();
+                }
+
+                if (ui != null)
+                    uiDic[id] = new UIChache<T>(ui);
+
+                return ui;
+            }
+        }
+
+        class UIChache<T> where T : Component
+        {
+            T ui;
             public bool isChecked { get; private set; }
 
-            public UnitHeadUIChache(UnitHeadUI ui)
+            public UIChache(T ui)
             {
                 this.ui = ui;
                 isChecked = true;
@@ -27,7 +119,7 @@ namespace AdvancedGears.UI
                 isChecked = false;
             }
 
-            public UnitHeadUI GetUI()
+            public T GetUI()
             {
                 isChecked = true;
                 return this.ui;
@@ -37,76 +129,55 @@ namespace AdvancedGears.UI
         [SerializeField]
         Canvas canvas;
 
-        UnitHeadUI baseHeadUI = null;
-        UnitHeadUI BaseHeadUI
+        private void Awake()
         {
-            get {
-                if (baseHeadUI == null) {
-                    var uiObject = UIObjectDictionary.GetUIObject(UIType.HeadStatus);
-                    if (uiObject != null)
-                        baseHeadUI = uiObject.GetComponent<UnitHeadUI>();
-                }
+            Assert.IsNotNull(canvas);
+        }
 
-                return baseHeadUI;
+        readonly Dictionary<UIType, IUIContainer> containersDic = new Dictionary<UIType, IUIContainer>();
+
+        IUIContainer GetContainer(UIType type)
+        {
+            if (containersDic.ContainsKey(type))
+                return containersDic[type];
+            else
+                return null;
+        }
+
+        public bool ContainsType(UIType type)
+        {
+            return containersDic.ContainsKey(type);
+        }
+
+        public void AddContainer<T>(UIType type) where T : Component,IUIObject
+        {
+            containersDic.Add(type, new UIContainer<T>(type));
+        }
+
+        public void ResetAll(params UIType [] types)
+        {
+            foreach (var t in types) {
+                GetContainer(t)?.ResetAll();
             }
         }
 
-        readonly Dictionary<EntityId,UnitHeadUIChache> headUIDic = new Dictionary<EntityId, UnitHeadUIChache>();
-        readonly Queue<UnitHeadUI> sleepUIList = new Queue<UnitHeadUI>();
-
-        public void ResetAll()
+        public void SleepAllUnused(params UIType[] types)
         {
-            foreach(var kvp in headUIDic)
-                kvp.Value.Reset();
-        }
-
-        HashSet<EntityId> ids = new HashSet<EntityId>();
-
-        public void SleepAllUnused()
-        {
-            ids.Clear();
-            foreach(var kvp in headUIDic) {
-                if (kvp.Value.isChecked == false)
-                    ids.Add(kvp.Key);
+            foreach (var t in types) {
+                GetContainer(t)?.SleepAllUnused();
             }
-
-            foreach(var i in ids)
-                SleepUI(i);
-
-            foreach (var u in sleepUIList)
-                u.gameObject.SetActive(false);
         }
 
-        public UnitHeadUI GetOrCreateHeadUI(EntityId id)
+        public Component GetOrCreateUI(UIType type, EntityId id, Transform parent = null)
         {
-            if (headUIDic.ContainsKey(id))
-                return headUIDic[id].GetUI();
-
-            UnitHeadUI ui = null;
-            if (sleepUIList.Count > 0) {
-                ui = sleepUIList.Dequeue();
-                ui.gameObject.SetActive(true);
-            }
-            else {
-                var go = Instantiate(this.BaseHeadUI.gameObject, canvas.transform);
-                ui = go.GetComponent<UnitHeadUI>();
-            }
-
-            if (ui != null)
-                headUIDic[id] = new UnitHeadUIChache(ui);
-
-            return ui;
+            parent = parent ?? canvas.transform;
+            return GetContainer(type)?.GetOrCreateUI(id, parent);
         }
+    }
 
-        public void SleepUI(EntityId id)
-        {
-            if (headUIDic.ContainsKey(id) == false)
-                return;
-
-            var ui = headUIDic[id].GetUI();
-            ui.gameObject.SetActive(false);
-            sleepUIList.Enqueue(ui);
-            headUIDic.Remove(id);
-        }
+    public interface IUIObject
+    {
+        void WakeUp();
+        void Sleep();
     }
 }

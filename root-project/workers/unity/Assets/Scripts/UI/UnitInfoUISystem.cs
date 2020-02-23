@@ -14,14 +14,11 @@ namespace AdvancedGears.UI
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
-    internal class UnitUIInfoSystem : BaseSearchSystem
+    internal class UnitUIInfoSystem : BaseUISystem<UnitHeadUI>
     {
-        private EntityQuery group;
+        protected override UIType type => UIType.HeadStatus;
 
-        UnitUICreator UnitUICreator
-        {
-            get { return UnitUICreator.Instance; }
-        }
+        private EntityQuery group;
 
         protected override void OnCreate()
         {
@@ -39,13 +36,8 @@ namespace AdvancedGears.UI
         const float depth = 1000.0f;
         Bounds viewBounds = new Bounds(new Vector3(0.5f,0.5f, depth/2), new Vector3(size,size, depth));
 
-        protected override void OnUpdate()
+        protected override void UpdateAction()
         {
-            if (this.UnitUICreator == null)
-                return;
-
-            this.UnitUICreator.ResetAll();
-
             Entities.With(group).ForEach((Entity entity,
                                           ref BaseUnitStatus.Component status,
                                           ref BaseUnitHealth.Component health,
@@ -65,15 +57,47 @@ namespace AdvancedGears.UI
                 if (viewBounds.Contains(view) == false)
                     return;
 
-                var ui = this.UnitUICreator.GetOrCreateHeadUI(entityId.EntityId);
+                var ui = GetOrCreateUI(entityId.EntityId);
                 if (ui == null)
                     return;
 
                 var pos = RectTransformUtility.WorldToScreenPoint(camera, trans.position + ui.Offset);
                 ui.SetInfo(pos, health.Health, health.MaxHealth);
             });
+        }
+    }
+
+    abstract class BaseUISystem<T> : BaseSearchSystem where T : Component,IUIObject
+    {
+        UnitUICreator UnitUICreator
+        {
+            get { return UnitUICreator.Instance; }
+        }
+
+        protected abstract UIType type { get; }
+
+        protected virtual Transform parent => null;
+
+        protected override void OnUpdate()
+        {
+            if (this.UnitUICreator == null)
+                return;
+
+            if (this.UnitUICreator.ContainsType(this.type) == false)
+                this.UnitUICreator.AddContainer<T>(this.type);
+
+            this.UnitUICreator.ResetAll();
+
+            UpdateAction();
 
             this.UnitUICreator.SleepAllUnused();
+        }
+
+        protected abstract void UpdateAction();
+
+        protected T GetOrCreateUI(EntityId entityId)
+        {
+            return this.UnitUICreator.GetOrCreateUI(this.type, entityId, parent) as T;
         }
     }
 }
