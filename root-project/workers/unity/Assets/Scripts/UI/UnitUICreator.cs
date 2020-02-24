@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -23,9 +24,9 @@ namespace AdvancedGears.UI
         {
             public UIType uiType { get; private set; }
 
-            public UIContainer (UIType type)
+            public UIContainer (UIType uiType)
             {
-                this.uiType = type;
+                this.uiType = uiType;
             }
 
             T baseUI = null;
@@ -90,7 +91,7 @@ namespace AdvancedGears.UI
                     ui = sleepUIList.Dequeue();
                     ui.WakeUp();
                 }
-                else
+                else if(this.BaseUI != null)
                 {
                     var go = Instantiate(this.BaseUI.gameObject, parent);
                     ui = go.GetComponent<T>();
@@ -132,6 +133,7 @@ namespace AdvancedGears.UI
         private void Awake()
         {
             Assert.IsNotNull(canvas);
+            Initialize();
         }
 
         readonly Dictionary<UIType, IUIContainer> containersDic = new Dictionary<UIType, IUIContainer>();
@@ -149,9 +151,9 @@ namespace AdvancedGears.UI
             return containersDic.ContainsKey(type);
         }
 
-        public void AddContainer<T>(UIType type) where T : Component,IUIObject
+        public void AddContainer<T>(UIType uiType) where T : Component,IUIObject
         {
-            containersDic.Add(type, new UIContainer<T>(type));
+            containersDic.Add(uiType, new UIContainer<T>(uiType));
         }
 
         public void ResetAll(params UIType [] types)

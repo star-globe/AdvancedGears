@@ -22,7 +22,7 @@ namespace AdvancedGears.UI
         public void SetInfo(Vector2 pos, UnitSide side, UnitType type)
         {
             if (this.Rect != null)
-                this.Rect.position = pos;
+                this.Rect.localPosition = pos;
 
             image.color = UIObjectDictionary.GetSideColor(side);
             image.sprite = UIObjectDictionary.GetUnitSprite(type);

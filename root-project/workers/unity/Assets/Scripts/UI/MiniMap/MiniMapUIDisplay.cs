@@ -17,7 +17,10 @@ namespace AdvancedGears.UI
             {
 				if (raderRadius < 0) {
 					var rect = raderImage.GetComponent<RectTransform>();
-					raderRadius = rect == null ? 10.0f: rect.sizeDelta.magnitude;
+                    if (rect == null)
+                        raderRadius = 10.0f;
+                    else
+                        raderRadius = (rect.rect.width + rect.rect.height)/2;
                 }
                 
                 return raderRadius;
@@ -39,6 +42,7 @@ namespace AdvancedGears.UI
         private void Awake()
         {
             Assert.IsNotNull(raderImage);
+            Initialize();
         }
     }
 }

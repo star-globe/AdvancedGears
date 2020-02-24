@@ -19,6 +19,7 @@ MonoBehaviour:
     soldiers: 5
     commanders: 3
   forwardLength: 10
-  separeteWeight: 1.2
+  separeteWeight: 1.5
   alignmentWeight: 1
-  cohesionWeight: 1.5
+  cohesionWeight: 2
+  captureSpeed: 1.5

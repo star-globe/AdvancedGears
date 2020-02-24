@@ -9,7 +9,7 @@ public class SingletonMonobehaviour<T> : MonoBehaviour where T :MonoBehaviour
 {
     public static T Instance { get; private set;}
 
-    void Awake()
+    protected void Initialize()
     {
         if (Instance == null)
             Instance = this as T;

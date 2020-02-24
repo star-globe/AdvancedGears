@@ -22,7 +22,8 @@ namespace AdvancedGears.UI
 
         MiniMapUIDisplay MiniMapUIDisplay => MiniMapUIDisplay.Instance;
 
-        protected override UIType type => UIType.HeadStatus;
+        protected override UIType uiType => UIType.MiniMapObject;
+        //protected override Type compType => typeof(MiniMapUIObject);
         protected override Transform parent
         {
             get { return this.MiniMapUIDisplay?.MiniMapParent; }
@@ -65,10 +66,11 @@ namespace AdvancedGears.UI
                 return;
 
             var diff = position.Coords.ToUnityVector() - playerPosition.Value;
-            diff = camera.transform.InverseTransformVector(diff);
-            var vec2 = this.MiniMapUIDisplay.GetMiniMapPos(new Vector2(diff.x, diff.z));
+            var inversed = camera.transform.InverseTransformVector(diff);
+            var vec2 = this.MiniMapUIDisplay.GetMiniMapPos(new Vector2(inversed.x, inversed.z));
 
             uiObject.SetInfo(vec2, status.Side, status.Type);
+            uiObject.SetName(string.Empty);
         }
 
         void UpdatePlayerPositions()

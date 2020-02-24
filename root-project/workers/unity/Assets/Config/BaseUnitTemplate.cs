@@ -181,24 +181,27 @@ namespace AdvancedGears
 
         static InterestTemplate CreateSelfPlayerMinimapInterestTemplate()
         {
-            var playerQuery = InterestQuery.Query(
-                Constraint.All(
-                    Constraint.Component<PlayerInfo.Component>(),
-                    Constraint.RelativeSphere(FixedParams.PlayerInterestLimit)))
-                .FilterResults(Position.ComponentId, PlayerInfo.ComponentId)
-                .WithMaxFrequencyHz(FixedParams.PlayerInterestFrequency);
+            var basicQuery = InterestQuery.Query(
+                Constraint.RelativeSphere(FixedParams.PlayerInterestLimit))
+                .FilterResults(Position.ComponentId,
+                               Metadata.ComponentId,
+                               BaseUnitStatus.ComponentId,
+                               BaseUnitHealth.ComponentId,
+                               TransformInternal.ComponentId);
 
-            var unitQuery = InterestQuery.Query(
+            var minimapQuery = InterestQuery.Query(
                 Constraint.All(
-                    Constraint.Component<CommanderStatus.Component>(),
-                    Constraint.Component<StrongholdStatus.Component>(),
-                    Constraint.Component<HeadQuarters.Component>(),
-                    Constraint.RelativeSphere(FixedParams.PlayerInterestLimit)))
-                .FilterResults(Position.ComponentId, BaseUnitStatus.ComponentId)
-                .WithMaxFrequencyHz(FixedParams.PlayerInterestFrequency);
+                    Constraint.Any(Constraint.Component<CommanderStatus.Component>(),
+                                   Constraint.Component<StrongholdStatus.Component>(),
+                                   Constraint.Component<HeadQuarters.Component>()),
+                    Constraint.RelativeSphere(FixedParams.WorldInterestLimit)))
+                .FilterResults(Position.ComponentId,
+                               BaseUnitStatus.ComponentId,
+                               TransformInternal.ComponentId)
+                .WithMaxFrequencyHz(FixedParams.WorldInterestFrequency);
 
             return InterestTemplate.Create()
-                .AddQueries<PlayerInfo.Component>(playerQuery, unitQuery);
+                   .AddQueries<AdvancedPlayerInput.Component>(basicQuery, minimapQuery);
         }
     }
 }

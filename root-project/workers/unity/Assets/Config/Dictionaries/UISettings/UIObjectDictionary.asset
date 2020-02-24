@@ -16,3 +16,21 @@ MonoBehaviour:
   - type: 100
     uiObject: {fileID: 1145548588463608764, guid: 31367de30f2b0764ba1a7be2acf71641,
       type: 3}
+  - type: 200
+    uiObject: {fileID: 4381768714999605381, guid: 3a8809a9896c9e546aff638eb8fe7027,
+      type: 3}
+  - type: 201
+    uiObject: {fileID: 1145548588463608764, guid: eb7fc24a613cef9499e86e42f44cd70a,
+      type: 3}
+  spriteSettings:
+  - type: 1
+    sprite: {fileID: 21300000, guid: fa779413490163b429c3dd0ae1da037a, type: 3}
+  - type: 2
+    sprite: {fileID: 21300000, guid: 5ab6c06fe2a24004ba5cdda51f9a16ed, type: 3}
+  - type: 3
+    sprite: {fileID: 21300000, guid: 8cfeb59eacafb094d8731078049173e2, type: 3}
+  - type: 101
+    sprite: {fileID: 21300000, guid: 93baf1d496ab12b43bcf556b4ea6425b, type: 3}
+  - type: 103
+    sprite: {fileID: 21300000, guid: 2b19f818dd2c0f94088c3aff1a69a1e0, type: 3}
+  colorSettings: {fileID: 11400000, guid: e9653011b1bcf4847b2c0b2d702b450d, type: 2}

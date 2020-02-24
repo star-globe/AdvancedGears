@@ -16,7 +16,7 @@ namespace AdvancedGears.UI
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     internal class UnitUIInfoSystem : BaseUISystem<UnitHeadUI>
     {
-        protected override UIType type => UIType.HeadStatus;
+        protected override UIType uiType => UIType.HeadStatus;
 
         private EntityQuery group;
 
@@ -35,6 +35,11 @@ namespace AdvancedGears.UI
         const float size = 1.1f;
         const float depth = 1000.0f;
         Bounds viewBounds = new Bounds(new Vector3(0.5f,0.5f, depth/2), new Vector3(size,size, depth));
+
+        protected override void OnUpdate()
+        {
+            base.OnUpdate();
+        }
 
         protected override void UpdateAction()
         {
@@ -69,12 +74,29 @@ namespace AdvancedGears.UI
 
     abstract class BaseUISystem<T> : BaseSearchSystem where T : Component,IUIObject
     {
+        UnitUICreator unitUICreator;
         UnitUICreator UnitUICreator
         {
-            get { return UnitUICreator.Instance; }
+            get
+            {
+                if (unitUICreator == null)
+                {
+                    unitUICreator = UnitUICreator.Instance;
+                    if (unitUICreator != null)
+                    {
+                        if (unitUICreator.ContainsType(this.uiType) == false)
+                            unitUICreator.AddContainer<T>(this.uiType);
+                        else
+                            Debug.LogErrorFormat("UIType:{0} was Registered.", this.uiType);
+                    }
+                }
+
+                return unitUICreator;
+            }
         }
 
-        protected abstract UIType type { get; }
+        protected abstract UIType uiType { get; }
+        bool isRegistered = false;
 
         protected virtual Transform parent => null;
 
@@ -82,9 +104,6 @@ namespace AdvancedGears.UI
         {
             if (this.UnitUICreator == null)
                 return;
-
-            if (this.UnitUICreator.ContainsType(this.type) == false)
-                this.UnitUICreator.AddContainer<T>(this.type);
 
             this.UnitUICreator.ResetAll();
 
@@ -97,7 +116,7 @@ namespace AdvancedGears.UI
 
         protected T GetOrCreateUI(EntityId entityId)
         {
-            return this.UnitUICreator.GetOrCreateUI(this.type, entityId, parent) as T;
+            return this.UnitUICreator.GetOrCreateUI(this.uiType, entityId, parent) as T;
         }
     }
 }

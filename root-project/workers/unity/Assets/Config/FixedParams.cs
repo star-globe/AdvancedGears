@@ -5,7 +5,8 @@ namespace AdvancedGears
 {
     public static class FixedParams
     {
-        public static readonly float PlayerInterestLimit = 500.0f;
-        public static readonly float PlayerInterestFrequency = 1.0f;
+        public static readonly float PlayerInterestLimit = 250.0f;
+        public static readonly float WorldInterestLimit = PlayerInterestLimit * 10.0f;
+        public static readonly float WorldInterestFrequency = 1.0f;
     }
 }
