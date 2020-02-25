@@ -61,12 +61,17 @@ namespace AdvancedGears
 
                 troop.IsActive = unit == null;
 
+                var container = troop.TroopContainer;
+
                 if (troop.IsActive) {
-                    Virtualize(status.Side, trans, boidRange, troop.SimpleUnits);
+                    Virtualize(status.Side, trans, boidRange, container.SimpleUnits);
                 }
                 else {
-                    Realize(trans, troop.SimpleUnits);
+                    Realize(trans, container.SimpleUnits);
                 }
+
+                container.Rank = commander.Rank;
+                troop.TroopContainer = container;
             });
         }
 

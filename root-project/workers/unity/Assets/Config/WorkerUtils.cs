@@ -14,7 +14,7 @@ namespace AdvancedGears
         public const string UnityGameLogic = "UnityGameLogic";
         public const string UnityStrategyLogic = "UnityStrategyLogic";
         public const string MobileClient = "MobileClient";
-        public static IEnumerable <strig> AllPhysicalAttributes
+        public static IEnumerable <string> AllPhysicalAttributes
         {
             get
             {
@@ -24,7 +24,7 @@ namespace AdvancedGears
             }
         }
 
-        public static IEnumerable <strig> AllWorkerAttributes
+        public static IEnumerable <string> AllWorkerAttributes
         {
             get
             {

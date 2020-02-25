@@ -41,32 +41,12 @@ namespace AdvancedGears
                 return;
 
             Entities.With(group).ForEach((Entity entity,
-                                          ref ArmyCloud.Component troop,
-                                          ref BaseUnitStatus.Component status,
-                                          ref CommanderStatus.Component commander,
+                                          ref ArmyCloud.Component army,
+                                          ref Position.Component position,
                                           ref SpatialEntityId entityId) =>
             {
-                if (status.State != UnitState.Alive)
-                    return;
+                var pos = position.Coords.ToUnityVector();
 
-                var trans = EntityManager.GetComponentObject<Transform>(entity);
-                var pos = trans.position;
-
-                var boidRange = RangeDictionary.GetBoidsRange(commander.Rank);
-                var range = boidRange * sightRate;
-                var unit = getNearestPlayer(pos, range, selfId:null, UnitType.Advanced);
-
-                if ((unit == null) == troop.IsActive)
-                    return;
-
-                troop.IsActive = unit == null;
-
-                if (troop.IsActive) {
-                    Virtualize(status.Side, trans, boidRange, troop.SimpleUnits);
-                }
-                else {
-                    Realize(trans, troop.SimpleUnits);
-                }
             });
         }
 
