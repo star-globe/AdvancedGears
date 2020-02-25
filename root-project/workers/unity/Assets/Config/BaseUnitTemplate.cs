@@ -48,7 +48,7 @@ namespace AdvancedGears
             SwitchType(template, type, WorkerUtils.UnityGameLogic);
             TransformSynchronizationHelper.AddTransformSynchronizationComponents(template, WorkerUtils.UnityGameLogic);
 
-            template.SetReadAccess(WorkerUtils.AllWorkerAttributes.ToArray());
+            template.SetReadAccess(WorkerUtils.AllPhysicalAttributes.ToArray());
             template.SetComponentWriteAccess(EntityAcl.ComponentId, WorkerUtils.UnityGameLogic);
 
             return template;
