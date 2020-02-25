@@ -1,0 +1,126 @@
+{
+  "build": {
+    "tasks": [
+      {
+        "name": "Codegen",
+        "steps": [{"name": "** Load Unity to generate code **", "command": "echo", "arguments": ["No-op."]}]
+      },
+      {
+        "name": "build",
+        "steps": [{"name": "** Open Unity to build the gamelogic worker. **", "command": "echo", "arguments": ["No-op."]}]
+      },
+      {
+        "name": "clean",
+        "steps": [{"name": "No-op", "command": "echo", "arguments": ["No-op."]}]
+      }
+    ]
+  },
+  "bridge": {
+    "worker_attribute_set": {
+      "attributes": [
+        "UnityStrategyLogic"
+      ]
+    },
+    "entity_interest": {
+      "range_entity_interest": {
+        "radius": 100
+      }
+    },
+    "component_delivery": {
+      "default": "RELIABLE_ORDERED",
+      "checkoutAllInitially": true
+    }
+  },
+  "external": {
+    "default": {
+      "run_type": "EXECUTABLE",
+      "windows": {
+        "command": "build/worker/UnityStrategyLogic@Windows/UnityStrategyLogic@Windows.exe",
+        "arguments": [
+          "+workerType",
+          "UnityStrategyLogic",
+          "-batchmode",
+          "-nographics",
+          "-logfile",
+          "../../logs/external-default-unitystrategylogic.log"
+        ]
+      },
+      "macos": {
+        "command": "open",
+        "arguments": [
+          "-n",
+          "./build/worker/UnityStrategyLogic@Mac/UnityStrategyLogic@Mac.app",
+          "--args",
+          "+workerType",
+          "UnityStrategyLogic",
+          "-batchmode",
+          "-nographics",
+          "-logfile",
+          "../../logs/external-default-unitystrategylogic.log"
+        ]
+      }
+    }
+  },
+  "managed": {
+    "windows": {
+      "artifact_name": "UnityStrategyLogic@Windows.zip",
+      "command": "UnityStrategyLogic@Windows.exe",
+      "arguments": [
+        "+workerType",
+        "UnityStrategyLogic",
+        "+workerId",
+        "${IMPROBABLE_WORKER_ID}",
+        "+receptionistHost",
+        "${IMPROBABLE_RECEPTIONIST_HOST}",
+        "+receptionistPort",
+        "${IMPROBABLE_RECEPTIONIST_PORT}",
+        "+linkProtocol",
+        "Tcp",
+        "-batchmode",
+        "-nographics",
+        "-logfile",
+        "${IMPROBABLE_LOG_FILE}"
+      ]
+    },
+    "macos": {
+      "artifact_name": "UnityStrategyLogic@Mac.zip",
+      "command": "UnityStrategyLogic@Mac.app/Contents/MacOS/UnityStrategyLogic@Mac",
+      "arguments": [
+        "+workerType",
+        "UnityStrategyLogic",
+        "+workerId",
+        "${IMPROBABLE_WORKER_ID}",
+        "+receptionistHost",
+        "${IMPROBABLE_RECEPTIONIST_HOST}",
+        "+receptionistPort",
+        "${IMPROBABLE_RECEPTIONIST_PORT}",
+        "+linkProtocol",
+        "Tcp",
+        "-batchmode",
+        "-nographics",
+        "-logfile",
+        "${IMPROBABLE_LOG_FILE}"
+      ]
+    },
+    "linux": {
+      "artifact_name": "UnityStrategyLogic@Linux.zip",
+      "command": "UnityStrategyLogic@Linux",
+      "arguments": [
+        "+workerType",
+        "UnityStrategyLogic",
+        "+workerId",
+        "${IMPROBABLE_WORKER_ID}",
+        "+receptionistHost",
+        "${IMPROBABLE_RECEPTIONIST_HOST}",
+        "+receptionistPort",
+        "${IMPROBABLE_RECEPTIONIST_PORT}",
+        "+linkProtocol",
+        "Tcp",
+        "-batchmode",
+        "-nographics",
+        "-logfile",
+        "${IMPROBABLE_LOG_FILE}"
+      ]
+    }
+  }
+}

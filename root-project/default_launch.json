@@ -26,12 +26,35 @@
         "options": {
           "manual_worker_connection_only": true
         }
+      },
+      {
+        "layer": "UnityStrategyLogic",
+        "points_of_interest": {
+          "num_workers": 1,
+          "points": [
+            {
+              "x": 0,
+              "z": 0
+            }
+          ]
+        },
+        "options": {
+          "manual_worker_connection_only": true
+        }
       }
     ]
   },
   "workers": [
     {
       "worker_type": "UnityGameLogic",
+      "permissions": [
+        {
+          "all": {}
+        }
+      ]
+    },
+    {
+      "worker_type": "UnityStrategyLogic",
       "permissions": [
         {
           "all": {}

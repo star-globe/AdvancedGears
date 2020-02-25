@@ -188,7 +188,9 @@ namespace AdvancedGears
                                Metadata.ComponentId,
                                BaseUnitStatus.ComponentId,
                                BaseUnitHealth.ComponentId,
-                               TransformInternal.ComponentId);
+                               TransformInternal.ComponentId,
+                               BulletComponent.ComponentId,
+                               GunComponent.ComponentId);
 
             var minimapQuery = InterestQuery.Query(
                 Constraint.All(
