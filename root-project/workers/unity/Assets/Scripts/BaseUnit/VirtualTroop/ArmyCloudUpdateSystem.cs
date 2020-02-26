@@ -50,19 +50,19 @@ namespace AdvancedGears
             });
         }
 
-        private void Virtualize(UnitSide side, Transform trans, float range, Dictionary<EntityId,SimpleUnit> dic)
+        private void Virtualize(UnitSide side, Vector3 position, float range, Dictionary<EntityId,SimpleUnit> dic)
         {
             dic.Clear();
 
-            var allies = getAllyUnits(side, trans.position, range, allowDead:false, UnitType.Soldier);
+            var allies = getAllyUnits(side, position, range, allowDead:false, UnitType.Commander);
             foreach(var u in allies) {
                 this.TryGetComponent<BaseUnitHealth.Component>(u.id, out var health);
                 this.TryGetComponent<GunComponent.Component>(u.id, out var gun);
 
                 var simple = new SimpleUnit();
-                var inverse = Quaternion.Inverse(trans.rotation);
-                simple.RelativePos = (inverse * (u.pos - trans.position)).ToFixedPointVector3();
-                simple.RelativeRot = (u.rot * inverse).ToCompressedQuaternion();
+                //var inverse = Quaternion.Inverse(trans.rotation);
+                simple.RelativePos = (u.pos - position).ToFixedPointVector3();//(inverse * (u.pos - trans.position)).ToFixedPointVector3();
+                simple.RelativeRot = u.rot.ToCompressedQuaternion();
                 simple.Health = health == null ? 0: health.Value.Health;
                 // todo calc attack and range from GunComponent;
 
