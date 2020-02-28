@@ -46,19 +46,35 @@ namespace AdvancedGears
                                           ref SpatialEntityId entityId) =>
             {
                 var pos = position.Coords.ToUnityVector();
+                var containers = army.TroopContainers;
 
+                float range = RangeDictionary.ArmyCloudRange;
+                var unit = getNearestPlayer(pos, range, selfId:null, UnitType.Advanced);
+                if (unit == null)
+                    Virtualize(status.Side, pos, range, containers);
+                else
+                    Realize(pos, containers);
             });
         }
 
-        private void Virtualize(UnitSide side, Vector3 position, float range, Dictionary<EntityId,SimpleUnit> dic)
+        private void Virtualize(UnitSide side, Vector3 position, float range, Dictionary<uint,TroopContainer> containers)
         {
-            dic.Clear();
+            containers.Clear();
 
             var allies = getAllyUnits(side, position, range, allowDead:false, UnitType.Commander);
             foreach(var u in allies) {
-                this.TryGetComponent<BaseUnitHealth.Component>(u.id, out var health);
-                this.TryGetComponent<GunComponent.Component>(u.id, out var gun);
+                if (!this.TryGetComponent<BaseUnitHealth.Component>(u.id, out var health) ||
+                    !this.TryGetComponent<GunComponent.Component>(u.id, out var gun) ||
+                    !this.TryGetComponent<CommanderStatus.Component>(u.id, out var commander)) {
+                    continue;
+                }
 
+                var rank = commander.Rank;
+                if (containers.TryGetValue(rank, out var troop) == false) {
+                    troop = new TroopContainer() { Rank = rank };
+                }
+
+                var dic = troop.SimpleUnits;
                 var simple = new SimpleUnit();
                 //var inverse = Quaternion.Inverse(trans.rotation);
                 simple.RelativePos = (u.pos - position).ToFixedPointVector3();//(inverse * (u.pos - trans.position)).ToFixedPointVector3();
@@ -69,23 +85,26 @@ namespace AdvancedGears
                 //int32 attack = 5;
                 //float attack_range = 6;
                 dic.Add(u.id, simple);
+
+                troop.SimpleUnits = dic;
+                containers[rank] = troop;
             }
         }
 
-        private void Realize(Transform trans, Dictionary<EntityId,SimpleUnit> dic)
+        private void Realize(Vector3 pos, Dictionary<uint,TroopContainer> containers)
         {
-            var pos = trans.position;
-            var rot = trans.rotation;
-            foreach(var kvp in dic) {
-                var id = kvp.Key;
-                if (this.TryGetComponentObject<Transform>(id, out var t)) {
-                    t.position = trans.position + rot * kvp.Value.RelativePos.ToUnityVector();
-                    t.rotation = kvp.Value.RelativeRot.ToUnityQuaternion() * rot;
-                }
+            foreach (var con in containers) {
+                foreach(var kvp in con.SimpleUnits) {
+                    var id = kvp.Key;
+                    if (this.TryGetComponentObject<Transform>(id, out var t)) {
+                        t.position = pos + kvp.Value.RelativePos.ToUnityVector();
+                        t.rotation = kvp.Value.RelativeRot.ToUnityQuaternion();
+                    }
 
-                if (this.TryGetComponent<BaseUnitHealth.Component>(id, out var health)) {
-                    var diff = kvp.Value.Health - health.Value.Health;
-                    this.UpdateSystem.SendEvent(new BaseUnitHealth.HealthDiffed.Event(new HealthDiff { Diff = diff }), id);
+                    if (this.TryGetComponent<BaseUnitHealth.Component>(id, out var health)) {
+                        var diff = kvp.Value.Health - health.Value.Health;
+                        this.UpdateSystem.SendEvent(new BaseUnitHealth.HealthDiffed.Event(new HealthDiff { Diff = diff }), id);
+                    }
                 }
             }
         }

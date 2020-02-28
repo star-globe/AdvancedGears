@@ -39,6 +39,9 @@ namespace AdvancedGears
         [SerializeField] private float minimapRange = 1000.0f;
         public static float MiniMapRange => Instance.minimapRange;
 
+        [SerializeField] private float armyCloudRange = 1200.0f;
+        public static float ArmyCloudRange => Instance.armyCloudRange;
+
         Dictionary<FixedRangeType, float> rangeDic = null;
         Dictionary<FixedRangeType, float> RangeDic
         {

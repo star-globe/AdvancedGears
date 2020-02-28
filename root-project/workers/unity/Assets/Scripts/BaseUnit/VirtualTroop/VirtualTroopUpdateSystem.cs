@@ -113,6 +113,8 @@ namespace AdvancedGears
                     this.UpdateSystem.SendEvent(new BaseUnitHealth.HealthDiffed.Event(new HealthDiff { Diff = diff }), id);
                 }
             }
+
+            dic.Clear();
         }
     }
 }
