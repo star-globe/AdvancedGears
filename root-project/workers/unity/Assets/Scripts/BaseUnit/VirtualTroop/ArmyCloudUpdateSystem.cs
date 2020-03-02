@@ -26,6 +26,7 @@ namespace AdvancedGears
                     ComponentType.ReadOnly<ArmyCloud.ComponentAuthority>(),
                     ComponentType.ReadWrite<Position.Component>(),
                     ComponentType.ReadOnly<Position.ComponentAuthority>(),
+                    ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                     ComponentType.ReadOnly<SpatialEntityId>()
             );
 
@@ -43,6 +44,7 @@ namespace AdvancedGears
             Entities.With(group).ForEach((Entity entity,
                                           ref ArmyCloud.Component army,
                                           ref Position.Component position,
+                                          ref BaseUnitStatus.Component status,
                                           ref SpatialEntityId entityId) =>
             {
                 var pos = position.Coords.ToUnityVector();
@@ -69,7 +71,7 @@ namespace AdvancedGears
                     continue;
                 }
 
-                var rank = commander.Rank;
+                var rank = commander.Value.Rank;
                 if (containers.TryGetValue(rank, out var troop) == false) {
                     troop = new TroopContainer() { Rank = rank };
                 }
@@ -94,7 +96,7 @@ namespace AdvancedGears
         private void Realize(Vector3 pos, Dictionary<uint,TroopContainer> containers)
         {
             foreach (var con in containers) {
-                foreach(var kvp in con.SimpleUnits) {
+                foreach(var kvp in con.Value.SimpleUnits) {
                     var id = kvp.Key;
                     if (this.TryGetComponentObject<Transform>(id, out var t)) {
                         t.position = pos + kvp.Value.RelativePos.ToUnityVector();
