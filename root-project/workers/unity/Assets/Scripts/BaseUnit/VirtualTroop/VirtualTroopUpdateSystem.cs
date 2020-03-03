@@ -34,11 +34,19 @@ namespace AdvancedGears
             inter = IntervalCheckerInitializer.InitializedChecker(1.0f);
         }
 
+        class TroopDamage
+        {
+            public EntityId id;
+            public int healthDiff;
+        }
+
         const float sightRate = 10.0f;
         protected override void OnUpdate()
         {
             if (inter.CheckTime() == false)
                 return;
+
+            var damageDic = new Dictionary<EntityId, TroopDamage>();
 
             Entities.With(group).ForEach((Entity entity,
                                           ref VirtualTroop.Component troop,
@@ -56,23 +64,90 @@ namespace AdvancedGears
                 var range = boidRange * sightRate;
                 var unit = getNearestPlayer(pos, range, selfId:null, UnitType.Advanced);
 
-                if ((unit == null) == troop.IsActive)
-                    return;
-
-                troop.IsActive = unit == null;
-
-                var container = troop.TroopContainer;
-
-                if (troop.IsActive) {
-                    Virtualize(status.Side, trans, boidRange, container.SimpleUnits);
+                if ((unit == null) == troop.IsActive) {
+                    if (CheckConflict(ref troop, status.Side, trans, commander.Rank, out var damage))
+                        damageDic[damage.id] = damage;
                 }
                 else {
-                    Realize(trans, container.SimpleUnits);
+                    UpdateContainer(ref troop, unit == null, status.Side, trans, boidRange, commander.Rank);
                 }
-
-                container.Rank = commander.Rank;
-                troop.TroopContainer = container;
             });
+
+            // SendDamage
+            foreach(var kvp in damageDic) {
+                this.UpdateSystem.SendEvent(new VirtualTroop.TotalHealthDiff.Event(kvp.Value.healthDiff), kvp.key.EntityId);
+            }
+        }
+
+        const float buffer = 0.3;
+        private bool CheckConflict(ref VirtualTroop.Component troop, UnitSide side, Transform trans, uint rank, out TroopDamage damage)
+        {
+            damage = null;
+            if (troop.IsActive == false)
+                return false;
+
+            var atkInter = troop.AttackInter;
+            if (atkInter.CheckTime() == false)
+                return false;
+
+            troop.AttackInter = atkInter;
+            var container = troop.TroopContainer;
+            float range = 0;
+            float attack = 0;
+            foreach(var sm in container.SimpleUnits) {
+                range += sm.AttackRange;
+                attack += sm.Attack * UnityEngine.Random.Range(1.0f - buffer, 1.0f + buffer);
+            }
+
+            if (attack == 0)
+                continue;
+
+            var count = container.SimpleUnits.Count;
+            if (count > 0) {
+                range /= count;
+            }
+
+            float sqrtlength = float.MaxValue;
+            var pos = trans.position;
+            var units = getEnemyUnits(side, pos, range, allowDead:false, UnitType.Commander);
+            foreach(var u in units) {
+                if (!this.TryGetComponent<CommanderStatus.Component>(u.id, out var commander) ||
+                    !this.TryGetComponent<VirtualTroop.Component>(u.id, out var tp))
+                    continue;
+
+                if (commander.Rank != rank)
+                    continue;
+
+                if (tp.IsActive == false)
+                    continue;
+
+                var diff = (u.pos - pos).sqrMagnitude;
+                if (diff >= sqrtlength)
+                    continue;
+
+                sqrtlength = diff;
+                damage = damage ?? new TroopDamage();
+                damage.id = u.id;
+                damage.healthDiff = attack;
+            }
+
+            return damage != null;
+        }
+
+        private void UpdateContainer(ref VirtualTroop.Component troop, bool isActive, UnitSide side, Transform trans, float range, uint rank)
+        {
+            troop.IsActive = isActive;
+            var container = troop.TroopContainer;
+
+            if (troop.IsActive) {
+                Virtualize(side, trans, range, container.SimpleUnits);
+            }
+            else {
+                Realize(trans, container.SimpleUnits);
+            }
+
+            container.Rank = rank;
+            troop.TroopContainer = container;
         }
 
         private void Virtualize(UnitSide side, Transform trans, float range, Dictionary<EntityId,SimpleUnit> dic)
@@ -81,8 +156,9 @@ namespace AdvancedGears
 
             var allies = getAllyUnits(side, trans.position, range, allowDead:false, UnitType.Soldier);
             foreach(var u in allies) {
-                this.TryGetComponent<BaseUnitHealth.Component>(u.id, out var health);
-                this.TryGetComponent<GunComponent.Component>(u.id, out var gun);
+                if (!this.TryGetComponent<BaseUnitHealth.Component>(u.id, out var health) ||
+                    !this.TryGetComponent<GunComponent.Component>(u.id, out var gun))
+                    continue;
 
                 var simple = new SimpleUnit();
                 var inverse = Quaternion.Inverse(trans.rotation);

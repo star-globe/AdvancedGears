@@ -74,7 +74,7 @@ namespace AdvancedGears
 
                 UnitInfo enemy = null;
                 //if (status.Order != OrderType.Escape)
-                enemy = getNearestEnemey(status.Side, pos, sight.Range);
+                enemy = getNearestEnemy(status.Side, pos, sight.Range);
 
                 if (enemy == null) {
                     if (target.TargetInfo.IsTarget) {
@@ -165,7 +165,7 @@ namespace AdvancedGears
             return info;
         }
 
-        protected UnitInfo getNearestEnemey(UnitSide self_side, in Vector3 pos, float length, bool allowDead = false, params UnitType[] types)
+        protected UnitInfo getNearestEnemy(UnitSide self_side, in Vector3 pos, float length, bool allowDead = false, params UnitType[] types)
         {
             return getNearestUnit(self_side, pos, length, true, null, allowDead, types);
         }

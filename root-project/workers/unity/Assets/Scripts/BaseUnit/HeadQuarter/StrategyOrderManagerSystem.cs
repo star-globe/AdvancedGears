@@ -62,7 +62,7 @@ namespace AdvancedGears
                 var range = RangeDictionary.Get(FixedRangeType.HeadQuarterRange);
 
                 var entityId = new EntityId();
-                var enemy = getNearestEnemey(status.Side, trans.position, range, allowDead:true, UnitType.HeadQuarter);
+                var enemy = getNearestEnemy(status.Side, trans.position, range, allowDead:true, UnitType.HeadQuarter);
                 if (enemy != null)
                     entityId = enemy.id;
 
