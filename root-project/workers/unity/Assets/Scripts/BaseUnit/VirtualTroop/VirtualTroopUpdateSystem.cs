@@ -75,11 +75,12 @@ namespace AdvancedGears
 
             // SendDamage
             foreach(var kvp in damageDic) {
-                this.UpdateSystem.SendEvent(new VirtualTroop.TotalHealthDiff.Event(kvp.Value.healthDiff), kvp.key.EntityId);
+                var diff = new TotalHealthDiff(kvp.Value.healthDiff);
+                this.UpdateSystem.SendEvent(new VirtualTroop.TotalHealthDiff.Event(diff), kvp.Key);
             }
         }
 
-        const float buffer = 0.3;
+        const float buffer = 0.3f;
         private bool CheckConflict(ref VirtualTroop.Component troop, UnitSide side, Transform trans, uint rank, out TroopDamage damage)
         {
             damage = null;
@@ -95,12 +96,12 @@ namespace AdvancedGears
             float range = 0;
             float attack = 0;
             foreach(var sm in container.SimpleUnits) {
-                range += sm.AttackRange;
-                attack += sm.Attack * UnityEngine.Random.Range(1.0f - buffer, 1.0f + buffer);
+                range += sm.Value.AttackRange;
+                attack += sm.Value.Attack * UnityEngine.Random.Range(1.0f - buffer, 1.0f + buffer);
             }
 
             if (attack == 0)
-                continue;
+                return false;
 
             var count = container.SimpleUnits.Count;
             if (count > 0) {
@@ -115,10 +116,10 @@ namespace AdvancedGears
                     !this.TryGetComponent<VirtualTroop.Component>(u.id, out var tp))
                     continue;
 
-                if (commander.Rank != rank)
+                if (commander.Value.Rank != rank)
                     continue;
 
-                if (tp.IsActive == false)
+                if (tp.Value.IsActive == false)
                     continue;
 
                 var diff = (u.pos - pos).sqrMagnitude;
@@ -128,7 +129,7 @@ namespace AdvancedGears
                 sqrtlength = diff;
                 damage = damage ?? new TroopDamage();
                 damage.id = u.id;
-                damage.healthDiff = attack;
+                damage.healthDiff = (int)attack;
             }
 
             return damage != null;

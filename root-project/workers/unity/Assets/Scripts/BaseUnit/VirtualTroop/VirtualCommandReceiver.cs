@@ -18,11 +18,11 @@ namespace AdvancedGears
             writer.OnTotalHealthDiffEvent += OnDiffedEvent;
         }
 
-        private void OnDiffedEvent(VirtualTroop.TotalHealthDiff diff)
+        private void OnDiffedEvent(TotalHealthDiff diff)
         {
             var container = writer.Data.TroopContainer;
             var simpleUnits = container.SimpleUnits;
-            var count = simpleUnits.count;
+            var count = simpleUnits.Count;
             if (count == 0)
                 return;
 
