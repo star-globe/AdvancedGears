@@ -134,6 +134,10 @@ namespace AdvancedGears
                     template.AddComponent(strongholdInterest.ToSnapshot(), writeAccess);
                     template.AddComponent(new SpawnPoint.Snapshot { Type = SpawnType.Start }, writeAccess);
                     break;
+
+                case UnitType.ArmyCloud:
+                    template.AddComponent(new ArmyCloud.Snapshot{}, writeAccess);
+                    break;
             }
         }
 

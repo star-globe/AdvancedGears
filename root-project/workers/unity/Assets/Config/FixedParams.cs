@@ -9,5 +9,6 @@ namespace AdvancedGears
         public static readonly float WorldInterestLimit = PlayerInterestLimit * 10.0f;
         public static readonly float WorldInterestFrequency = 1.0f;
         public static readonly float AbyssHeight = -1000.0f;
+        public static readonly float StrategyHeight = 1000.0f;
     }
 }

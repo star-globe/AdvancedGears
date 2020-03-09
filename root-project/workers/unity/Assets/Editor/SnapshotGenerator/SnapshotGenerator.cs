@@ -199,6 +199,11 @@ namespace AdvancedGears.Editor
             {
                 var template = BaseUnitTemplate.CreateBaseUnitEntityTemplate(u.side, GroundCoordinates(u.pos.x, u.pos.y, u.pos.z), u.type);
                 snapshot.AddEntity(template);
+
+                if (u.type == UnitType.HeadQuarter)
+                {
+                    template = BaseUnitTemplate.CreateBaseUnitEntityTemplate(u.side, new Coordinates(u.pos.x, FixedParams.StrategyHeight, u.pos.z), UnitType.ArmyCloud);
+                }
             }
         }
 
