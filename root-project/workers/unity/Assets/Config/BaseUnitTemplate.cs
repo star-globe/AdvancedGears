@@ -183,7 +183,9 @@ namespace AdvancedGears
         static InterestTemplate CreateSelfPlayerMinimapInterestTemplate()
         {
             var basicQuery = InterestQuery.Query(
-                Constraint.RelativeSphere(FixedParams.PlayerInterestLimit))
+                Constraint.All(
+                    Constraint.RelativeSphere(FixedParams.PlayerInterestLimit)),
+                    Constraint.Component(BaseUnitStatus.ComponentId))
                 .FilterResults(Position.ComponentId,
                                Metadata.ComponentId,
                                BaseUnitStatus.ComponentId,
@@ -194,9 +196,9 @@ namespace AdvancedGears
 
             var minimapQuery = InterestQuery.Query(
                 Constraint.All(
-                    Constraint.Any(Constraint.Component<CommanderStatus.Component>(),
-                                   Constraint.Component<StrongholdStatus.Component>(),
-                                   Constraint.Component<HeadQuarters.Component>()),
+                    Constraint.Any(Constraint.Component(CommanderStatus.ComponentId),
+                                   Constraint.Component(StrongholdStatus.ComponentId),
+                                   Constraint.Component(HeadQuarters.ComponentId)),
                     Constraint.RelativeSphere(FixedParams.WorldInterestLimit)))
                 .FilterResults(Position.ComponentId,
                                BaseUnitStatus.ComponentId,

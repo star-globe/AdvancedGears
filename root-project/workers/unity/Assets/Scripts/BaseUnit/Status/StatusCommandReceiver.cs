@@ -39,14 +39,26 @@ namespace AdvancedGears
                 State = change.State,
             });
 
-            if (change.State != UnitState.Alive)
-                return;
+            switch(change.State)
+            {
+                case UnitState.Alive:   Revive(); break;
+                case UnitState.Sleep:   SetSleep(); break;
+            }
+        }
 
+        private void Revive()
+        {
             var health = healthWriter.Data;
             healthWriter.SendUpdate(new BaseUnitHealth.Update()
             {
                 Health = health.MaxHealth,
             });
+        }
+
+        private void SetSleep()
+        {
+            var pos = this.transform.position;
+            this.transform.position = new Vector3(pos.x, FixedParams.AbyssHeight, pos.z);
         }
     }
 }

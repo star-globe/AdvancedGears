@@ -144,7 +144,7 @@ namespace AdvancedGears
                 Virtualize(side, trans, range, container.SimpleUnits);
             }
             else {
-                Realize(trans, container.SimpleUnits);
+                Realize(side, trans, container.SimpleUnits);
             }
 
             container.Rank = rank;
@@ -171,27 +171,39 @@ namespace AdvancedGears
                 //int32 attack = 5;
                 //float attack_range = 6;
                 dic.Add(u.id, simple);
+
+                this.CommandSystem.SendCommand(new BaseUnitStatus.ForceState.Request(u.id, new ForceStateChange(side, UnitState.Sleep)));
             }
         }
 
-        private void Realize(Transform trans, Dictionary<EntityId,SimpleUnit> dic)
+        private void Realize(UnitSide side, Transform trans, Dictionary<EntityId,SimpleUnit> dic)
         {
             var pos = trans.position;
             var rot = trans.rotation;
             foreach(var kvp in dic) {
                 var id = kvp.Key;
-                if (this.TryGetComponentObject<Transform>(id, out var t)) {
-                    t.position = trans.position + rot * kvp.Value.RelativePos.ToUnityVector();
-                    t.rotation = kvp.Value.RelativeRot.ToUnityQuaternion() * rot;
-                }
+                if (!this.TryGetComponentObject<Transform>(id, out var t) ||
+                    !this.TryGetComponent<BaseUnitHealth.Component>(id, out var health))
+                    continue;
+                
+                t.position = GetGrounded(trans.position + rot * kvp.Value.RelativePos.ToUnityVector());
+                t.rotation = kvp.Value.RelativeRot.ToUnityQuaternion() * rot;
+                
+                var diff = kvp.Value.Health - health.Value.Health;
+                this.UpdateSystem.SendEvent(new BaseUnitHealth.HealthDiffed.Event(new HealthDiff { Diff = diff }), id);
+                
+                var state = health.Value.Health > 0 ? UnitState.Alive: UnitState.Dead;
 
-                if (this.TryGetComponent<BaseUnitHealth.Component>(id, out var health)) {
-                    var diff = kvp.Value.Health - health.Value.Health;
-                    this.UpdateSystem.SendEvent(new BaseUnitHealth.HealthDiffed.Event(new HealthDiff { Diff = diff }), id);
-                }
+                this.CommandSystem.SendCommand(new BaseUnitStatus.ForceState.Request(id, new ForceStateChange(side, state)));
             }
 
             dic.Clear();
+        }
+
+        readonly float buffer = 1.0f;
+        Vector3 GetGround(Vector3 pos)
+        {
+            return PhysicsUtils.GetGroundPosition(new Vector3(pos.x, 1000.0f, pos.z)) + Vector3.up * buffer;
         }
     }
 }
