@@ -9,7 +9,7 @@ namespace AdvancedGears
 {
     public class UnityStrategyLogicConnector : WorkerConnector
     {
-        public const string WorkerType = WorkerUtils.Strategy;
+        public const string WorkerType = WorkerUtils.UnityStrategyLogic;
 
         private async void Start()
         {

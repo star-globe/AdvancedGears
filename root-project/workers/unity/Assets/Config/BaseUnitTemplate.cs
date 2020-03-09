@@ -207,8 +207,8 @@ namespace AdvancedGears
         {
             var basicQuery = InterestQuery.Query(
                 Constraint.All(
-                    Constraint.RelativeSphere(FixedParams.PlayerInterestLimit)),
-                    Constraint.Component(BaseUnitStatus.ComponentId))
+                    Constraint.RelativeSphere(FixedParams.PlayerInterestLimit),
+                    Constraint.Component(BaseUnitStatus.ComponentId)))
                 .FilterResults(Position.ComponentId,
                                Metadata.ComponentId,
                                BaseUnitStatus.ComponentId,

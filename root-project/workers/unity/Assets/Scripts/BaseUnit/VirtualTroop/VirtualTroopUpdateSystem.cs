@@ -200,8 +200,7 @@ namespace AdvancedGears
             dic.Clear();
         }
 
-        readonly float buffer = 1.0f;
-        Vector3 GetGround(Vector3 pos)
+        Vector3 GetGrounded(Vector3 pos)
         {
             return PhysicsUtils.GetGroundPosition(new Vector3(pos.x, 1000.0f, pos.z)) + Vector3.up * buffer;
         }
