@@ -17,6 +17,7 @@ namespace AdvancedGears
             { UnitType.Commander, "CommanderUnit"},
             { UnitType.Stronghold, "StrongholdUnit"},
             { UnitType.HeadQuarter, "HeadQuarterUnit"},
+            { UnitType.ArmyCloud, "ArmyCloudUnit"},
         };
 
         static readonly Dictionary<UnitType, OrderType> orderDic = new Dictionary<UnitType, OrderType>()
@@ -25,6 +26,7 @@ namespace AdvancedGears
             { UnitType.Commander, OrderType.Attack },
             { UnitType.Stronghold, OrderType.Idle },
             { UnitType.HeadQuarter, OrderType.Attack },
+            { UnitType.ArmyCloud, OrderType.Idle},
         };
 
         public static EntityTemplate CreateBaseUnitEntityTemplate(UnitSide side, Coordinates coords, UnitType type, OrderType? order = null)
@@ -49,10 +51,27 @@ namespace AdvancedGears
             SwitchType(template, type, WorkerUtils.UnityGameLogic);
             TransformSynchronizationHelper.AddTransformSynchronizationComponents(template, WorkerUtils.UnityGameLogic);
 
-            template.SetReadAccess(WorkerUtils.AllPhysicalAttributes.ToArray());
+            template.SetReadAccess(GetReadAttributes(type));
             template.SetComponentWriteAccess(EntityAcl.ComponentId, WorkerUtils.UnityGameLogic);
 
             return template;
+        }
+
+        private static string[] GetReadAttributes(UnitType type)
+        {
+            switch (type)
+            {
+                case UnitType.ArmyCloud:
+                    return new string[] { WorkerUtils.UnityStrategyLogic };
+
+                case UnitType.Commander:
+                case UnitType.Stronghold:
+                case UnitType.HeadQuarter:
+                    return WorkerUtils.AllWorkerAttributes.ToArray();
+
+                default:
+                    return WorkerUtils.AllPhysicalAttributes.ToArray();
+            }
         }
 
         private static void SwitchType(EntityTemplate template, UnitType type, string writeAccess)

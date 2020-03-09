@@ -14,6 +14,9 @@ enum UnitType {
     Stronghold = 101;
     Turret = 102;
     HeadQuarter = 103;
+
+    // virtual
+    ArmyCloud = 201;
 }
 
 enum UnitBaseType
