@@ -87,6 +87,17 @@ namespace AdvancedGears
             world.GetOrCreateSystem<BaseUnitReviveTimerSystem>();
             world.GetOrCreateSystem<FieldQueryServerSystem>();
         }
+
+        public static void AddStrategyLogicSystems(World world, UnityEngine.GameObject gameObject)
+        {
+            TransformSynchronizationHelper.AddServerSystems(world);
+            PlayerLifecycleHelper.AddServerSystems(world);
+            GameObjectCreationHelper.EnableStandardGameObjectCreation(world, gameObject);
+
+            world.GetOrCreateSystem<ProcessLaunchCommandSystem>();
+            world.GetOrCreateSystem<MetricSendSystem>();
+            world.GetOrCreateSystem<ArmyCloudUpdateSystem>();
+        }
     }
 
     public static class Utils
