@@ -23,7 +23,7 @@ namespace AdvancedGears
         private const float RunSpeed = 20.0f;
         private const float MaxSpeed = 25.0f;
 
-        private const float TurnSpeed = 2.0f;
+        private const float TurnSpeed = 4.0f;
 
         private const float TurnSmoothTime = 0.2f;
         private float turnSmoothVelocity;
@@ -103,10 +103,9 @@ namespace AdvancedGears
                     //rigidbody.transform.eulerAngles = rigidbody.transform.up * Mathf.SmoothDampAngle(
                     //    rigidbody.transform.eulerAngles.y, targetRotation,
                     //    ref turnSmoothVelocity, TurnSmoothTime);
+                    var fwd = new Vector3(trans.forward.x, 0, trans.forward.z);
+                    trans.rotation = Quaternion.LookRotation(fwd.normalized, Vector3.up);
                 }
-
-                var fwd = new Vector3(trans.forward.x, 0, trans.forward.z);
-                trans.rotation = Quaternion.LookRotation(fwd.normalized, Vector3.up);
 
                 //else
                 //{

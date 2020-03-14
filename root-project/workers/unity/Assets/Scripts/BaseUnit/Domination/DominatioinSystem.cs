@@ -105,7 +105,8 @@ namespace AdvancedGears
                 else
                     staminas[first.Key] += over;
 
-                foreach (var k in staminas.Keys) {
+                var keys = staminas.Keys.ToArray();
+                foreach (var k in keys) {
                     if (k != first.Key) {
                         var val = staminas[k];
                         staminas[k] = Mathf.Max(0.0f, val - over);

@@ -31,8 +31,7 @@ namespace AdvancedGears
             return cannon == null ? null: cannon.Muzzle;
         }
 
-        [SerializeField]
-        float bulletSpeed = 4.5f;
+        float bulletSpeed = 14.5f;
 
         [SerializeField]
         float lifeTime = 2.0f;

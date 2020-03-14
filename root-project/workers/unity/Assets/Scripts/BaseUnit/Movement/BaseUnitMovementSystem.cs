@@ -110,7 +110,9 @@ namespace AdvancedGears
                     return;
                 }
 
-                var uVec = rigidbody.transform.forward * movement.MoveSpeed * forward;
+                var speed = AttackLogicDictionary.GetOrderSpeed(status.Order, movement.MoveSpeed);
+
+                var uVec = rigidbody.transform.forward * speed * forward;
                 var moveVec = uVec * Time.fixedDeltaTime;
                 rigidbody.MovePosition(pos + moveVec);
 

@@ -96,7 +96,6 @@ namespace AdvancedGears.UI
         }
 
         protected abstract UIType uiType { get; }
-        bool isRegistered = false;
 
         protected virtual Transform parent => null;
 

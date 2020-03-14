@@ -15,7 +15,6 @@ namespace AdvancedGears
     internal class BaseUnitActionSystem : SpatialComponentSystem
     {
         private EntityQuery group;
-        Vector3 origin;
 
         protected override void OnCreate()
         {
@@ -61,7 +60,7 @@ namespace AdvancedGears
 
                 if (action.EnemyPositions.Count > 0)
                 {
-                    var epos = action.EnemyPositions[0].ToWorkerPosition(origin);
+                    var epos = action.EnemyPositions[0].ToWorkerPosition(this.Origin);
                     bool updPosture, updGuns;
                     var unit = EntityManager.GetComponentObject<UnitTransform>(entity);
                     Attack(unit, time, action.AngleSpeed, epos, entityId, ref posture, ref gun, out updPosture, out updGuns);
