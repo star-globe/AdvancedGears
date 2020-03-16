@@ -72,7 +72,7 @@ namespace AdvancedGears
                 return;
 
             OnHit(fire.Value);
-            base.Creator?.InvokeVanishAction(fire.Value.ShooterEntityId, fire.Value.BulletId);
+            base.Creator?.InvokeVanishAction(fire.Value.ShooterEntityId, fire.Value.Type, fire.Value.BulletId);
         }
 
         protected virtual void OnHit(BulletInfo info)

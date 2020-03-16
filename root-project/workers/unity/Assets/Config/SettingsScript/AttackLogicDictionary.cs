@@ -19,6 +19,10 @@ namespace AdvancedGears
 		[SerializeField]
 		OrderRate[] orderRates;
 
+        [SerializeField]
+        float judgeRate = 1.5f;
+        public static float JudgeRate => Instance.judgeRate; 
+
         public static AttackLogicDictionary Instance { private get; set; }
 
         readonly Dictionary<OrderType, OrderRate> orderDic = new Dictionary<OrderType, OrderRate>();

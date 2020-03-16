@@ -20,6 +20,7 @@ type BulletFireInfo {
 
 type BulletVanishInfo {
     int64 shooter_entity_id = 1;
+    uint32 type = 2;
     uint64 bullet_id = 10;
 }
 
@@ -55,7 +56,7 @@ type GunInfo {
 }
 
 type AttackTargetInfo {
-    uint32 type = 1;
+    uint32 gun_type_id = 1;
     improbable.gdk.transform_synchronization.FixedPointVector3 target_position = 2;
     PosturePoint attached = 3;
 }

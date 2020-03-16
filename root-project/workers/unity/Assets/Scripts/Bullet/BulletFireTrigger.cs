@@ -31,14 +31,6 @@ namespace AdvancedGears
             return cannon == null ? null: cannon.Muzzle;
         }
 
-        float bulletSpeed = 14.5f;
-
-        [SerializeField]
-        float lifeTime = 2.0f;
-
-        [SerializeField]
-        float interval = 0.4f;
-
         float fireTime = 0.0f;
 
         LinkedEntityComponent spatialComp = null;
@@ -73,13 +65,17 @@ namespace AdvancedGears
             base.Creator?.RemoveTriggerEntity(this.SpatialComp.EntityId);
         }
 
-        public void OnFire(PosturePoint point)
+        public void OnFire(PosturePoint point, int gunId)
         {
             if (this.SpatialComp == null || this.BulletWriter == null)
                 return;
 
+            var gun = GunDictionary.GetGunSettings(gunId);
+            if (gun == null)
+                return;
+
             var time = Time.time;
-            if (time - fireTime <= interval)
+            if (time - fireTime <= gun.Interval)
                 return;
 
             var muzzle = GetMuzzleTransform(point);
@@ -90,19 +86,19 @@ namespace AdvancedGears
 
             var pos = muzzle.position - origin;
             var vec = muzzle.forward;
-            vec *= bulletSpeed;
+            vec *= gun.BulletSpeed;
 
             var id = this.BulletWriter.Data.CurrentId;
             var fire = new BulletFireInfo()
             {
                 Power = 1,
-                Type = 1,
+                Type = gun.BulletTypeId,
                 Alignment = 3,
                 LaunchPosition = pos.ToFixedPointVector3(),
                 InitialVelocity = vec.ToFixedPointVector3(),
                 LaunchTime = Time.time,
-                LifeTime = lifeTime,
-                GunId = 0,
+                LifeTime = gun.BulletLifeTime,
+                GunId = gunId,
                 ShooterEntityId = SpatialComp.EntityId.Id,
                 BulletId = id,
             };
@@ -114,11 +110,12 @@ namespace AdvancedGears
             this.BulletWriter.SendFiresEvent(fire);
         }
 
-        private void VanishBullet(ulong id)
+        private void VanishBullet(uint type, ulong id)
         {
             var vanish = new BulletVanishInfo()
             {
                 ShooterEntityId = SpatialComp.EntityId.Id,
+                Type = type,
                 BulletId = id,
             };
 

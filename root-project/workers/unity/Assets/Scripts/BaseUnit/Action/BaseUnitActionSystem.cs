@@ -98,7 +98,7 @@ namespace AdvancedGears
                         gunInfo.Interval = inter;
                         var atk = new AttackTargetInfo
                         {
-                            Type = 1,
+                            GunTypeId = gunInfo.GunTypeId,
                             TargetPosition = epos.ToFixedPointVector3(),
                             Attached = point,
                         };

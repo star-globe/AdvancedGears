@@ -8,18 +8,29 @@ namespace AdvancedGears
     public class GunSettings : ScriptableObject
     {
         [SerializeField] uint typeId = 1;
-        [SerializeField] int stock = 30;
-        [SerializeField] float atkRange = 15.0f;
-        [SerializeField] float atkAngle = 1.0f;
-        [SerializeField] float inter = 0.5f;
-        [SerializeField] PosturePoint attached = PosturePoint.Root;
-
         public uint TypeId => typeId;
+        [SerializeField] int stock = 30;
         public int Stock => stock;
-        public float Inter => inter;
+        [SerializeField] float atkRange = 15.0f;
         public float AtkRange => atkRange;
+        [SerializeField] float atkAngle = 1.0f;
         public float AtkAngle => atkAngle;
+        [SerializeField] float inter = 0.5f;
+        public float Inter => inter;
+        [SerializeField] uint bulletTypeId = 1;
+        public uint BulletTypeId => bulletTypeId;
+        [SerializeField] float bulletSpeed = 15.0f;
+        public float BulletSpeed => bulletSpeed;
+        [SerializeField] PosturePoint attached = PosturePoint.Root;
         public PosturePoint Attached => attached;
+
+        public float BulletLifeTime
+        {
+            get
+            {
+                return bulletSpeed > 0 ? atkRange / bulletSpeed: 0.0f;
+            }
+        }
 
         public GunInfo GetGunInfo(ulong uid)
         {

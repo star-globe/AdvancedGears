@@ -247,6 +247,7 @@ namespace AdvancedGears
                     if (unit.Value.State == UnitState.Dead)
                         continue;
 
+                    // todo calc war power
                     if (unit.Value.Side == side)
                         ally += 1.0f;
                     else
@@ -254,7 +255,7 @@ namespace AdvancedGears
                 }
             }
 
-            float rate = 1.1f;
+            float rate = AttackLogicDictionary.JudgeRate;
             if (ally > enemy * rate)
                 return OrderType.Attack;
 

@@ -27,7 +27,7 @@ namespace AdvancedGears
 
         private void OnTarget(AttackTargetInfo info)
         {
-            OnFire(info.Attached);
+            OnFire(info.Attached, info.GunTypeId);
         }
     }
 }
