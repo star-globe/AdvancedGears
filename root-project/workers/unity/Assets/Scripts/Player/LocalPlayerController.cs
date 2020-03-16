@@ -22,7 +22,7 @@ namespace AdvancedGears
 
 			if (Input.GetKey(KeyCode.Space))
 			{
-				trigger.OnFire(PosturePoint.Arm1);
+				trigger.OnFire(PosturePoint.Arm1, 1);
 			}
 		}
 	}

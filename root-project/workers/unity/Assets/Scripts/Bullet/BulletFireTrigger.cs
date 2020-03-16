@@ -65,7 +65,7 @@ namespace AdvancedGears
             base.Creator?.RemoveTriggerEntity(this.SpatialComp.EntityId);
         }
 
-        public void OnFire(PosturePoint point, int gunId)
+        public void OnFire(PosturePoint point, uint gunId)
         {
             if (this.SpatialComp == null || this.BulletWriter == null)
                 return;
@@ -75,7 +75,7 @@ namespace AdvancedGears
                 return;
 
             var time = Time.time;
-            if (time - fireTime <= gun.Interval)
+            if (time - fireTime <= gun.Inter)
                 return;
 
             var muzzle = GetMuzzleTransform(point);

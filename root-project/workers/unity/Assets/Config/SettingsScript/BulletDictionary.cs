@@ -16,7 +16,7 @@ namespace AdvancedGears
             Instance = this;
         }
 
-        public static BulletSettings Get(int index)
+        public static BulletSettings Get(uint gunId)
         {
             if (Instance == null)
             {
@@ -24,13 +24,13 @@ namespace AdvancedGears
                 return null;
             }
 
-            if (index < 0 || index >= Count)
+            if (gunId >= Count)
             {
-                Debug.LogErrorFormat("The index {0} is outside of the dictionary's range (size {1}).", index, Count);
+                Debug.LogErrorFormat("The index {0} is outside of the dictionary's range (size {1}).", gunId, Count);
                 return null;
             }
 
-            return Instance.bulletsList[index];
+            return Instance.bulletsList[gunId];
         }
 
         public static int Count => Instance.bulletsList.Length;

@@ -40,12 +40,14 @@ namespace AdvancedGears
 
         class BulletsContainer
         {
-            public BulletsContainer(uint type, Transform parent)
+            public BulletsContainer(uint type, Transform parent, Vector3 origin)
             {
                 this.typeId = type;
                 bulletParent = parent;
+                this.Origin = origin;
             }
 
+            Vector3 Origin;
             Transform bulletParent; 
             public uint typeId { get; private set;}
 
@@ -78,7 +80,7 @@ namespace AdvancedGears
                 }
             }
 
-            public void OnFire(BulletFireInfo info)
+            public void OnFire(BulletFireInfo info, bool detectCollisions)
             {
                 // check
                 Rigidpair bullet;
@@ -93,7 +95,7 @@ namespace AdvancedGears
                 bullet.IsActive = true;
                 bullet.Rigid.useGravity = true;
                 bullet.Rigid.isKinematic = false;
-                bullet.Rigid.detectCollisions = entityDic.ContainsKey(info.ShooterEntityId);
+                bullet.Rigid.detectCollisions = detectCollisions;
 
                 var pos = info.LaunchPosition.ToUnityVector();
                 pos += Origin;
@@ -190,11 +192,11 @@ namespace AdvancedGears
             BulletsContainer container;
             var type = info.Type;
             if (containerDic.TryGetValue(type, out container) == false) {
-                container = new BulletsContainer(type, this.transform);
+                container = new BulletsContainer(type, this.transform,  this.Origin);
                 containerDic.Add(type, container);
             }
 
-            containner.OnFire(info);
+            container.OnFire(info, entityDic.ContainsKey(info.ShooterEntityId));
         }
 
         public void OnVanish(BulletVanishInfo info)
