@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 390e53795b0688440809e7dc385f24a7, type: 3}
   m_Name: BasicGunSettings
   m_EditorClassIdentifier: 
-  typeId: 1
+  typeId: 0
   stock: 30
   atkRange: 15
   atkAngle: 1
   inter: 0.5
+  bulletTypeId: 0
+  bulletSpeed: 15
   attached: 1

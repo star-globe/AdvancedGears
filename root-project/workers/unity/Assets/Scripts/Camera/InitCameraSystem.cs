@@ -36,7 +36,7 @@ namespace AdvancedGears
                     PostUpdateCommands.AddComponent(entity, CameraComponentDefaults.Input);
                     PostUpdateCommands.AddComponent(entity, CameraComponentDefaults.Transform);
 
-                    Cursor.lockState = CursorLockMode.Locked;
+                    //Cursor.lockState = CursorLockMode.Locked;
 
                     // Disable system after first run.
                     Enabled = false;
@@ -46,7 +46,7 @@ namespace AdvancedGears
 
         protected override void OnDestroy()
         {
-            Cursor.lockState = CursorLockMode.None;
+            //Cursor.lockState = CursorLockMode.None;
 
             base.OnDestroy();
         }

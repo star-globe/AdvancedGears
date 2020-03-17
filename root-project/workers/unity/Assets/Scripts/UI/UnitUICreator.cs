@@ -45,7 +45,7 @@ namespace AdvancedGears.UI
                 }
             }
 
-            readonly Dictionary<EntityId, UIChache<T>> uiDic = new Dictionary<EntityId, UIChache<T>>();
+            readonly Dictionary<EntityId, UICache<T>> uiDic = new Dictionary<EntityId, UICache<T>>();
             readonly Queue<T> sleepUIList = new Queue<T>();
 
             public void ResetAll()
@@ -98,18 +98,18 @@ namespace AdvancedGears.UI
                 }
 
                 if (ui != null)
-                    uiDic[id] = new UIChache<T>(ui);
+                    uiDic[id] = new UICache<T>(ui);
 
                 return ui;
             }
         }
 
-        class UIChache<T> where T : Component
+        class UICache<T> where T : Component
         {
             T ui;
             public bool isChecked { get; private set; }
 
-            public UIChache(T ui)
+            public UICache(T ui)
             {
                 this.ui = ui;
                 isChecked = true;

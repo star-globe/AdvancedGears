@@ -12,4 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7aebcca4cb299a149ae78fc804037dec, type: 3}
   m_Name: AttackLogic Dictionary
   m_EditorClassIdentifier: 
-  orderRates: []
+  orderRates:
+  - order: 1
+    rangeRate: 0.4
+    speedRate: 1
+  - order: 4
+    rangeRate: 0.4
+    speedRate: 0.8
+  - order: 3
+    rangeRate: 1.5
+    speedRate: 0.8
+  - order: 2
+    rangeRate: 0.9
+    speedRate: 0.8
+  judgeRate: 1.5

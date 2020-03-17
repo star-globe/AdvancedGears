@@ -17,7 +17,7 @@ namespace AdvancedGears
         public float AtkAngle => atkAngle;
         [SerializeField] float inter = 0.5f;
         public float Inter => inter;
-        [SerializeField] uint bulletTypeId = 1;
+        [SerializeField] uint bulletTypeId = 0;
         public uint BulletTypeId => bulletTypeId;
         [SerializeField] float bulletSpeed = 15.0f;
         public float BulletSpeed => bulletSpeed;

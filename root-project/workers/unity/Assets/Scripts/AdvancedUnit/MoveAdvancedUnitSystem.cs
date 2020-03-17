@@ -97,14 +97,27 @@ namespace AdvancedGears
 
                 var trans = rigidbody.transform;
                 if (inputDir.x * inputDir.x > 0.0f) {
-                    trans.Rotate(Vector3.up, inputDir.x * TurnSpeed);//(trans.up, inputDir.x);
+                    Vector3 up = trans.up;
+                    var unit = EntityManager.GetComponentObject<UnitTransform>(entity);
+                    if (unit != null && unit.GetGrounded(out var hit)) {
+                        up = hit.normal;
+                        //var fwd = new Vector3(trans.forward.x, 0, trans.forward.z);
+                        //trans.rotation = Quaternion.LookRotation(fwd.normalized, hit.normal);
+                    }
+                    //(trans.up, inputDir.x);
+
+                    trans.Rotate(up, inputDir.x * TurnSpeed);
 
                     //Debug.LogFormat("x:{0} y:{1}", inputDir.x, inputDir.y);
                     //rigidbody.transform.eulerAngles = rigidbody.transform.up * Mathf.SmoothDampAngle(
                     //    rigidbody.transform.eulerAngles.y, targetRotation,
                     //    ref turnSmoothVelocity, TurnSmoothTime);
-                    var fwd = new Vector3(trans.forward.x, 0, trans.forward.z);
-                    trans.rotation = Quaternion.LookRotation(fwd.normalized, Vector3.up);
+                    //var fwd = new Vector3(trans.forward.x, 0, trans.forward.z);
+                    //trans.rotation = Quaternion.LookRotation(fwd.normalized, Vector3.up);
+                    //var unit = EntityManager.GetComponentObject<UnitTransform>(entity);
+                    //if (unit != null && unit.GetGrounded(out var hit)) {
+                    //    
+                    //}
                 }
 
                 //else

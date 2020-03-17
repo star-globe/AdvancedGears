@@ -104,11 +104,11 @@ namespace AdvancedGears.UI
             if (this.UnitUICreator == null)
                 return;
 
-            this.UnitUICreator.ResetAll();
+            this.UnitUICreator.ResetAll(this.uiType);
 
             UpdateAction();
 
-            this.UnitUICreator.SleepAllUnused();
+            this.UnitUICreator.SleepAllUnused(this.uiType);
         }
 
         protected abstract void UpdateAction();

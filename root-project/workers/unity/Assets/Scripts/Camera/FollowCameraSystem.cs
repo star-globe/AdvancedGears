@@ -56,7 +56,7 @@ namespace AdvancedGears
         {
             var x = input.X + InputUtils.CameraX;
             var y = input.Y - InputUtils.CameraY;
-            var distance = input.Distance + Input.GetAxis("Mouse ScrollWheel") * ZoomScale;
+            var distance = input.Distance;// + Input.GetAxis("Mouse ScrollWheel") * ZoomScale;
 
             x %= 360;
             y = Mathf.Clamp(y, MinYAngle, MaxYAngle);
