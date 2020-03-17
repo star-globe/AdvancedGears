@@ -284,6 +284,16 @@ component CommanderAction {
     CommandActionType action_type = 3;
 }
 
+component PathFinderComponent {
+    id = 20024;
+
+    int32 current_index = 1;
+    list<improbable.Coordinates> points = 2;
+    improbable.Coordinates end_point = 3;
+
+    command improbable.gdk.core.Empty set_end_point(improbable.Coordinates);
+}
+
 // stronghold:20030~
 component StrongholdStatus {
     id = 20030;
