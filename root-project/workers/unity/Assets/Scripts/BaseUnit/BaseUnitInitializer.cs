@@ -10,7 +10,6 @@ namespace AdvancedGears
     public class BaseUnitInitializer : MonoBehaviour
     {
         [Require] BaseUnitMovementWriter movement;
-        [Require] BaseUnitSightWriter sight;
         [Require] BaseUnitActionWriter action;
         [Require] BaseUnitHealthWriter health;
         [Require] FuelComponentWriter fuel;
@@ -32,15 +31,10 @@ namespace AdvancedGears
                 ConsumeRate = settings.ConsumeRate,
             });
 
-            sight.SendUpdate(new BaseUnitSight.Update
-            {
-                Interval = IntervalCheckerInitializer.InitializedChecker(settings.Inter),
-                Range = settings.SightRange
-            });
-
             action.SendUpdate(new BaseUnitAction.Update
             {
                 Interval = IntervalCheckerInitializer.InitializedChecker(settings.Inter),
+                SightRange = settings.SightRange,
                 AngleSpeed = settings.AngleSpeed,
             });
 

@@ -18,6 +18,8 @@ namespace AdvancedGears
     public class BaseUnitSearchSystem : BaseSearchSystem
     {
         EntityQuery group;
+        IntervalChecker interval;
+        const int frequency = 15; 
 
         protected override void OnCreate()
         {
@@ -27,7 +29,6 @@ namespace AdvancedGears
                 ComponentType.ReadWrite<BaseUnitMovement.Component>(),
                 ComponentType.ReadWrite<BaseUnitAction.Component>(),
                 ComponentType.ReadOnly<BaseUnitAction.ComponentAuthority>(),
-                ComponentType.ReadWrite<BaseUnitSight.Component>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadWrite<BaseUnitTarget.Component>(),
                 ComponentType.ReadOnly<BaseUnitTarget.ComponentAuthority>(),
@@ -37,14 +38,18 @@ namespace AdvancedGears
 
             group.SetFilter(BaseUnitAction.ComponentAuthority.Authoritative);
             group.SetFilter(BaseUnitTarget.ComponentAuthority.Authoritative);
+
+            inter = IntervalCheckerInitializer.InitializedChecker(1.0f / frequency);
         }
 
         protected override void OnUpdate()
         {
+            if (inter.CheckTime() == false)
+                return;
+
             Entities.With(group).ForEach((Entity entity,
                                           ref BaseUnitMovement.Component movement,
                                           ref BaseUnitAction.Component action,
-                                          ref BaseUnitSight.Component sight,
                                           ref BaseUnitStatus.Component status,
                                           ref BaseUnitTarget.Component target,
                                           ref GunComponent.Component gun) =>
@@ -59,12 +64,6 @@ namespace AdvancedGears
                     status.Type != UnitType.Commander)
                     return;
 
-                var inter = sight.Interval;
-                if (inter.CheckTime() == false)
-                    return;
-
-                sight.Interval = inter;
-
                 // initial
                 target.State = TargetState.None;
                 action.EnemyPositions.Clear();
@@ -73,15 +72,17 @@ namespace AdvancedGears
                 var pos = trans.position;
 
                 UnitInfo enemy = null;
+                var sightRange = action.SightRange;
+                
                 //if (status.Order != OrderType.Escape)
-                enemy = getNearestEnemy(status.Side, pos, sight.Range);
+                enemy = getNearestEnemy(status.Side, pos, sightRange);
 
                 if (enemy == null) {
                     if (target.TargetInfo.IsTarget) {
                         movement.TargetPosition = target.TargetInfo.Position;
 
                         var diff = movement.TargetPosition.ToUnityVector() - pos;
-                        var s_range = RangeDictionary.SightRangeRate * sight.Range;
+                        var s_range = RangeDictionary.SightRangeRate * sightRange;
                         if (diff.sqrMagnitude <= s_range * s_range)
                             target.State = TargetState.MovementTarget;
                         else
