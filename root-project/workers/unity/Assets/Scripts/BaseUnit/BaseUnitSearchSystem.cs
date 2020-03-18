@@ -18,7 +18,7 @@ namespace AdvancedGears
     public class BaseUnitSearchSystem : BaseSearchSystem
     {
         EntityQuery group;
-        IntervalChecker interval;
+        IntervalChecker inter;
         const int frequency = 15; 
 
         protected override void OnCreate()
