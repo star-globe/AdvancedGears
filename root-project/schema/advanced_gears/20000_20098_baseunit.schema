@@ -77,6 +77,12 @@ component BaseUnitMovement {
 
     float move_speed = 1;
     float rot_speed = 2;
+}
+
+component BaseUnitSight {
+    id = 20011;
+
+    IntervalChecker interval = 1;
 
     improbable.gdk.transform_synchronization.FixedPointVector3 target_position = 4;
     float target_range = 5;
