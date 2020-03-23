@@ -14,7 +14,9 @@ namespace AdvancedGears
     internal class BaseUnitSightSystem : SpatialComponentSystem
     {
         EntityQuery group;
+        IntervalChecker interval;
 
+        const int period = 10; 
         protected override void OnCreate()
         {
             base.OnCreate();
@@ -30,6 +32,7 @@ namespace AdvancedGears
             );
 
             group.SetFilter(BaseUnitMovement.ComponentAuthority.Authoritative);
+            interval = IntervalCheckerInitializer.InitializedChecker(60.0f/period);
         }
 
         protected override void OnUpdate()

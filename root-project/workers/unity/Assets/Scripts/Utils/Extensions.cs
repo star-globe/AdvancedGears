@@ -314,6 +314,12 @@ namespace AdvancedGears
 
     public static class IntervalCheckerInitializer
     {
+        public static IntervalChecker InitializedChecker(int period, bool setChecked = false)
+        {
+            period = period > 0 ?? 1;
+            return InitializedChecker(1.0f/period, setChecked);
+        }
+
         public static IntervalChecker InitializedChecker(float inter, bool setChecked = false)
         {
             return new IntervalChecker(inter, setChecked ? float.MinValue: 0, 0, -1);
