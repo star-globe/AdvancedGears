@@ -77,6 +77,8 @@ component BaseUnitMovement {
 
     float move_speed = 1;
     float rot_speed = 2;
+
+    float consume_rate = 8;
 }
 
 component BaseUnitSight {
@@ -87,8 +89,6 @@ component BaseUnitSight {
     
     improbable.gdk.transform_synchronization.FixedPointVector3 commander_position = 6;
     BoidVector boid_vector = 7;
-
-    float consume_rate = 8;
 
     event BoidVector boid_diffed;
 }

@@ -26,7 +26,8 @@ namespace AdvancedGears
             base.OnCreate();
 
             group = GetEntityQuery(
-                ComponentType.ReadWrite<BaseUnitMovement.Component>(),
+                ComponentType.ReadWrite<BaseUnitSight.Component>(),
+                ComponentType.ReadOnly<BaseUnitSight.ComponentAuthority>(),
                 ComponentType.ReadWrite<BaseUnitAction.Component>(),
                 ComponentType.ReadOnly<BaseUnitAction.ComponentAuthority>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
@@ -36,6 +37,7 @@ namespace AdvancedGears
                 ComponentType.ReadOnly<Transform>()
             );
 
+            group.SetFilter(BaseUnitSight.ComponentAuthority.Authoritative);
             group.SetFilter(BaseUnitAction.ComponentAuthority.Authoritative);
             group.SetFilter(BaseUnitTarget.ComponentAuthority.Authoritative);
 
@@ -48,7 +50,7 @@ namespace AdvancedGears
                 return;
 
             Entities.With(group).ForEach((Entity entity,
-                                          ref BaseUnitMovement.Component movement,
+                                          ref BaseUnitSight.Component sight,
                                           ref BaseUnitAction.Component action,
                                           ref BaseUnitStatus.Component status,
                                           ref BaseUnitTarget.Component target,
@@ -79,9 +81,9 @@ namespace AdvancedGears
 
                 if (enemy == null) {
                     if (target.TargetInfo.IsTarget) {
-                        movement.TargetPosition = target.TargetInfo.Position;
+                        sight.TargetPosition = target.TargetInfo.Position;
 
-                        var diff = movement.TargetPosition.ToUnityVector() - pos;
+                        var diff = sight.TargetPosition.ToUnityVector() - pos;
                         var s_range = RangeDictionary.SightRangeRate * sightRange;
                         if (diff.sqrMagnitude <= s_range * s_range)
                             target.State = TargetState.MovementTarget;
@@ -93,7 +95,7 @@ namespace AdvancedGears
                     target.State = TargetState.ActionTarget;
                     var epos = enemy.pos.ToWorldPosition(this.Origin);
 
-                    movement.TargetPosition = epos;
+                    sight.TargetPosition = epos;
                     action.EnemyPositions.Add(epos);
                 }
 
@@ -101,9 +103,9 @@ namespace AdvancedGears
                 var entityId = targetInfo.CommanderId;
                 Position.Component? comp = null;
                 if (entityId.IsValid() && base.TryGetComponent<Position.Component>(entityId, out comp))
-                    movement.CommanderPosition = comp.Value.Coords.ToUnityVector().ToFixedPointVector3();
+                    sight.CommanderPosition = comp.Value.Coords.ToUnityVector().ToFixedPointVector3();
                 else
-                    movement.CommanderPosition = FixedPointVector3.Zero;
+                    sight.CommanderPosition = FixedPointVector3.Zero;
 
                 var range = gun.GetAttackRange();
                 if (status.Type == UnitType.Commander && targetInfo.Side != status.Side) {
@@ -117,7 +119,7 @@ namespace AdvancedGears
                 }
 
                 range = AttackLogicDictionary.GetOrderRange(status.Order, range);
-                movement.TargetRange = range;
+                sight.TargetRange = range;
             });
         }
 

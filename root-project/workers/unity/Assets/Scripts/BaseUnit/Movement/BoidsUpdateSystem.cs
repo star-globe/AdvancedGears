@@ -84,10 +84,10 @@ namespace AdvancedGears
                 vector /= alliesCount;
 
                 foreach(var unit in allies) {
-                    if (TryGetComponent<BaseUnitMovement.Component>(unit.id, out var movement) == false)
+                    if (TryGetComponent<BaseUnitSight.Component>(unit.id, out var sight) == false)
                         continue;
                     
-                    var baseVec = movement.Value.BoidVector.Vector.ToUnityVector();
+                    var baseVec = sight.Value.BoidVector.Vector.ToUnityVector();
                     var boidVec = Vector3.zero;
                     var rate = 1.0f;
 
@@ -115,7 +115,7 @@ namespace AdvancedGears
                         continue;
 
                     var boidVector = new BoidVector(boidVec.ToFixedPointVector3(), rate);
-                    this.UpdateSystem.SendEvent(new BaseUnitMovement.BoidDiffed.Event(boidVector), unit.id);
+                    this.UpdateSystem.SendEvent(new BaseUnitSight.BoidDiffed.Event(boidVector), unit.id);
                 }
             });
         }

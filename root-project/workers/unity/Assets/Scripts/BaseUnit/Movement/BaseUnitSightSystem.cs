@@ -25,6 +25,8 @@ namespace AdvancedGears
                     ComponentType.ReadOnly<UnitTransform>(),
                     ComponentType.ReadWrite<BaseUnitMovement.Component>(),
                     ComponentType.ReadOnly<BaseUnitMovement.ComponentAuthority>(),
+                    ComponentType.ReadWrite<BaseUnitSight.Component>(),
+                    ComponentType.ReadOnly<BaseUnitSight.ComponentAuthority>(),
                     ComponentType.ReadOnly<BaseUnitTarget.Component>(),
                     ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                     ComponentType.ReadOnly<BaseUnitAction.Component>(),
@@ -32,13 +34,19 @@ namespace AdvancedGears
             );
 
             group.SetFilter(BaseUnitMovement.ComponentAuthority.Authoritative);
+            group.SetFilter(BaseUnitSight.ComponentAuthority.Authoritative);
+
             interval = IntervalCheckerInitializer.InitializedChecker(60.0f/period);
         }
 
         protected override void OnUpdate()
         {
+            if (interval.CheckTime() == false)
+                return;
+
             Entities.With(group).ForEach((Entity entity,
                                           ref BaseUnitMovement.Component movement,
+                                          ref BaseUnitSight.Component sight,
                                           ref BaseUnitTarget.Component target,
                                           ref BaseUnitStatus.Component status,
                                           ref FuelComponent.Component fuel) =>
@@ -60,27 +68,23 @@ namespace AdvancedGears
                 if (unit == null || unit.GetGrounded(out var hitInfo) == false)
                     return;
 
-                var rigidbody = EntityManager.GetComponentObject<Rigidbody>(entity);
-
                 if (target.State == TargetState.None)
-                {
-                    rigidbody.Stop();
                     return;
-                }
 
-                var pos = rigidbody.position;
+                var trans = unit.transform;
+                var pos = trans.position;
 
                 Vector3 tgt;
-                if (target.State == TargetState.OutOfRange && movement.BoidVector.Vector != FixedPointVector3.Zero) {
-                    var boidVec = movement.BoidVector.GetVector3(movement.TargetRange);
+                if (target.State == TargetState.OutOfRange && sight.BoidVector.Vector != FixedPointVector3.Zero) {
+                    var boidVec = sight.BoidVector.GetVector3(sight.TargetRange);
                     tgt = pos + boidVec;
                 }
                 else
-                    tgt = movement.TargetPosition.ToWorkerPosition(this.Origin);
+                    tgt = sight.TargetPosition.ToWorkerPosition(this.Origin);
 
                 float forward = 0.0f;
                 var diff = tgt - pos;
-                var range = movement.TargetRange;
+                var range = sight.TargetRange;
                 var buffer = range * RangeDictionary.MoveBufferRate;
                 var mag = diff.magnitude;
 
@@ -92,14 +96,8 @@ namespace AdvancedGears
                 }
 
                 bool isRotating = false;
-                if (rotate(rigidbody.transform, tgt - pos, movement.RotSpeed))
+                if (rotate(trans, tgt - pos, movement.RotSpeed))
                 {
-                    var inter = posture.Interval;
-                    if (posture.Initialized && inter.CheckTime())
-                    {
-                        posture.Interval = inter;
-                        posture.Root = rigidbody.transform.rotation.ToCompressedQuaternion();
-                    }
                     isRotating = true;
                 }
 

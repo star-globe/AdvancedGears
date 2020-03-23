@@ -69,52 +69,63 @@ namespace AdvancedGears
                     return;
                 }
 
-                var pos = rigidbody.position;
+                //var pos = rigidbody.position;
+                //
+                //Vector3 tgt;
+                //if (target.State == TargetState.OutOfRange && movement.BoidVector.Vector != FixedPointVector3.Zero) {
+                //    var boidVec = movement.BoidVector.GetVector3(movement.TargetRange);
+                //    tgt = pos + boidVec;
+                //}
+                //else
+                //    tgt = movement.TargetPosition.ToWorkerPosition(this.Origin);
+                //
+                //float forward = 0.0f;
+                //var diff = tgt - pos;
+                //var range = movement.TargetRange;
+                //var buffer = range * RangeDictionary.MoveBufferRate;
+                //var mag = diff.magnitude;
+                //
+                //if (mag > range) {
+                //    forward = Mathf.Min((mag - range) / buffer, 1.0f);
+                //}
+                //else if (mag < range - buffer) {
+                //    forward = Mathf.Max((mag - range + buffer) / buffer , -1.0f);
+                //}
+                //
+                //bool isRotating = false;
+                //if (rotate(rigidbody.transform, tgt - pos, movement.RotSpeed))
+                //{
+                //    var inter = posture.Interval;
+                //    if (posture.Initialized && inter.CheckTime())
+                //    {
+                //        posture.Interval = inter;
+                //        posture.Root = rigidbody.transform.rotation.ToCompressedQuaternion();
+                //    }
+                //    isRotating = true;
+                //}
+                //
+                //if (forward == 0.0f)
+                //{
+                //    rigidbody.Stop(isRotating);
+                //    return;
+                //}
+                //
+                //var speed = AttackLogicDictionary.GetOrderSpeed(status.Order, movement.MoveSpeed);
+                //
+                //var uVec = rigidbody.transform.forward * speed * forward;
+                //var moveVec = uVec * Time.fixedDeltaTime;
+                //rigidbody.MovePosition(pos + moveVec);
 
-                Vector3 tgt;
-                if (target.State == TargetState.OutOfRange && movement.BoidVector.Vector != FixedPointVector3.Zero) {
-                    var boidVec = movement.BoidVector.GetVector3(movement.TargetRange);
-                    tgt = pos + boidVec;
-                }
-                else
-                    tgt = movement.TargetPosition.ToWorkerPosition(this.Origin);
 
-                float forward = 0.0f;
-                var diff = tgt - pos;
-                var range = movement.TargetRange;
-                var buffer = range * RangeDictionary.MoveBufferRate;
-                var mag = diff.magnitude;
+                var trans = rigidbody.transform;
+                var uVec = trans.forward * movement.MoveSpeed;
 
-                if (mag > range) {
-                    forward = Mathf.Min((mag - range) / buffer, 1.0f);
-                }
-                else if (mag < range - buffer) {
-                    forward = Mathf.Max((mag - range + buffer) / buffer , -1.0f);
-                }
+                rigidbody.velocity = uVec;
 
-                bool isRotating = false;
-                if (rotate(rigidbody.transform, tgt - pos, movement.RotSpeed))
-                {
-                    var inter = posture.Interval;
-                    if (posture.Initialized && inter.CheckTime())
-                    {
-                        posture.Interval = inter;
-                        posture.Root = rigidbody.transform.rotation.ToCompressedQuaternion();
-                    }
-                    isRotating = true;
-                }
+                if (movement.RotSpeed != 0.0f)
+                    trans.Rotate(trans.up, movement.RotSpeed * Time.fixedDeltaTime);
 
-                if (forward == 0.0f)
-                {
-                    rigidbody.Stop(isRotating);
-                    return;
-                }
-
-                var speed = AttackLogicDictionary.GetOrderSpeed(status.Order, movement.MoveSpeed);
-
-                var uVec = rigidbody.transform.forward * speed * forward;
                 var moveVec = uVec * Time.fixedDeltaTime;
-                rigidbody.MovePosition(pos + moveVec);
 
                 var consume = (int)(moveVec.magnitude * movement.ConsumeRate);
                 fuel.Fuel -= consume;
