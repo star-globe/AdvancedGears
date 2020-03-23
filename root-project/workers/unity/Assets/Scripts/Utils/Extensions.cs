@@ -316,7 +316,7 @@ namespace AdvancedGears
     {
         public static IntervalChecker InitializedChecker(int period, bool setChecked = false)
         {
-            period = period > 0 ?? 1;
+            period = period > 0 ? period: 1;
             return InitializedChecker(1.0f/period, setChecked);
         }
 
