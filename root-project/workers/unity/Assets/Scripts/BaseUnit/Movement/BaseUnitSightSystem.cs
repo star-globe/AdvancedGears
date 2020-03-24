@@ -25,8 +25,7 @@ namespace AdvancedGears
                     ComponentType.ReadOnly<UnitTransform>(),
                     ComponentType.ReadWrite<BaseUnitMovement.Component>(),
                     ComponentType.ReadOnly<BaseUnitMovement.ComponentAuthority>(),
-                    ComponentType.ReadWrite<BaseUnitSight.Component>(),
-                    ComponentType.ReadOnly<BaseUnitSight.ComponentAuthority>(),
+                    ComponentType.ReadOnly<BaseUnitSight.Component>(),
                     ComponentType.ReadOnly<BaseUnitTarget.Component>(),
                     ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                     ComponentType.ReadOnly<BaseUnitAction.Component>(),
@@ -34,7 +33,6 @@ namespace AdvancedGears
             );
 
             group.SetFilter(BaseUnitMovement.ComponentAuthority.Authoritative);
-            group.SetFilter(BaseUnitSight.ComponentAuthority.Authoritative);
 
             interval = IntervalCheckerInitializer.InitializedChecker(60.0f/period);
         }

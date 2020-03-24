@@ -24,9 +24,7 @@ namespace AdvancedGears
                     ComponentType.ReadOnly<BaseUnitPosture.ComponentAuthority>(),
                     ComponentType.ReadOnly<UnitTransform>(),
                     ComponentType.ReadOnly<BaseUnitMovement.Component>(),
-                    ComponentType.ReadOnly<BaseUnitTarget.Component>(),
                     ComponentType.ReadOnly<BaseUnitStatus.Component>(),
-                    ComponentType.ReadOnly<BaseUnitAction.Component>(),
                     ComponentType.ReadWrite<FuelComponent.Component>(),
                     ComponentType.ReadOnly<FuelComponent.ComponentAuthority>()
             );
@@ -40,7 +38,6 @@ namespace AdvancedGears
             Entities.With(group).ForEach((Entity entity,
                                           ref BaseUnitPosture.Component posture,
                                           ref BaseUnitMovement.Component movement,
-                                          ref BaseUnitTarget.Component target,
                                           ref BaseUnitStatus.Component status,
                                           ref FuelComponent.Component fuel) =>
             {
