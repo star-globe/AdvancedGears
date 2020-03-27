@@ -15,6 +15,7 @@ namespace AdvancedGears
     {
         EntityQuery group;
         IntervalChecker interval;
+        float deltaTime = -1.0f;
 
         const int period = 10; 
         protected override void OnCreate()
@@ -35,12 +36,16 @@ namespace AdvancedGears
             group.SetFilter(BaseUnitMovement.ComponentAuthority.Authoritative);
 
             interval = IntervalCheckerInitializer.InitializedChecker(60.0f/period);
+
+            deltaTime = Time.time;
         }
 
         protected override void OnUpdate()
         {
             if (interval.CheckTime() == false)
                 return;
+
+            deltaTime = Time.time - deltaTime;
 
             Entities.With(group).ForEach((Entity entity,
                                           ref BaseUnitMovement.Component movement,
@@ -93,25 +98,23 @@ namespace AdvancedGears
                     forward = Mathf.Max((mag - range + buffer) / buffer , -1.0f);
                 }
 
-                bool isRotating = false;
-                if (rotate(trans, tgt - pos, movement.RotSpeed))
-                {
-                    isRotating = true;
-                }
+                var isRotate = rotate(trans, tgt - pos, rot * deltaTime);
 
                 if (forward == 0.0f)
                     movement.MoveSpeed = 0.0f;
                 else
                     movement.MoveSpeed = forward * speed;
 
-                if (isRotating)
-                    movement.RotSpeed = rot;
-                else
+                if (isRotate == 0)
                     movement.RotSpeed = 0.0f;
+                else
+                    movement.RotSpeed = rot * isRotate;
             });
+
+            deltaTime = Time.time;
         }
 
-        const float speed = 1.0f;
+        const float speed = 5.0f;
         const float rot = 3.0f;
 
         bool in_range(Vector3 forward, Vector3 tgt, float range, out Vector3 rot)
@@ -124,19 +127,27 @@ namespace AdvancedGears
             return Mathf.Asin(rot.magnitude) < Mathf.Deg2Rad * range;
         }
 
-        bool rotate(Transform transform, Vector3 diff, float rot_speed)
+        int rotate(Transform transform, Vector3 diff, float angle_range)
         {
-            Vector3 rot;
-            Vector3 foward = diff.normalized;
-            float angle = rot_speed * Time.deltaTime;
-            if (in_range(transform.forward, foward, angle, out rot) == false)
-            {
-                RotateLogic.Rotate(transform, foward, angle);
-                return true;
-            }
+            var rot = RotateLogic.GetAngle(transform.up, transform.forward, diff.normalized);
+            if (rot * rot < angle_range)
+                return 0;
 
-            return false;
+            return rot < 0 ? -1: 1;
         }
+        //bool rotate(Transform transform, Vector3 diff, float rot_speed)
+        //{
+        //    Vector3 rot;
+        //    Vector3 foward = diff.normalized;
+        //    float angle = rot_speed * Time.deltaTime;
+        //    if (in_range(transform.forward, foward, angle, out rot) == false)
+        //    {
+        //        RotateLogic.Rotate(transform, foward, angle);
+        //        return true;
+        //    }
+        //
+        //    return false;
+        //}
 
         float get_move_velocity(Vector3 diff, float check_length, float speed)
         {

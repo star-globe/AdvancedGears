@@ -60,7 +60,7 @@ namespace AdvancedGears
 
                 var rigidbody = EntityManager.GetComponentObject<Rigidbody>(entity);
 
-                if (target.State == TargetState.None)
+                if (movement.MoveSpeed == 0.0f)//target.State == TargetState.None)
                 {
                     rigidbody.Stop();
                     return;
@@ -68,7 +68,7 @@ namespace AdvancedGears
 
                 //var pos = rigidbody.position;
                 //
-                //Vector3 tgt;
+                //Vector3 tgt;s
                 //if (target.State == TargetState.OutOfRange && movement.BoidVector.Vector != FixedPointVector3.Zero) {
                 //    var boidVec = movement.BoidVector.GetVector3(movement.TargetRange);
                 //    tgt = pos + boidVec;
