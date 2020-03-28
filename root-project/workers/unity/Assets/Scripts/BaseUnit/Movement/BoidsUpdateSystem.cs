@@ -77,7 +77,7 @@ namespace AdvancedGears
                     if (TryGetComponentObject<Transform>(unit.id, out var t) == false)
                         continue;
 
-                    float rate = unit.type != UnitType.Commander ? 1.0f: 15.0f;
+                    float rate = unit.type != UnitType.Commander ? 1.0f: 2.0f;
 
                     vector += t.forward * rate;
                 }
