@@ -39,7 +39,9 @@ namespace AdvancedGears
         }
 
         EntityQuery group;
+        IntervalChecker inter;
 
+        const int period = 10;
         protected override void OnCreate()
         {
             base.OnCreate();
@@ -49,6 +51,8 @@ namespace AdvancedGears
                     ComponentType.ReadOnly<UnitTransform>(),
                     ComponentType.ReadOnly<BaseUnitStatus.Component>()
             );
+
+            inter = IntervalCheckerInitializer.InitializedChecker(period);
         }
 
         //Ray vertical = new Ray();
@@ -56,6 +60,9 @@ namespace AdvancedGears
         //readonly Dictionary<EntityId,PhysInfo> physDic = new Dictionary<EntityId, PhysInfo>();
         protected override void OnUpdate()
         {
+            if (inter.CheckTime() == false)
+                return;
+
             Entities.With(group).ForEach((Entity entity, ref BaseUnitStatus.Component status) =>
             {
                 var rigidbody = EntityManager.GetComponentObject<Rigidbody>(entity);

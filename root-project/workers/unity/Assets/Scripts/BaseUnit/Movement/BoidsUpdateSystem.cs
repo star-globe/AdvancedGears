@@ -17,7 +17,7 @@ namespace AdvancedGears
 
         IntervalChecker inter;
 
-        const int period = 2;
+        const int period = 10;
         protected override void OnCreate()
         {
             base.OnCreate();
@@ -67,7 +67,7 @@ namespace AdvancedGears
                 {
                     case TargetState.MovementTarget:    bufferRate = 0.5f;  break;
                     case TargetState.OutOfRange:        bufferRate = 1.0f;  break;
-                    case TargetState.ActionTarget:      bufferRate = 0.1f; break;
+                    case TargetState.ActionTarget:      bufferRate = 0.4f; break;
                 }
 
                 var center = pos + trans.forward * boid.ForwardLength;
