@@ -172,9 +172,13 @@ namespace AdvancedGears
         private void CheckOrder(OrderType order, Dictionary<EntityId,TargetStrongholdInfo> targets, Dictionary<EntityId,TeamInfo> datas)
         {
             entityIds.Clear();
+
+            var count = targets.Count;
+            if (count == 0)
+                return;
+
             foreach(var kvp in datas) {
                  if(targets.ContainsKey(kvp.Value.TargetEntityId) == false) {
-                    var count = targets.Count;
                     var key = targets.Keys.ElementAt(UnityEngine.Random.Range(0,count));
 
                     if (entityIds.ContainsKey(key) == false)

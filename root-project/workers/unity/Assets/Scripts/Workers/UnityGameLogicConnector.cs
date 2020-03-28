@@ -44,7 +44,7 @@ namespace AdvancedGears
             WorkerUtils.AddGameLogicSystems(Worker.World, this.gameObject);
         }
 
-        private static EntityTemplate CreatePlayerEntityTemplate(string workerId, byte[] serializedArguments)
+        private static EntityTemplate CreatePlayerEntityTemplate(EntityId entityId, string workerId, byte[] serializedArguments)
         {
             var clientAttribute = EntityTemplate.GetWorkerAccessAttribute(workerId);
 

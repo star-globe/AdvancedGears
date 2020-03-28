@@ -60,9 +60,9 @@ namespace AdvancedGears
 
                 var rigidbody = EntityManager.GetComponentObject<Rigidbody>(entity);
 
-                if (movement.MoveSpeed == 0.0f)//target.State == TargetState.None)
+                if (movement.MoveSpeed == 0.0f &&
+                    movement.RotSpeed == 0.0f)//target.State == TargetState.None)
                 {
-                    rigidbody.Stop();
                     return;
                 }
 
@@ -112,17 +112,17 @@ namespace AdvancedGears
                 //var uVec = rigidbody.transform.forward * speed * forward;
                 //var moveVec = uVec * Time.fixedDeltaTime;
                 //rigidbody.MovePosition(pos + moveVec);
-
-
                 var trans = rigidbody.transform;
-                var uVec = trans.forward * movement.MoveSpeed;
 
-                rigidbody.velocity = uVec;
+                var uVec = trans.forward * movement.MoveSpeed;
+                var moveVec = uVec * Time.fixedDeltaTime;
+
+                //rigidbody.velocity = uVec;
+                var pos = rigidbody.position;
+                rigidbody.MovePosition(pos + moveVec);
 
                 if (movement.RotSpeed != 0.0f)
                     trans.Rotate(trans.up, movement.RotSpeed * Time.fixedDeltaTime);
-
-                var moveVec = uVec * Time.fixedDeltaTime;
 
                 var consume = (int)(moveVec.magnitude * movement.ConsumeRate);
                 fuel.Fuel -= consume;

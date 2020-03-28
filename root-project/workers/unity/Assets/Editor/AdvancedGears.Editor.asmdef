@@ -6,12 +6,17 @@
         "Improbable.Gdk.Core",
         "Improbable.Gdk.Generated",
         "Improbable.Gdk.TransformSynchronization",
+        "Improbable.Gdk.QueryBasedInterestHelper",
         "Unity.Entities"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],
     "excludePlatforms": [],
-    "allowUnsafeCode": false
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
 }

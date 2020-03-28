@@ -17,6 +17,7 @@ namespace AdvancedGears
 
         IntervalChecker inter;
 
+        const int period = 2;
         protected override void OnCreate()
         {
             base.OnCreate();
@@ -32,7 +33,7 @@ namespace AdvancedGears
             );
 
             group.SetFilter(BoidComponent.ComponentAuthority.Authoritative);
-            inter = IntervalCheckerInitializer.InitializedChecker(1.0f);
+            inter = IntervalCheckerInitializer.InitializedChecker(period);
         }
 
         float diffMin = 0.1f;
@@ -76,7 +77,7 @@ namespace AdvancedGears
                     if (TryGetComponentObject<Transform>(unit.id, out var t) == false)
                         continue;
 
-                    float rate = unit.type != UnitType.Commander ? 1.0f: 5.0f;
+                    float rate = unit.type != UnitType.Commander ? 1.0f: 15.0f;
 
                     vector += t.forward * rate;
                 }

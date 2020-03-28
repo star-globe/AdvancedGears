@@ -183,19 +183,28 @@ namespace AdvancedGears
             template.AddComponent(new GunComponent.Snapshot { GunsDic = new Dictionary<PosturePoint, GunInfo>() }, WorkerUtils.UnityGameLogic);
             template.AddComponent(new FuelComponent.Snapshot(), WorkerUtils.UnityGameLogic);
 
+            InterestTemplate interest = InterestTemplate.Create();
+
             if (isPlayer) {
                 template.AddComponent(new AdvancedPlayerInput.Snapshot(), controllAttribute);
                 template.AddComponent(new PlayerInfo.Snapshot { ClientWorkerId = workerId }, controllAttribute);
-                template.AddComponent(CreateSelfPlayerMinimapInterestTemplate().ToSnapshot(), controllAttribute);
+                PlayerLifecycleHelper.AddPlayerLifecycleComponents(template, workerId, WorkerUtils.UnityGameLogic);
+
+                // ミニマップ用QBI
+                template.AddComponent(new MinimapComponent.Snapshot(), controllAttribute);
+                AddMinimapQuery<MinimapComponent.Component>(interest);
             }
-            else { 
+            else {
                 template.AddComponent(new AdvancedUnmannedInput.Snapshot(), controllAttribute);
             }
 
             template.AddComponent(new BaseUnitStatus.Snapshot { Type = UnitType.Advanced, Side = side, State = UnitState.Alive }, WorkerUtils.UnityGameLogic);
 
             TransformSynchronizationHelper.AddTransformSynchronizationComponents(template, controllAttribute);
-            PlayerLifecycleHelper.AddPlayerLifecycleComponents(template, workerId, WorkerUtils.UnityGameLogic);
+
+            // 共通QBI
+            AddBasicQuery<Position.Component>(interest);
+            template.AddComponent(interest.ToSnapshot(), controllAttribute);
 
             template.SetReadAccess(UnityClientConnector.WorkerType, MobileClientWorkerConnector.WorkerType, WorkerUtils.UnityGameLogic);
             template.SetComponentWriteAccess(EntityAcl.ComponentId, WorkerUtils.UnityGameLogic);
@@ -203,21 +212,16 @@ namespace AdvancedGears
             return template;
         }
 
-        static InterestTemplate CreateSelfPlayerMinimapInterestTemplate()
+        static void AddBasicQuery<T>(InterestTemplate interest) where T : ISpatialComponentData
         {
-            var basicQuery = InterestQuery.Query(
-                Constraint.All(
-                    Constraint.RelativeSphere(FixedParams.PlayerInterestLimit),
-                    Constraint.Component(BaseUnitStatus.ComponentId)))
-                .FilterResults(Position.ComponentId,
-                               Metadata.ComponentId,
-                               BaseUnitStatus.ComponentId,
-                               BaseUnitHealth.ComponentId,
-                               TransformInternal.ComponentId,
-                               BulletComponent.ComponentId,
-                               GunComponent.ComponentId);
+            var basicQuery = InterestQuery.Query(Constraint.RelativeSphere(FixedParams.PlayerInterestLimit));
 
-            var minimapQuery = InterestQuery.Query(
+            interest.AddQueries<T>(basicQuery);
+        }
+
+        static void AddMinimapQuery<T>(InterestTemplate interest) where T : ISpatialComponentData
+        {
+             var minimapQuery = InterestQuery.Query(
                 Constraint.All(
                     Constraint.Any(Constraint.Component(CommanderStatus.ComponentId),
                                    Constraint.Component(StrongholdStatus.ComponentId),
@@ -228,8 +232,7 @@ namespace AdvancedGears
                                TransformInternal.ComponentId)
                 .WithMaxFrequencyHz(FixedParams.WorldInterestFrequency);
 
-            return InterestTemplate.Create()
-                   .AddQueries<AdvancedPlayerInput.Component>(basicQuery, minimapQuery);
+            interest.AddQueries<T>(minimapQuery);
         }
     }
 }
