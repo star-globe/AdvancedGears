@@ -205,7 +205,7 @@ namespace AdvancedGears
             if (info.StrongholdId.IsValid()) {
                 tgt = getUnitInfo(info.StrongholdId);
 
-                Debug.LogFormat("TargetStronghold is Valid. Side:{0} Position:{1}", status.Side, tgt.pos);
+                //Debug.LogFormat("TargetStronghold is Valid. Side:{0} Position:{1}", status.Side, tgt.pos);
             }
             else
                 tgt = getNearestEnemy(status.Side, pos, sight.Range, allowDead:true, UnitType.Stronghold, UnitType.Commander);

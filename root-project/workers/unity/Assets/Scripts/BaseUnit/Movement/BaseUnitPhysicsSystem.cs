@@ -47,41 +47,28 @@ namespace AdvancedGears
             group = GetEntityQuery(
                     ComponentType.ReadWrite<Rigidbody>(),
                     ComponentType.ReadOnly<UnitTransform>(),
-                    ComponentType.ReadOnly<BaseUnitStatus.Component>(),
-                    ComponentType.ReadOnly<SpatialEntityId>()
+                    ComponentType.ReadOnly<BaseUnitStatus.Component>()
             );
         }
 
-        Ray vertical = new Ray();
+        //Ray vertical = new Ray();
         //readonly int layer = //LayerMask.//LayerMask.GetMask("Ground");
-        readonly Dictionary<EntityId,PhysInfo> physDic = new Dictionary<EntityId, PhysInfo>();
+        //readonly Dictionary<EntityId,PhysInfo> physDic = new Dictionary<EntityId, PhysInfo>();
         protected override void OnUpdate()
         {
-            Entities.With(group).ForEach((Entity entity,
-                                          ref BaseUnitStatus.Component status,
-                                          ref SpatialEntityId entityId) =>
+            Entities.With(group).ForEach((Entity entity, ref BaseUnitStatus.Component status) =>
             {
+                var rigidbody = EntityManager.GetComponentObject<Rigidbody>(entity);
+                if (rigidbody == null ||
+                    rigidbody.isKinematic)
+                    return;
+
                 var unit = EntityManager.GetComponentObject<UnitTransform>(entity);
                 if (unit == null)
                     return;
 
-                var isGrounded = unit.GetGrounded();
-                var isBuilding = UnitPhysicsDictionary.IsBuilding(status.Type);
-                var isNotAlive = status.State != UnitState.Alive;
-
-                var id = entityId.EntityId;
-                if (physDic.ContainsKey(id) == false) {
-                    physDic.Add(id, new PhysInfo(isGrounded, isBuilding, isNotAlive));
-                }
-                else if (physDic[id].CheckChanged(isGrounded, isNotAlive) == false) {
-                    return; 
-                }
-
-                var rigidbody = EntityManager.GetComponentObject<Rigidbody>(entity);
-
-                if (isGrounded & isBuilding) {
+                if (unit.GetGrounded() && UnitPhysicsDictionary.IsBuilding(status.Type))
                     rigidbody.isKinematic = true;
-                }
             });
         }
     }

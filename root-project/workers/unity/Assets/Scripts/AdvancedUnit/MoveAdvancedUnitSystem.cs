@@ -99,12 +99,12 @@ namespace AdvancedGears
                 if (inputDir.x * inputDir.x > 0.0f) {
                     Vector3 up = trans.up;
                     var unit = EntityManager.GetComponentObject<UnitTransform>(entity);
-                    if (unit != null && unit.GetGrounded(out var hit)) {
+                    if (unit != null && unit.GetGrounded(out var hit))
+                    {
                         up = hit.normal;
-                        //var fwd = new Vector3(trans.forward.x, 0, trans.forward.z);
-                        //trans.rotation = Quaternion.LookRotation(fwd.normalized, hit.normal);
+                        var fwd = new Vector3(trans.forward.x, 0, trans.forward.z);
+                        trans.rotation = Quaternion.LookRotation(fwd.normalized, hit.normal);
                     }
-                    //(trans.up, inputDir.x);
 
                     trans.Rotate(up, inputDir.x * TurnSpeed);
 

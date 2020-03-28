@@ -84,3 +84,7 @@ component AdvancedUnmannedInput {
     int32 logic_pattern = 3;
 
 }
+
+component MinimapComponent {
+    id = 21050;
+}

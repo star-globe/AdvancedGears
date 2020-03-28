@@ -21,5 +21,5 @@ MonoBehaviour:
   forwardLength: 10
   separeteWeight: 1.5
   alignmentWeight: 1
-  cohesionWeight: 2
+  cohesionWeight: 10
   captureSpeed: 1.5

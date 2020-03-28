@@ -122,6 +122,11 @@ namespace AdvancedGears
             return Physics.Raycast(vertical, out hitInfo, bounds.extents.y * 1.1f, this.Layer);
         }
 
+        public Vector3 GetUpAxis()
+        {
+            return groundDetect.transform.up;
+        }
+
 #if false
         private void OnCollisionStay(Collision collision)
         {

@@ -35,7 +35,7 @@ namespace AdvancedGears
 
             group.SetFilter(BaseUnitMovement.ComponentAuthority.Authoritative);
 
-            interval = IntervalCheckerInitializer.InitializedChecker(60.0f/period);
+            interval = IntervalCheckerInitializer.InitializedChecker(period);
 
             deltaTime = Time.time;
         }
@@ -98,7 +98,9 @@ namespace AdvancedGears
                     forward = Mathf.Max((mag - range + buffer) / buffer , -1.0f);
                 }
 
-                var isRotate = rotate(trans, tgt - pos, rot * deltaTime);
+                MovementDictionary.TryGet(status.Type, out var speed, out var rot);
+
+                var isRotate = rotate(trans, tgt - pos, rot * Time.deltaTime);
 
                 if (forward == 0.0f)
                     movement.MoveSpeed = 0.0f;
@@ -114,9 +116,6 @@ namespace AdvancedGears
             deltaTime = Time.time;
         }
 
-        const float speed = 5.0f;
-        const float rot = 3.0f;
-
         bool in_range(Vector3 forward, Vector3 tgt, float range, out Vector3 rot)
         {
             rot = Vector3.Cross(forward, tgt);
@@ -130,7 +129,7 @@ namespace AdvancedGears
         int rotate(Transform transform, Vector3 diff, float angle_range)
         {
             var rot = RotateLogic.GetAngle(transform.up, transform.forward, diff.normalized);
-            if (rot * rot < angle_range)
+            if (rot * rot < angle_range * angle_range)
                 return 0;
 
             return rot < 0 ? -1: 1;

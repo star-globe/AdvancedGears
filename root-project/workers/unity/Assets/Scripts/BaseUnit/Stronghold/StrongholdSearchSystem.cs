@@ -16,7 +16,9 @@ namespace AdvancedGears
     internal class StrongholdSearchSystem : BaseSearchSystem
     {
         private EntityQuery group;
+        IntervalChecker inter;
 
+        const int period = 2;
         protected override void OnCreate()
         {
             base.OnCreate();
@@ -32,10 +34,15 @@ namespace AdvancedGears
             );
             group.SetFilter(StrongholdSight.ComponentAuthority.Authoritative);
             group.SetFilter(BaseUnitStatus.ComponentAuthority.Authoritative);
+
+            inter = IntervalCheckerInitializer.InitializedChecker(period);
         }
 
         protected override void OnUpdate()
         {
+            if (inter.CheckTime() == false)
+                return;
+
             Entities.With(group).ForEach((Entity entity,
                                           ref StrongholdSight.Component sight,
                                           ref StrongholdStatus.Component stronghold,
@@ -99,7 +106,7 @@ namespace AdvancedGears
                 order = OrderType.Keep;
             }
 
-            Debug.LogFormat("Side:{0} Order:{1} StrategyVector:{2}", side, order, strategyVector);
+            //Debug.LogFormat("Side:{0} Order:{1} StrategyVector:{2}", side, order, strategyVector);
 
             return order;
         }
