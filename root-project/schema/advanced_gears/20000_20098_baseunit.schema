@@ -68,7 +68,9 @@ component BaseUnitReviveTimer {
 
 type BoidVector {
     improbable.gdk.transform_synchronization.FixedPointVector3 vector = 1;
-    float buffer_rate = 2;
+    improbable.gdk.transform_synchronization.FixedPointVector3 center = 2;
+    float buffer_rate = 3;
+    float boid_radius = 4;
 }
 
 // move:20010~20019

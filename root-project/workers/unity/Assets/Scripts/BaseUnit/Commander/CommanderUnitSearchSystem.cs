@@ -18,8 +18,11 @@ namespace AdvancedGears
         private EntityQuery targettingGroup;
         private EntityQuery teamingGroup;
 
-        IntervalChecker inter;
+        IntervalChecker teamingInter;
+        IntervalChecker targettingInter;
 
+        const float teaminTime = 1.0f;
+        const int period = 15;
         #region ComponentSystem
         protected override void OnCreate()
         {
@@ -48,15 +51,17 @@ namespace AdvancedGears
             );
             teamingGroup.SetFilter(CommanderTeam.ComponentAuthority.Authoritative);
 
-            inter = IntervalCheckerInitializer.InitializedChecker(5.0f);
+            teamingInter = IntervalCheckerInitializer.InitializedChecker(teaminTime);
+            targettingInter = IntervalCheckerInitializer.InitializedChecker(period);
         }
 
         protected override void OnUpdate()
         {
-            if (inter.CheckTime())
+            if (teamingInter.CheckTime())
                 HandleTeaming();
 
-            HandleTargetting();
+            if (targettingInter.CheckTime())
+                HandleTargetting();
         }
         private void HandleTargetting()
         {

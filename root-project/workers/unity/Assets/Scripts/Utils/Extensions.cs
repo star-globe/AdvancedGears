@@ -310,6 +310,12 @@ namespace AdvancedGears
             var norm = boidVector.Vector.ToUnityVector().normalized;
             return norm * range * (1.0f + boidVector.BufferRate);
         }
+
+        public static float SqrtBoidRadius(this BoidVector boidVector)
+        {
+            var radius = boidVector.BoidRadius;
+            return radius * radius;
+        }
     }
 
     public static class IntervalCheckerInitializer

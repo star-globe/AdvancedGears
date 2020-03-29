@@ -36,7 +36,8 @@ namespace AdvancedGears
             inter = IntervalCheckerInitializer.InitializedChecker(period);
         }
 
-        float diffMin = 0.1f;
+        const float diffMinVec = 0.1f * 0.1f;
+        const float diffMinPos = 1.0f * 1.0f;
         protected override void OnUpdate()
         {
             if (inter.CheckTime() == false)
@@ -77,9 +78,9 @@ namespace AdvancedGears
                     if (TryGetComponentObject<Transform>(unit.id, out var t) == false)
                         continue;
 
-                    float rate = unit.type != UnitType.Commander ? 1.0f: 2.0f;
+                    //float rate = unit.type != UnitType.Commander ? 1.0f: 2.0f;
 
-                    vector += t.forward * rate;
+                    vector += t.forward;// * rate;
                 }
 
                 vector /= alliesCount;
@@ -93,13 +94,16 @@ namespace AdvancedGears
                     var rate = 1.0f;
 
                     var inter = RangeDictionary.UnitInter;
-                    if (unit.type != UnitType.Commander) {
-                        foreach (var other in allies) {
+                    if (unit.type == UnitType.Commander)
+                        continue;
+                    else {
+                        foreach (var other in allies)
+                        {
                             if (other.id == unit.id)
                                 continue;
 
                             var sep = unit.pos - other.pos;
-                            sep *= other.type != UnitType.Commander ? 1.0f: 3.0f; 
+                            //sep *= other.type != UnitType.Commander ? 1.0f: 3.0f; 
 
                             boidVec += sep;
                         }
@@ -111,11 +115,12 @@ namespace AdvancedGears
                         rate = bufferRate * (center - unit.pos).sqrMagnitude / 100.0f;
                     }
 
-                    var diff = boidVec - baseVec;
-                    if (diff.sqrMagnitude < diffMin * diffMin)
+                    var diffVec = boidVec - baseVec;
+                    var diffCenter = center - sight.Value.BoidVector.Center.ToUnityVector();
+                    if (diffVec.sqrMagnitude < diffMinVec && diffCenter.sqrMagnitude < diffMinPos)
                         continue;
 
-                    var boidVector = new BoidVector(boidVec.ToFixedPointVector3(), rate);
+                    var boidVector = new BoidVector(boidVec.ToFixedPointVector3(), center.ToWorldPosition(this.Origin), rate, range);
                     this.UpdateSystem.SendEvent(new BaseUnitSight.BoidDiffed.Event(boidVector), unit.id);
                 }
             });

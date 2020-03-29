@@ -20,7 +20,7 @@ MonoBehaviour:
     rangeRate: 0.4
     speedRate: 0.8
   - order: 3
-    rangeRate: 2.0
+    rangeRate: 3
     speedRate: 0.8
   - order: 2
     rangeRate: 0.9

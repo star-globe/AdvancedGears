@@ -77,16 +77,22 @@ namespace AdvancedGears
                 var trans = unit.transform;
                 var pos = trans.position;
 
-                Vector3 tgt;
-                if (target.State == TargetState.OutOfRange && sight.BoidVector.Vector != FixedPointVector3.Zero) {
-                    var boidVec = sight.BoidVector.GetVector3(sight.TargetRange);
-                    tgt = pos + boidVec;
+                Vector3? tgt = null;
+                var boidVector = sight.BoidVector;
+                if (boidVector.Vector != FixedPointVector3.Zero) {
+                    var center = boidVector.Center.ToWorkerPosition(this.Origin);
+
+                    if ((center - pos).sqrMagnitude > boidVector.SqrtBoidRadius())
+                        tgt = center;
+                    else if (target.State == TargetState.OutOfRange)
+                        tgt = pos + boidVector.GetVector3(sight.TargetRange);
                 }
-                else
+
+                if (tgt == null)
                     tgt = sight.TargetPosition.ToWorkerPosition(this.Origin);
 
                 float forward = 0.0f;
-                var diff = tgt - pos;
+                var diff = tgt.Value - pos;
                 var range = sight.TargetRange;
                 var buffer = range * RangeDictionary.MoveBufferRate;
                 var mag = diff.magnitude;
@@ -100,7 +106,7 @@ namespace AdvancedGears
 
                 MovementDictionary.TryGet(status.Type, out var speed, out var rot);
 
-                var isRotate = rotate(trans, tgt - pos, rot * Time.deltaTime);
+                var isRotate = rotate(trans, tgt.Value - pos, rot * Time.deltaTime);
 
                 if (forward == 0.0f)
                     movement.MoveSpeed = 0.0f;

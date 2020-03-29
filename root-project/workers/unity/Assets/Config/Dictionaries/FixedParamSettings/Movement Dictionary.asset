@@ -15,7 +15,7 @@ MonoBehaviour:
   movementSettings:
   - type: 1
     speed: 2
-    rot: 5
+    rot: 10
   - type: 2
     speed: 2
-    rot: 5
+    rot: 10
