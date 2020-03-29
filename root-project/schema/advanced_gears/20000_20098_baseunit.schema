@@ -71,6 +71,7 @@ type BoidVector {
     improbable.gdk.transform_synchronization.FixedPointVector3 center = 2;
     float buffer_rate = 3;
     float boid_radius = 4;
+    float potential = 5;
 }
 
 // move:20010~20019
