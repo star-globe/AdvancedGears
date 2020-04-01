@@ -12,8 +12,22 @@ namespace AdvancedGears
     {
         [SerializeField] PostureTransform[] postures;
 
-        [SerializeField] BoxCollider groundDetect;
-        public BoxCollider GroundDetect { get { return groundDetect; } }
+        [SerializeField] BoxCollider boxDetect;
+        [SerializeField] SphereCollider sphereDetect;
+
+        private Collider Detect
+        {
+            get
+            {
+                if (boxDetect != null)
+                    return boxDetect;
+
+                if (sphereDetect != null)
+                    return sphereDetect;
+
+                return null;
+            }
+        }
 
         Dictionary<PosturePoint,PostureTransform> postureDic = null;
         public Dictionary<PosturePoint,PostureTransform> PostureDic
@@ -99,16 +113,6 @@ namespace AdvancedGears
             }
         }
         
-
-        private void Start()
-        {
-            //var bounds = groundDetect.bounds;
-            //vertical.direction = -groundDetect.transform.up;
-            //vertical.origin = bounds.center;
-            //
-            //IsGrounded = Physics.Raycast(vertical, bounds.extents.y * 1.1f, this.Layer);
-        }
-
         public bool GetGrounded()
         {
             return GetGrounded(out var hitInfo);
@@ -116,15 +120,23 @@ namespace AdvancedGears
 
         public bool GetGrounded(out RaycastHit hitInfo)
         {
-            var bounds = groundDetect.bounds;
-            vertical.direction = -groundDetect.transform.up;
+            if (this.Detect == null) {
+                hitInfo = new RaycastHit();
+                return false;
+            }
+
+            var bounds = this.Detect.bounds;
+            vertical.direction = -this.Detect.transform.up;
             vertical.origin = bounds.center;
             return Physics.Raycast(vertical, out hitInfo, bounds.extents.y * 1.1f, this.Layer);
         }
 
         public Vector3 GetUpAxis()
         {
-            return groundDetect.transform.up;
+            if (this.Detect == null)
+                return Vector3.up;
+
+            return this.Detect.transform.up;
         }
 
 #if false

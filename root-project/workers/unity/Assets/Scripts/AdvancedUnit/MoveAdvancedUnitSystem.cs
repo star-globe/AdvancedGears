@@ -97,36 +97,19 @@ namespace AdvancedGears
 
                 var trans = rigidbody.transform;
                 if (inputDir.x * inputDir.x > 0.0f) {
-                    Vector3 up = trans.up;
-                    var unit = EntityManager.GetComponentObject<UnitTransform>(entity);
-                    if (unit != null && unit.GetGrounded(out var hit))
-                    {
-                        up = hit.normal;
-                        var fwd = new Vector3(trans.forward.x, 0, trans.forward.z);
-                        trans.rotation = Quaternion.LookRotation(fwd.normalized, hit.normal);
-                    }
-
-                    trans.Rotate(up, inputDir.x * TurnSpeed);
-
-                    //Debug.LogFormat("x:{0} y:{1}", inputDir.x, inputDir.y);
-                    //rigidbody.transform.eulerAngles = rigidbody.transform.up * Mathf.SmoothDampAngle(
-                    //    rigidbody.transform.eulerAngles.y, targetRotation,
-                    //    ref turnSmoothVelocity, TurnSmoothTime);
-                    //var fwd = new Vector3(trans.forward.x, 0, trans.forward.z);
-                    //trans.rotation = Quaternion.LookRotation(fwd.normalized, Vector3.up);
+                    //Vector3 up = trans.up;
                     //var unit = EntityManager.GetComponentObject<UnitTransform>(entity);
-                    //if (unit != null && unit.GetGrounded(out var hit)) {
-                    //    
+                    //if (unit != null && unit.GetGrounded(out var hit))
+                    //{
+                    //    up = hit.normal;
+                    //    var fwd = new Vector3(trans.forward.x, 0, trans.forward.z);
+                    //    trans.rotation = Quaternion.LookRotation(fwd.normalized, hit.normal);
                     //}
-                }
 
-                //else
-                //{
-                //    var rotation = rigidbody.transform.rotation;
-                //    var angles = rotation.eulerAngles;
-                //    rotation.eulerAngles = new Vector3(0.0f, angles.y, angles.z);
-                //    rigidbody.transform.rotation = rotation;
-                //}
+                    trans.Rotate(Vector3.up, inputDir.x * TurnSpeed);
+                    var fwd = new Vector3(trans.forward.x, 0, trans.forward.z);
+                    trans.rotation = Quaternion.LookRotation(fwd.normalized, vector3.up);
+                }
 
                 var x = rigidbody.velocity.x;
                 var z = rigidbody.velocity.z;
