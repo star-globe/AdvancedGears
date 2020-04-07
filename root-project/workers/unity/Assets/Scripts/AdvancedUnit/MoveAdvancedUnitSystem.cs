@@ -108,7 +108,7 @@ namespace AdvancedGears
 
                     trans.Rotate(Vector3.up, inputDir.x * TurnSpeed);
                     var fwd = new Vector3(trans.forward.x, 0, trans.forward.z);
-                    trans.rotation = Quaternion.LookRotation(fwd.normalized, vector3.up);
+                    trans.rotation = Quaternion.LookRotation(fwd.normalized, Vector3.up);
                 }
 
                 var x = rigidbody.velocity.x;

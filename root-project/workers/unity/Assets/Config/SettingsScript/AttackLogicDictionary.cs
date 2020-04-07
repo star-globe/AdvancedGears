@@ -21,7 +21,11 @@ namespace AdvancedGears
 
         [SerializeField]
         float judgeRate = 1.5f;
-        public static float JudgeRate => Instance.judgeRate; 
+        public static float JudgeRate => Instance.judgeRate;
+
+        [SerializeField]
+        float boidReduceRate = 0.8f;
+        public static float BoidReduceRate => Instance.boidReduceRate;
 
         public static AttackLogicDictionary Instance { private get; set; }
 

@@ -50,7 +50,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   postures:
   - {fileID: 832899008666104661}
-  groundDetect: {fileID: 2018367697226967595}
+  boxDetect: {fileID: 0}
+  sphereDetect: {fileID: 0}
 --- !u!114 &7984425953243554742
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -323,8 +324,8 @@ GameObject:
   - component: {fileID: 3206165956079817796}
   - component: {fileID: 1378434714887685636}
   - component: {fileID: 4495539276159928859}
-  - component: {fileID: 2018367697226967595}
   - component: {fileID: 6323144072509972556}
+  - component: {fileID: 721522618326989078}
   m_Layer: 13
   m_Name: Vehicle
   m_TagString: Untagged
@@ -392,19 +393,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!65 &2018367697226967595
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1992814905447513452}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1.5, y: 2, z: 1.5}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &6323144072509972556
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -417,6 +405,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0da2d9182fc6244eb594f713d4ce4af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!135 &721522618326989078
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1992814905447513452}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.23
+  m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!1 &4845667005483981039
 GameObject:
   m_ObjectHideFlags: 0
