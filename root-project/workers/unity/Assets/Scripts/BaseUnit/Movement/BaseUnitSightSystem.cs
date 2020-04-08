@@ -88,6 +88,11 @@ namespace AdvancedGears
                         tgt = pos + boidVector.GetVector3(sight.TargetRange);
                 }
 
+                var current = Time.time;
+                var diff = current - sight.BoidUpdateTime;
+                boidVector.Potential = AttackLogicDictionary.ReduceBoidPotential(boidVector.Potential, diff);
+                sight.BoidUpdateTime = current;
+
                 if (tgt == null)
                     tgt = sight.TargetPosition.ToWorkerPosition(this.Origin);
 
