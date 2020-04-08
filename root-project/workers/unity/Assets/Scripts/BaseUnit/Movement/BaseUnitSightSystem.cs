@@ -79,7 +79,7 @@ namespace AdvancedGears
 
                 Vector3? tgt = null;
                 var boidVector = sight.BoidVector;
-                if (boidVector.Vector != FixedPointVector3.Zero) {
+                if (boidVector.Potential > 0.0f) {
                     var center = boidVector.Center.ToWorkerPosition(this.Origin);
 
                     if ((center - pos).sqrMagnitude > boidVector.SqrtBoidRadius())

@@ -29,6 +29,7 @@ namespace AdvancedGears
                     ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                     ComponentType.ReadOnly<BaseUnitTarget.Component>(),
                     ComponentType.ReadOnly<CommanderStatus.Component>(),
+                    ComponentType.ReadOnly<BaseUnitMovement.Component>(),
                     ComponentType.ReadOnly<SpatialEntityId>()
             );
 
@@ -48,6 +49,7 @@ namespace AdvancedGears
                                           ref BaseUnitStatus.Component status,
                                           ref BaseUnitTarget.Component target,
                                           ref CommanderStatus.Component commander,
+                                          ref BaseUnitMovement.Component movement,
                                           ref SpatialEntityId entityId) =>
             {
                 if (status.State != UnitState.Alive)
@@ -91,7 +93,6 @@ namespace AdvancedGears
                     
                     var baseVec = sight.Value.BoidVector.Vector.ToUnityVector();
                     var boidVec = Vector3.zero;
-                    var rate = 1.0f;
 
                     var inter = RangeDictionary.UnitInter;
                     if (unit.type == UnitType.Commander)
@@ -117,14 +118,14 @@ namespace AdvancedGears
                     boidVec += vector * boid.AlignmentWeight;
                     boidVec += (center - unit.pos) * boid.CohesionWeight;
 
-                    rate = bufferRate * (center - unit.pos).sqrMagnitude / 100.0f;
+                    boidVec = boidVec.normalized * movement.MoveSpeed;
 
                     var diffVec = boidVec - baseVec;
                     var diffCenter = center - sight.Value.BoidVector.Center.ToUnityVector();
                     if (diffVec.sqrMagnitude < diffMinVec && diffCenter.sqrMagnitude < diffMinPos)
                         continue;
 
-                    var boidVector = new BoidVector(boidVec.ToFixedPointVector3(), center.ToWorldPosition(this.Origin), rate, range, potential);
+                    var boidVector = new BoidVector(boidVec.ToFixedPointVector3(), center.ToWorldPosition(this.Origin), range, potential);
                     this.UpdateSystem.SendEvent(new BaseUnitSight.BoidDiffed.Event(boidVector), unit.id);
                 }
             });

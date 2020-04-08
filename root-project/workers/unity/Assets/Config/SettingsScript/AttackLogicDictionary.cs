@@ -27,6 +27,10 @@ namespace AdvancedGears
         float boidReduceRate = 0.8f;
         public static float BoidReduceRate => Instance.boidReduceRate;
 
+        [SerializeField]
+        float boidPotentialMinimum = 1.0f / 1000;
+        public static float BoidPotentialMinimum => Instance.boidPotentialMinimum;
+
         public static AttackLogicDictionary Instance { private get; set; }
 
         readonly Dictionary<OrderType, OrderRate> orderDic = new Dictionary<OrderType, OrderRate>();
@@ -54,6 +58,12 @@ namespace AdvancedGears
                 baseSpeed = rates.rangeRate * baseSpeed;
 
             return baseSpeed;
+        }
+
+        public static float ReduceBoidPotential(float potential, float time)
+        {
+            potential *= Mathf.Pow(BoidReduceRate, time);
+            return potential < BoidPotentialMinimum ? 0.0f: potential;
         }
     }
 }

@@ -307,8 +307,8 @@ namespace AdvancedGears
 
         public static Vector3 GetVector3(this BoidVector boidVector, float range)
         {
-            var norm = boidVector.Vector.ToUnityVector().normalized;
-            return norm * range * (1.0f + boidVector.BufferRate);
+            var vec = boidVector.Vector.ToUnityVector();
+            return vec.normalized * ( range + vec.magnitude);
         }
 
         public static float SqrtBoidRadius(this BoidVector boidVector)
