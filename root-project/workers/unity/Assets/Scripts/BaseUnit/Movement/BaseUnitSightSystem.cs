@@ -89,8 +89,8 @@ namespace AdvancedGears
                 }
 
                 var current = Time.time;
-                var diff = current - sight.BoidUpdateTime;
-                boidVector.Potential = AttackLogicDictionary.ReduceBoidPotential(boidVector.Potential, diff);
+                var diffTime = current - sight.BoidUpdateTime;
+                boidVector.Potential = AttackLogicDictionary.ReduceBoidPotential(boidVector.Potential, diffTime);
                 sight.BoidUpdateTime = current;
 
                 if (tgt == null)
@@ -145,7 +145,7 @@ namespace AdvancedGears
             is_over = false;
             var rot = RotateLogic.GetAngle(transform.up, transform.forward, diff.normalized);
             var sqrtRot = rot * rot;
-            var srtRange = angle_range * angle_range;
+            var sqrtRange = angle_range * angle_range;
             if (sqrtRot < sqrtRange) {
                 return 0;
             }

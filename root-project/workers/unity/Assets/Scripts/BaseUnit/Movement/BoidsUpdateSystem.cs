@@ -82,10 +82,10 @@ namespace AdvancedGears
                         continue;
 
                     //float rate = unit.type != UnitType.Commander ? 1.0f: 2.0f;
-                    if (TryGetComponent<BaseUnitMovement.Component>(unit.id, out var movement) == false)
+                    if (TryGetComponent<BaseUnitMovement.Component>(unit.id, out var move) == false)
                         continue;
 
-                    speedDic[unit.id] = movement.MoveSpeed;
+                    speedDic[unit.id] = move.Value.MoveSpeed;
 
                     vector += t.forward;// * rate;
                 }

@@ -34,7 +34,7 @@ namespace AdvancedGears
             sightWriter.SendUpdate(new BaseUnitSight.Update()
             {
                 BoidVector = vector,
-                BoidUpdateTme = Time.time,
+                BoidUpdateTime = Time.time,
             });
         }
     }
