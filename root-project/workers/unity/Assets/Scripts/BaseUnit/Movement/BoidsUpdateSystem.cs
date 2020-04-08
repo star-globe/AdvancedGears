@@ -76,11 +76,16 @@ namespace AdvancedGears
                 var center = pos + trans.forward * boid.ForwardLength;
                 var vector = Vector3.zero;
 
+                var speedDic = new Dictionary<EntityId, float>();
                 foreach(var unit in allies) {
                     if (TryGetComponentObject<Transform>(unit.id, out var t) == false)
                         continue;
 
                     //float rate = unit.type != UnitType.Commander ? 1.0f: 2.0f;
+                    if (TryGetComponent<BaseUnitMovement.Component>(unit.id, out var movement) == false)
+                        continue;
+
+                    speedDic[unit.id] = movement.MoveSpeed;
 
                     vector += t.forward;// * rate;
                 }
@@ -90,9 +95,10 @@ namespace AdvancedGears
                 foreach(var unit in allies) {
                     if (TryGetComponent<BaseUnitSight.Component>(unit.id, out var sight) == false)
                         continue;
-                    
+
                     var baseVec = sight.Value.BoidVector.Vector.ToUnityVector();
                     var boidVec = Vector3.zero;
+                    var syncSpeed = 0.0f;
 
                     var inter = RangeDictionary.UnitInter;
                     if (unit.type == UnitType.Commander)
@@ -103,22 +109,28 @@ namespace AdvancedGears
                     if (potential < sight.Value.BoidVector.Potential)
                         continue;
 
-                    foreach (var other in allies)
-                    {
+                    if (speedDic.TryGetValue(unit.id, out var selfSpeed) == false)
+                        continue;
+
+                    foreach (var other in allies) {
                         if (other.id == unit.id)
                             continue;
 
-                        var sep = unit.pos - other.pos;
-                        //sep *= other.type != UnitType.Commander ? 1.0f: 3.0f; 
+                        if (speedDic.TryGetValue(other.id, out var speed) == false)
+                            continue;
 
+                        var sep = unit.pos - other.pos;
                         boidVec += sep;
+
+                        syncSpeed += (speed - selfSpeed) / (1.0f + sep.magnitude);
                     }
 
+                    syncSpeed = Mathf.Max(syncSpeed, 0.0f);
                     boidVec = (boidVec / alliesCount) * boid.SepareteWeight;
                     boidVec += vector * boid.AlignmentWeight;
                     boidVec += (center - unit.pos) * boid.CohesionWeight;
 
-                    boidVec = boidVec.normalized * movement.MoveSpeed;
+                    boidVec = boidVec.normalized * syncSpeed;
 
                     var diffVec = boidVec - baseVec;
                     var diffCenter = center - sight.Value.BoidVector.Center.ToUnityVector();
