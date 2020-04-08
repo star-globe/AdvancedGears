@@ -111,7 +111,10 @@ namespace AdvancedGears
 
                 MovementDictionary.TryGet(status.Type, out var speed, out var rot);
 
-                var isRotate = rotate(trans, tgt.Value - pos, rot * Time.deltaTime);
+                var isRotate = rotate(trans, tgt.Value - pos, rot * Time.deltaTime, 2.0f, out var is_over);
+
+                if (forward > 0 && is_over)
+                    forward = -forward;
 
                 if (forward == 0.0f)
                     movement.MoveSpeed = 0.0f;
@@ -137,12 +140,17 @@ namespace AdvancedGears
             return Mathf.Asin(rot.magnitude) < Mathf.Deg2Rad * range;
         }
 
-        int rotate(Transform transform, Vector3 diff, float angle_range)
+        int rotate(Transform transform, Vector3 diff, float angle_range, float over_rate, out bool is_over)
         {
+            is_over = false;
             var rot = RotateLogic.GetAngle(transform.up, transform.forward, diff.normalized);
-            if (rot * rot < angle_range * angle_range)
+            var sqrtRot = rot * rot;
+            var srtRange = angle_range * angle_range;
+            if (sqrtRot < sqrtRange) {
                 return 0;
+            }
 
+            is_over = sqrtRot > sqrtRange * over_rate * over_rate;
             return rot < 0 ? -1: 1;
         }
         //bool rotate(Transform transform, Vector3 diff, float rot_speed)
