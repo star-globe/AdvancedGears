@@ -12,6 +12,11 @@ namespace AdvancedGears
 
         [SerializeField] private MovementSettings[] movementSettings;
 
+        [SerializeField]
+        float rotateLimitRate = 15.0f;
+        public static float RotateLimitRate => Instance.rotateLimitRate;
+
+
         Dictionary<UnitType, MovementSettings> movementDic = null;
         Dictionary<UnitType, MovementSettings> MovementDic
         {

@@ -26,3 +26,6 @@ MonoBehaviour:
     rangeRate: 0.9
     speedRate: 0.8
   judgeRate: 1.5
+  boidReduceRate: 0.5
+  boidPotentialMinimum: 0.01
+  boidRadiusMinimum: 0.1

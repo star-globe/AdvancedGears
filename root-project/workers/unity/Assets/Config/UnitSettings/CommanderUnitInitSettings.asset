@@ -20,6 +20,6 @@ MonoBehaviour:
     commanders: 3
   forwardLength: 10
   separeteWeight: 2.5
-  alignmentWeight: 1
+  alignmentWeight: 0.5
   cohesionWeight: 10
   captureSpeed: 1.5

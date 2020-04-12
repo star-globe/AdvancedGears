@@ -17,7 +17,7 @@ namespace AdvancedGears
         IntervalChecker interval;
         float deltaTime = -1.0f;
 
-        const int period = 10; 
+        const int period = 15; 
         protected override void OnCreate()
         {
             base.OnCreate();
@@ -26,14 +26,15 @@ namespace AdvancedGears
                     ComponentType.ReadOnly<UnitTransform>(),
                     ComponentType.ReadWrite<BaseUnitMovement.Component>(),
                     ComponentType.ReadOnly<BaseUnitMovement.ComponentAuthority>(),
-                    ComponentType.ReadOnly<BaseUnitSight.Component>(),
+                    ComponentType.ReadWrite<BaseUnitSight.Component>(),
+                    ComponentType.ReadOnly<BaseUnitSight.ComponentAuthority>(),
                     ComponentType.ReadOnly<BaseUnitTarget.Component>(),
                     ComponentType.ReadOnly<BaseUnitStatus.Component>(),
-                    ComponentType.ReadOnly<BaseUnitAction.Component>(),
-                    ComponentType.ReadOnly<FuelComponent.Component>()
+                    ComponentType.ReadOnly<BaseUnitAction.Component>()
             );
 
             group.SetFilter(BaseUnitMovement.ComponentAuthority.Authoritative);
+            group.SetFilter(BaseUnitSight.ComponentAuthority.Authoritative);
 
             interval = IntervalCheckerInitializer.InitializedChecker(period);
 
@@ -51,18 +52,13 @@ namespace AdvancedGears
                                           ref BaseUnitMovement.Component movement,
                                           ref BaseUnitSight.Component sight,
                                           ref BaseUnitTarget.Component target,
-                                          ref BaseUnitStatus.Component status,
-                                          ref FuelComponent.Component fuel) =>
+                                          ref BaseUnitStatus.Component status) =>
             {
                 if (status.State != UnitState.Alive)
                     return;
 
                 if (status.Type != UnitType.Soldier &&
                     status.Type != UnitType.Commander)
-                    return;
-
-                // check fueld
-                if (fuel.Fuel == 0)
                     return;
 
                 var unit = EntityManager.GetComponentObject<UnitTransform>(entity);
@@ -92,6 +88,7 @@ namespace AdvancedGears
                 var diffTime = current - sight.BoidUpdateTime;
                 boidVector.Potential = AttackLogicDictionary.ReduceBoidPotential(boidVector.Potential, diffTime);
                 sight.BoidUpdateTime = current;
+                sight.BoidVector = boidVector;
 
                 if (tgt == null)
                     tgt = sight.TargetPosition.ToWorkerPosition(this.Origin);
@@ -110,11 +107,11 @@ namespace AdvancedGears
                 }
 
                 MovementDictionary.TryGet(status.Type, out var speed, out var rot);
+                var rate = MovementDictionary.RotateLimitRate;
+                var isRotate = rotate(trans, tgt.Value - pos, rot * Time.deltaTime, rate, out var is_over);
 
-                var isRotate = rotate(trans, tgt.Value - pos, rot * Time.deltaTime, 2.0f, out var is_over);
-
-                if (forward > 0 && is_over)
-                    forward = -forward;
+                //if (forward > 0 && is_over)
+                //    forward = -forward;
 
                 if (forward == 0.0f)
                     movement.MoveSpeed = 0.0f;

@@ -37,7 +37,7 @@ namespace AdvancedGears
             );
             group.SetFilter(UnitFactory.ComponentAuthority.Authoritative);
 
-            inter = IntervalCheckerInitializer.InitializedChecker(3.0f);
+            inter = IntervalCheckerInitializer.InitializedChecker(0.5f);
         }
 
         protected override void OnUpdate()

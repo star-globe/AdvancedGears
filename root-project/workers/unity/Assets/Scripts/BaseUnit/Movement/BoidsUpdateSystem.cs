@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Improbable;
 using Improbable.Gdk.Core;
@@ -16,8 +17,11 @@ namespace AdvancedGears
         EntityQuery group;
 
         IntervalChecker inter;
-
         const int period = 10;
+
+        readonly Dictionary<EntityId, float> potentialDic = new Dictionary<EntityId, float>();
+        readonly Dictionary<EntityId,float> speedDic = new Dictionary<EntityId, float>();
+
         protected override void OnCreate()
         {
             base.OnCreate();
@@ -43,6 +47,8 @@ namespace AdvancedGears
         {
             if (inter.CheckTime() == false)
                 return;
+
+            potentialDic.Clear();
 
             Entities.With(group).ForEach((Entity entity,
                                           ref BoidComponent.Component boid,
@@ -76,7 +82,7 @@ namespace AdvancedGears
                 var center = pos + trans.forward * boid.ForwardLength;
                 var vector = Vector3.zero;
 
-                var speedDic = new Dictionary<EntityId, float>();
+                speedDic.Clear();
                 foreach(var unit in allies) {
                     if (TryGetComponentObject<Transform>(unit.id, out var t) == false)
                         continue;
@@ -96,21 +102,32 @@ namespace AdvancedGears
                     if (TryGetComponent<BaseUnitSight.Component>(unit.id, out var sight) == false)
                         continue;
 
-                    var baseVec = sight.Value.BoidVector.Vector.ToUnityVector();
+                    var boidVector = sight.Value.BoidVector;
+                    var baseVec = boidVector.Vector.ToUnityVector();
                     var boidVec = Vector3.zero;
-                    var syncSpeed = 0.0f;
 
                     var inter = RangeDictionary.UnitInter;
                     if (unit.type == UnitType.Commander)
                         continue;
 
-                    var length = Mathf.Max((center - unit.pos).magnitude, 1.0f);
-                    var potential = commander.Rank / length;
-                    if (potential < sight.Value.BoidVector.Potential)
+                    var length = Mathf.Max((pos - unit.pos).magnitude, 1.0f);
+                    var potential = AttackLogicDictionary.BoidPotential(1, length, range);
+
+                    float basePotential = boidVector.Potential;
+                    if (potentialDic.TryGetValue(unit.id, out var p)) {
+                        basePotential = p;
+                    }
+
+                    if (potential <= basePotential)
                         continue;
+
+                    potentialDic[unit.id] = p;
 
                     if (speedDic.TryGetValue(unit.id, out var selfSpeed) == false)
                         continue;
+
+                    var syncSpeed = (movement.MoveSpeed + selfSpeed) / 2;//selfSpeed;
+                    var diffSpeed = 0.0f;
 
                     foreach (var other in allies) {
                         if (other.id == unit.id)
@@ -122,22 +139,22 @@ namespace AdvancedGears
                         var sep = unit.pos - other.pos;
                         boidVec += sep;
 
-                        syncSpeed += (speed - selfSpeed) / (1.0f + sep.magnitude);
+                        diffSpeed += (speed - selfSpeed) / (1.0f + (sep.magnitude/ (range * range)));
                     }
 
-                    syncSpeed = Mathf.Max(syncSpeed, 0.0f);
+                    //syncSpeed += diffSpeed / alliesCount;
                     boidVec = (boidVec / alliesCount) * boid.SepareteWeight;
                     boidVec += vector * boid.AlignmentWeight;
                     boidVec += (center - unit.pos) * boid.CohesionWeight;
 
-                    boidVec = boidVec.normalized * syncSpeed;
+                    boidVec = boidVec.normalized * syncSpeed * 10.0f;
 
                     var diffVec = boidVec - baseVec;
                     var diffCenter = center - sight.Value.BoidVector.Center.ToUnityVector();
                     if (diffVec.sqrMagnitude < diffMinVec && diffCenter.sqrMagnitude < diffMinPos)
                         continue;
 
-                    var boidVector = new BoidVector(boidVec.ToFixedPointVector3(), center.ToWorldPosition(this.Origin), range, potential);
+                    boidVector = new BoidVector(boidVec.ToFixedPointVector3(), center.ToWorldPosition(this.Origin), range, potential);
                     this.UpdateSystem.SendEvent(new BaseUnitSight.BoidDiffed.Event(boidVector), unit.id);
                 }
             });

@@ -121,7 +121,7 @@ namespace AdvancedGears
 
         // TODO:getFromSettings;
         const float range = 12.0f;
-        const float height_buffer = 5.0f;
+        const float height_buffer = 15.0f;
         void HandleProductUnit()
         {
             if (factoryInter.CheckTime() == false)
@@ -245,7 +245,7 @@ namespace AdvancedGears
 
             VortexCoordsContainer vortex = null;
             if (strDic.TryGetValue(id, out vortex) == false) {
-                vortex = new VortexCoordsContainer(center, containers.Select(c => c.Pos.ToCoordinates()).ToList(), RangeDictionary.TeamInter);
+                vortex = new VortexCoordsContainer(center.GetGrounded(this.Origin), containers.Select(c => c.Pos.ToCoordinates()).ToList(), RangeDictionary.TeamInter);
                 strDic[id] = vortex;
             }
 
@@ -425,7 +425,7 @@ namespace AdvancedGears
         {
             VortexCoordsContainer container = null;
             if (vortexDic.TryGetValue(coords, out container) == false) {
-                container = new VortexCoordsContainer(coords, RangeDictionary.UnitInter);
+                container = new VortexCoordsContainer(coords, RangeDictionary.UnitInter, this.Origin);
                 vortexDic.Add(coords, container);
             }
 
@@ -593,11 +593,13 @@ namespace AdvancedGears
         int edge = 1;
         int index = 0;
         double inter = 0;
+        Vector3 origin;
 
-        public VortexCoordsContainer(in Coordinates coords, double inter)
+        public VortexCoordsContainer(in Coordinates coords, double inter, Vector3 origin)
         {
             this.inter = inter;
             Reset(coords);
+            this.origin = origin;
         }
 
         public VortexCoordsContainer(in Coordinates center, List<Coordinates> posList, double inter)
@@ -668,6 +670,7 @@ namespace AdvancedGears
                 x = inter;
 
             pos += new Coordinates(x, 0, z);
+            pos = pos.GetGrounded(this.origin);
             posList.Add(pos);
             index++;
 

@@ -31,6 +31,9 @@ namespace AdvancedGears
         float boidPotentialMinimum = 1.0f / 1000;
         public static float BoidPotentialMinimum => Instance.boidPotentialMinimum;
 
+        [SerializeField]
+        float boidRadiusMinimum = 0.1f;
+
         public static AttackLogicDictionary Instance { private get; set; }
 
         readonly Dictionary<OrderType, OrderRate> orderDic = new Dictionary<OrderType, OrderRate>();
@@ -64,6 +67,14 @@ namespace AdvancedGears
         {
             potential *= Mathf.Pow(BoidReduceRate, time);
             return potential < BoidPotentialMinimum ? 0.0f: potential;
+        }
+
+        public static float BoidPotential(uint rank, float length, float radius)
+        {
+            //radius /= 2;
+            length = Mathf.Max(length, Instance.boidRadiusMinimum);
+            var rate = length / radius;
+            return rank / (rate * rate);
         }
     }
 }

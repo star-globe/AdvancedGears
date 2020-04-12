@@ -316,6 +316,12 @@ namespace AdvancedGears
             var radius = boidVector.BoidRadius;
             return radius * radius;
         }
+
+        public static Coordinates GetGrounded(this Coordinates coords, Vector3 origin)
+        {
+            var pos = PhysicsUtils.GetGroundPosition((float)coords.X, origin.y, (float)coords.Z);
+            return pos.ToWorldPosition(origin).ToCoordinates();
+        }
     }
 
     public static class IntervalCheckerInitializer
