@@ -17,7 +17,7 @@ namespace AdvancedGears
         IntervalChecker interval;
         float deltaTime = -1.0f;
 
-        const int period = 15; 
+        const int period = 10; 
         protected override void OnCreate()
         {
             base.OnCreate();
