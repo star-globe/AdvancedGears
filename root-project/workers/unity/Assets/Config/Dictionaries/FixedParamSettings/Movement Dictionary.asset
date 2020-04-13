@@ -15,7 +15,8 @@ MonoBehaviour:
   movementSettings:
   - type: 1
     speed: 2
-    rot: 10
+    rot: 20
   - type: 2
     speed: 2
-    rot: 10
+    rot: 20
+  rotateLimitRate: 15

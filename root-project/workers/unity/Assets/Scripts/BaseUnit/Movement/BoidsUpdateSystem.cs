@@ -161,6 +161,7 @@ namespace AdvancedGears
             });
         }
 
+#if false
         readonly Dictionary<uint,List<UnitInfo>> commandersDic = new Dictionary<uint, List<UnitInfo>>();
         // Calc BoidVector for Commander.
         // Do the same process for each rank.
@@ -263,6 +264,7 @@ namespace AdvancedGears
                 this.UpdateSystem.SendEvent(new BaseUnitSight.BoidDiffed.Event(boidVector), unit.id);
             }
         }
+#endif
     }
 
     public struct Flockmate

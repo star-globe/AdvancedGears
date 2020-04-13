@@ -121,7 +121,7 @@ namespace AdvancedGears
 
         // TODO:getFromSettings;
         const float range = 12.0f;
-        const float height_buffer = 15.0f;
+        const float height_buffer = 5.0f;
         void HandleProductUnit()
         {
             if (factoryInter.CheckTime() == false)
@@ -195,10 +195,9 @@ namespace AdvancedGears
 
                 //var trans = EntityManager.GetComponentObject<Transform>(entity);
                 //var p = trans.position + RandomLogic.XZRandomCirclePos(range);
-                var pos = GetEmptyCoordinates(entityId.EntityId, position.Coords, factory.Containers);
+                var coords = GetEmptyCoordinates(entityId.EntityId, position.Coords, height_buffer, factory.Containers);
                 //var pos = p - this.Origin;
                 EntityTemplate template = null;
-                var coords = new Coordinates(pos.X, pos.Y + height_buffer, pos.Z);
 
                 bool finished = false;
                 UnitType type = UnitType.None;
@@ -235,7 +234,7 @@ namespace AdvancedGears
         }
 
         readonly Dictionary<EntityId, VortexCoordsContainer> strDic = new Dictionary<EntityId, VortexCoordsContainer>();
-        private Coordinates GetEmptyCoordinates(EntityId id, in Coordinates center, List<UnitContainer> containers)
+        private Coordinates GetEmptyCoordinates(EntityId id, in Coordinates center, float height_buffer, List<UnitContainer> containers)
         {
             var index = containers.FindIndex(c => c.State == ContainerState.Empty);
             if (index >= 0) {
@@ -245,7 +244,7 @@ namespace AdvancedGears
 
             VortexCoordsContainer vortex = null;
             if (strDic.TryGetValue(id, out vortex) == false) {
-                vortex = new VortexCoordsContainer(center.GetGrounded(this.Origin), containers.Select(c => c.Pos.ToCoordinates()).ToList(), RangeDictionary.TeamInter);
+                vortex = new VortexCoordsContainer(center, containers.Select(c => c.Pos.ToCoordinates()).ToList(), RangeDictionary.TeamInter, this.Origin, height_buffer);
                 strDic[id] = vortex;
             }
 
@@ -425,7 +424,7 @@ namespace AdvancedGears
         {
             VortexCoordsContainer container = null;
             if (vortexDic.TryGetValue(coords, out container) == false) {
-                container = new VortexCoordsContainer(coords, RangeDictionary.UnitInter, this.Origin);
+                container = new VortexCoordsContainer(coords, RangeDictionary.UnitInter, this.Origin, height_buffer);
                 vortexDic.Add(coords, container);
             }
 
@@ -594,19 +593,23 @@ namespace AdvancedGears
         int index = 0;
         double inter = 0;
         Vector3 origin;
+        float height_buffer;
 
-        public VortexCoordsContainer(in Coordinates coords, double inter, Vector3 origin)
+        public VortexCoordsContainer(in Coordinates center, double inter, Vector3 origin, float height_buffer)
         {
             this.inter = inter;
-            Reset(coords);
+            Reset(center);
             this.origin = origin;
+            this.height_buffer = height_buffer;
         }
 
-        public VortexCoordsContainer(in Coordinates center, List<Coordinates> posList, double inter)
+        public VortexCoordsContainer(in Coordinates center, List<Coordinates> posList, double inter, Vector3 origin, float height_buffer)
         {
-            this.center = center;
+            this.center = center.GetGrounded(origin, height_buffer);
             this.posList = posList;
             this.inter = inter;
+            this.origin = origin;
+            this.height_buffer = height_buffer;
 
             index = posList.Count;
             edge = 1;
@@ -616,9 +619,9 @@ namespace AdvancedGears
             }
         }
 
-        private void Reset(in Coordinates coords)
+        private void Reset(in Coordinates center)
         {
-            this.center = coords;
+            this.center = center.GetGrounded(origin, height_buffer);
             edge = 1;
             index = 0;
             posList.Clear();
@@ -670,7 +673,7 @@ namespace AdvancedGears
                 x = inter;
 
             pos += new Coordinates(x, 0, z);
-            pos = pos.GetGrounded(this.origin);
+            pos = pos.GetGrounded(this.origin, this.height_buffer);
             posList.Add(pos);
             index++;
 
