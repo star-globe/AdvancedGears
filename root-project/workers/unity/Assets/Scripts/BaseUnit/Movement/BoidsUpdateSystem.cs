@@ -163,6 +163,7 @@ namespace AdvancedGears
 
 #if false
         readonly Dictionary<uint,List<UnitInfo>> commandersDic = new Dictionary<uint, List<UnitInfo>>();
+        readonly List<UnitInfo> soldiers = new List<UnitInfo>();
         // Calc BoidVector for Commander.
         // Do the same process for each rank.
         private void CalcCommandersBoid(Vector3 pos, ref BaseUnitStatus.Component status, ref CommanderStatus.Component commander)
@@ -170,10 +171,17 @@ namespace AdvancedGears
             foreach(var kvp in commandersDic)
                 kvp.Value.Clear();
 
+            soldiers.Clear();
+
             var range = RangeDictionary.GetBoidsRange(commander.Rank);
-            var allies = getAllyUnits(status.Side, pos, range, allowDead: false, UnitType.Commander);
+            var allies = getAllyUnits(status.Side, pos, range, allowDead: false, UnitType.Soldier, UnitType.Commander);
 
             foreach(var unit in allies) {
+                if (unit.type == UnitType.Soldier) {
+                    soldiers.Add(unit);
+                    continue;
+                }
+
                 if (TryGetComponent<CommanderStatus.Component>(unit.id, out var com) == false)
                         continue;
 
@@ -190,7 +198,7 @@ namespace AdvancedGears
         }
 
         //TODO:omit dictionary
-        private void BoidCalculate(Vector3 center, List<UnitInfo> allies)
+        private void BoidCalculate(Vector3 center, float centerMoveSpeed, List<UnitInfo> allies)
         {
             var vector = Vector3.zero;
 
@@ -232,7 +240,7 @@ namespace AdvancedGears
                 if (speedDic.TryGetValue(unit.id, out var selfSpeed) == false)
                     continue;
 
-                var syncSpeed = (movement.MoveSpeed + selfSpeed) / 2;//selfSpeed;
+                var syncSpeed = (centerMoveSpeed + selfSpeed) / 2;
                 var diffSpeed = 0.0f;
 
                 foreach (var other in allies) {
