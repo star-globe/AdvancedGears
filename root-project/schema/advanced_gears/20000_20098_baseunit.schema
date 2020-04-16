@@ -187,11 +187,6 @@ type HQInfo {
     EntityId entity_id = 1;
 }
 
-type TeamConfig {
-    int32 soldiers = 1;
-    int32 commanders = 2;
-}
-
 component CommanderStatus {
     id = 20020;
 

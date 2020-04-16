@@ -5,10 +5,11 @@ enum UnitType {
     None = 0;
     // moving
     Soldier = 1;
-    Commander = 2;
-    Advanced = 3;
-    Supply = 4;
-    Recon = 5;
+    Sergeant = 2;
+    Commander = 3;
+    Advanced = 4;
+    Supply = 5;
+    Recon = 6;
 
     // fixed
     Stronghold = 101;
