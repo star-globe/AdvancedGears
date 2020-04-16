@@ -323,6 +323,18 @@ namespace AdvancedGears
             pos += Vector3.up * height_buffer;
             return pos.ToWorldPosition(origin).ToCoordinates();
         }
+
+        public static bool IsDominationTarget(this TargetInfo targetInfo, UnitSide selfSide)
+        {
+            if (targetInfo.Type != UnitType.Stronghold)
+                return false;
+
+            if (targetInfo.Side == selfSide)
+                return false;
+
+            return targetInfo.Side == UnitSide.None ||
+                   targetInfo.State == UnitState.Dead;
+        }
     }
 
     public static class IntervalCheckerInitializer

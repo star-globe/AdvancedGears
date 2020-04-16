@@ -90,7 +90,6 @@ component BaseUnitSight {
     improbable.gdk.transform_synchronization.FixedPointVector3 target_position = 4;
     float target_range = 5;
     
-    improbable.gdk.transform_synchronization.FixedPointVector3 commander_position = 6;
     BoidVector boid_vector = 7;
     float boid_update_time = 8;
 

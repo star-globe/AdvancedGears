@@ -76,19 +76,12 @@ namespace AdvancedGears
                 UnitInfo enemy = null;
                 var sightRange = action.SightRange;
                 
-                //if (status.Order != OrderType.Escape)
                 enemy = getNearestEnemy(status.Side, pos, sightRange);
 
                 if (enemy == null) {
                     if (target.TargetInfo.IsTarget) {
                         sight.TargetPosition = target.TargetInfo.Position;
-
-                        var diff = sight.TargetPosition.ToUnityVector() - pos;
-                        var s_range = RangeDictionary.SightRangeRate * sightRange;
-                        if (diff.sqrMagnitude <= s_range * s_range)
-                            target.State = TargetState.MovementTarget;
-                        else
-                            target.State = TargetState.OutOfRange;
+                        target.State = CalcTargetState(sight.TargetPosition.ToUnityVector() - pos, sightRange); 
                     }
                 }
                 else {
@@ -99,23 +92,12 @@ namespace AdvancedGears
                     action.EnemyPositions.Add(epos);
                 }
 
-                var targetInfo = target.TargetInfo;
-                var entityId = targetInfo.CommanderId;
-                Position.Component? comp = null;
-                if (entityId.IsValid() && base.TryGetComponent<Position.Component>(entityId, out comp))
-                    sight.CommanderPosition = comp.Value.Coords.ToUnityVector().ToFixedPointVector3();
-                else
-                    sight.CommanderPosition = FixedPointVector3.Zero;
-
                 var range = gun.GetAttackRange();
-                if (status.Type == UnitType.Commander && targetInfo.Side != status.Side) {
-                    if (targetInfo.Type == UnitType.Stronghold &&
-                        (targetInfo.Side == UnitSide.None || targetInfo.State == UnitState.Dead)) {
+                if (status.Type == UnitType.Commander) {
+                    if (targetInfo.IsDominationTarget(status.Side))
                         range = GetDominationRange(targetInfo.TargetId) / 2;
-                    }
-                    else {
+                    else
                         range += targetInfo.AllyRange;
-                    }
                 }
 
                 range = AttackLogicDictionary.GetOrderRange(status.Order, range);
@@ -134,6 +116,15 @@ namespace AdvancedGears
             }
 
             return dominationRangeDic[entityId];
+        }
+
+        private TargetState CalcTargetState(Vector3 diff, float sightRange)
+        {
+            var s_range = RangeDictionary.SightRangeRate * sightRange;
+            if (diff.sqrMagnitude <= s_range * s_range)
+                return TargetState.MovementTarget;
+            else
+                return TargetState.OutOfRange;
         }
     }
 
