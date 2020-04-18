@@ -43,7 +43,7 @@ Terrain:
   m_GameObject: {fileID: 3136015966841369424}
   m_Enabled: 1
   serializedVersion: 5
-  m_TerrainData: {fileID: 15600000, guid: 043177bb622af0446a82c5d83d63dce5, type: 2}
+  m_TerrainData: {fileID: 0}
   m_TreeDistance: 5000
   m_TreeBillboardDistance: 50
   m_TreeCrossFadeLength: 5
@@ -75,7 +75,7 @@ TerrainCollider:
   m_GameObject: {fileID: 3136015966841369424}
   m_Material: {fileID: 0}
   m_Enabled: 1
-  m_TerrainData: {fileID: 15600000, guid: 043177bb622af0446a82c5d83d63dce5, type: 2}
+  m_TerrainData: {fileID: 0}
   m_EnableTreeColliders: 1
 --- !u!114 &3136015966841369425
 MonoBehaviour:
@@ -89,11 +89,47 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 031e728247d3ffd43b28fe28dc569fe4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  worldSize: 0
+  worldSize: 500
+  localSize: 500
   terrain: {fileID: 3136015966841369431}
   realizer: {fileID: 2011829079}
-  units: []
-  fields: []
+  units:
+  - type: 103
+    side: 1
+    pos: {x: -193.31012, y: 12.380337, z: 0}
+  - type: 101
+    side: 2
+    pos: {x: 190.3899, y: 0.7658529, z: 0}
+  - type: 103
+    side: 2
+    pos: {x: 193.1499, y: 0.7068434, z: 0}
+  - type: 101
+    side: 1
+    pos: {x: -189.81012, y: 12.599098, z: 0}
+  - type: 101
+    side: 0
+    pos: {x: 0, y: 12.423038, z: 0}
+  fields:
+  - highest: 39
+    range: 100
+    materialType: 1
+    pos: {x: 149.8, y: 39, z: -168}
+    seeds: 0
+  - highest: 5
+    range: 30
+    materialType: 1
+    pos: {x: 0, y: 5, z: 90.5}
+    seeds: 0
+  - highest: 19.45
+    range: 100
+    materialType: 1
+    pos: {x: -172, y: 19.45, z: -15.86}
+    seeds: 0
+  - highest: 19.68
+    range: 100
+    materialType: 1
+    pos: {x: 0, y: 19.68, z: 29}
+    seeds: 0
   dictionary: {fileID: 11400000, guid: 3c63fb39c87234b4087ddd150277aa39, type: 2}
 --- !u!114 &2011829079
 MonoBehaviour:

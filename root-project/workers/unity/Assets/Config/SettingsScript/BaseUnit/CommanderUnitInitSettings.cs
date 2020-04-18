@@ -15,9 +15,6 @@ namespace AdvancedGears
         [SerializeField] float inter = 3.0f;
         public float Inter => inter;
 
-        [SerializeField] TeamInfo team;
-        public TeamConfig TeamConfig => team.GetConfig();
-
         [SerializeField] float forwardLength = 10.0f;
         public float ForwardLength => forwardLength;
 
@@ -30,17 +27,5 @@ namespace AdvancedGears
 
         [SerializeField] float captureSpeed = 1.5f;
         public float CaptureSpeed => captureSpeed;
-
-        [Serializable]
-        class TeamInfo
-        {
-            public int soldiers;
-            public int commanders;
-
-            public TeamConfig GetConfig()
-            {
-                return new TeamConfig(soldiers,commanders);
-            }
-        }
     }
 }

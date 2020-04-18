@@ -127,7 +127,7 @@ namespace AdvancedGears
                     if (speedDic.TryGetValue(unit.id, out var selfSpeed) == false)
                         continue;
 
-                    var syncSpeed = (movement.MoveSpeed + selfSpeed) / 2;//selfSpeed;
+                    var syncSpeed = (movement.MoveSpeed  * 1.0f + selfSpeed * length) / (length + 1.0f);
                     var diffSpeed = 0.0f;
 
                     foreach (var other in allies) {

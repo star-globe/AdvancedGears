@@ -13,11 +13,8 @@ MonoBehaviour:
   m_Name: CommanderUnitInitSettings
   m_EditorClassIdentifier: 
   sightRange: 200
-  allyRange: 100
+  allyRange: 50
   inter: 3
-  team:
-    soldiers: 5
-    commanders: 3
   forwardLength: 10
   separeteWeight: 2.5
   alignmentWeight: 0.5

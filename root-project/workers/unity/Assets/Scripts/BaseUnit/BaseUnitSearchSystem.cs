@@ -94,10 +94,10 @@ namespace AdvancedGears
 
                 var range = gun.GetAttackRange();
                 if (status.Type == UnitType.Commander) {
-                    if (targetInfo.IsDominationTarget(status.Side))
-                        range = GetDominationRange(targetInfo.TargetId) / 2;
+                    if (target.TargetInfo.IsDominationTarget(status.Side))
+                        range = GetDominationRange(target.TargetInfo.TargetId) / 2;
                     else
-                        range += targetInfo.AllyRange;
+                        range += target.TargetInfo.AllyRange / 2;
                 }
 
                 range = AttackLogicDictionary.GetOrderRange(status.Order, range);
