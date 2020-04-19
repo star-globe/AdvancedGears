@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: Unit Common Settings Dictionary
+  m_EditorClassIdentifier: AdvancedGears:AdvancedGears:UnitCommonSettingsDictionary
+  settgins:
+  - {fileID: 11400000, guid: 7652a880fb5972d48ad2975de01a5475, type: 2}
+  - {fileID: 11400000, guid: 035fff9a803c2734297cdcb97946a271, type: 2}
+  - {fileID: 11400000, guid: 2001bae22e8df5f4c9de3cc90e0f4a4d, type: 2}
+  - {fileID: 11400000, guid: 3bebc78a1bff531499ae9fb96cf38bef, type: 2}
+  - {fileID: 11400000, guid: 53004734c5f8ede428133f295867a02e, type: 2}

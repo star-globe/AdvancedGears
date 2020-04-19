@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BaseUnitInitSettings
   m_EditorClassIdentifier: 
   speed: 1.5
-  rotSpeed: 20
+  rotSpeed: 25
   inter: 0.5
   sightRange: 30
   atkRange: 30

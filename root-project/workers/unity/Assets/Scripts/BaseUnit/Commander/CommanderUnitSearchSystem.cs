@@ -115,7 +115,7 @@ namespace AdvancedGears
                 if (status.State != UnitState.Alive)
                     return;
 
-                if (status.Type != UnitType.Commander)
+                if (UnitUtils.IsOfficer(status.Type) == false)
                     return;
 
                 if (status.Order == OrderType.Idle)
@@ -206,14 +206,15 @@ namespace AdvancedGears
         {
             // check rank
             UnitInfo tgt;
-            var info = team.TargetStronghold;
-            if (info.StrongholdId.IsValid()) {
-                tgt = getUnitInfo(info.StrongholdId);
 
-                //Debug.LogFormat("TargetStronghold is Valid. Side:{0} Position:{1}", status.Side, tgt.pos);
+            var range = AttackLogicDictionary.RankScaled(sight.Range, commander.Rank);
+
+            tgt = getNearestEnemy(status.Side, pos, sight.Range, allowDead: true, UnitType.Stronghold, UnitType.Commander);
+            if (tgt == null) {
+                var info = team.TargetStronghold;
+                if (info.StrongholdId.IsValid())
+                    tgt = getUnitInfo(info.StrongholdId);
             }
-            else
-                tgt = getNearestEnemy(status.Side, pos, sight.Range, allowDead:true, UnitType.Stronghold, UnitType.Commander);
 
             TargetInfo targetInfo;
             commonTargeting(tgt, entityId, commander, ref sight, out targetInfo);

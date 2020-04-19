@@ -82,7 +82,7 @@ namespace AdvancedGears
             if (rank == 0)
                 return baseRange;
 
-            return baseRange * Mathf.Pow(BoidsRankRate, rank - 1);
+            return baseRange * Mathf.Pow(BoidsRankRate, rank);
         }
 
         [Serializable]

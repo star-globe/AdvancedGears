@@ -19,8 +19,6 @@ namespace AdvancedGears
         IntervalChecker inter;
         const int period = 10;
 
-        //TODO:test to omit "potentialDic" and "speedDic"
-        readonly Dictionary<EntityId, float> potentialDic = new Dictionary<EntityId, float>();
         readonly Dictionary<EntityId,float> speedDic = new Dictionary<EntityId, float>();
 
         protected override void OnCreate()
@@ -49,8 +47,6 @@ namespace AdvancedGears
             if (inter.CheckTime() == false)
                 return;
 
-            potentialDic.Clear();
-
             Entities.With(group).ForEach((Entity entity,
                                           ref BoidComponent.Component boid,
                                           ref BaseUnitStatus.Component status,
@@ -65,145 +61,42 @@ namespace AdvancedGears
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
                 var pos = trans.position;
 
-                var range = RangeDictionary.GetBoidsRange(commander.Rank);
-                var allies = getAllyUnits(status.Side, pos, range, allowDead: false, UnitType.Soldier, UnitType.Commander);
+                var side = status.Side;
+                var speed = movement.MoveSpeed;
+                var forward = trans.forward;
+                var commanderRank = commander.Rank;
 
-                var alliesCount = allies.Count;
-                if (alliesCount == 0)
+                var soldierRange = RangeDictionary.BaseBoidsRange;
+                var soldiers = getAllyUnits(side, pos, soldierRange, allowDead:false, selfId:entityId.EntityId, UnitType.Soldier);
+
+                float f_length = boid.ForwardLength;
+                boid_calculate(pos + forward * f_length, pos, soldierRange, speed,
+                               boid.SepareteWeight, boid.AlignmentWeight, boid.CohesionWeight, soldiers);
+
+                if (commanderRank < 1)
                     return;
 
-                //float bufferRate = 1.0f;
-                //switch(target.State)
-                //{
-                //    case TargetState.MovementTarget:    bufferRate = 0.5f;  break;
-                //    case TargetState.OutOfRange:        bufferRate = 1.0f;  break;
-                //    case TargetState.ActionTarget:      bufferRate = 0.4f; break;
-                //}
+                var commanderRange = RangeDictionary.GetBoidsRange(commanderRank);
+                var commanders = getAllyUnits(side, pos, commanderRange, allowDead: false, selfId: entityId.EntityId, UnitType.Commander);
+                commanders.RemoveAll(unit => TryGetComponent<CommanderStatus.Component>(unit.id, out var com) == false || com.Value.Rank != commanderRank - 1);
 
-                var center = pos + trans.forward * boid.ForwardLength;
-                var vector = Vector3.zero;
+                f_length = AttackLogicDictionary.RankScaled(f_length, commanderRank);
+                f_length += commander.AllyRange;
+                var separeteWeight = AttackLogicDictionary.RankScaled(boid.SepareteWeight, commanderRank);
 
-                speedDic.Clear();
-                foreach(var unit in allies) {
-                    if (TryGetComponentObject<Transform>(unit.id, out var t) == false)
-                        continue;
-
-                    //float rate = unit.type != UnitType.Commander ? 1.0f: 2.0f;
-                    if (TryGetComponent<BaseUnitMovement.Component>(unit.id, out var move) == false)
-                        continue;
-
-                    speedDic[unit.id] = move.Value.MoveSpeed;
-
-                    vector += t.forward;// * rate;
-                }
-
-                vector /= alliesCount;
-
-                foreach(var unit in allies) {
-                    if (TryGetComponent<BaseUnitSight.Component>(unit.id, out var sight) == false)
-                        continue;
-
-                    var boidVector = sight.Value.BoidVector;
-                    var baseVec = boidVector.Vector.ToUnityVector();
-                    var boidVec = Vector3.zero;
-
-                    var inter = RangeDictionary.UnitInter;
-                    if (unit.type == UnitType.Commander)
-                        continue;
-
-                    var length = Mathf.Max((pos - unit.pos).magnitude, 1.0f);
-                    var potential = AttackLogicDictionary.BoidPotential(1, length, range);
-
-                    float basePotential = boidVector.Potential;
-                    if (potentialDic.TryGetValue(unit.id, out var p)) {
-                        basePotential = p;
-                    }
-
-                    if (potential <= basePotential)
-                        continue;
-
-                    potentialDic[unit.id] = p;
-
-                    if (speedDic.TryGetValue(unit.id, out var selfSpeed) == false)
-                        continue;
-
-                    var syncSpeed = (movement.MoveSpeed  * 1.0f + selfSpeed * length) / (length + 1.0f);
-                    var diffSpeed = 0.0f;
-
-                    foreach (var other in allies) {
-                        if (other.id == unit.id)
-                            continue;
-
-                        if (speedDic.TryGetValue(other.id, out var speed) == false)
-                            continue;
-
-                        var sep = unit.pos - other.pos;
-                        boidVec += sep;
-
-                        diffSpeed += (speed - selfSpeed) / (1.0f + (sep.magnitude/ (range * range)));
-                    }
-
-                    //syncSpeed += diffSpeed / alliesCount;
-                    boidVec = (boidVec / alliesCount) * boid.SepareteWeight;
-                    boidVec += vector * boid.AlignmentWeight;
-                    boidVec += (center - unit.pos) * boid.CohesionWeight;
-
-                    boidVec = boidVec.normalized * syncSpeed * 10.0f;
-
-                    var diffVec = boidVec - baseVec;
-                    var diffCenter = center - sight.Value.BoidVector.Center.ToUnityVector();
-                    if (diffVec.sqrMagnitude < diffMinVec && diffCenter.sqrMagnitude < diffMinPos)
-                        continue;
-
-                    boidVector = new BoidVector(boidVec.ToFixedPointVector3(), center.ToWorldPosition(this.Origin), range, potential);
-                    this.UpdateSystem.SendEvent(new BaseUnitSight.BoidDiffed.Event(boidVector), unit.id);
-                }
+                boid_calculate(pos + forward * f_length, pos, commanderRange, speed,
+                               separeteWeight, boid.AlignmentWeight, boid.CohesionWeight, commanders);
             });
         }
 
-#if false
-        readonly Dictionary<uint,List<UnitInfo>> commandersDic = new Dictionary<uint, List<UnitInfo>>();
-        readonly List<UnitInfo> soldiers = new List<UnitInfo>();
-        // Calc BoidVector for Commander.
-        // Do the same process for each rank.
-        private void CalcCommandersBoid(Vector3 pos, ref BaseUnitStatus.Component status, ref CommanderStatus.Component commander)
-        {
-            foreach(var kvp in commandersDic)
-                kvp.Value.Clear();
-
-            soldiers.Clear();
-
-            var range = RangeDictionary.GetBoidsRange(commander.Rank);
-            var allies = getAllyUnits(status.Side, pos, range, allowDead: false, UnitType.Soldier, UnitType.Commander);
-
-            foreach(var unit in allies) {
-                if (unit.type == UnitType.Soldier) {
-                    soldiers.Add(unit);
-                    continue;
-                }
-
-                if (TryGetComponent<CommanderStatus.Component>(unit.id, out var com) == false)
-                        continue;
-
-                var rank = com.Value.Rank;
-                if (commandersDic.ContainsKey(rank) == false)
-                    commandersDic[rank] = new List<UnitInfo>();
-
-                commandersDic[rank].Add(unit);
-            }
-
-            foreach(var kvp in commandersDic) {
-
-            }
-        }
-
-        //TODO:omit dictionary
-        private void BoidCalculate(Vector3 center, float centerMoveSpeed, List<UnitInfo> allies)
+        private void boid_calculate(Vector3 center, Vector3 pos, float range, float centerMoveSpeed,
+                                   float separeteWeight, float alignmentWeight, float cohesionWeight, List<UnitInfo> allies)
         {
             var vector = Vector3.zero;
 
             speedDic.Clear();
-            foreach(var unit in allies) {
+            foreach (var unit in allies)
+            {
                 if (TryGetComponentObject<Transform>(unit.id, out var t) == false)
                     continue;
 
@@ -211,12 +104,14 @@ namespace AdvancedGears
                     continue;
 
                 speedDic[unit.id] = move.Value.MoveSpeed;
-                vector += t.forward;// * rate;
+
+                vector += t.forward;
             }
 
-            vector /= alliesCount;
+            vector /= allies.Count;
 
-            foreach(var unit in allies) {
+            foreach (var unit in allies)
+            {
                 if (TryGetComponent<BaseUnitSight.Component>(unit.id, out var sight) == false)
                     continue;
 
@@ -224,26 +119,24 @@ namespace AdvancedGears
                 var baseVec = boidVector.Vector.ToUnityVector();
                 var boidVec = Vector3.zero;
 
+                var inter = RangeDictionary.UnitInter;
+                if (unit.type == UnitType.Commander)
+                    continue;
+
                 var length = Mathf.Max((pos - unit.pos).magnitude, 1.0f);
                 var potential = AttackLogicDictionary.BoidPotential(1, length, range);
 
-                float basePotential = boidVector.Potential;
-                if (potentialDic.TryGetValue(unit.id, out var p)) {
-                    basePotential = p;
-                }
-
-                if (potential <= basePotential)
+                if (potential <= boidVector.Potential)
                     continue;
-
-                potentialDic[unit.id] = p;
 
                 if (speedDic.TryGetValue(unit.id, out var selfSpeed) == false)
                     continue;
 
-                var syncSpeed = (centerMoveSpeed + selfSpeed) / 2;
+                var syncSpeed = (centerMoveSpeed * 1.0f + selfSpeed * length) / (length + 1.0f);
                 var diffSpeed = 0.0f;
 
-                foreach (var other in allies) {
+                foreach (var other in allies)
+                {
                     if (other.id == unit.id)
                         continue;
 
@@ -253,13 +146,12 @@ namespace AdvancedGears
                     var sep = unit.pos - other.pos;
                     boidVec += sep;
 
-                    diffSpeed += (speed - selfSpeed) / (1.0f + (sep.magnitude/ (range * range)));
+                    diffSpeed += (speed - selfSpeed) / (1.0f + (sep.magnitude / (range * range)));
                 }
 
-                //syncSpeed += diffSpeed / alliesCount;
-                boidVec = (boidVec / alliesCount) * boid.SepareteWeight;
-                boidVec += vector * boid.AlignmentWeight;
-                boidVec += (center - unit.pos) * boid.CohesionWeight;
+                boidVec = (boidVec / allies.Count) * separeteWeight;
+                boidVec += vector * alignmentWeight;
+                boidVec += (center - unit.pos) * cohesionWeight;
 
                 boidVec = boidVec.normalized * syncSpeed * 10.0f;
 
@@ -272,12 +164,5 @@ namespace AdvancedGears
                 this.UpdateSystem.SendEvent(new BaseUnitSight.BoidDiffed.Event(boidVector), unit.id);
             }
         }
-#endif
-    }
-
-    public struct Flockmate
-    {
-        public Vector3 position;
-        public Vector3 vector;
     }
 }
