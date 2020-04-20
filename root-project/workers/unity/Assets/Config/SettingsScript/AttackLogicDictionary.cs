@@ -79,7 +79,6 @@ namespace AdvancedGears
 
         public static float BoidPotential(uint rank, float length, float radius)
         {
-            //radius /= 2;
             length = Mathf.Max(length, Instance.boidRadiusMinimum);
             var rate = length / radius;
             return rank / (rate * rate);

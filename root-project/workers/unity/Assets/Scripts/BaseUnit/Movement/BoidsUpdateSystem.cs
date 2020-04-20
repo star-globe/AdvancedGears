@@ -92,6 +92,7 @@ namespace AdvancedGears
         private void boid_calculate(Vector3 center, Vector3 pos, float range, float centerMoveSpeed,
                                    float separeteWeight, float alignmentWeight, float cohesionWeight, List<UnitInfo> allies)
         {
+            var rate = range / RangeDictionary.BaseBoidsRange;
             var vector = Vector3.zero;
 
             speedDic.Clear();
@@ -120,11 +121,9 @@ namespace AdvancedGears
                 var boidVec = Vector3.zero;
 
                 var inter = RangeDictionary.UnitInter;
-                if (unit.type == UnitType.Commander)
-                    continue;
 
                 var length = Mathf.Max((pos - unit.pos).magnitude, 1.0f);
-                var potential = AttackLogicDictionary.BoidPotential(1, length, range);
+                var potential = AttackLogicDictionary.BoidPotential(1, length , range);
 
                 if (potential <= boidVector.Potential)
                     continue;
@@ -132,8 +131,8 @@ namespace AdvancedGears
                 if (speedDic.TryGetValue(unit.id, out var selfSpeed) == false)
                     continue;
 
-                var syncSpeed = (centerMoveSpeed * 1.0f + selfSpeed * length) / (length + 1.0f);
-                var diffSpeed = 0.0f;
+                var scaledLength = length / rate;
+                var syncSpeed = (centerMoveSpeed * 1.0f + selfSpeed * scaledLength) / (scaledLength + 1.0f);
 
                 foreach (var other in allies)
                 {
@@ -143,15 +142,13 @@ namespace AdvancedGears
                     if (speedDic.TryGetValue(other.id, out var speed) == false)
                         continue;
 
-                    var sep = unit.pos - other.pos;
+                    var sep = (unit.pos - other.pos) / rate;
                     boidVec += sep;
-
-                    diffSpeed += (speed - selfSpeed) / (1.0f + (sep.magnitude / (range * range)));
                 }
 
                 boidVec = (boidVec / allies.Count) * separeteWeight;
                 boidVec += vector * alignmentWeight;
-                boidVec += (center - unit.pos) * cohesionWeight;
+                boidVec += ((center - unit.pos) / rate) * cohesionWeight;
 
                 boidVec = boidVec.normalized * syncSpeed * 10.0f;
 
