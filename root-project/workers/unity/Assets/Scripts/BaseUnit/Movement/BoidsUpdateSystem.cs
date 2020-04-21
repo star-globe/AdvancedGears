@@ -82,10 +82,9 @@ namespace AdvancedGears
 
                 f_length = AttackLogicDictionary.RankScaled(f_length, commanderRank);
                 f_length += commander.AllyRange;
-                var separeteWeight = AttackLogicDictionary.RankScaled(boid.SepareteWeight, commanderRank);
 
                 boid_calculate(pos + forward * f_length, pos, commanderRange, speed,
-                               separeteWeight, boid.AlignmentWeight, boid.CohesionWeight, commanders);
+                               boid.SepareteWeight, boid.AlignmentWeight, boid.CohesionWeight, commanders);
             });
         }
 
@@ -146,9 +145,9 @@ namespace AdvancedGears
                     boidVec += sep;
                 }
 
-                boidVec = (boidVec / allies.Count) * separeteWeight;
-                boidVec += vector * alignmentWeight;
-                boidVec += ((center - unit.pos) / rate) * cohesionWeight;
+                boidVec = (boidVec / allies.Count) * separeteWeight;    // todo scaled
+                boidVec += vector * alignmentWeight;                    // todo scaled
+                boidVec += ((center - unit.pos) / rate) * cohesionWeight;    // todo scaled
 
                 boidVec = boidVec.normalized * syncSpeed * 10.0f;
 
