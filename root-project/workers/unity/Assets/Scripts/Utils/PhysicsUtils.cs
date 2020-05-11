@@ -22,5 +22,22 @@ namespace AdvancedGears
         {
             return GetGroundPosition(new Vector3( x, y + buffer, z));
         }
+
+        public static Vector3 GetCrossPointFromVerticalPlane(Vector3 origin, Vector3 target, Vector3[] vertexes)
+        {
+            if (vertexes == null || vertexes.Length != 2)
+                return target;
+
+            var plane = new Plane(vertexes[0], vertexes[1], vertexes[0] + Vector3.up);
+
+            var diff = target - origin;
+            if (plane.Raycast(new Ray(origin, target - origin), out float enter) == false)
+                return target;
+
+            if (enter > diff.magnitude)
+                return target;
+
+            return origin + diff.normalized * enter;
+        }
     }
 }
