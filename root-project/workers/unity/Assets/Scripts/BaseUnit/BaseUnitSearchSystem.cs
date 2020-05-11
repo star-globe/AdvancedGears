@@ -62,8 +62,7 @@ namespace AdvancedGears
                 if (status.Order == OrderType.Idle)
                     return;
 
-                if (status.Type != UnitType.Soldier &&
-                    status.Type != UnitType.Commander)
+                if (UnitUtils.IsAutomaticallyMoving(status.Type) == false)
                     return;
 
                 // initial
@@ -93,11 +92,17 @@ namespace AdvancedGears
                 }
 
                 var range = gun.GetAttackRange();
-                if (status.Type == UnitType.Commander) {
-                    if (target.TargetInfo.IsDominationTarget(status.Side))
+                if (status.Type == UnitType.Commander && TryGetComponent(entity, out CommanderStatus.Component? com)) {
+
+                    var rank = com.Value.Rank;
+
+                    if (rank == 0 && target.TargetInfo.IsDominationTarget(status.Side))
                         range = GetDominationRange(target.TargetInfo.TargetId) / 2;
                     else
-                        range += target.TargetInfo.AllyRange / 2;
+                    {
+                        var addRange = target.TargetInfo.AllyRange / 2;
+                        range += AttackLogicDictionary.RankScaled(addRange, rank);
+                    }
                 }
 
                 range = AttackLogicDictionary.GetOrderRange(status.Order, range);
@@ -226,17 +231,29 @@ namespace AdvancedGears
             return info;
         }
 
+        protected List<UnitInfo> getAllyUnits(UnitSide self_side, in Vector3 pos, float length, params UnitType[] types)
+        {
+            return getUnits(self_side, pos, length, isEnemy: false, allowDead:false, null, types);
+        }
+
+        protected List<UnitInfo> getAllyUnits(UnitSide self_side, in Vector3 pos, float length, bool allowDead = false, params UnitType[] types)
+        {
+            return getUnits(self_side, pos, length, isEnemy: false, allowDead, null, types);
+        }
+
         /// <summary>
-        /// Get Ally UnitsInfo. allowDead = false;
+        /// Get Ally UnitsInfo. allowDead = false
         /// </summary>
         /// <param name="self_side"></param>
         /// <param name="pos"></param>
         /// <param name="length"></param>
+        /// <param name="allowDead"></param>
+        /// <param name="selfId"></param>
         /// <param name="types"></param>
         /// <returns></returns>
-        protected List<UnitInfo> getAllyUnits(UnitSide self_side, in Vector3 pos, float length, bool allowDead = false, params UnitType[] types)
+        protected List<UnitInfo> getAllyUnits(UnitSide self_side, in Vector3 pos, float length, bool allowDead = false, EntityId? selfId = null, params UnitType[] types)
         {
-            return getUnits(self_side, pos, length, isEnemy:false, allowDead, types);
+            return getUnits(self_side, pos, length, isEnemy:false, allowDead, selfId, types);
         }
 
         /// <summary>
@@ -249,15 +266,20 @@ namespace AdvancedGears
         /// <returns></returns>
         protected List<UnitInfo> getEnemyUnits(UnitSide self_side, in Vector3 pos, float length, bool allowDead = false, params UnitType[] types)
         {
-            return getUnits(self_side, pos, length, isEnemy: true, allowDead, types);
+            return getUnits(self_side, pos, length, isEnemy: true, allowDead, null, types);
+        }
+
+        protected List<UnitInfo> getAllUnits(in Vector3 pos, float length, EntityId? selfId, params UnitType[] types)
+        {
+            return getUnits(UnitSide.None, pos, length, isEnemy: null, allowDead: false, selfId, types);
         }
 
         protected List<UnitInfo> getAllUnits(in Vector3 pos, float length, params UnitType[] types)
         {
-            return getUnits(UnitSide.None, pos, length, isEnemy: null, allowDead: false, types);
+            return getUnits(UnitSide.None, pos, length, isEnemy: null, allowDead: false, null, types);
         }
 
-        protected List<UnitInfo> getUnits(UnitSide self_side, in Vector3 pos, float length, bool? isEnemy, bool allowDead, params UnitType[] types)
+        protected List<UnitInfo> getUnits(UnitSide self_side, in Vector3 pos, float length, bool? isEnemy, bool allowDead, EntityId? selfId, params UnitType[] types)
         {
             List<UnitInfo> unitList = new List<UnitInfo>();
 
@@ -267,6 +289,9 @@ namespace AdvancedGears
                 var col = colls[i];
                 var comp = col.GetComponent<LinkedEntityComponent>();
                 if (comp == null)
+                    continue;
+
+                if (selfId != null && selfId.Value == comp.EntityId)
                     continue;
 
                 BaseUnitStatus.Component? unit;

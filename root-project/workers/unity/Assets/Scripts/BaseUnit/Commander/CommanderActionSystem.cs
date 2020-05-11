@@ -16,6 +16,8 @@ namespace AdvancedGears
     internal class CommanderActionSystem : BaseCommanderSearch
     {
         private EntityQuery group;
+        private IntervalChecker inter;
+        private const int period = 10;
 
         protected override void OnCreate()
         {
@@ -32,10 +34,15 @@ namespace AdvancedGears
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
             group.SetFilter(CommanderAction.ComponentAuthority.Authoritative);
+
+            inter = IntervalCheckerInitializer.InitializedChecker(period);
         }
 
         protected override void OnUpdate()
         {
+            if (inter.CheckTime() == false)
+                return;
+
             Entities.With(group).ForEach((Entity entity,
                                           ref CommanderAction.Component action,
                                           ref CommanderStatus.Component commander,
@@ -47,21 +54,15 @@ namespace AdvancedGears
                 if (status.State != UnitState.Alive)
                     return;
 
-                if (status.Type != UnitType.Commander)
+                if (UnitUtils.IsOfficer(status.Type) == false)
                     return;
 
                 if (!action.IsTarget)
                     return;
 
-                var inter = action.Interval;
-                if (inter.CheckTime() == false)
-                    return;
-
-                action.Interval = inter;
-
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
                 ApplyOrder(trans.position, status.Side, status.Order, commander.Rank, tgt);
-                
+
                 //switch (status.Order)
                 //{
                 //    case OrderType.Escape:

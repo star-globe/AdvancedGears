@@ -74,7 +74,7 @@ namespace AdvancedGears
                 if (unit == null)
                     return;
 
-                if (unit.GetGrounded() && UnitPhysicsDictionary.IsBuilding(status.Type))
+                if (unit.GetGrounded() && UnitUtils.IsBuilding(status.Type))
                     rigidbody.isKinematic = true;
             });
         }

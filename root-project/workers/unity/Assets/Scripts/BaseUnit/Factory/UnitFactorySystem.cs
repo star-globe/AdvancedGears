@@ -180,7 +180,7 @@ namespace AdvancedGears
                         return;
                     }
 
-                    factory.ProductInterval = IntervalCheckerInitializer.InitializedChecker(timeCost);//new IntervalChecker(timeCost, time + timeCost, 0, -1);   // TODO modify
+                    factory.ProductInterval = IntervalCheckerInitializer.InitializedChecker(timeCost);
                     factory.CurrentType = orderType;
                     resource.Resource -= resourceCost;
                 }
@@ -193,10 +193,7 @@ namespace AdvancedGears
 
                 factory.ProductInterval = factoryInter;
 
-                //var trans = EntityManager.GetComponentObject<Transform>(entity);
-                //var p = trans.position + RandomLogic.XZRandomCirclePos(range);
                 var coords = GetEmptyCoordinates(entityId.EntityId, position.Coords, height_buffer, factory.Containers);
-                //var pos = p - this.Origin;
                 EntityTemplate template = null;
 
                 bool finished = false;

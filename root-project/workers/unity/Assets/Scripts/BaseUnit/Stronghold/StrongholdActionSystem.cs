@@ -1,14 +1,9 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Improbable.Gdk.Core;
-using Improbable.Gdk.Subscriptions;
 using Improbable.Worker.CInterop;
-using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
-using UnityEngine.Experimental.PlayerLoop;
 
 namespace AdvancedGears
 {
@@ -126,14 +121,15 @@ namespace AdvancedGears
             requestLists.Add(id);
         }
 
-        const int solnum = 5;
-        const int underCommands = 3;
         List<TeamOrder> makeOrders(uint rank, OrderType order, Dictionary<EntityId,TeamInfo> datas)
         {
             var maxrank = OrderDictionary.GetMaxRank(order, rank);
 
             if (maxrank <= 0 || datas == null)
                 return null;
+
+            var solnum = AttackLogicDictionary.UnderSoldiers;
+            var underCommands = AttackLogicDictionary.UnderCommanders;
 
             List<TeamOrder> teamOrders = null;
             int coms = 1;

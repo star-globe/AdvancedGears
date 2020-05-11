@@ -34,6 +34,14 @@ namespace AdvancedGears
         [SerializeField]
         float boidRadiusMinimum = 0.1f;
 
+        [SerializeField]
+        int underSoldiers = 5;
+        public static int UnderSoldiers => Instance.underSoldiers;
+
+        [SerializeField]
+        int underCommanders = 3;
+        public static int UnderCommanders => Instance.underCommanders;
+
         public static AttackLogicDictionary Instance { private get; set; }
 
         readonly Dictionary<OrderType, OrderRate> orderDic = new Dictionary<OrderType, OrderRate>();
@@ -71,10 +79,17 @@ namespace AdvancedGears
 
         public static float BoidPotential(uint rank, float length, float radius)
         {
-            //radius /= 2;
             length = Mathf.Max(length, Instance.boidRadiusMinimum);
             var rate = length / radius;
             return rank / (rate * rate);
+        }
+
+        public static float RankScaled(float range, uint rank)
+        {
+            if (rank < 1)
+                return range;
+            else
+                return range * Mathf.Pow(UnderCommanders, rank);
         }
     }
 }
