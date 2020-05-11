@@ -3,4 +3,25 @@ import "improbable/gdk/core/common.schema";
 import "advanced_gears/common.schema";
 import "improbable/gdk/transform_synchronization/transform_internal.schema";
 
+enum HexType {
+    Normal = 0;
+    FixedSide = 1;
+    NotBelong = 2;
+}
+
 // strategy:22000~22099
+component HexBase {
+    id = 22000;
+
+    uint32 index = 1;
+    HexType type = 2;
+    UnitSide side = 3;
+    EntityId stronghold_id = 4;
+}
+
+// attach to stronghold
+component HexFacility {
+    id = 22001;
+
+    EntityId hex_id = 1;
+}
