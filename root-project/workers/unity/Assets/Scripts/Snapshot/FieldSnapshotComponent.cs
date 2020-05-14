@@ -37,4 +37,14 @@ namespace AdvancedGears
             };
         }
     }
+
+    [Serializable]
+    public struct FieldSnapshot
+    {
+        public float highest;
+        public float range;
+        public FieldMaterialType materialType;
+        public Vector3 pos;
+        public int seeds;
+    }
 }

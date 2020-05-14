@@ -37,7 +37,7 @@ namespace AdvancedGears
 
         Vector3 size => terrain.terrainData.size;
 
-        float rate => this.WorldSize / localSize;
+        public float rate => this.WorldSize / localSize;
 
         private void Start()
         {
@@ -84,23 +84,5 @@ namespace AdvancedGears
             var point = PhysicsUtils.GetGroundPosition(new Vector3(x / rate, 1000.0f, z / rate));
             return point.y * rate;
         }
-    }
-
-    [Serializable]
-    public struct UnitSnapshot
-    {
-        public UnitType type;
-        public UnitSide side;
-        public Vector3 pos;
-    }
-
-    [Serializable]
-    public struct FieldSnapshot
-    {
-        public float highest;
-        public float range;
-        public FieldMaterialType materialType;
-        public Vector3 pos;
-        public int seeds;
     }
 }

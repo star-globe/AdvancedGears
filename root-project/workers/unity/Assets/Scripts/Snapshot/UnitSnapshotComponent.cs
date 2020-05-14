@@ -16,6 +16,9 @@ namespace AdvancedGears
         [SerializeField]
         UnitSide side;
 
+        [SerializeField]
+        UnitAttachment[] attachments = null;
+
         public UnitSnapshot GetUnitSnapshot(float horizontalRate, float virticalRate)
         {
             var pos = this.transform.position;
@@ -24,6 +27,7 @@ namespace AdvancedGears
                 type = type,
                 side = side,
                 pos = new Vector3(pos.x * horizontalRate, pos.y * virticalRate, pos.z * horizontalRate),
+                attachments = attachments.ToArray(),
             };
         }
 
@@ -37,5 +41,22 @@ namespace AdvancedGears
 
             this.transform.position = new Vector3(pos.x, hit.point.y + buffer / rate, pos.z);
         }
+    }
+
+    [Serializable]
+    public class UnitAttachment
+    {
+        public virtual void AddComponent(EntityTemplate template)
+        {
+        }
+    }
+
+    [Serializable]
+    public struct UnitSnapshot
+    {
+        public UnitType type;
+        public UnitSide side;
+        public Vector3 pos;
+        public UnitAttachment[] attachments;
     }
 }

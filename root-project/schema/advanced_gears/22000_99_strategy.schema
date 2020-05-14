@@ -3,10 +3,19 @@ import "improbable/gdk/core/common.schema";
 import "advanced_gears/common.schema";
 import "improbable/gdk/transform_synchronization/transform_internal.schema";
 
-enum HexType {
+enum HexAttribute {
     Normal = 0;
     FixedSide = 1;
     NotBelong = 2;
+}
+
+enum HexDirection {
+    East = 0;
+    NorthEast = 1;
+    NorthWest = 2;
+    West = 3;
+    SouthWest = 4;
+    SouthEast = 5;
 }
 
 // strategy:22000~22099
@@ -14,14 +23,25 @@ component HexBase {
     id = 22000;
 
     uint32 index = 1;
-    HexType type = 2;
-    UnitSide side = 3;
-    EntityId stronghold_id = 4;
+    HexAttribute attribute = 2;
+    int32 hex_id = 3;
+    UnitSide side = 4;
 }
 
 // attach to stronghold
 component HexFacility {
     id = 22001;
 
+    int hex_index = 1;
+}
+
+type HexInfo {
     EntityId hex_id = 1;
+    uint32 index = 2;
+    UnitSide side = 3;
+}
+
+type StrategyVector {
+    HexInfo from = 1;
+    HexInfo to = 2;
 }

@@ -204,12 +204,18 @@ namespace AdvancedGears.Editor
             foreach(var u in units)
             {
                 var template = BaseUnitTemplate.CreateBaseUnitEntityTemplate(u.side, GroundCoordinates(u.pos.x, u.pos.y, u.pos.z), u.type);
+                if (u.attachments != null) {
+                    foreach (var attach in u.attachments) {
+                        attach.AddComponent(template);
+                    }
+                }
+                
                 snapshot.AddEntity(template);
 
-                if (u.type == UnitType.HeadQuarter)
-                {
-                    template = BaseUnitTemplate.CreateBaseUnitEntityTemplate(u.side, new Coordinates(u.pos.x, FixedParams.StrategyHeight, u.pos.z), UnitType.ArmyCloud);
-                }
+                //if (u.type == UnitType.HeadQuarter)
+                //{
+                //    template = BaseUnitTemplate.CreateBaseUnitEntityTemplate(u.side, new Coordinates(u.pos.x, FixedParams.StrategyHeight, u.pos.z), UnitType.ArmyCloud);
+                //}
             }
         }
 
