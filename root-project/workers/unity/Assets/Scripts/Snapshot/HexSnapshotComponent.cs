@@ -19,6 +19,14 @@ namespace AdvancedGears
         [SerializeField]
         int masterId;
 
+        int index = -1;
+
+        public void SetPosition(Vector3 pos, int index)
+        {
+            this.index = index;
+            this.transform.position = pos;
+        }
+
         public HexSnapshot GetHexSnapshot(float horizontalRate, float virticalRate)
         {
             var pos = this.transform.position;
