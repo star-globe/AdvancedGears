@@ -14,8 +14,6 @@ namespace AdvancedGears
         readonly string writeAccess = WorkerUtils.UnityGameLogic;
         public override void AddComponent(EntityTemplate template)
         {
-            template.AddComponent(new HexFacility.Snapshot(hexIndex: hexIndex), writeAccess);
-
             bool isDominatable = false;
             bool isFactory = false;
 
@@ -40,6 +38,9 @@ namespace AdvancedGears
 
             if (isFactory)
                 template.AddComponent(new UnitFactory.Snapshot().DefaultSnapshot(), writeAccess);
+
+            if (isFactory || isDominatable)
+                template.AddComponent(new HexFacility.Snapshot(hexIndex: hexIndex), writeAccess);
         }
     }
 }

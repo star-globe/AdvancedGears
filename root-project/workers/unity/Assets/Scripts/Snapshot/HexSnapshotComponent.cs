@@ -22,8 +22,25 @@ namespace AdvancedGears
                     hex.attribute = attribute;
                 }
 
-                if (unit)
+                if (unit) {
                     unit.side = side;
+
+                    var type = UnitType.None;
+                    switch (attribute)
+                    {
+                        case HexAttribute.Field:
+                        case HexAttribute.ForwardBase:
+                            type = UnitType.Stronghold;
+                            break;
+
+                        case HexAttribute.CentralBase:
+                            type = UnitType.HeadQuarter;
+                            break;
+                    }
+
+                    unit.type = type;
+                    unit.gameObject.SetActive(type != UnitType.None);
+                }
             }
         }
 
@@ -37,7 +54,7 @@ namespace AdvancedGears
         int masterId;
 
         [SerializeField]
-        UnitSnapshotPair[] pairs;
+        UnitSnapshotPair pair;
 
         [SerializeField]
         LineRenderer line;
@@ -68,19 +85,15 @@ namespace AdvancedGears
 
         public void SyncUnitSide()
         {
-            foreach (var p in pairs)
-                p.SetHexInfo(this.side, this.index, this.attribute);
+            pair.SetHexInfo(this.side, this.index, this.attribute);
         }
 
         public void SearchChildren()
         {
             var list = new List<UnitSnapshotPair>();
-            var units = GetComponentsInChildren<UnitSnapshotComponent>();
-            foreach(var u in units) {
-                list.Add(new UnitSnapshotPair() { unit = u, hex = u.GetComponent<HexSnapshotAttachment>() });
-            }
-
-            this.pairs = list.ToArray();
+            var u = GetComponentInChildren<UnitSnapshotComponent>();
+            if (u)
+                this.pair = new UnitSnapshotPair() { unit = u, hex = u.GetComponent<HexSnapshotAttachment>() };
         }
     }
 
