@@ -29,8 +29,8 @@ namespace AdvancedGears
 
         public void Realize(List<TerrainPointInfo> terrainPoints)
         {
-            var width = terrain.terrainData.heightmapWidth;
-            var height = terrain.terrainData.heightmapHeight;
+            var width = terrain.terrainData.heightmapResolution;
+            var height = terrain.terrainData.heightmapResolution;
 
             var size = terrain.terrainData.size;
 

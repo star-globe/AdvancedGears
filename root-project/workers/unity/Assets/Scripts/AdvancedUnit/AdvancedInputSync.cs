@@ -17,11 +17,10 @@ namespace AdvancedGears
             inputPlayerGroup = GetEntityQuery(
                 ComponentType.ReadWrite<AdvancedPlayerInput.Component>(),
                 ComponentType.ReadOnly<CameraTransform>(),
-                ComponentType.ReadOnly<AdvancedPlayerInput.ComponentAuthority>(),
+                ComponentType.ReadOnly<AdvancedPlayerInput.HasAuthority>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
 
             );
-            inputPlayerGroup.SetFilter(AdvancedPlayerInput.ComponentAuthority.Authoritative);
         }
 
         protected override void OnUpdate()
@@ -52,11 +51,10 @@ namespace AdvancedGears
             // unmanned
             inputUnmannedGroup = GetEntityQuery(
                 ComponentType.ReadWrite<AdvancedUnmannedInput.Component>(),
-                ComponentType.ReadOnly<AdvancedUnmannedInput.ComponentAuthority>(),
+                ComponentType.ReadOnly<AdvancedUnmannedInput.HasAuthority>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
-            inputUnmannedGroup.SetFilter(AdvancedUnmannedInput.ComponentAuthority.Authoritative);
         }
 
         protected override void OnUpdate()
@@ -69,7 +67,7 @@ namespace AdvancedGears
                     return;
 
                 var inter = unMannedInput.Interval;
-                if (inter.CheckTime() == false)
+                if (CheckTime(ref inter) == false)
                     return;
 
                 unMannedInput.Interval = inter;

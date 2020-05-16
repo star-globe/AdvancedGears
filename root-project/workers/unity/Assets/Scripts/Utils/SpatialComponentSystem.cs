@@ -68,6 +68,11 @@ namespace AdvancedGears
                 return logDispatcher;
             }
         }
+
+        protected bool CheckTime(ref IntervalChecker inter)
+        {
+            return inter.CheckTime(this.Time.ElapsedTime);
+        }
     }
 
     public abstract class BaseEntitySearchSystem : SpatialComponentSystem

@@ -32,7 +32,7 @@ namespace AdvancedGears
         {
             hexes.Clear();
             foreach (var u in FindObjectsOfType<HexSnapshotComponent>())
-                hexes.Add(u.GetUnitSnapshot(rate, rate));
+                hexes.Add(u.GetHexSnapshot(rate, rate));
         }
     }
 }

@@ -45,7 +45,7 @@ namespace AdvancedGears
 
             if (entityQueryId != null)
             {
-                if (retryInter.CheckTime() == false)
+                if (CheckTime(ref retryInter) == false)
                     HandleEntityQueryResponses();
                 else
                     SendEntityQuery();
@@ -56,7 +56,7 @@ namespace AdvancedGears
             if(IsCheckTime)
                 return;
 
-            if (inter.CheckTime() == false)
+            if (CheckTime(ref inter) == false)
                 return;
 
             // position check 
@@ -82,7 +82,7 @@ namespace AdvancedGears
         {
             var entityQueryResponses = this.CommandSystem.GetResponses<WorldCommands.EntityQuery.ReceivedResponse>();
             var name = this.GetType().ToString();
-            var time = Time.time;
+            var time = Time.ElapsedTime;
 
             for (var i = 0; i < entityQueryResponses.Count; i++)
             {

@@ -7,7 +7,6 @@ using Improbable.Gdk.Subscriptions;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
-using UnityEngine.Experimental.PlayerLoop;
 
 namespace AdvancedGears
 {
@@ -23,11 +22,10 @@ namespace AdvancedGears
 
             group = GetEntityQuery(
                 ComponentType.ReadWrite<HeadQuarters.Component>(),
-                ComponentType.ReadOnly<HeadQuarters.ComponentAuthority>(),
+                ComponentType.ReadOnly<HeadQuarters.HasAuthority>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
-            group.SetFilter(HeadQuarters.ComponentAuthority.Authoritative);
         }
 
         protected override void OnUpdate()
@@ -53,7 +51,7 @@ namespace AdvancedGears
                     return;
 
                 var inter = headQuarter.Interval;
-                if (inter.CheckTime() == false)
+                if (CheckTime(ref inter) == false)
                     return;
 
                 headQuarter.Interval = inter;

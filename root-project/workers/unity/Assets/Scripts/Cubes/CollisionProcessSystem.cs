@@ -27,10 +27,9 @@ namespace AdvancedGears
 
             collisionGroup = GetEntityQuery(
                 ComponentType.ReadOnly<Launchable.Component>(),
-                ComponentType.ReadOnly<Launchable.ComponentAuthority>(),
+                ComponentType.ReadOnly<Launchable.HasAuthority>(),
                 ComponentType.ReadOnly<CollisionComponent>()
             );
-            collisionGroup.SetFilter(Launchable.ComponentAuthority.Authoritative);
         }
 
         protected override void OnUpdate()

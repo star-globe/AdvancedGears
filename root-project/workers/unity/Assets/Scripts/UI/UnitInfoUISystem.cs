@@ -7,7 +7,6 @@ using Improbable.Gdk.Subscriptions;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
-using UnityEngine.Experimental.PlayerLoop;
 using AdvancedGears;
 
 namespace AdvancedGears.UI

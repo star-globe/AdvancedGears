@@ -11,7 +11,6 @@ using Improbable.Worker.CInterop;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
-using UnityEngine.Experimental.PlayerLoop;
 
 namespace AdvancedGears
 {
@@ -32,9 +31,6 @@ namespace AdvancedGears
                 ComponentType.ReadOnly<Transform>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
-
-            group.SetFilter(FuelServer.ComponentAuthority.Authoritative);
-            group.SetFilter(FuelComponent.ComponentAuthority.Authoritative);
         }
 
         const int rate = 2;
@@ -56,7 +52,7 @@ namespace AdvancedGears
                     return;
 
                 var inter = server.Interval;
-                if (inter.CheckTime() == false)
+                if (CheckTime(ref inter) == false)
                     return;
 
                 server.Interval = inter;

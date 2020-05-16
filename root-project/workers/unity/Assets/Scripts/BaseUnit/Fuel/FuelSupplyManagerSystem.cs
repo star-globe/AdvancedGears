@@ -11,7 +11,6 @@ using Improbable.Worker.CInterop;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
-using UnityEngine.Experimental.PlayerLoop;
 
 namespace AdvancedGears
 {
@@ -30,8 +29,6 @@ namespace AdvancedGears
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
-
-            group.SetFilter(FuelSupplyManager.ComponentAuthority.Authoritative);
         }
 
         private class SupplyReserve
@@ -73,7 +70,7 @@ namespace AdvancedGears
                     return;
 
                 var inter = manager.Interval;
-                if (inter.CheckTime() == false)
+                if (CheckTime(ref inter) == false)
                     return;
 
                 manager.Interval = inter;

@@ -22,17 +22,15 @@ namespace AdvancedGears
 
             group = GetEntityQuery(
                 ComponentType.ReadWrite<BaseUnitAction.Component>(),
-                ComponentType.ReadOnly<BaseUnitAction.ComponentAuthority>(),
+                ComponentType.ReadOnly<BaseUnitAction.HasAuthority>(),
                 ComponentType.ReadWrite<BaseUnitPosture.Component>(),
-                ComponentType.ReadOnly<BaseUnitPosture.ComponentAuthority>(),
+                ComponentType.ReadOnly<BaseUnitPosture.HasAuthority>(),
                 ComponentType.ReadWrite<GunComponent.Component>(),
                 ComponentType.ReadOnly<BaseUnitTarget.Component>(),
                 ComponentType.ReadOnly<UnitTransform>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
-            group.SetFilter(BaseUnitAction.ComponentAuthority.Authoritative);
-            group.SetFilter(BaseUnitPosture.ComponentAuthority.Authoritative);
         }
 
         protected override void OnUpdate()
@@ -51,7 +49,7 @@ namespace AdvancedGears
                 if (target.State != TargetState.ActionTarget)
                     return;
 
-                var time = Time.time;
+                var time = Time.ElapsedTime;
                 var inter = action.Interval;
                 if (inter.CheckTime(time) == false)
                     return;
@@ -74,7 +72,7 @@ namespace AdvancedGears
             });
         }
 
-        void Attack(UnitTransform unit, float time, float angleSpeed, in Vector3 epos, in SpatialEntityId entityId, ref BaseUnitPosture.Component posture, ref GunComponent.Component gun, out bool updPosture, out bool updGuns)
+        void Attack(UnitTransform unit, double time, float angleSpeed, in Vector3 epos, in SpatialEntityId entityId, ref BaseUnitPosture.Component posture, ref GunComponent.Component gun, out bool updPosture, out bool updGuns)
         {
             var pos = posture.Posture;
             var gunsDic = gun.GunsDic;
@@ -155,7 +153,7 @@ namespace AdvancedGears
             if (RotateLogic.CheckRotate(cannon.Forward, cannon.HingeAxis, foward, angle))
                 return Result.InRange;
             
-            posture.Resolve(epos, cannon.Muzzle, angleSpeed * Time.deltaTime);
+            posture.Resolve(epos, cannon.Muzzle, angleSpeed * Time.DeltaTime);
             return Result.Rotate;
         }
     }

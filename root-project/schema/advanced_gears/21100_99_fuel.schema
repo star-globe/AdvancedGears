@@ -146,7 +146,7 @@ component ResourceSupplyer {
 
     float resource_fraction = 3;
     float recovery_rate = 4;
-    float checked_time = 5;
+    double checked_time = 5;
 }
 
 component ResourceTransporter {
@@ -171,6 +171,6 @@ component RecoveryComponent {
     RecoveryState state = 1;
     float range = 2;
     float recovery_rate = 3;
-    float checked_time = 4;
+    double checked_time = 4;
     float end_time = 5;
 }

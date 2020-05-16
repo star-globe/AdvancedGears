@@ -14,14 +14,14 @@ namespace AdvancedGears
 
         [SerializeField] private float edgeLength;
         public float EdgeLength => edgeLength;
-        public static float EdgeLength => Instance.EdgeLength;
+        public static float HexEdgeLength => Instance.edgeLength;
 
         public override void Initialize()
         {
             Instance = this;
 
             foreach (var h in hexesList)
-                hexesDic[h.Id] = f;
+                hexesDic[h.Id] = h;
         }
 
         public static HexSettings Get(int hex_type_id)

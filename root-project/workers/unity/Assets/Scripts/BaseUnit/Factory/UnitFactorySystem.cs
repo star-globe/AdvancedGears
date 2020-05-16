@@ -11,7 +11,6 @@ using Improbable.Worker.CInterop;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
-using UnityEngine.Experimental.PlayerLoop;
 
 namespace AdvancedGears
 {
@@ -50,25 +49,22 @@ namespace AdvancedGears
 
             factoryGroup = GetEntityQuery(
                 ComponentType.ReadWrite<UnitFactory.Component>(),
-                ComponentType.ReadOnly<UnitFactory.ComponentAuthority>(),
+                ComponentType.ReadOnly<UnitFactory.HasAuthority>(),
                 ComponentType.ReadWrite<ResourceComponent.Component>(),
-                ComponentType.ReadOnly<ResourceComponent.ComponentAuthority>(),
+                ComponentType.ReadOnly<ResourceComponent.HasAuthority>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<Position.Component>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
-            factoryGroup.SetFilter(UnitFactory.ComponentAuthority.Authoritative);
-            factoryGroup.SetFilter(ResourceComponent.ComponentAuthority.Authoritative);
 
             factoryInter = IntervalCheckerInitializer.InitializedChecker(1.0f);
 
             checkerGroup = GetEntityQuery(
                 ComponentType.ReadWrite<UnitFactory.Component>(),
-                ComponentType.ReadOnly<UnitFactory.ComponentAuthority>(),
+                ComponentType.ReadOnly<UnitFactory.HasAuthority>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<Position.Component>()
             );
-            checkerGroup.SetFilter(UnitFactory.ComponentAuthority.Authoritative);
 
             checkerInter = IntervalCheckerInitializer.InitializedChecker(1.5f);
         }
@@ -82,7 +78,7 @@ namespace AdvancedGears
 
         private void HandleUnitCheck()
         {
-            if (checkerInter.CheckTime() == false)
+            if (CheckTime(ref checkerInter) == false)
                 return;
 
             Entities.With(checkerGroup).ForEach((ref UnitFactory.Component factory,
@@ -124,7 +120,7 @@ namespace AdvancedGears
         const float height_buffer = 5.0f;
         void HandleProductUnit()
         {
-            if (factoryInter.CheckTime() == false)
+            if (CheckTime(ref factoryInter) == false)
                 return;
 
             Entities.With(factoryGroup).ForEach((Unity.Entities.Entity entity,
@@ -186,7 +182,7 @@ namespace AdvancedGears
                 }
 
                 factoryInter = factory.ProductInterval;
-                if (factoryInter.CheckTime() == false)
+                if (CheckTime(ref factoryInter) == false)
                     return;
 
                 Debug.LogFormat("CreateUnit!");

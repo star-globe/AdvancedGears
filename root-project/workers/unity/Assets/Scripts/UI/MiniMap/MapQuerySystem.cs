@@ -62,7 +62,7 @@ namespace AdvancedGears
 
         protected override void OnUpdate()
         {
-            if (inter.CheckTime())
+            if (CheckTime(ref inter))
             {
                 Entities.With(group).ForEach((Unity.Entities.Entity entity,
                                               ref PlayerInfo.Component playerInfo,

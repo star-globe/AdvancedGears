@@ -32,7 +32,7 @@ component HexBase {
 component HexFacility {
     id = 22001;
 
-    int hex_index = 1;
+    uint32 hex_index = 1;
 }
 
 type HexInfo {
@@ -41,7 +41,7 @@ type HexInfo {
     UnitSide side = 3;
 }
 
-type StrategyVector {
+type StrategyHexVector {
     HexInfo from = 1;
     HexInfo to = 2;
 }

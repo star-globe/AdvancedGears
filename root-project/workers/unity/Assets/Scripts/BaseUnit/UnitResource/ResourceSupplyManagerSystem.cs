@@ -11,7 +11,6 @@ using Improbable.Worker.CInterop;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
-using UnityEngine.Experimental.PlayerLoop;
 
 namespace AdvancedGears
 {
@@ -29,19 +28,18 @@ namespace AdvancedGears
 
             group = GetEntityQuery(
                 ComponentType.ReadWrite<ResourceComponent.Component>(),
-                ComponentType.ReadOnly<ResourceComponent.ComponentAuthority>(),
+                ComponentType.ReadOnly<ResourceComponent.HasAuthority>(),
                 ComponentType.ReadWrite<ResourceSupplyer.Component>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
 
-            group.SetFilter(ResourceComponent.ComponentAuthority.Authoritative);
             inter = IntervalCheckerInitializer.InitializedChecker(time);
         }
 
         protected override void OnUpdate()
         {
-            if (inter.CheckTime() == false)
+            if (CheckTime(ref inter) == false)
                 return;
 
             Entities.With(group).ForEach((ref ResourceComponent.Component resource,
@@ -55,12 +53,12 @@ namespace AdvancedGears
                 if (status.Type != UnitType.Stronghold)
                     return;
 
-                var current = Time.time;
+                var current = Time.ElapsedTime;
                 RecoveryResource(current, ref resource, ref supplyer);
             });
         }
 
-        private void RecoveryResource(float current, ref ResourceComponent.Component resource, ref ResourceSupplyer.Component supplyer)
+        private void RecoveryResource(double current, ref ResourceComponent.Component resource, ref ResourceSupplyer.Component supplyer)
         {
             //Debug.LogFormat("CurrentResource:{0}", resource.Resource);
 
@@ -70,7 +68,7 @@ namespace AdvancedGears
             }
 
             if (supplyer.CheckedTime != 0.0f) {
-                supplyer.ResourceFraction += (supplyer.CheckedTime - current) * supplyer.RecoveryRate;
+                supplyer.ResourceFraction += (float)(supplyer.CheckedTime - current) * supplyer.RecoveryRate;
                 var add = Mathf.FloorToInt(supplyer.ResourceFraction);
                 if (add > 0) {
                     var res = resource.Resource + add;

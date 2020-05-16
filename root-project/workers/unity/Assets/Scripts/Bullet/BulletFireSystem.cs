@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Entities;
 using Unity.Collections;
-using UnityEngine.Experimental.PlayerLoop;
 
 namespace AdvancedGears
 {

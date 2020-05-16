@@ -5,7 +5,6 @@ using Improbable.Gdk.TransformSynchronization;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
-using UnityEngine.Experimental.PlayerLoop;
 
 namespace AdvancedGears
 {
@@ -21,16 +20,13 @@ namespace AdvancedGears
 
             group = GetEntityQuery(
                     ComponentType.ReadWrite<BaseUnitPosture.Component>(),
-                    ComponentType.ReadOnly<BaseUnitPosture.ComponentAuthority>(),
+                    ComponentType.ReadOnly<BaseUnitPosture.HasAuthority>(),
                     ComponentType.ReadOnly<UnitTransform>(),
                     ComponentType.ReadOnly<BaseUnitMovement.Component>(),
                     ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                     ComponentType.ReadWrite<FuelComponent.Component>(),
-                    ComponentType.ReadOnly<FuelComponent.ComponentAuthority>()
+                    ComponentType.ReadOnly<FuelComponent.HasAuthority>()
             );
-
-            group.SetFilter(BaseUnitPosture.ComponentAuthority.Authoritative);
-            group.SetFilter(FuelComponent.ComponentAuthority.Authoritative);
         }
 
         protected override void OnUpdate()
@@ -79,7 +75,7 @@ namespace AdvancedGears
                     trans.Rotate(trans.up, movement.RotSpeed * Time.fixedDeltaTime);
 
                     var inter = posture.Interval;
-                    if (posture.Initialized && inter.CheckTime())
+                    if (posture.Initialized && CheckTime(ref inter))
                     {
                         posture.Interval = inter;
                         posture.Root = rigidbody.transform.rotation.ToCompressedQuaternion();

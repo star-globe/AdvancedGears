@@ -22,8 +22,8 @@ namespace AdvancedGears
             {
                 if (heights == null)
                 {
-                    var width = terrain.terrainData.heightmapWidth;
-                    var height = terrain.terrainData.heightmapHeight;
+                    var width = terrain.terrainData.heightmapResolution;
+                    var height = terrain.terrainData.heightmapResolution;
                     heights = new float[width, width];
                 }
 
@@ -69,8 +69,8 @@ namespace AdvancedGears
         public void Realize(Vector3 center, List<TerrainPointInfo> terrainPoints = null, Vector3? terrainPos = null)
         {
             this.IsSet = true;
-            var width = terrain.terrainData.heightmapWidth;
-            var height = terrain.terrainData.heightmapHeight;
+            var width = terrain.terrainData.heightmapResolution;
+            var height = terrain.terrainData.heightmapResolution;
             var size = terrain.terrainData.size;
             var start = center - new Vector3(size.x/2, 0.0f, size.z/2);
 

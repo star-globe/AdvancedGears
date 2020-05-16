@@ -20,10 +20,9 @@ namespace AdvancedGears
             uiInitGroup = GetEntityQuery(
                 ComponentType.ReadOnly<Launcher.Component>(),
                 ComponentType.ReadOnly<Score.Component>(),
-                ComponentType.ReadOnly<PlayerInput.ComponentAuthority>(),
+                ComponentType.ReadOnly<PlayerInput.HasAuthority>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
-            uiInitGroup.SetFilter(PlayerInput.ComponentAuthority.Authoritative);
         }
 
         protected override void OnUpdate()
