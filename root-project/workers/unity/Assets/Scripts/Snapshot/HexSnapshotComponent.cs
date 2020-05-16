@@ -69,7 +69,7 @@ namespace AdvancedGears
         public void SyncUnitSide()
         {
             foreach (var p in pairs)
-                p.SyncUnitSide(this.side, this.index);
+                p.SetHexInfo(this.side, this.index, this.attribute);
         }
 
         public void SearchChildren()
@@ -82,8 +82,6 @@ namespace AdvancedGears
 
             this.pairs = list.ToArray();
         }
-
-        public void 
     }
 
     [Serializable]
