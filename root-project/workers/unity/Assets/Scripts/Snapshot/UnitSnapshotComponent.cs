@@ -10,14 +10,11 @@ namespace AdvancedGears
 {
     public class UnitSnapshotComponent : MonoBehaviour
     {
-        [SerializeField]
-        UnitType type;
+        public UnitType type;
+        public UnitSide side;
 
         [SerializeField]
-        UnitSide side;
-
-        [SerializeField]
-        UnitAttachment[] attachments = null;
+        UnitSnapshotAttachment[] attachments = null;
 
         public UnitSnapshot GetUnitSnapshot(float horizontalRate, float virticalRate)
         {
@@ -44,19 +41,11 @@ namespace AdvancedGears
     }
 
     [Serializable]
-    public class UnitAttachment
-    {
-        public virtual void AddComponent(EntityTemplate template)
-        {
-        }
-    }
-
-    [Serializable]
     public struct UnitSnapshot
     {
         public UnitType type;
         public UnitSide side;
         public Vector3 pos;
-        public UnitAttachment[] attachments;
+        public UnitSnapshotAttachment[] attachments;
     }
 }

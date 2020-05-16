@@ -10,21 +10,26 @@ namespace AdvancedGears
     {
         const float edgeLength = 500.0f;
         readonly static float route3 = Mathf.Sqrt(3.0f);
-        public static void SetHexCorners(in Vector3 origin, int index, Vector3[] corners, float edge = edgeLength)
+
+        public static void SetHexCorners(in Vector3 center, Vector3[] corners, float edge = edgeLength)
         {
             if (corners == null || corners.Length != 6)
                 return;
 
-            var center = GetHexCenter(origin, index, edge);
-            corners[0] = center + new Vector3(edge * route3/2, 0, edge * 0.5f);
+            corners[0] = center + new Vector3(edge * route3 / 2, 0, edge * 0.5f);
             corners[1] = center + new Vector3(0, 0, edge);
-            corners[2] = center + new Vector3(-edge * route3/2, 0, edge * 0.5f);
-            corners[3] = center + new Vector3(-edge * route3/2, 0, -edge * 0.5f);
+            corners[2] = center + new Vector3(-edge * route3 / 2, 0, edge * 0.5f);
+            corners[3] = center + new Vector3(-edge * route3 / 2, 0, -edge * 0.5f);
             corners[4] = center + new Vector3(0, 0, -edge);
-            corners[5] = center + new Vector3(edge * route3/2, 0, -edge * 0.5f);
+            corners[5] = center + new Vector3(edge * route3 / 2, 0, -edge * 0.5f);
         }
 
-        public static Vector3 GetHexCenter(in Vector3 origin, int index, float edge = edgeLength)
+        public static void SetHexCorners(in Vector3 origin, uint index, Vector3[] corners, float edge = edgeLength)
+        {
+            SetHexCorners(GetHexCenter(origin, index, edge), corners, edge);
+        }
+
+        public static Vector3 GetHexCenter(in Vector3 origin, uint index, float edge = edgeLength)
         {
             if (index == 0)
                 return origin;
@@ -32,9 +37,9 @@ namespace AdvancedGears
             Vector3 pos = origin;
 
             var i = index;
-            int n = 0;
-            int direct = 0;
-            int rest = 0;
+            uint n = 0;
+            uint direct = 0;
+            uint rest = 0;
             while(i > 0) {
                 n++;
                 direct = (i-1)/n;

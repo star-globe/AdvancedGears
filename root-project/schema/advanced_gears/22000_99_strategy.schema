@@ -4,9 +4,10 @@ import "advanced_gears/common.schema";
 import "improbable/gdk/transform_synchronization/transform_internal.schema";
 
 enum HexAttribute {
-    Normal = 0;
-    FixedSide = 1;
-    NotBelong = 2;
+    Field = 0;
+    ForwardBase = 1;
+    CentralBase = 2;
+    NotBelong = 3;
 }
 
 enum HexDirection {
