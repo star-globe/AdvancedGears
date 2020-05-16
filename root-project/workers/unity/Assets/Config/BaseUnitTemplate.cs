@@ -38,7 +38,7 @@ namespace AdvancedGears
             template.AddComponent(new BaseUnitMovement.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new BaseUnitSight.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new BaseUnitAction.Snapshot { EnemyPositions = new List<FixedPointVector3>() }, WorkerUtils.UnityGameLogic);
-            template.AddComponent(new BaseUnitStatus.Snapshot(side, type, UnitState.Alive, order == null ? orderDic[type]: order.Value), WorkerUtils.UnityGameLogic);
+            template.AddComponent(new BaseUnitStatus.Snapshot(side, type, UnitState.Alive, order == null ? orderDic[type] : order.Value), WorkerUtils.UnityGameLogic);
             template.AddComponent(new BaseUnitTarget.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new Launchable.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new BaseUnitHealth.Snapshot(), WorkerUtils.UnityGameLogic);
@@ -47,7 +47,7 @@ namespace AdvancedGears
 
             if (type.BaseType() == UnitBaseType.Moving)
                 template.AddComponent(new BaseUnitReviveTimer.Snapshot { IsStart = false, RestTime = 0.0f }, WorkerUtils.UnityGameLogic);
-            
+
             SwitchType(template, type, WorkerUtils.UnityGameLogic);
             TransformSynchronizationHelper.AddTransformSynchronizationComponents(template, WorkerUtils.UnityGameLogic);
 
@@ -85,9 +85,9 @@ namespace AdvancedGears
                 case UnitType.Commander:
                     template.AddComponent(new BulletComponent.Snapshot(), writeAccess);
                     template.AddComponent(new CommanderStatus.Snapshot { Order = new OrderPair { Self = OrderType.Idle, Upper = OrderType.Idle },
-                                                                         Rank = 0, }, writeAccess);
+                        Rank = 0, }, writeAccess);
                     template.AddComponent(new CommanderTeam.Snapshot { FollowerInfo = new FollowerInfo { Followers = new List<EntityId>(), UnderCommanders = new List<EntityId>() },
-                                                                       SuperiorInfo = new SuperiorInfo() }, writeAccess);
+                        SuperiorInfo = new SuperiorInfo() }, writeAccess);
                     template.AddComponent(new CommanderSight.Snapshot { WarPowers = new List<WarPower>() }, writeAccess);
                     template.AddComponent(new CommanderAction.Snapshot { ActionType = CommandActionType.None }, writeAccess);
                     template.AddComponent(new BaseUnitPosture.Snapshot { Posture = new PostureInfo { Datas = new Dictionary<PosturePoint, PostureData>() } }, writeAccess);
@@ -105,12 +105,8 @@ namespace AdvancedGears
                 case UnitType.Stronghold:
                     template.AddComponent(new StrongholdStatus.Snapshot { Rank = 1, }, writeAccess);
                     template.AddComponent(new StrongholdSight.Snapshot { TargetStrongholds = new Dictionary<EntityId, TargetStrongholdInfo>() }, writeAccess);
-                    template.AddComponent(new UnitFactory.Snapshot { Containers = new List<UnitContainer>(),
-                                                                     FollowerOrders = new List<FollowerOrder>(),
-                                                                     SuperiorOrders = new List<SuperiorOrder>(),
-                                                                     TeamOrders = new List<TeamOrder>() }, writeAccess);
-                    //template.AddComponent(new UnitArmyObserver.Snapshot(), writeAccess);
-                    template.AddComponent(new DominationStamina.Snapshot { SideStaminas = new Dictionary<UnitSide,float>() }, writeAccess);
+                    template.AddComponent(new UnitFactory.Snapshot().DefaultSnapshot(), writeAccess);
+                    template.AddComponent(new DominationStamina.Snapshot().DefaultSnapshot(), writeAccess);
                     template.AddComponent(new ResourceComponent.Snapshot(), writeAccess);
                     template.AddComponent(new ResourceSupplyer.Snapshot(), writeAccess);
                     template.AddComponent(new RecoveryComponent.Snapshot { State = RecoveryState.Supplying }, writeAccess);
@@ -136,7 +132,7 @@ namespace AdvancedGears
                     break;
 
                 case UnitType.ArmyCloud:
-                    template.AddComponent(new ArmyCloud.Snapshot{}, writeAccess);
+                    template.AddComponent(new ArmyCloud.Snapshot { }, writeAccess);
                     break;
             }
         }
@@ -176,7 +172,7 @@ namespace AdvancedGears
 
             var template = new EntityTemplate();
             template.AddComponent(new Position.Snapshot { Coords = coords }, controllAttribute);
-            template.AddComponent(new Metadata.Snapshot(isPlayer ? "Player": "AdvancedUnit"), WorkerUtils.UnityGameLogic);
+            template.AddComponent(new Metadata.Snapshot(isPlayer ? "Player" : "AdvancedUnit"), WorkerUtils.UnityGameLogic);
             template.AddComponent(new BulletComponent.Snapshot(), controllAttribute);
             template.AddComponent(new AdvancedUnitController.Snapshot(), controllAttribute);
             template.AddComponent(new BaseUnitHealth.Snapshot(), WorkerUtils.UnityGameLogic);
@@ -221,18 +217,36 @@ namespace AdvancedGears
 
         static void AddMinimapQuery<T>(InterestTemplate interest) where T : ISpatialComponentData
         {
-             var minimapQuery = InterestQuery.Query(
-                Constraint.All(
-                    Constraint.Any(Constraint.Component(CommanderStatus.ComponentId),
-                                   Constraint.Component(StrongholdStatus.ComponentId),
-                                   Constraint.Component(HeadQuarters.ComponentId)),
-                    Constraint.RelativeSphere(FixedParams.WorldInterestLimit)))
-                .FilterResults(Position.ComponentId,
-                               BaseUnitStatus.ComponentId,
-                               TransformInternal.ComponentId)
-                .WithMaxFrequencyHz(FixedParams.WorldInterestFrequency);
+            var minimapQuery = InterestQuery.Query(
+               Constraint.All(
+                   Constraint.Any(Constraint.Component(CommanderStatus.ComponentId),
+                                  Constraint.Component(StrongholdStatus.ComponentId),
+                                  Constraint.Component(HeadQuarters.ComponentId)),
+                   Constraint.RelativeSphere(FixedParams.WorldInterestLimit)))
+               .FilterResults(Position.ComponentId,
+                              BaseUnitStatus.ComponentId,
+                              TransformInternal.ComponentId)
+               .WithMaxFrequencyHz(FixedParams.WorldInterestFrequency);
 
             interest.AddQueries<T>(minimapQuery);
+        }
+    }
+
+    static class TemplateExtensions
+    {
+        public static UnitFactory.Snapshot DefaultSnapshot(this UnitFactory.Snapshot snapshot)
+        {
+            snapshot.Containers = new List<UnitContainer>();
+            snapshot.FollowerOrders = new List<FollowerOrder>();
+            snapshot.SuperiorOrders = new List<SuperiorOrder>();
+            snapshot.TeamOrders = new List<TeamOrder>();
+            return snapshot;
+        }
+
+        public static DominationStamina.Snapshot DefaultSnapshot(this DominationStamina.Snapshot snapshot)
+        {
+            snapshot.SideStaminas = new Dictionary<UnitSide, float>();
+            return snapshot;
         }
     }
 }
