@@ -48,7 +48,7 @@ namespace AdvancedGears.Editor
                 GenerateSnapshot();
         }
 
-        void GenerateSnapshot()
+        protected virtual void GenerateSnapshot()
         {
             if (scene == null)
                 return;

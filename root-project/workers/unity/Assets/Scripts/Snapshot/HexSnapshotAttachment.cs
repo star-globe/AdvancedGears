@@ -16,6 +16,7 @@ namespace AdvancedGears
         {
             bool isDominatable = false;
             bool isFactory = false;
+            SpawnType spawnType = SpawnType.None;
 
             switch (attribute)
             {
@@ -25,9 +26,11 @@ namespace AdvancedGears
                 case HexAttribute.ForwardBase:
                     isDominatable = true;
                     isFactory = true;
+                    spawnType = SpawnType.Revive;
                     break;
                 case HexAttribute.CentralBase:
                     isFactory = true;
+                    spawnType = SpawnType.Start;
                     break;
                 case HexAttribute.NotBelong:
                     break;
@@ -41,6 +44,9 @@ namespace AdvancedGears
 
             if (isFactory || isDominatable)
                 template.AddComponent(new HexFacility.Snapshot(hexIndex: hexIndex), writeAccess);
+
+            if (spawnType != SpawnType.None)
+                template.AddComponent(new SpawnPoint.Snapshot { Type = spawnType }, writeAccess);
         }
     }
 }

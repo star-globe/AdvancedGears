@@ -105,12 +105,12 @@ namespace AdvancedGears
                 case UnitType.Stronghold:
                     template.AddComponent(new StrongholdStatus.Snapshot { Rank = 1, }, writeAccess);
                     template.AddComponent(new StrongholdSight.Snapshot { TargetStrongholds = new Dictionary<EntityId, TargetStrongholdInfo>() }, writeAccess);
-                    template.AddComponent(new UnitFactory.Snapshot().DefaultSnapshot(), writeAccess);
-                    template.AddComponent(new DominationStamina.Snapshot().DefaultSnapshot(), writeAccess);
+                    //template.AddComponent(new UnitFactory.Snapshot().DefaultSnapshot(), writeAccess);
+                    //template.AddComponent(new DominationStamina.Snapshot().DefaultSnapshot(), writeAccess);
                     template.AddComponent(new ResourceComponent.Snapshot(), writeAccess);
                     template.AddComponent(new ResourceSupplyer.Snapshot(), writeAccess);
                     template.AddComponent(new RecoveryComponent.Snapshot { State = RecoveryState.Supplying }, writeAccess);
-                    template.AddComponent(new SpawnPoint.Snapshot { Type = SpawnType.Revive }, writeAccess);
+                    //template.AddComponent(new SpawnPoint.Snapshot { Type = SpawnType.Revive }, writeAccess);
                     var commandersQuery = InterestQuery.Query(Constraint.Component<CommanderStatus.Component>())
                                             .FilterResults(Position.ComponentId, BaseUnitStatus.ComponentId);
                     var commanderInterest = InterestTemplate.Create().AddQueries<StrongholdStatus.Component>(commandersQuery);
@@ -128,7 +128,7 @@ namespace AdvancedGears
                                           .FilterResults(Position.ComponentId, BaseUnitStatus.ComponentId);
                     var strongholdInterest = InterestTemplate.Create().AddQueries<StrategyOrderManager.Component>(strongholdQuery);
                     template.AddComponent(strongholdInterest.ToSnapshot(), writeAccess);
-                    template.AddComponent(new SpawnPoint.Snapshot { Type = SpawnType.Start }, writeAccess);
+                    //template.AddComponent(new SpawnPoint.Snapshot { Type = SpawnType.Start }, writeAccess);
                     break;
 
                 case UnitType.ArmyCloud:

@@ -84,5 +84,11 @@ namespace AdvancedGears
             var point = PhysicsUtils.GetGroundPosition(new Vector3(x / rate, 1000.0f, z / rate));
             return point.y * rate;
         }
+
+        public virtual void GenerateSnapshot(string outputPath)
+        {
+            var snapshot = SnapshotGenerator.GenerateGroundSnapshot(this.WorldSize, this.GetHeight);
+            
+        }
     }
 }

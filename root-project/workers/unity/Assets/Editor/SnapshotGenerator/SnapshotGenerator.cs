@@ -65,6 +65,30 @@ namespace AdvancedGears.Editor
             snapshot.WriteToFile(arguments.OutputPath);
         }
 
+        public static Snapshot GenerateGroundSnapshot(float fieldSize, GetSnapshotHeight ground = null)
+        {
+            var snapshot = new Snapshot();
+
+            int count = (int)Mathf.Round(fieldSize / standardSize) * 2;
+            for (int i = 0; i <= count; i++)
+            {
+                for (int j = 0; j <= count; j++)
+                {
+                    var length_x = standardSize * (i - (count - 1) / 2.0f);
+                    var length_z = standardSize * (j - (count - 1) / 2.0f);
+                    AddPlayerSpawner(snapshot, GroundCoordinates( length_x, length_z, ground));
+                }
+            }
+
+            return snapshot;
+        }
+
+        public static void WriteSnapshotFile(Snapshot snapshot, string outputPath)
+        {
+            Debug.Log($"Writing snapshot to: {outputPath}");
+            snapshot.WriteToFile(outputPath);
+        }
+
         const float standardSize = 400.0f;
         private static Snapshot CreateSnapshot(GetSnapshotHeight ground = null, float fieldSize = standardSize, List<UnitSnapshot> units = null, List<FieldSnapshot> fields = null)
         {
