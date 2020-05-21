@@ -23,6 +23,10 @@ namespace AdvancedGears
         const int frequencyManager = 5; 
         const int frequencyHex = 15; 
 
+        readonly Dictionary<uint,HexInfo> hexDic = new Dictionary<uint, HexInfo>();
+
+        float hexEdge => HexDictionary.HexEdgeLength;
+
         protected override void OnCreate()
         {
             base.OnCreate();
@@ -63,9 +67,22 @@ namespace AdvancedGears
                                           ref Position.Component position,
                                           ref SpatialEntityId entityId) =>
                 {
-
+                    hexDic[hex.Index].Index = hex.Index;
+                    hexDic[hex.Index].HexId = hex.HexId;
+                    hexDic[hex.Index].Side = hex.Side;
                 });
             }
+        }
+
+        public List<uint> BorderHexList(UnitSide side)
+        {
+            List<uint> indexes = new List<uint>();
+
+            foreach(var kvp in hexDic) {
+                
+            }
+
+            return indexes;
         }
     }
 }

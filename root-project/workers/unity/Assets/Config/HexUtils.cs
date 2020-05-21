@@ -68,5 +68,23 @@ namespace AdvancedGears
             pos += spread * n + roll * rest;
             return pos;
         }
+
+        public static uint[] GetNeighborHexIndexes(uint index)
+        {
+            var ids = new uint[6];
+
+            var i = index;
+            uint n = 0;
+            uint direct = 0;
+            uint rest = 0;
+            while(i > 0) {
+                n++;
+                direct = (i-1)/n;
+                rest = (i-1)%n;
+                i -= 6 * n;
+            }
+
+            return ids;
+        }
     }
 }
