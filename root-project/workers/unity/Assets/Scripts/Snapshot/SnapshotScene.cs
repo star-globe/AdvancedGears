@@ -87,13 +87,13 @@ namespace AdvancedGears.Editor
 
         public virtual Snapshot GenerateSnapshot()
         {
-            var snapshot = SnapshotGenerator.GenerateGroundSnapshot(this.WorldSize, this.GetHeight);
+            var snapshot = SnapshotUtils.GenerateGroundSnapshot(this.WorldSize, this.GetHeight);
 
             foreach(var f in Fields)
                 snapshot.AddEntity(FieldTemplate.CreateFieldEntityTemplate(f.pos.ToCoordinates(), f.range, f.highest, f.materialType, f.seeds));
 
             foreach(var u in Units) {
-                var template = BaseUnitTemplate.CreateBaseUnitEntityTemplate(u.side, GroundCoordinates(u.pos.x, u.pos.y, u.pos.z), u.type);
+                var template = BaseUnitTemplate.CreateBaseUnitEntityTemplate(u.side, SnapshotUtils.GroundCoordinates(u.pos.x, u.pos.y, u.pos.z), u.type);
                 if (u.attachments != null) {
                     foreach (var attach in u.attachments) {
                         attach.AddComponent(template);

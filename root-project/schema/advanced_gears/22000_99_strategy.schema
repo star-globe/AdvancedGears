@@ -37,9 +37,10 @@ component HexFacility {
 }
 
 type HexInfo {
-    EntityId hex_id = 1;
+    EntityId hex_entity_id = 1;
     uint32 index = 2;
-    UnitSide side = 3;
+    int32 hex_id = 3;
+    UnitSide side = 4;
 }
 
 type StrategyHexVector {

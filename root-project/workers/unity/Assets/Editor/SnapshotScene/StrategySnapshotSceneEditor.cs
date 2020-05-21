@@ -11,9 +11,11 @@ namespace AdvancedGears.Editor
     [CustomEditor (typeof(StrategySnapshotScene))]
     public class StrategySnapshotSceneEditor : SnapshotSceneEditor
     {
+        StrategySnapshotScene strategy = null;
         protected override void AttachScene()
         {
-            scene = target as StrategySnapshotScene;
+            strategy = target as StrategySnapshotScene;
+            scene = strategy;
         }
 
         public override void OnInspectorGUI ()
@@ -21,10 +23,10 @@ namespace AdvancedGears.Editor
             base.OnInspectorGUI();
 
             if (GUILayout.Button("Align Hexes"))
-                scene.AlignHexes();
+                strategy.AlignHexes();
 
             if (GUILayout.Button("Convert Hexes"))
-                scene.ConvertHexes();
+                strategy.ConvertHexes();
         }
     }
 }

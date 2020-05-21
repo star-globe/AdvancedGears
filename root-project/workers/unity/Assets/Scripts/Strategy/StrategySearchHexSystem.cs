@@ -67,9 +67,7 @@ namespace AdvancedGears
                                           ref Position.Component position,
                                           ref SpatialEntityId entityId) =>
                 {
-                    hexDic[hex.Index].Index = hex.Index;
-                    hexDic[hex.Index].HexId = hex.HexId;
-                    hexDic[hex.Index].Side = hex.Side;
+                    hexDic[hex.Index] = new HexInfo() { Index = hex.Index, HexId = hex.HexId, Side = hex.Side };
                 });
             }
         }
