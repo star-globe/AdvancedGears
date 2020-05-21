@@ -79,6 +79,7 @@ namespace AdvancedGears
                 index = index,
                 attribute = attribute,
                 hexId = masterId,
+                pos = pos,
                 side = side,
             };
         }
@@ -103,6 +104,7 @@ namespace AdvancedGears
         public uint index;
         public HexAttribute attribute;
         public int hexId;
+        public Vector3 pos;
         public UnitSide side;
     }
 

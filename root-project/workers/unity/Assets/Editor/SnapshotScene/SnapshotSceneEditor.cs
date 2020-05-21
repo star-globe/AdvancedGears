@@ -11,11 +11,16 @@ namespace AdvancedGears.Editor
     [CustomEditor (typeof(SnapshotScene))]
     public class SnapshotSceneEditor : UnityEditor.Editor
     {
-        SnapshotScene scene = null;
+        protected SnapshotScene scene = null;
 
         string outputPath = null;
 
         void OnEnable ()
+        {
+                AttachScene();
+        }
+
+        protected virtual void AttachScene()
         {
             scene = target as SnapshotScene;
         }
@@ -58,7 +63,9 @@ namespace AdvancedGears.Editor
                 OutputPath = SnapshotGenerator.GetSnapshotPath(outputPath)
             };
 
-            SnapshotGenerator.Generate(arguments, scene.WorldSize, scene.GetHeight, scene.Units, scene.Fields);
+            var snapshot = scene.GenerateSnapshot();
+            Debug.Log($"Writing snapshot to: {OutputPath}");
+            snapshot.WriteToFile(OutputPath);
         }
     }
 }

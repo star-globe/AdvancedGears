@@ -11,17 +11,20 @@ namespace AdvancedGears.Editor
     [CustomEditor (typeof(StrategySnapshotScene))]
     public class StrategySnapshotSceneEditor : SnapshotSceneEditor
     {
-        protected override void GenerateSnapshot()
+        protected override void AttachScene()
         {
-            if (scene == null)
-                return;
+            scene = target as StrategySnapshotScene;
+        }
 
-            var arguments = new SnapshotGenerator.Arguments
-            {
-                OutputPath = SnapshotGenerator.GetSnapshotPath(outputPath)
-            };
+        public override void OnInspectorGUI ()
+        {
+            base.OnInspectorGUI();
 
-            var snapshot = SnapshotGenerator.GenerateGroundSnapshot(scene.WorldSize, scene.GetHeight);//, scene.Units, scene.Fields);
+            if (GUILayout.Button("Align Hexes"))
+                scene.AlignHexes();
+
+            if (GUILayout.Button("Convert Hexes"))
+                scene.ConvertHexes();
         }
     }
 }

@@ -6,7 +6,7 @@ using UnityEditor;
 using Snapshot = Improbable.Gdk.Core.Snapshot;
 using AdvancedGears;
 
-namespace AdvancedGears
+namespace AdvancedGears.Editor
 {
     public class StrategySnapshotScene : SnapshotScene
     {
@@ -70,6 +70,18 @@ namespace AdvancedGears
             hexes.Clear();
             foreach (var u in realizeList)
                 hexes.Add(u.GetHexSnapshot(rate, rate));
+        }
+
+        public override Snapshot GenerateSnapshot()
+        {
+            var snapshot = base.GenerateSnapshot();
+
+            foreach (var h in Hexes) {
+                var template = HexTemplate.CreateHexEntityTemplate(h.pos.ToCoordinates(), h.index, h.attribute, h.hexId, h.side);
+                snapshot.AddEntity(template);
+            }
+
+            return snapshot;
         }
     }
 }
