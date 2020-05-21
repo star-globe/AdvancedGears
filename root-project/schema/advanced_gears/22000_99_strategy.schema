@@ -46,3 +46,8 @@ type StrategyHexVector {
     HexInfo from = 1;
     HexInfo to = 2;
 }
+
+// manager
+component StrategyHexManager {
+    id = 220010;
+}
