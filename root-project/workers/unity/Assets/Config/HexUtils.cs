@@ -131,25 +131,37 @@ namespace AdvancedGears
                         ids[2] = index == 6 ? 0: index - (6*n+5);
                         ids[3] = rest == 0 ? index - 1: index - 6*n;
                         ids[4] = rest == 0 ? index + 6*n+4: index - 1;
-                        ids[5] = index + (6*n+5);
+                        ids[5] = index + 6*n+5;
                         break;
             }
 
             //for(var i = 0; i <= 5; i++) {
+            //    int ind = (direct + i) % 6;
             //    int num = 0;
+            //    switch(i)
+            //    {
+            //        case 0:
+            //        case 1:
+            //            num = index + 6*n + ind;
+            //            break;
             //
-            //    if (i == direct)
-            //        num = index + 6*n + direct;
-            //    else if(i == (direct+1) % 6)
-            //        num = index + 6*n + direct+1;
-            //    else if (i == (direct+2) % 6)
-            //        num = index + 1;
-            //    else if (i == (direct+3) % 6)
-            //        num = index -(6*n + direct);
-            //    else if (i == (direct+4) % 6)
-            //        num = index -6*n;
+            //        case 2:
+            //            num = index + 1;
+            //            break;
             //
-            //    ids[i] = num;
+            //        case 3:
+            //            num = index == direct+1 ? 0: index - 6*(n-1) - direct;
+            //            break;
+            //
+            //        case 4:
+            //            num = rest == 0 ? index - 1: index - 6*n;
+            //            break;
+            //        case 5:
+            //            num = rest == 0 ? index + 6*n+4: index - 1;
+            //            break;
+            //    }
+            //
+            //    ids[ind] = num;
             //}
 
             return ids;
