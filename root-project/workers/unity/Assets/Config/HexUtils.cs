@@ -84,23 +84,73 @@ namespace AdvancedGears
                 i -= 6 * n;
             }
 
-            //int baseNum = 0;
             switch(direct)
             {
                 case 0: ids[0] = index + 6*n;
-                        ids[1] = ids[0] + 1;
+                        ids[1] = index + 6*n+1;
                         ids[2] = index + 1;
                         ids[3] = index == 1 ? 0: index - 6*(n-1);
-                        ids[4] = rest == 0 ? 6*n*(n+1)/2: ids[3] - 1;
-                        ids[5] = rest == 0 ? 6*(n+1)*(n+2)/2: index - 1;
+                        ids[4] = rest == 0 ? index + 6*n-1: index - (6*n+1);
+                        ids[5] = rest == 0 ? index + 6*(2*n+1)-1: index - 1;
                         break;
-                case 1: 
-                case 2: 
-                case 3: 
-                case 4:
-                case 5:
+
+                case 1: ids[0] = rest == 0 ? index + 6*n: index - 1;
+                        ids[1] = index + 6*n+1;
+                        ids[2] = index + 6*n+2;
+                        ids[3] = index + 1;
+                        ids[4] = index == 2 ? 0: index - (6*n+1);
+                        ids[5] = reset == 0 ? index - 1: index - (6*n+2);
+                        break;
+
+                case 2: ids[0] = rest == 0 ? index - 1: index - (6*n+3);
+                        ids[1] = rest == 0 ? index + 6*n+1: index - 1;
+                        ids[2] = index + 6*n+2;
+                        ids[3] = index + 6*n+3;
+                        ids[4] = index + 1;
+                        ids[5] = index == 3 ? 0: index - (6*n+2);
+                        break;
+
+                case 3: ids[0] = index == 4 ? 0: index - (6*n+3);
+                        ids[1] = rest == 0 ? index - 1: index - (6*n-2);
+                        ids[2] = rest == 0 ? index + 6*n+2: index - 1;
+                        ids[3] = index + 6*n+3;
+                        ids[4] = index + 6*n+4;
+                        ids[5] = index + 1;
+                        break;
+
+                case 4: ids[0] = index + 1;
+                        ids[1] = index == 5 ? 0: index - (6*n-2);
+                        ids[2] = reset == 0 ? index - 1: index - (6*n-1);
+                        ids[3] = reset == 0 ? index + (6*n+3): index - 1;
+                        ids[4] = index + 6*n+4;
+                        ids[5] = index + 6*n+5; 
+                        break;
+
+                case 5: ids[0] = index + 6*n+6;
+                        ids[1] = index + 1;
+                        ids[2] = index == 6 ? 0: index - (6*n+5);
+                        ids[3] = rest == 0 ? index - 1: index - 6*n;
+                        ids[4] = rest == 0 ? index + 6*n+4: index - 1;
+                        ids[5] = index + (6*n+5);
                         break;
             }
+
+            //for(var i = 0; i <= 5; i++) {
+            //    int num = 0;
+            //
+            //    if (i == direct)
+            //        num = index + 6*n + direct;
+            //    else if(i == (direct+1) % 6)
+            //        num = index + 6*n + direct+1;
+            //    else if (i == (direct+2) % 6)
+            //        num = index + 1;
+            //    else if (i == (direct+3) % 6)
+            //        num = index -(6*n + direct);
+            //    else if (i == (direct+4) % 6)
+            //        num = index -6*n;
+            //
+            //    ids[i] = num;
+            //}
 
             return ids;
         }
