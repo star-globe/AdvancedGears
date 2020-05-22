@@ -71,7 +71,7 @@ namespace AdvancedGears
 
         public static uint[] GetNeighborHexIndexes(uint index)
         {
-            var ids = new uint[6];
+            var ids = new uint[6] { 1, 2, 3, 4, 5, 6};
 
             var i = index;
             uint n = 0;
@@ -82,6 +82,24 @@ namespace AdvancedGears
                 direct = (i-1)/n;
                 rest = (i-1)%n;
                 i -= 6 * n;
+            }
+
+            //int baseNum = 0;
+            switch(direct)
+            {
+                case 0: ids[0] = index + 6*n;
+                        ids[1] = ids[0] + 1;
+                        ids[2] = index + 1;
+                        ids[3] = index == 1 ? 0: index - 6*(n-1);
+                        ids[4] = rest == 0 ? 6*n*(n+1)/2: ids[3] - 1;
+                        ids[5] = rest == 0 ? 6*(n+1)*(n+2)/2: index - 1;
+                        break;
+                case 1: 
+                case 2: 
+                case 3: 
+                case 4:
+                case 5:
+                        break;
             }
 
             return ids;
