@@ -99,7 +99,7 @@ namespace AdvancedGears
                         ids[2] = index + 6*n+2;
                         ids[3] = index + 1;
                         ids[4] = index == 2 ? 0: index - (6*n+1);
-                        ids[5] = reset == 0 ? index - 1: index - (6*n+2);
+                        ids[5] = rest == 0 ? index - 1: index - (6*n+2);
                         break;
 
                 case 2: ids[0] = rest == 0 ? index - 1: index - (6*n+3);
@@ -120,8 +120,8 @@ namespace AdvancedGears
 
                 case 4: ids[0] = index + 1;
                         ids[1] = index == 5 ? 0: index - (6*n-2);
-                        ids[2] = reset == 0 ? index - 1: index - (6*n-1);
-                        ids[3] = reset == 0 ? index + (6*n+3): index - 1;
+                        ids[2] = rest == 0 ? index - 1: index - (6*n-1);
+                        ids[3] = rest == 0 ? index + (6*n+3): index - 1;
                         ids[4] = index + 6*n+4;
                         ids[5] = index + 6*n+5; 
                         break;
