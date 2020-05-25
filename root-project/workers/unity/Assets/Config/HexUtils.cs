@@ -135,34 +135,41 @@ namespace AdvancedGears
                         break;
             }
 
-            //for(var i = 0; i <= 5; i++) {
-            //    int ind = (direct + i) % 6;
-            //    int num = 0;
-            //    switch(i)
-            //    {
-            //        case 0:
-            //        case 1:
-            //            num = index + 6*n + ind;
-            //            break;
-            //
-            //        case 2:
-            //            num = index + 1;
-            //            break;
-            //
-            //        case 3:
-            //            num = index == direct+1 ? 0: index - 6*(n-1) - direct;
-            //            break;
-            //
-            //        case 4:
-            //            num = rest == 0 ? index - 1: index - 6*n;
-            //            break;
-            //        case 5:
-            //            num = rest == 0 ? index + 6*n+4: index - 1;
-            //            break;
-            //    }
-            //
-            //    ids[ind] = num;
-            //}
+            for(var i = 0; i <= 5; i++) {
+                int ind = (direct + i) % 6;
+                int num = 0;
+                switch(i)
+                {
+                    case 0:
+                    case 1:
+                        num = index + 6*n + direct + i;
+                        break;
+            
+                    case 2:
+                        if (direct == 5 && rest == n - 1)
+                            num = index - (6*n-1);
+                        else
+                            num = index + 1;
+                        break;
+            
+                    case 3:
+                        num = index == direct+1 ? 0: index - (6*n + direct - 6);
+                        break;
+            
+                    case 4:
+                        num = rest == 0 ? index - 1: index - (6*n + direct - 5);
+                        break;
+                    case 5:
+                        if (rest > 0)
+                            num = index - 1;
+                        else
+                            num = direct > 0 ? index + 6*n + direct -1:
+                                               index + 6*n + 5;
+                        break;
+                }
+            
+                ids[ind] = num;
+            }
 
             return ids;
         }
