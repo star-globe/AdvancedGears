@@ -22,44 +22,49 @@ namespace AdvancedGears.Editor
         float edgeLength => hexDictionary.EdgeLength;
 
         readonly List<HexSnapshotComponent> realizeList = new List<HexSnapshotComponent>();
-        readonly Queue<HexSnapshotComponent> sleepQueue = new Queue<HexSnapshotComponent>();
 
         IEnumerable<HexSnapshotComponent> GetHexBaseObjects(int number)
         {
-            for (int i = 0; i < number; i++)
-            {
-                if (i >= realizeList.Count)
-                {
-                    if (sleepQueue.Count > 0) {
-                        var hex = sleepQueue.Dequeue();
-                        hex.gameObject.SetActive(true);
-                        realizeList.Add(sleepQueue.Dequeue());
-                    }
-                    else
-                        realizeList.Add(Instantiate(baseHexObject));
-                }
+            number = 3 * number * (number+1) + 1;
 
-                yield return realizeList[i];
+            var comps = FindObjectsOfType<HexSnapshotComponent>();
+            Dictionary<uint, HexSnapshotComponent> hexDic = new Dictionary<uint, HexSnapshotComponent>();
+
+            foreach (var c in comps) {
+                hexDic[c.Index] = c;
             }
 
-            for(int i = number; i < realizeList.Count; i++)
+            for (uint i = 0; i < number; i++)
             {
-                var hex = realizeList[i];
-                hex.gameObject.SetActive(false);
-                sleepQueue.Enqueue(hex);
+                HexSnapshotComponent hex = null;
+                if (hexDic.ContainsKey(i)) {
+                    hex = hexDic[i];
+                    hex.gameObject.SetActive(true);
+                    hexDic.Remove(i);
+                }
+                else {
+                    hex = Instantiate(baseHexObject);
+                    hex.gameObject.name = string.Format("Hex_ID:{0}", i);
+                }
+
+                yield return hex;
+            }
+
+            foreach(var kvp in hexDic) {
+                kvp.Value.gameObject.SetActive(false);
             }
         }
 
         public void AlignHexes()
         {
-            int number = Mathf.CeilToInt(WorldSize / edgeLength);
-            number *= number;
+            var centerPos = this.CenterPos;
+            int edgeNumber = Mathf.CeilToInt((WorldSize / 2 / edgeLength - 1.0f) / 2);
             uint index = 0;
 
             var edge = edgeLength / rate;
 
-            foreach (var h in GetHexBaseObjects(number)) {
-                var center = HexUtils.GetHexCenter(this.transform.position, index, edge);
+            foreach (var h in GetHexBaseObjects(edgeNumber)) {
+                var center = HexUtils.GetHexCenter(centerPos, index, edge);
                 h.SetPosition(center,index, edge);
                 index++;
             }

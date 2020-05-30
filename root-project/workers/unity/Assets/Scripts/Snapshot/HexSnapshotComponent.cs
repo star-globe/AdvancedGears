@@ -59,15 +59,18 @@ namespace AdvancedGears
         [SerializeField]
         LineRenderer line;
 
+        [SerializeField]
         uint index = 0;
+        public uint Index => index;
 
         public void SetPosition(Vector3 pos, uint index, float edge)
         {
             this.index = index;
             this.transform.position = pos;
 
-            var corners = new Vector3[6];
+            var corners = new Vector3[7];
             HexUtils.SetHexCorners(pos, corners, edge);
+            line.positionCount = 7;
             line.SetPositions(corners);
         }
 

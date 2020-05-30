@@ -39,6 +39,8 @@ namespace AdvancedGears.Editor
 
         public float rate => this.WorldSize / localSize;
 
+        public Vector3 CenterPos => this.transform.position + new Vector3(localSize / 2, 0, localSize / 2);
+
         private void Start()
         {
             Initialize();

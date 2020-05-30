@@ -13,7 +13,7 @@ namespace AdvancedGears
 
         public static void SetHexCorners(in Vector3 center, Vector3[] corners, float edge = edgeLength)
         {
-            if (corners == null || corners.Length != 6)
+            if (corners == null || corners.Length != 7)
                 return;
 
             corners[0] = center + new Vector3(edge * route3 / 2, 0, edge * 0.5f);
@@ -22,12 +22,32 @@ namespace AdvancedGears
             corners[3] = center + new Vector3(-edge * route3 / 2, 0, -edge * 0.5f);
             corners[4] = center + new Vector3(0, 0, -edge);
             corners[5] = center + new Vector3(edge * route3 / 2, 0, -edge * 0.5f);
+            corners[6] = corners[0];
         }
 
         public static void SetHexCorners(in Vector3 origin, uint index, Vector3[] corners, float edge = edgeLength)
         {
             SetHexCorners(GetHexCenter(origin, index, edge), corners, edge);
         }
+
+        private static void CalcIndex(uint index, out uint n, out uint direct, out uint rest)
+        {
+            var i = index;
+            n = 0;
+            direct = 0;
+            rest = 0;
+            while (i > 0) {
+                n++;
+                direct = (i - 1) / n;
+                rest = (i - 1) % n;
+
+                if (i > 6 * n)
+                    i -= 6 * n;
+                else
+                    break;
+            }
+        }
+
 
         public static Vector3 GetHexCenter(in Vector3 origin, uint index, float edge = edgeLength)
         {
@@ -36,16 +56,7 @@ namespace AdvancedGears
 
             Vector3 pos = origin;
 
-            var i = index;
-            uint n = 0;
-            uint direct = 0;
-            uint rest = 0;
-            while(i > 0) {
-                n++;
-                direct = (i-1)/n;
-                rest = (i-1)%n;
-                i -= 6 * n;
-            }
+            CalcIndex(index, out var n, out var direct, out var rest);
 
             Vector3 spread = Vector3.zero;
             Vector3 roll = Vector3.zero;
@@ -58,7 +69,7 @@ namespace AdvancedGears
                 case 2: spread = new Vector3(-edge * route3/2, 0, edge * 1.5f);
                         roll = new Vector3(-edge * route3/2, 0, -edge * 1.5f); break;
                 case 3: spread = new Vector3(-edge * route3, 0, 0);
-                        roll = new Vector3(edge * route3, 0, -edge * 1.5f); break;
+                        roll = new Vector3(edge * route3/2, 0, -edge * 1.5f); break;
                 case 4: spread = new Vector3(-edge * route3/2, 0, -edge * 1.5f);
                         roll = new Vector3(edge * route3, 0, 0); break;
                 case 5: spread = new Vector3(edge * route3/2, 0, -edge * 1.5f);
@@ -73,18 +84,9 @@ namespace AdvancedGears
         {
             var ids = new uint[6] { 1, 2, 3, 4, 5, 6};
 
-            var idx = index;
-            uint n = 0;
-            uint direct = 0;
-            uint rest = 0;
-            while(idx > 0) {
-                n++;
-                direct = (idx - 1)/n;
-                rest = (idx - 1)%n;
-                idx -= 6 * n;
-            }
+            CalcIndex(index, out var n, out var direct, out var rest);
 
-            switch(direct)
+            switch (direct)
             {
                 case 0: ids[0] = index + 6*n;
                         ids[1] = index + 6*n+1;
