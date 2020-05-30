@@ -24,22 +24,8 @@ namespace AdvancedGears
 
                 if (unit) {
                     unit.side = side;
-
-                    var type = UnitType.None;
-                    switch (attribute)
-                    {
-                        case HexAttribute.Field:
-                        case HexAttribute.ForwardBase:
-                            type = UnitType.Stronghold;
-                            break;
-
-                        case HexAttribute.CentralBase:
-                            type = UnitType.HeadQuarter;
-                            break;
-                    }
-
-                    unit.type = type;
-                    unit.gameObject.SetActive(type != UnitType.None);
+                    unit.type = HexUtils.GetUnitType(attribute);
+                    unit.gameObject.SetActive(unit.type != UnitType.None);
                 }
             }
         }
@@ -87,17 +73,28 @@ namespace AdvancedGears
             };
         }
 
-        public void SyncUnitSide()
+        public void SyncUnitSettings()
         {
+            SearchChildren();
             pair.SetHexInfo(this.side, this.index, this.attribute);
         }
 
-        public void SearchChildren()
+        private void SearchChildren()
         {
             var list = new List<UnitSnapshotPair>();
-            var u = GetComponentInChildren<UnitSnapshotComponent>();
-            if (u)
-                this.pair = new UnitSnapshotPair() { unit = u, hex = u.GetComponent<HexSnapshotAttachment>() };
+            var units = GetComponentsInChildren<UnitSnapshotComponent>();
+
+            bool isSet = false;
+            foreach (var u in units) {
+                if (!isSet && u != null && u.type == HexUtils.GetUnitType(attribute)) {
+                    this.pair = new UnitSnapshotPair() { unit = u, hex = u.GetComponent<HexSnapshotAttachment>() };
+                    isSet = true;
+                    u.gameObject.SetActive(true);
+                }
+                else {
+                    u.gameObject.SetActive(false);
+                }
+            }
         }
     }
 
@@ -126,11 +123,8 @@ namespace AdvancedGears
         {
             base.OnInspectorGUI();
 
-            if (GUILayout.Button("SyncUnitSide"))
-                component.SyncUnitSide();
-
-            if (GUILayout.Button("SearchChildren"))
-                component.SearchChildren();
+            if (GUILayout.Button("SyncUnitSetings"))
+                component.SyncUnitSettings();
         }
     }
 #endif

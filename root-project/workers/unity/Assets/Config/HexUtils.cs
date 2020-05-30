@@ -48,7 +48,6 @@ namespace AdvancedGears
             }
         }
 
-
         public static Vector3 GetHexCenter(in Vector3 origin, uint index, float edge = edgeLength)
         {
             if (index == 0)
@@ -174,6 +173,24 @@ namespace AdvancedGears
             }
 
             return ids;
+        }
+
+        public static UnitType GetUnitType(HexAttribute attribute)
+        {
+            var type = UnitType.None;
+            switch (attribute)
+            {
+                case HexAttribute.Field:
+                case HexAttribute.ForwardBase:
+                    type = UnitType.Stronghold;
+                    break;
+
+                case HexAttribute.CentralBase:
+                    type = UnitType.HeadQuarter;
+                    break;
+            }
+
+            return type;
         }
     }
 }

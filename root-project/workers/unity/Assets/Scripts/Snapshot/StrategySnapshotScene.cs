@@ -21,8 +21,6 @@ namespace AdvancedGears.Editor
         HexDictionary hexDictionary;
         float edgeLength => hexDictionary.EdgeLength;
 
-        readonly List<HexSnapshotComponent> realizeList = new List<HexSnapshotComponent>();
-
         IEnumerable<HexSnapshotComponent> GetHexBaseObjects(int number)
         {
             number = 3 * number * (number+1) + 1;
@@ -73,20 +71,22 @@ namespace AdvancedGears.Editor
         public void ConvertHexes()
         {
             hexes.Clear();
-            foreach (var u in realizeList)
-                hexes.Add(u.GetHexSnapshot(rate, rate));
-        }
-
-        public override Snapshot GenerateSnapshot()
-        {
-            var snapshot = base.GenerateSnapshot();
-
-            foreach (var h in Hexes) {
-                var template = HexTemplate.CreateHexEntityTemplate(h.pos.ToCoordinates(), h.index, h.attribute, h.hexId, h.side);
-                snapshot.AddEntity(template);
+            foreach (var u in FindObjectsOfType<HexSnapshotComponent>()) {
+                if (u.gameObject.activeSelf)
+                    hexes.Add(u.GetHexSnapshot(rate, rate));
             }
-
-            return snapshot;
         }
+
+        //public override Snapshot GenerateSnapshot()
+        //{
+        //    var snapshot = base.GenerateSnapshot();
+        //
+        //    foreach (var h in Hexes) {
+        //        var template = HexTemplate.CreateHexEntityTemplate(h.pos.ToCoordinates(), h.index, h.attribute, h.hexId, h.side);
+        //        snapshot.AddEntity(template);
+        //    }
+        //
+        //    return snapshot;
+        //}
     }
 }

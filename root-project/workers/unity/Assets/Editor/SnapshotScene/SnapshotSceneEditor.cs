@@ -65,7 +65,7 @@ namespace AdvancedGears.Editor
 
             var snapshot = scene.GenerateSnapshot();
             Debug.Log($"Writing snapshot to: {outputPath}");
-            snapshot.WriteToFile(outputPath);
+            snapshot.WriteToFile(arguments.OutputPath);
         }
     }
 }
