@@ -5,7 +5,6 @@ using Improbable.Gdk.TransformSynchronization;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
-using UnityEngine.Experimental.PlayerLoop;
 
 namespace AdvancedGears
 {
@@ -15,7 +14,7 @@ namespace AdvancedGears
     {
         EntityQuery group;
         IntervalChecker interval;
-        float deltaTime = -1.0f;
+        double deltaTime = -1.0;
 
         const int period = 10; 
         protected override void OnCreate()
@@ -25,28 +24,25 @@ namespace AdvancedGears
             group = GetEntityQuery(
                     ComponentType.ReadOnly<UnitTransform>(),
                     ComponentType.ReadWrite<BaseUnitMovement.Component>(),
-                    ComponentType.ReadOnly<BaseUnitMovement.ComponentAuthority>(),
+                    ComponentType.ReadOnly<BaseUnitMovement.HasAuthority>(),
                     ComponentType.ReadWrite<BaseUnitSight.Component>(),
-                    ComponentType.ReadOnly<BaseUnitSight.ComponentAuthority>(),
+                    ComponentType.ReadOnly<BaseUnitSight.HasAuthority>(),
                     ComponentType.ReadOnly<BaseUnitTarget.Component>(),
                     ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                     ComponentType.ReadOnly<BaseUnitAction.Component>()
             );
 
-            group.SetFilter(BaseUnitMovement.ComponentAuthority.Authoritative);
-            group.SetFilter(BaseUnitSight.ComponentAuthority.Authoritative);
-
             interval = IntervalCheckerInitializer.InitializedChecker(period);
 
-            deltaTime = Time.time;
+            deltaTime = Time.ElapsedTime;
         }
 
         protected override void OnUpdate()
         {
-            if (interval.CheckTime() == false)
+            if (CheckTime(ref interval) == false)
                 return;
 
-            deltaTime = Time.time - deltaTime;
+            deltaTime = Time.ElapsedTime - deltaTime;
 
             Entities.With(group).ForEach((Entity entity,
                                           ref BaseUnitMovement.Component movement,
@@ -96,7 +92,7 @@ namespace AdvancedGears
                     movement.RotSpeed = rot * isRotate;
             });
 
-            deltaTime = Time.time;
+            deltaTime = Time.ElapsedTime;
         }
 
         #region method
@@ -128,7 +124,7 @@ namespace AdvancedGears
         int rotate(float rotSpeed, Transform trans, Vector3 diff)
         {
             var rate = MovementDictionary.RotateLimitRate;
-            return rotate(trans, diff, rotSpeed * Time.deltaTime, rate, out var is_over);
+            return rotate(trans, diff, rotSpeed * Time.DeltaTime, rate, out var is_over);
         }
 
         /// <summary>
@@ -201,8 +197,8 @@ namespace AdvancedGears
                     tgt = pos + boidVector.GetVector3(sight.TargetRange);
             }
 
-            var current = Time.time;
-            var diffTime = current - sight.BoidUpdateTime;
+            var current = Time.ElapsedTime;
+            var diffTime = (float)(current - sight.BoidUpdateTime);
             boidVector.Potential = AttackLogicDictionary.ReduceBoidPotential(boidVector.Potential, diffTime);
             sight.BoidUpdateTime = current;
             sight.BoidVector = boidVector;

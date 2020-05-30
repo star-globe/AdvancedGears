@@ -55,7 +55,7 @@ namespace AdvancedGears
                     return;
 
                 var inter = observer.Interval;
-                if (inter.CheckTime() == false)
+                if (CheckTime(ref inter) == false)
                     return;
 
                 observer.Interval = inter;

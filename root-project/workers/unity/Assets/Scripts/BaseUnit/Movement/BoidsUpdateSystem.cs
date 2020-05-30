@@ -6,8 +6,6 @@ using Improbable.Gdk.TransformSynchronization;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
-using UnityEngine.Experimental.PlayerLoop;
-
 namespace AdvancedGears
 {
     [DisableAutoCreation]
@@ -27,7 +25,7 @@ namespace AdvancedGears
 
             group = GetEntityQuery(
                     ComponentType.ReadWrite<BoidComponent.Component>(),
-                    ComponentType.ReadOnly<BoidComponent.ComponentAuthority>(),
+                    ComponentType.ReadOnly<BoidComponent.HasAuthority>(),
                     ComponentType.ReadOnly<Transform>(),
                     ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                     ComponentType.ReadOnly<BaseUnitTarget.Component>(),
@@ -36,7 +34,6 @@ namespace AdvancedGears
                     ComponentType.ReadOnly<SpatialEntityId>()
             );
 
-            group.SetFilter(BoidComponent.ComponentAuthority.Authoritative);
             inter = IntervalCheckerInitializer.InitializedChecker(period);
         }
 
@@ -44,7 +41,7 @@ namespace AdvancedGears
         const float diffMinPos = 1.0f * 1.0f;
         protected override void OnUpdate()
         {
-            if (inter.CheckTime() == false)
+            if (CheckTime(ref inter) == false)
                 return;
 
             Entities.With(group).ForEach((Entity entity,

@@ -36,20 +36,18 @@ namespace AdvancedGears
 
             newAdvancedGroup = GetEntityQuery(
                 ComponentType.ReadOnly<AdvancedUnitController.Component>(),
-                ComponentType.ReadOnly<AdvancedUnitController.ComponentAuthority>(),
+                ComponentType.ReadOnly<AdvancedUnitController.HasAuthority>(),
                 ComponentType.Exclude<Speed>()
             );
-            newAdvancedGroup.SetFilter(AdvancedUnitController.ComponentAuthority.Authoritative);
 
             advancedInputGroup = GetEntityQuery(
                 ComponentType.ReadWrite<Rigidbody>(),
                 ComponentType.ReadWrite<Speed>(),
                 ComponentType.ReadOnly<UnitTransform>(),
                 ComponentType.ReadOnly<AdvancedUnitController.Component>(),
-                ComponentType.ReadOnly<TransformInternal.ComponentAuthority>(),
+                ComponentType.ReadOnly<TransformInternal.HasAuthority>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>()
             );
-            advancedInputGroup.SetFilter(TransformInternal.ComponentAuthority.Authoritative);
        }
 
         protected override void OnUpdate()
@@ -119,7 +117,7 @@ namespace AdvancedGears
                 var targetSpeed = (unitController.Controller.Running ? RunSpeed : WalkSpeed) * inputDir.y;
                 var currentSpeed = speed.CurrentSpeed;
                 var speedSmoothVelocity = speed.SpeedSmoothVelocity;
-                currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref speedSmoothVelocity, SpeedSmoothTime, MaxSpeed, Time.deltaTime);
+                currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref speedSmoothVelocity, SpeedSmoothTime, MaxSpeed, Time.DeltaTime);
 
                 speed = new Speed
                 {

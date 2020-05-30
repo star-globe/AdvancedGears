@@ -10,7 +10,6 @@ using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
 using EntityQuery = Improbable.Worker.CInterop.Query.EntityQuery;
-using UnityEngine.Experimental.PlayerLoop;
 
 namespace AdvancedGears
 {

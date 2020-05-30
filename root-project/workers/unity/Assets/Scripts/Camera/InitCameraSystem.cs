@@ -18,10 +18,9 @@ namespace AdvancedGears
             componentUpdateSystem = World.GetExistingSystem<ComponentUpdateSystem>();
 
             inputGroup = GetEntityQuery(
-                ComponentType.ReadOnly<AdvancedPlayerInput.ComponentAuthority>(),
+                ComponentType.ReadOnly<AdvancedPlayerInput.HasAuthority>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
-            inputGroup.SetFilter(AdvancedPlayerInput.ComponentAuthority.Authoritative);
         }
 
         protected override void OnUpdate()

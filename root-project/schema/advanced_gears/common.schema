@@ -43,7 +43,7 @@ enum UnitState {
 
 type IntervalChecker {
     float interval = 1;
-    float last_checked = 2;
+    double last_checked = 2;
     float buffer = 3;
     int32 current_day = 4;
 }

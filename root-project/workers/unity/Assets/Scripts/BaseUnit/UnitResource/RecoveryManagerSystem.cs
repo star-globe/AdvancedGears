@@ -11,7 +11,6 @@ using Improbable.Worker.CInterop;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
-using UnityEngine.Experimental.PlayerLoop;
 
 namespace AdvancedGears
 {
@@ -34,13 +33,12 @@ namespace AdvancedGears
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
 
-            group.SetFilter(RecoveryComponent.ComponentAuthority.Authoritative);
             inter = IntervalCheckerInitializer.InitializedChecker(time);
         }
 
         protected override void OnUpdate()
         {
-            if (inter.CheckTime() == false)
+            if (CheckTime(ref inter) == false)
                 return;
 
             Entities.With(group).ForEach((Unity.Entities.Entity entity,
@@ -57,7 +55,7 @@ namespace AdvancedGears
                 if (status.Side == UnitSide.None)
                     return;
 
-                var current = Time.time;
+                var current = Time.ElapsedTime;
 
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
                 var pos = trans.position;
@@ -78,7 +76,7 @@ namespace AdvancedGears
             });
         }
 
-        private void RecoveryUnits(UnitSide side, in Vector3 pos, float current, ref RecoveryComponent.Component recovery, bool isReducing = false)
+        private void RecoveryUnits(UnitSide side, in Vector3 pos, double current, ref RecoveryComponent.Component recovery, bool isReducing = false)
         {
             if (recovery.CheckedTime != 0.0f) {
                 var delta = current - recovery.CheckedTime;

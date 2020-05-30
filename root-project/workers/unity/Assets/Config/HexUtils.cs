@@ -2,9 +2,7 @@ using Improbable.Gdk.Core;
 using Improbable.Gdk.GameObjectCreation;
 using Improbable.Gdk.PlayerLifecycle;
 using Improbable.Gdk.TransformSynchronization;
-using Unity.Entities;
-using System.Collections.Generic;
-using AdvancedGears.UI;
+using UnityEngine;
 
 namespace AdvancedGears
 {
@@ -12,21 +10,26 @@ namespace AdvancedGears
     {
         const float edgeLength = 500.0f;
         readonly static float route3 = Mathf.Sqrt(3.0f);
-        public static void SetHexCorners(in Vector3 origin, int index, Vector3[] corners, float edge = edgeLength)
+
+        public static void SetHexCorners(in Vector3 center, Vector3[] corners, float edge = edgeLength)
         {
             if (corners == null || corners.Length != 6)
                 return;
 
-            var center = GetHexCenter(origin, index, edge);
-            corners[0] = center + new Vector3(edge * route3/2, 0, edge * 0.5f);
+            corners[0] = center + new Vector3(edge * route3 / 2, 0, edge * 0.5f);
             corners[1] = center + new Vector3(0, 0, edge);
-            corners[2] = center + new Vector3(-edge * route3/2, 0, edge * 0.5f);
-            corners[3] = center + new Vector3(-edge * route3/2, 0, -edge * 0.5f);
+            corners[2] = center + new Vector3(-edge * route3 / 2, 0, edge * 0.5f);
+            corners[3] = center + new Vector3(-edge * route3 / 2, 0, -edge * 0.5f);
             corners[4] = center + new Vector3(0, 0, -edge);
-            corners[5] = center + new Vector3(edge * route3/2, 0, -edge * 0.5f);
+            corners[5] = center + new Vector3(edge * route3 / 2, 0, -edge * 0.5f);
         }
 
-        public static Vector3 GetHexCenter(in Vector3 origin, int index, float edge = edgeLength)
+        public static void SetHexCorners(in Vector3 origin, uint index, Vector3[] corners, float edge = edgeLength)
+        {
+            SetHexCorners(GetHexCenter(origin, index, edge), corners, edge);
+        }
+
+        public static Vector3 GetHexCenter(in Vector3 origin, uint index, float edge = edgeLength)
         {
             if (index == 0)
                 return origin;
@@ -34,9 +37,9 @@ namespace AdvancedGears
             Vector3 pos = origin;
 
             var i = index;
-            int n = 0;
-            int direct = 0;
-            int rest = 0;
+            uint n = 0;
+            uint direct = 0;
+            uint rest = 0;
             while(i > 0) {
                 n++;
                 direct = (i-1)/n;
@@ -64,6 +67,111 @@ namespace AdvancedGears
 
             pos += spread * n + roll * rest;
             return pos;
+        }
+
+        public static uint[] GetNeighborHexIndexes(uint index)
+        {
+            var ids = new uint[6] { 1, 2, 3, 4, 5, 6};
+
+            var i = index;
+            uint n = 0;
+            uint direct = 0;
+            uint rest = 0;
+            while(i > 0) {
+                n++;
+                direct = (i-1)/n;
+                rest = (i-1)%n;
+                i -= 6 * n;
+            }
+
+            switch(direct)
+            {
+                case 0: ids[0] = index + 6*n;
+                        ids[1] = index + 6*n+1;
+                        ids[2] = index + 1;
+                        ids[3] = index == 1 ? 0: index - 6*(n-1);
+                        ids[4] = rest == 0 ? index + 6*n-1: index - (6*n+1);
+                        ids[5] = rest == 0 ? index + 6*(2*n+1)-1: index - 1;
+                        break;
+
+                case 1: ids[0] = rest == 0 ? index + 6*n: index - 1;
+                        ids[1] = index + 6*n+1;
+                        ids[2] = index + 6*n+2;
+                        ids[3] = index + 1;
+                        ids[4] = index == 2 ? 0: index - (6*n+1);
+                        ids[5] = rest == 0 ? index - 1: index - (6*n+2);
+                        break;
+
+                case 2: ids[0] = rest == 0 ? index - 1: index - (6*n+3);
+                        ids[1] = rest == 0 ? index + 6*n+1: index - 1;
+                        ids[2] = index + 6*n+2;
+                        ids[3] = index + 6*n+3;
+                        ids[4] = index + 1;
+                        ids[5] = index == 3 ? 0: index - (6*n+2);
+                        break;
+
+                case 3: ids[0] = index == 4 ? 0: index - (6*n+3);
+                        ids[1] = rest == 0 ? index - 1: index - (6*n-2);
+                        ids[2] = rest == 0 ? index + 6*n+2: index - 1;
+                        ids[3] = index + 6*n+3;
+                        ids[4] = index + 6*n+4;
+                        ids[5] = index + 1;
+                        break;
+
+                case 4: ids[0] = index + 1;
+                        ids[1] = index == 5 ? 0: index - (6*n-2);
+                        ids[2] = rest == 0 ? index - 1: index - (6*n-1);
+                        ids[3] = rest == 0 ? index + (6*n+3): index - 1;
+                        ids[4] = index + 6*n+4;
+                        ids[5] = index + 6*n+5; 
+                        break;
+
+                case 5: ids[0] = index + 6*n+6;
+                        ids[1] = index + 1;
+                        ids[2] = index == 6 ? 0: index - (6*n+5);
+                        ids[3] = rest == 0 ? index - 1: index - 6*n;
+                        ids[4] = rest == 0 ? index + 6*n+4: index - 1;
+                        ids[5] = index + 6*n+5;
+                        break;
+            }
+
+            for(var i = 0; i <= 5; i++) {
+                int ind = (direct + i) % 6;
+                int num = 0;
+                switch(i)
+                {
+                    case 0:
+                    case 1:
+                        num = index + 6*n + direct + i;
+                        break;
+            
+                    case 2:
+                        if (direct == 5 && rest == n - 1)
+                            num = index - (6*n-1);
+                        else
+                            num = index + 1;
+                        break;
+            
+                    case 3:
+                        num = index == direct+1 ? 0: index - (6*n + direct - 6);
+                        break;
+            
+                    case 4:
+                        num = rest == 0 ? index - 1: index - (6*n + direct - 5);
+                        break;
+                    case 5:
+                        if (rest > 0)
+                            num = index - 1;
+                        else
+                            num = direct > 0 ? index + 6*n + direct -1:
+                                               index + 6*n + 5;
+                        break;
+                }
+            
+                ids[ind] = num;
+            }
+
+            return ids;
         }
     }
 }

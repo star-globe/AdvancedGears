@@ -51,18 +51,7 @@ namespace AdvancedGears
             transform.rotation = Quaternion.LookRotation(f, up);
         }
 
-        public static bool CheckTime(this ref IntervalChecker inter, float current, out float diff)
-        {
-            diff = inter.Buffer + inter.Interval;
-            return CheckTime(ref inter, current);
-        }
-
-        public static bool CheckTime(this ref IntervalChecker inter)
-        {
-            return CheckTime(ref inter, Time.time);
-        }
-
-        public static bool CheckTime(this ref IntervalChecker inter, float current)
+        public static bool CheckTime(this ref IntervalChecker inter, double current)
         {
             if (current - (inter.LastChecked + inter.Buffer) < inter.Interval)
                 return false;

@@ -49,8 +49,8 @@ namespace AdvancedGears
 
         private void Start()
         {
-            var width = terrain.terrainData.heightmapWidth;
-            var height = terrain.terrainData.heightmapHeight;
+            var width = terrain.terrainData.heightmapResolution;
+            var height = terrain.terrainData.heightmapResolution;
 
             float[,] heights = new float[width, height];
             var pos = terrain.transform.position;

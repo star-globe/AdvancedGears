@@ -8,7 +8,6 @@ using Improbable.Gdk.TransformSynchronization;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
-using UnityEngine.Experimental.PlayerLoop;
 
 namespace AdvancedGears
 {
@@ -26,19 +25,17 @@ namespace AdvancedGears
 
             group = GetEntityQuery(
                 ComponentType.ReadWrite<StrategyOrderManager.Component>(),
-                ComponentType.ReadOnly<StrategyOrderManager.ComponentAuthority>(),
+                ComponentType.ReadOnly<StrategyOrderManager.HasAuthority>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
-
-            group.SetFilter(StrategyOrderManager.ComponentAuthority.Authoritative);
 
             inter = IntervalCheckerInitializer.InitializedChecker(10.0f);
         }
 
         protected override void OnUpdate()
         {
-            if (inter.CheckTime() == false)
+            if (CheckTime(ref inter) == false)
                 return;
 
             Entities.With(group).ForEach((Entity entity,
@@ -53,7 +50,7 @@ namespace AdvancedGears
                     return;
 
                 var inter = manager.Interval;
-                if (inter.CheckTime() == false)
+                if (CheckTime(ref inter) == false)
                     return;
 
                 manager.Interval = inter;

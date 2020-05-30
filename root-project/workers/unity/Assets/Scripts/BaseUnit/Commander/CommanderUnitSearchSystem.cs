@@ -32,24 +32,22 @@ namespace AdvancedGears
                 ComponentType.ReadWrite<CommanderSight.Component>(),
                 ComponentType.ReadWrite<CommanderStatus.Component>(),
                 ComponentType.ReadWrite<CommanderAction.Component>(),
-                ComponentType.ReadOnly<CommanderAction.ComponentAuthority>(),
+                ComponentType.ReadOnly<CommanderAction.HasAuthority>(),
                 ComponentType.ReadOnly<CommanderTeam.Component>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<Transform>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
-            targettingGroup.SetFilter(CommanderAction.ComponentAuthority.Authoritative);
 
             teamingGroup = GetEntityQuery(
                 ComponentType.ReadWrite<CommanderTeam.Component>(),
-                ComponentType.ReadOnly<CommanderTeam.ComponentAuthority>(),
+                ComponentType.ReadOnly<CommanderTeam.HasAuthority>(),
                 ComponentType.ReadOnly<CommanderSight.Component>(),
                 ComponentType.ReadOnly<CommanderStatus.Component>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<Transform>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
-            teamingGroup.SetFilter(CommanderTeam.ComponentAuthority.Authoritative);
 
             teamingInter = IntervalCheckerInitializer.InitializedChecker(teaminTime);
             targettingInter = IntervalCheckerInitializer.InitializedChecker(period);
@@ -57,10 +55,10 @@ namespace AdvancedGears
 
         protected override void OnUpdate()
         {
-            if (teamingInter.CheckTime())
+            if (CheckTime(ref teamingInter))
                 HandleTeaming();
 
-            if (targettingInter.CheckTime())
+            if (CheckTime(ref targettingInter))
                 HandleTargetting();
         }
         private void HandleTargetting()
@@ -83,7 +81,7 @@ namespace AdvancedGears
                     return;
 
                 var inter = sight.Interval;
-                if (inter.CheckTime() == false)
+                if (CheckTime(ref inter) == false)
                     return;
 
                 sight.Interval = inter;

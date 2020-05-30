@@ -49,7 +49,7 @@ namespace AdvancedGears
             if (interval != null)
             {
                 var inter = interval.Value;
-                if (inter.CheckTime() == false)
+                if (CheckTime(ref inter) == false)
                     return;
             }
 

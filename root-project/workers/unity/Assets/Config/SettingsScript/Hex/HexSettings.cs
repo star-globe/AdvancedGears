@@ -2,8 +2,8 @@ using UnityEngine;
 
 namespace AdvancedGears
 {
-    [CreateAssetMenu(menuName = "AdvancedGears/Field Config/Field Settings", order = 1)]
-    public class FieldSettings : ScriptableObject
+    [CreateAssetMenu(menuName = "AdvancedGears/Strategy Config/Hex Settings", order = 1)]
+    public class HexSettings : ScriptableObject
     {
         [SerializeField] private int id;
         [SerializeField] private float fieldSize;

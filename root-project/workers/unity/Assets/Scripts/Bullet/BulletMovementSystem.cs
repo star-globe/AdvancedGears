@@ -42,7 +42,7 @@ namespace AdvancedGears
                     return;
 
                 // time check
-                var diff = Time.time - info.LaunchTime;
+                var diff = Time.ElapsedTime - info.LaunchTime;
                 if (diff >= info.LifeTime)
                 {
                     info.IsActive = false;
@@ -62,7 +62,7 @@ namespace AdvancedGears
         public FixedPointVector3 LaunchPosition;
         public FixedPointVector3 InitialVelocity;
         public FixedPointVector3 CurrentVelocity;
-        public float LaunchTime;
+        public double LaunchTime;
         public float LifeTime;
         public uint GunId;
         public long ShooterEntityId;

@@ -91,7 +91,7 @@ component BaseUnitSight {
     float target_range = 5;
     
     BoidVector boid_vector = 7;
-    float boid_update_time = 8;
+    double boid_update_time = 8;
 
     event BoidVector boid_diffed;
 }

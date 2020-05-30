@@ -5,7 +5,6 @@ using Improbable.Gdk.TransformSynchronization;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
-using UnityEngine.Experimental.PlayerLoop;
 
 namespace AdvancedGears
 {
@@ -23,14 +22,13 @@ namespace AdvancedGears
 
             group = GetEntityQuery(
                     ComponentType.ReadWrite<VirtualTroop.Component>(),
-                    ComponentType.ReadOnly<VirtualTroop.ComponentAuthority>(),
+                    ComponentType.ReadOnly<VirtualTroop.HasAuthority>(),
                     ComponentType.ReadOnly<Transform>(),
                     ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                     ComponentType.ReadOnly<CommanderStatus.Component>(),
                     ComponentType.ReadOnly<SpatialEntityId>()
             );
 
-            group.SetFilter(VirtualTroop.ComponentAuthority.Authoritative);
             inter = IntervalCheckerInitializer.InitializedChecker(1.0f);
         }
 
@@ -43,7 +41,7 @@ namespace AdvancedGears
         const float sightRate = 10.0f;
         protected override void OnUpdate()
         {
-            if (inter.CheckTime() == false)
+            if (CheckTime(ref inter) == false)
                 return;
 
             var damageDic = new Dictionary<EntityId, TroopDamage>();
@@ -88,7 +86,7 @@ namespace AdvancedGears
                 return false;
 
             var atkInter = troop.AttackInter;
-            if (atkInter.CheckTime() == false)
+            if (CheckTime(ref atkInter) == false)
                 return false;
 
             troop.AttackInter = atkInter;

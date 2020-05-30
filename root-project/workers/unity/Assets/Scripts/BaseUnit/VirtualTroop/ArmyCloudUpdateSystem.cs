@@ -5,7 +5,6 @@ using Improbable.Gdk.TransformSynchronization;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
-using UnityEngine.Experimental.PlayerLoop;
 
 namespace AdvancedGears
 {
@@ -23,22 +22,20 @@ namespace AdvancedGears
 
             group = GetEntityQuery(
                     ComponentType.ReadWrite<ArmyCloud.Component>(),
-                    ComponentType.ReadOnly<ArmyCloud.ComponentAuthority>(),
+                    ComponentType.ReadOnly<ArmyCloud.HasAuthority>(),
                     ComponentType.ReadWrite<Position.Component>(),
-                    ComponentType.ReadOnly<Position.ComponentAuthority>(),
+                    ComponentType.ReadOnly<Position.HasAuthority>(),
                     ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                     ComponentType.ReadOnly<SpatialEntityId>()
             );
 
-            group.SetFilter(ArmyCloud.ComponentAuthority.Authoritative);
-            group.SetFilter(Position.ComponentAuthority.Authoritative);
             inter = IntervalCheckerInitializer.InitializedChecker(1.0f);
         }
 
         const float sightRate = 10.0f;
         protected override void OnUpdate()
         {
-            if (inter.CheckTime() == false)
+            if (CheckTime(ref inter) == false)
                 return;
 
             Entities.With(group).ForEach((Entity entity,

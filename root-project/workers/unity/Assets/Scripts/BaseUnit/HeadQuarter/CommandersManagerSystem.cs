@@ -8,7 +8,6 @@ using Improbable.Gdk.Subscriptions;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
-using UnityEngine.Experimental.PlayerLoop;
 
 namespace AdvancedGears
 {
@@ -40,13 +39,11 @@ namespace AdvancedGears
 
             commanderGroup = GetEntityQuery(
                 ComponentType.ReadWrite<CommandersManager.Component>(),
-                ComponentType.ReadOnly<CommandersManager.ComponentAuthority>(),
+                ComponentType.ReadOnly<CommandersManager.HasAuthority>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<Position.Component>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
-
-            commanderGroup.SetFilter(CommandersManager.ComponentAuthority.Authoritative);
 
             strongholdGroup = GetEntityQuery(
                 ComponentType.ReadOnly<StrongholdStatus.Component>(),
@@ -60,7 +57,7 @@ namespace AdvancedGears
 
         protected override void OnUpdate()
         {
-            if (inter.CheckTime())
+            if (CheckTime(ref inter))
                 UpdateStrongHolds();
 
             UpdateForCreateCommander();
@@ -84,7 +81,7 @@ namespace AdvancedGears
                     return;
 
                 var inter = manager.Interval;
-                if (inter.CheckTime() == false)
+                if (CheckTime(ref inter) == false)
                     return;
 
                 manager.Interval = inter;

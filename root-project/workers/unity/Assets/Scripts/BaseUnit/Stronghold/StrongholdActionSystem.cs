@@ -24,13 +24,12 @@ namespace AdvancedGears
             group = GetEntityQuery(
                 ComponentType.ReadOnly<StrongholdStatus.Component>(),
                 ComponentType.ReadWrite<UnitFactory.Component>(),
-                ComponentType.ReadOnly<UnitFactory.ComponentAuthority>(),
+                ComponentType.ReadOnly<UnitFactory.HasAuthority>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<StrongholdSight.Component>(),
                 ComponentType.ReadOnly<Transform>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
-            group.SetFilter(UnitFactory.ComponentAuthority.Authoritative);
 
             inter = IntervalCheckerInitializer.InitializedChecker(0.5f);
         }
@@ -43,7 +42,7 @@ namespace AdvancedGears
 
         void HandleRequests()
         {
-            if (inter.CheckTime() == false)
+            if (CheckTime(ref inter) == false)
                 return;
 
             Entities.With(group).ForEach((Unity.Entities.Entity entity,

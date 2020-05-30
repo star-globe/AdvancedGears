@@ -11,7 +11,6 @@ using Improbable.Worker.CInterop;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
-using UnityEngine.Experimental.PlayerLoop;
 
 namespace AdvancedGears
 {
@@ -29,13 +28,11 @@ namespace AdvancedGears
 
             group = GetEntityQuery(
                 ComponentType.ReadWrite<DominationStamina.Component>(),
-                ComponentType.ReadOnly<DominationStamina.ComponentAuthority>(),
+                ComponentType.ReadOnly<DominationStamina.HasAuthority>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<Transform>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
-
-            group.SetFilter(DominationStamina.ComponentAuthority.Authoritative);
 
             inter = IntervalCheckerInitializer.InitializedChecker(1.0f);
         }
@@ -47,7 +44,7 @@ namespace AdvancedGears
 
         void HandleCaputuring()
         {
-            if (inter.CheckTime() == false)
+            if (CheckTime(ref inter) == false)
                 return;
 
             Entities.With(group).ForEach((Unity.Entities.Entity entity,

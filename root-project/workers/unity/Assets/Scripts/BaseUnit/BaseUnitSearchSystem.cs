@@ -9,7 +9,6 @@ using Improbable.Gdk.TransformSynchronization;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
-using UnityEngine.Experimental.PlayerLoop;
 
 namespace AdvancedGears
 {
@@ -27,26 +26,22 @@ namespace AdvancedGears
 
             group = GetEntityQuery(
                 ComponentType.ReadWrite<BaseUnitSight.Component>(),
-                ComponentType.ReadOnly<BaseUnitSight.ComponentAuthority>(),
+                ComponentType.ReadOnly<BaseUnitSight.HasAuthority>(),
                 ComponentType.ReadWrite<BaseUnitAction.Component>(),
-                ComponentType.ReadOnly<BaseUnitAction.ComponentAuthority>(),
+                ComponentType.ReadOnly<BaseUnitAction.HasAuthority>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadWrite<BaseUnitTarget.Component>(),
-                ComponentType.ReadOnly<BaseUnitTarget.ComponentAuthority>(),
+                ComponentType.ReadOnly<BaseUnitTarget.HasAuthority>(),
                 ComponentType.ReadOnly<GunComponent.Component>(),
                 ComponentType.ReadOnly<Transform>()
             );
-
-            group.SetFilter(BaseUnitSight.ComponentAuthority.Authoritative);
-            group.SetFilter(BaseUnitAction.ComponentAuthority.Authoritative);
-            group.SetFilter(BaseUnitTarget.ComponentAuthority.Authoritative);
 
             inter = IntervalCheckerInitializer.InitializedChecker(1.0f / frequency);
         }
 
         protected override void OnUpdate()
         {
-            if (inter.CheckTime() == false)
+            if (CheckTime(ref inter) == false)
                 return;
 
             Entities.With(group).ForEach((Entity entity,

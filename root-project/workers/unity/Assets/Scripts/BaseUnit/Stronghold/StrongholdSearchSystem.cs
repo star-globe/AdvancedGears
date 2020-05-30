@@ -7,7 +7,6 @@ using Improbable.Gdk.Subscriptions;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
-using UnityEngine.Experimental.PlayerLoop;
 
 namespace AdvancedGears
 {
@@ -25,22 +24,20 @@ namespace AdvancedGears
 
             group = GetEntityQuery(
                 ComponentType.ReadWrite<StrongholdSight.Component>(),
-                ComponentType.ReadOnly<StrongholdSight.ComponentAuthority>(),
+                ComponentType.ReadOnly<StrongholdSight.HasAuthority>(),
                 ComponentType.ReadWrite<BaseUnitStatus.Component>(),
-                ComponentType.ReadOnly<BaseUnitStatus.ComponentAuthority>(),
+                ComponentType.ReadOnly<BaseUnitStatus.HasAuthority>(),
                 ComponentType.ReadOnly<StrongholdStatus.Component>(),
                 ComponentType.ReadOnly<Transform>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
-            group.SetFilter(StrongholdSight.ComponentAuthority.Authoritative);
-            group.SetFilter(BaseUnitStatus.ComponentAuthority.Authoritative);
 
             inter = IntervalCheckerInitializer.InitializedChecker(period);
         }
 
         protected override void OnUpdate()
         {
-            if (inter.CheckTime() == false)
+            if (CheckTime(ref inter) == false)
                 return;
 
             Entities.With(group).ForEach((Entity entity,
@@ -59,7 +56,7 @@ namespace AdvancedGears
                     return;
 
                 var inter = sight.Interval;
-                if (inter.CheckTime() == false)
+                if (CheckTime(ref inter) == false)
                     return;
 
                 sight.Interval = inter;

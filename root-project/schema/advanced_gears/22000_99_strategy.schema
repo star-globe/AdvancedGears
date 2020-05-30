@@ -4,9 +4,10 @@ import "advanced_gears/common.schema";
 import "improbable/gdk/transform_synchronization/transform_internal.schema";
 
 enum HexAttribute {
-    Normal = 0;
-    FixedSide = 1;
-    NotBelong = 2;
+    Field = 0;
+    ForwardBase = 1;
+    CentralBase = 2;
+    NotBelong = 3;
 }
 
 enum HexDirection {
@@ -32,16 +33,22 @@ component HexBase {
 component HexFacility {
     id = 22001;
 
-    int hex_index = 1;
+    uint32 hex_index = 1;
 }
 
 type HexInfo {
-    EntityId hex_id = 1;
+    EntityId hex_entity_id = 1;
     uint32 index = 2;
-    UnitSide side = 3;
+    int32 hex_id = 3;
+    UnitSide side = 4;
 }
 
-type StrategyVector {
+type StrategyHexVector {
     HexInfo from = 1;
     HexInfo to = 2;
+}
+
+// manager
+component StrategyHexManager {
+    id = 220010;
 }

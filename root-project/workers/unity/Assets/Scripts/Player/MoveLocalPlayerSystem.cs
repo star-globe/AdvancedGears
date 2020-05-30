@@ -35,18 +35,16 @@ namespace AdvancedGears
 
             newPlayerGroup = GetEntityQuery(
                 ComponentType.ReadOnly<PlayerInput.Component>(),
-                ComponentType.ReadOnly<PlayerInput.ComponentAuthority>(),
+                ComponentType.ReadOnly<PlayerInput.HasAuthority>(),
                 ComponentType.Exclude<Speed>()
             );
-            newPlayerGroup.SetFilter(PlayerInput.ComponentAuthority.Authoritative);
 
             playerInputGroup = GetEntityQuery(
                 ComponentType.ReadWrite<Rigidbody>(),
                 ComponentType.ReadWrite<Speed>(),
                 ComponentType.ReadOnly<PlayerInput.Component>(),
-                ComponentType.ReadOnly<TransformInternal.ComponentAuthority>()
+                ComponentType.ReadOnly<TransformInternal.HasAuthority>()
             );
-            playerInputGroup.SetFilter(TransformInternal.ComponentAuthority.Authoritative);
         }
 
         protected override void OnUpdate()
@@ -85,7 +83,7 @@ namespace AdvancedGears
                     var speedSmoothVelocity = speed.SpeedSmoothVelocity;
 
                     currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref speedSmoothVelocity, SpeedSmoothTime,
-                        MaxSpeed, Time.deltaTime);
+                        MaxSpeed, Time.DeltaTime);
                     speed = new Speed
                     {
                         CurrentSpeed = currentSpeed,

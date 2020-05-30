@@ -11,7 +11,6 @@ using Improbable.Worker.CInterop;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
-using UnityEngine.Experimental.PlayerLoop;
 
 namespace AdvancedGears
 {
@@ -29,7 +28,7 @@ namespace AdvancedGears
 
             group = GetEntityQuery(
                 ComponentType.ReadWrite<ResourceComponent.Component>(),
-                ComponentType.ReadOnly<ResourceComponent.ComponentAuthority>(),
+                ComponentType.ReadOnly<ResourceComponent.HasAuthority>(),
                 ComponentType.ReadWrite<ResourceTransporter.Component>(),
                 ComponentType.ReadOnly<BaseUnitTarget.Component>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
@@ -37,13 +36,12 @@ namespace AdvancedGears
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
 
-            group.SetFilter(ResourceComponent.ComponentAuthority.Authoritative);
             inter = IntervalCheckerInitializer.InitializedChecker(time);
         }
 
         protected override void OnUpdate()
         {
-            if (inter.CheckTime() == false)
+            if (CheckTime(ref inter) == false)
                 return;
 
             Entities.With(group).ForEach((Unity.Entities.Entity entity,

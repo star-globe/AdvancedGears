@@ -6,7 +6,7 @@ using UnityEditor;
 using Snapshot = Improbable.Gdk.Core.Snapshot;
 using AdvancedGears;
 
-namespace AdvancedGears
+namespace AdvancedGears.Editor
 {
     public class SnapshotScene : MonoBehaviour
     {
@@ -83,6 +83,27 @@ namespace AdvancedGears
         {
             var point = PhysicsUtils.GetGroundPosition(new Vector3(x / rate, 1000.0f, z / rate));
             return point.y * rate;
+        }
+
+        public virtual Snapshot GenerateSnapshot()
+        {
+            var snapshot = SnapshotUtils.GenerateGroundSnapshot(this.WorldSize, this.GetHeight);
+
+            foreach(var f in Fields)
+                snapshot.AddEntity(FieldTemplate.CreateFieldEntityTemplate(f.pos.ToCoordinates(), f.range, f.highest, f.materialType, f.seeds));
+
+            foreach(var u in Units) {
+                var template = BaseUnitTemplate.CreateBaseUnitEntityTemplate(u.side, SnapshotUtils.GroundCoordinates(u.pos.x, u.pos.y, u.pos.z), u.type);
+                if (u.attachments != null) {
+                    foreach (var attach in u.attachments) {
+                        attach.AddComponent(template);
+                    }
+                }
+
+                snapshot.AddEntity(template);
+            }
+
+            return snapshot;
         }
     }
 }

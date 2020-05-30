@@ -5,11 +5,8 @@ using System.Linq;
 using Improbable;
 using Improbable.Gdk.Core;
 using Improbable.Gdk.Core.Commands;
-using Improbable.Gdk.Subscriptions;
-using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
-using UnityEngine.Experimental.PlayerLoop;
 
 namespace AdvancedGears
 {
@@ -33,12 +30,10 @@ namespace AdvancedGears
 
             group = GetEntityQuery(
                 ComponentType.ReadWrite<BaseUnitReviveTimer.Component>(),
-                ComponentType.ReadOnly<BaseUnitReviveTimer.ComponentAuthority>(),
+                ComponentType.ReadOnly<BaseUnitReviveTimer.HasAuthority>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
-
-            group.SetFilter(BaseUnitReviveTimer.ComponentAuthority.Authoritative);
         }
 
         protected override void OnUpdate()
@@ -90,7 +85,7 @@ namespace AdvancedGears
                 }
 
                 if (revive.RestTime > 0)
-                    revive.RestTime -= Time.deltaTime;
+                    revive.RestTime -= Time.DeltaTime;
                 
                 var id = entityId.EntityId;
                 if (revive.RestTime < 0 && deletedIds.Contains(id) == false) {
