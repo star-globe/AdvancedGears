@@ -73,15 +73,15 @@ namespace AdvancedGears
         {
             var ids = new uint[6] { 1, 2, 3, 4, 5, 6};
 
-            var i = index;
+            var idx = index;
             uint n = 0;
             uint direct = 0;
             uint rest = 0;
-            while(i > 0) {
+            while(idx > 0) {
                 n++;
-                direct = (i-1)/n;
-                rest = (i-1)%n;
-                i -= 6 * n;
+                direct = (idx - 1)/n;
+                rest = (idx - 1)%n;
+                idx -= 6 * n;
             }
 
             switch(direct)
@@ -135,9 +135,9 @@ namespace AdvancedGears
                         break;
             }
 
-            for(var i = 0; i <= 5; i++) {
-                int ind = (direct + i) % 6;
-                int num = 0;
+            for(uint i = 0; i <= 5; i++) {
+                uint ind = (direct + i) % 6;
+                uint num = 0;
                 switch(i)
                 {
                     case 0:

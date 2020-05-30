@@ -20,7 +20,7 @@ namespace AdvancedGears
         private TimerInfo? timerInfo;
         public TimerInfo? Timer { get { return timerInfo;} }
 
-        private long? timerEntityQueryId;
+        private CommandRequestId? timerEntityQueryId;
         private readonly List<EntityId> timerEntityIds = new List<EntityId>();
         private readonly Dictionary<EntityId,EntitySnapshot> timerEntityDic = new Dictionary<EntityId, EntitySnapshot>();
         //private readonly InterestQuery timerQuery;
