@@ -52,3 +52,13 @@ type StrategyHexVector {
 component StrategyHexManager {
     id = 220010;
 }
+
+type FrontHexInfo {
+    list<uint32> indexes = 1;
+}
+
+component StrategyHexAccessPortal {
+    id = 220011;
+
+    FrontHexInfo front_hex_info = 1;
+}

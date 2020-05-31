@@ -16,9 +16,17 @@ namespace AdvancedGears
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     public class StrategySearchHexSystem : SpatialComponentSystem
     {
-        EntityQuery managerGroup;
+        class HexInfo
+        {
+            public uint Index;
+            public int HexId;
+            public UnitSide Side;
+        }
+
+
+        EntityQuery portalGroup;
         EntityQuery hexGroup;
-        IntervalChecker interManager;
+        IntervalChecker interAccess;
         IntervalChecker interHex;
         const int frequencyManager = 5; 
         const int frequencyHex = 15; 
@@ -31,10 +39,9 @@ namespace AdvancedGears
         {
             base.OnCreate();
 
-            managerGroup = GetEntityQuery(
-                ComponentType.ReadWrite<StrategyHexManager.Component>(),
-                ComponentType.ReadOnly<StrategyHexManager.HasAuthority>(),
-                ComponentType.ReadOnly<BaseUnitStatus.Component>(),
+            portalGroup = GetEntityQuery(
+                ComponentType.ReadWrite<StrategyHexAccessPortal.Component>(),
+                ComponentType.ReadOnly<StrategyHexAccessPortal.HasAuthority>(),
                 ComponentType.ReadOnly<SpatialEntityId>(),
                 ComponentType.ReadOnly<Transform>()
             );
@@ -45,42 +52,97 @@ namespace AdvancedGears
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
 
-            interManager = IntervalCheckerInitializer.InitializedChecker(1.0f / frequencyManager);
+            interAccess = IntervalCheckerInitializer.InitializedChecker(1.0f / frequencyManager);
             interHex = IntervalCheckerInitializer.InitializedChecker(1.0f / frequencyHex);
         }
 
         protected override void OnUpdate()
         {
-            if (CheckTime(ref interManager)) {
-                Entities.With(managerGroup).ForEach((Entity entity,
-                                          ref StrategyHexManager.Component strategy,
-                                          ref BaseUnitStatus.Component status,
-                                          ref SpatialEntityId entityId) =>
-                {
+            UpdateHexInfo();
 
-                });
-            }
-
-            if (CheckTime(ref interHex)) {
-                Entities.With(hexGroup).ForEach((Entity entity,
-                                          ref HexBase.Component hex,
-                                          ref Position.Component position,
-                                          ref SpatialEntityId entityId) =>
-                {
-                    hexDic[hex.Index] = new HexInfo() { Index = hex.Index, HexId = hex.HexId, Side = hex.Side };
-                });
-            }
+            UpdateHexAccess();
         }
 
-        public List<uint> BorderHexList(UnitSide side)
+        private void UpdateHexAccess()
         {
-            List<uint> indexes = new List<uint>();
+            if (CheckTime(ref interAccess) == false)
+                return;
+
+            Entities.With(portalGroup).ForEach((Entity entity,
+                                      ref StrategyHexAccessPortal.Component strategy,
+                                      ref BaseUnitStatus.Component status,
+                                      ref SpatialEntityId entityId) =>
+            {
+                if (status.Side == UnitSide.None)
+                    return;
+
+                var hashes = BorderHexList(status.Side);
+
+                CompairList(strategy.FrontHexInfo.Indexes, hashes);
+            });
+        }
+
+        private void UpdateHexInfo()
+        {
+            if (CheckTime(ref interHex) == false)
+                return;
+
+            Entities.With(hexGroup).ForEach((Entity entity,
+                                      ref HexBase.Component hex,
+                                      ref Position.Component position,
+                                      ref SpatialEntityId entityId) =>
+            {
+                if (hexDic.ContainsKey(hex.Index) == false)
+                    hexDic[hex.Index] = new HexInfo();
+
+                hexDic[hex.Index].Index = hex.Index;
+                hexDic[hex.Index].HexId = hex.HexId;
+                hexDic[hex.Index].Side = hex.Side;
+            });
+
+            return;
+        }
+
+        private HashSet<uint> BorderHexList(UnitSide side)
+        {
+            HashSet<uint> indexes = null;
 
             foreach(var kvp in hexDic) {
-                
+                if (kvp.Value.Side != side)
+                    continue;
+
+                bool isFront = false;
+                var index = kvp.Value.Index;
+                var ids = HexUtils.GetNeighborHexIndexes(index);
+                foreach (var i in ids) {
+                    if (hexDic.TryGetValue(i, out var hex))
+                        isFront |= hex.Side != side;
+                }
+
+                if (!isFront)
+                    continue;
+
+                indexes = indexes ?? new HashSet<uint>();
+                indexes.Add(index);
             }
 
             return indexes;
+        }
+
+        private void CompairList(List<uint> indexes, HashSet<uint> hashes)
+        {
+            if (hashes == null)
+                return;
+
+            bool isDiff = indexes.Count != hashes.Count;
+            foreach (var i in indexes) {
+                isDiff |= !hashes.Contains(i);
+            }
+
+            if (isDiff) {
+                indexes.Clear();
+                indexes.AddRange(hashes);
+            }
         }
     }
 }

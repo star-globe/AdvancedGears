@@ -77,16 +77,16 @@ namespace AdvancedGears.Editor
             }
         }
 
-        //public override Snapshot GenerateSnapshot()
-        //{
-        //    var snapshot = base.GenerateSnapshot();
-        //
-        //    foreach (var h in Hexes) {
-        //        var template = HexTemplate.CreateHexEntityTemplate(h.pos.ToCoordinates(), h.index, h.attribute, h.hexId, h.side);
-        //        snapshot.AddEntity(template);
-        //    }
-        //
-        //    return snapshot;
-        //}
+        public override Snapshot GenerateSnapshot()
+        {
+            var snapshot = base.GenerateSnapshot();
+        
+            foreach (var h in Hexes) {
+                var template = HexTemplate.CreateHexEntityTemplate(h.pos.ToCoordinates(), h.index, h.attribute, h.hexId, h.side);
+                snapshot.AddEntity(template);
+            }
+        
+            return snapshot;
+        }
     }
 }
