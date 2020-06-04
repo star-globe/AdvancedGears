@@ -102,7 +102,7 @@ namespace AdvancedGears
                 hexDic[hex.Index].Index = hex.Index;
                 hexDic[hex.Index].HexId = hex.HexId;
                 hexDic[hex.Index].Side = hex.Side;
-                hexDic[hex.Index].SpatialEntityId = entityId;
+                hexDic[hex.Index].EntityId = entityId;
             });
 
             return;
@@ -140,18 +140,18 @@ namespace AdvancedGears
                 return;
 
             bool isDiff = indexes.Count != hashes.Count;
-            foreach (var i in indexes) {
+            foreach (var h in indexes) {
                 if (isDiff)
                     break;
 
-                isDiff |= !hashes.Contains(i);
+                isDiff |= !hashes.Contains(h.Index);
             }
 
             if (isDiff) {
                 indexes.Clear();
 
-                foreach(var i in indexes) {
-                    indexes.Add(new HexIndex(hexDic[i].SpatialEntityId, i));
+                foreach(var h in indexes) {
+                    indexes.Add(new HexIndex(hexDic[h.Index].EntityId.EntityId, h.Index));
                 }
             }
         }

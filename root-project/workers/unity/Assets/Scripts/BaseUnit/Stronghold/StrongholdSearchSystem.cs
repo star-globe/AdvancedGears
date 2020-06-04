@@ -117,7 +117,7 @@ namespace AdvancedGears
 
             var strategyVector = vector;// * RangeDictionary.StrategyRangeRate;
             var range = strategyVector.magnitude;
-            SpatialEntityId? target = null;
+            EntityId? target = null;
             float length = float.MaxValue;
             foreach (var hex in indexes) {
                 var h_pos = GetHexCenter(hex.Index);
@@ -126,7 +126,7 @@ namespace AdvancedGears
                     continue;
 
                 length = l;
-                target = hex.EtityId;
+                target = hex.EntityId;
             }
 
 
