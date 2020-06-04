@@ -15,6 +15,7 @@ namespace AdvancedGears
     internal class StrongholdSearchSystem : BaseSearchSystem
     {
         private EntityQuery group;
+        private EntityQuery hexGroup;
         IntervalChecker inter;
 
         const int period = 2;
@@ -28,6 +29,7 @@ namespace AdvancedGears
                 ComponentType.ReadWrite<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<BaseUnitStatus.HasAuthority>(),
                 ComponentType.ReadOnly<StrongholdStatus.Component>(),
+                ComponentType.ReadOnly<StrategyHexAccessPortal.Component>(),
                 ComponentType.ReadOnly<Transform>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
@@ -44,6 +46,7 @@ namespace AdvancedGears
                                           ref StrongholdSight.Component sight,
                                           ref StrongholdStatus.Component stronghold,
                                           ref BaseUnitStatus.Component status,
+                                          ref StrategyHexAccessPortal.Component portal,
                                           ref SpatialEntityId entityId) =>
             {
                 if (status.State != UnitState.Alive)
@@ -65,7 +68,8 @@ namespace AdvancedGears
 
                 var targets = sight.TargetStrongholds;
                 var vector = sight.StrategyVector.Vector.ToUnityVector();
-                var order = GetTargetStronghold(trans.position, status.Side, vector, entityId.EntityId, targets);
+                var indexes = portal.FrontHexInfo.Indexes;
+                var order = GetTargetStronghold(trans.position, status.Side, vector, entityId.EntityId, indexes, targets);
 
                 sight.TargetStrongholds = targets;
                 status.Order = order;
@@ -73,6 +77,41 @@ namespace AdvancedGears
         }
 
         private OrderType GetTargetStronghold(in Vector3 pos, UnitSide side, in Vector3 vector, EntityId selfId, Dictionary<EntityId,TargetStrongholdInfo> targets)
+        {
+            OrderType order = OrderType.Idle;
+
+            var strategyVector = vector;// * RangeDictionary.StrategyRangeRate;
+            var range = strategyVector.magnitude;
+            var units = getEnemyUnits(side, pos, range, allowDead:true, UnitType.Stronghold);
+            if (units != null) {
+                order = OrderType.Attack;
+            }
+            else {
+                var newCenter = pos + strategyVector;
+                units = getAllyUnits(side, newCenter, range, allowDead:true, UnitType.Stronghold);
+                if (units != null)
+                    units.RemoveAll(u => u.id == selfId);
+
+                if (units != null || units.Count > 0)
+                    order = OrderType.Supply;
+            }
+
+            targets.Clear();
+            if (units != null && units.Count > 0) {
+                foreach (var u in units) {
+                    targets.Add(u.id, new TargetStrongholdInfo(u.id, u.side, u.pos.ToWorldPosition(this.Origin).ToCoordinates()));
+                }
+            }
+            else {
+                targets.Add(selfId, new TargetStrongholdInfo(selfId, side, pos.ToWorldPosition(this.Origin).ToCoordinates()));
+                order = OrderType.Keep;
+            }
+
+            //Debug.LogFormat("Side:{0} Order:{1} StrategyVector:{2}", side, order, strategyVector);
+
+            return order;
+        }
+        private OrderType GetTargetStronghold(in Vector3 pos, UnitSide side, in Vector3 vector, EntityId selfId, List<HexIndex> indexes, Dictionary<EntityId,TargetStrongholdInfo> targets)
         {
             OrderType order = OrderType.Idle;
 

@@ -21,6 +21,7 @@ namespace AdvancedGears
             public uint Index;
             public int HexId;
             public UnitSide Side;
+            public SpatialEntityId EntityId;
         }
 
 
@@ -78,7 +79,10 @@ namespace AdvancedGears
 
                 var hashes = BorderHexList(status.Side);
 
-                CompairList(strategy.FrontHexInfo.Indexes, hashes);
+                var info = strategy.FrontHexInfo;
+                CompairList(info.Indexes, hashes);
+
+                strategy.FrontHexInfo = info;
             });
         }
 
@@ -98,6 +102,7 @@ namespace AdvancedGears
                 hexDic[hex.Index].Index = hex.Index;
                 hexDic[hex.Index].HexId = hex.HexId;
                 hexDic[hex.Index].Side = hex.Side;
+                hexDic[hex.Index].SpatialEntityId = entityId;
             });
 
             return;
@@ -129,19 +134,25 @@ namespace AdvancedGears
             return indexes;
         }
 
-        private void CompairList(List<uint> indexes, HashSet<uint> hashes)
+        private void CompairList(List<HexIndex> indexes, HashSet<uint> hashes)
         {
             if (hashes == null)
                 return;
 
             bool isDiff = indexes.Count != hashes.Count;
             foreach (var i in indexes) {
+                if (isDiff)
+                    break;
+
                 isDiff |= !hashes.Contains(i);
             }
 
             if (isDiff) {
                 indexes.Clear();
-                indexes.AddRange(hashes);
+
+                foreach(var i in indexes) {
+                    indexes.Add(new HexIndex(hexDic[i].SpatialEntityId, i));
+                }
             }
         }
     }

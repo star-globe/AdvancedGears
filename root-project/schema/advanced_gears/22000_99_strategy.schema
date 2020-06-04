@@ -53,8 +53,13 @@ component StrategyHexManager {
     id = 220010;
 }
 
+type HexIndex {
+    EntityId entity_id = 1;
+    uint32 index = 2;
+}
+
 type FrontHexInfo {
-    list<uint32> indexes = 1;
+    list<HexIndex> indexes = 1;
 }
 
 component StrategyHexAccessPortal {
