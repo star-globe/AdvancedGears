@@ -339,6 +339,11 @@ namespace AdvancedGears
             this.CommandSystem.SendCommand(new BaseUnitStatus.SetOrder.Request(id, new OrderInfo() { Order = order }), send);
             return true;
         }
+
+        protected Vector3 GetHexCenter(uint index)
+        {
+            return HexUtils.GetHexCenter(this.Origin, index, HexDictionary.HexEdgeLength);
+        } 
     }
 
     // Utils

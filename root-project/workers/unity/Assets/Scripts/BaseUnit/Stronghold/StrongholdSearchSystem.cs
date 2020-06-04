@@ -117,6 +117,19 @@ namespace AdvancedGears
 
             var strategyVector = vector;// * RangeDictionary.StrategyRangeRate;
             var range = strategyVector.magnitude;
+            SpatialEntityId? target = null;
+            float length = float.MaxValue;
+            foreach (var hex in indexes) {
+                var h_pos = GetHexCenter(hex.Index);
+                var l = (pos - h_pos).sqrMagnitude;
+                if (l >= length)
+                    continue;
+
+                length = l;
+                target = hex.EtityId;
+            }
+
+
             var units = getEnemyUnits(side, pos, range, allowDead:true, UnitType.Stronghold);
             if (units != null) {
                 order = OrderType.Attack;
