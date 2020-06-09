@@ -132,7 +132,7 @@ namespace AdvancedGears
                     foreach(var id in ids) {
                         if (hexDic.TryGetValue(id, out var hex) == false ||
                             hex.Side == side)
-                            conotinue;
+                            continue;
 
                         isFront = true;
 
@@ -168,13 +168,14 @@ namespace AdvancedGears
                 if (isDiff)
                     break;
 
-                isDiff |= !dic.Contains(h.Index);
+                isDiff |= !dic.ContainsKey(h.Index);
             }
 
             if (isDiff) {
                 indexes.Clear();
 
-                foreach(var id in hashes) {
+                foreach(var kvp in dic) {
+                    var id = kvp.Key;
                     indexes.Add(new HexIndex(hexDic[id].EntityId.EntityId, id, dic[id]));
                 }
             }

@@ -213,7 +213,7 @@ namespace AdvancedGears
                 if (info.StrongholdId.IsValid())
                     tgt = getUnitInfo(info.StrongholdId);
                 else {
-                    var line = team.TargetFrontline;
+                    var line = team.TargetFrontLine;
                     if (line.IsValid()) {
                         
                     }

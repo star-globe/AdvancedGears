@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Improbable;
 using Improbable.Gdk.Core;
 using Improbable.Worker.CInterop;
 using Unity.Entities;

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Improbable;
 using Improbable.Gdk.Core;
 using Improbable.Gdk.Subscriptions;
 using Unity.Collections;
@@ -83,7 +84,7 @@ namespace AdvancedGears
             HexIndex? targetIndex = null;
             float length = float.MaxValue;
             foreach (var hex in indexes) {
-                h_pos = GetHexCenter(hex.Index);
+                var h_pos = GetHexCenter(hex.Index);
                 var l = (pos - h_pos).sqrMagnitude;
                 if (l >= length)
                     continue;

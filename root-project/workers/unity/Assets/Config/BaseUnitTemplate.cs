@@ -104,7 +104,7 @@ namespace AdvancedGears
 
                 case UnitType.Stronghold:
                     template.AddComponent(new StrongholdStatus.Snapshot { Rank = 1, }, writeAccess);
-                    template.AddComponent(new StrongholdSight.Snapshot { TargetStrongholds = new Dictionary<EntityId, TargetStrongholdInfo>(), FrontlineCorners = new List<Coordinate>() }, writeAccess);
+                    template.AddComponent(new StrongholdSight.Snapshot { TargetStrongholds = new Dictionary<EntityId, TargetStrongholdInfo>(), FrontlineCorners = new List<Coordinates>() }, writeAccess);
                     //template.AddComponent(new UnitFactory.Snapshot().DefaultSnapshot(), writeAccess);
                     //template.AddComponent(new DominationStamina.Snapshot().DefaultSnapshot(), writeAccess);
                     template.AddComponent(new StrategyHexAccessPortal.Snapshot { FrontHexInfo = new FrontHexInfo { Indexes = new List<HexIndex>() } });

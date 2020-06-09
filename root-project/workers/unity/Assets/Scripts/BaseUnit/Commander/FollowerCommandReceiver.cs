@@ -129,7 +129,7 @@ namespace AdvancedGears
         {
             writer.SendUpdate(new CommanderTeam.Update()
             {
-                TargetFrontline = request.Payload,
+                TargetFrontLine = request.Payload,
                 StrongholdEntityId = new EntityId(request.RequestId),
             });
         }
