@@ -218,6 +218,11 @@ type TargetStrongholdInfo {
     improbable.Coordinates position = 3;
 }
 
+type TargetFrontLineInfo {
+    improbable.Coordinates left_corner = 1;
+    improbable.Coordinates right_corner = 2;
+}
+
 component CommanderTeam {
     id = 20021;
 
@@ -225,12 +230,14 @@ component CommanderTeam {
     SuperiorInfo superior_info = 2;
 
     TargetStrongholdInfo target_stronghold = 4;
-    EntityId stronghold_entity_id = 5;
+    TargetFrontLineInfo target_frontline = 5;
+    EntityId stronghold_entity_id = 6;
 
     command improbable.gdk.core.Empty add_follower(FollowerInfo);
     command improbable.gdk.core.Empty set_superior(SuperiorInfo);
     command TeamInfoResponse get_team_info(TeamInfoRequest);
     command improbable.gdk.core.Empty set_target_stroghold(TargetStrongholdInfo);
+    command improbable.gdk.core.Empty set_target_frontline(TargetFrontLineInfo);
 }
 
 type WarPower {
@@ -307,6 +314,7 @@ component StrongholdSight {
     IntervalChecker interval = 1;
     StrategyVector strategy_vector = 2;
     map<EntityId,TargetStrongholdInfo> target_strongholds = 4;
+    list<improbable.Coordinates> frontline_corners = 5;
 
     command improbable.gdk.core.Empty set_strategy_vector(StrategyVector);
 }

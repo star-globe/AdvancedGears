@@ -118,10 +118,33 @@ namespace AdvancedGears
 
                 bool isFront = false;
                 var index = kvp.Value.Index;
+
+                var baseCorners = new Vector3[6];
+                var checkCorners = new Vector3[6];
+
+                HexUtils.SetHexCorners(this.Origin, index, baseCorners, HexDictionary.HexEdgeLength);
                 var ids = HexUtils.GetNeighborHexIndexes(index);
-                foreach (var i in ids) {
-                    if (hexDic.TryGetValue(i, out var hex))
-                        isFront |= hex.Side != side;
+
+                HashSet<int> cornerIndexes = new HashSet<int>{0,1,2,3,4,5};
+                foreach (var cornerIndex in cornerIndexes.ToArray()) {
+                    var tgt = baseCorners[cornerIndex];
+
+                    bool isTouched = false;
+                    foreach(var id in ids) {
+                        if (hexDic.TryGetValue(id, out var hex) == false ||
+                            hex.Side == side)
+                            conotinue;
+
+                        isFront = true;
+
+                        HexUtils.SetHexCorners(this.Origin, id, checkCorners, HexDictionary.HexEdgeLength);
+
+                        if (checkCorners.Any(c => (c - tgt).sqrMagnitude < HexDictionary.HexEdgeLength * 0.01f))
+                            isTouched = true;
+                    }
+
+                    if (isTouched == false)
+                        cornerIndexes.Remove(cornerIndex);
                 }
 
                 if (!isFront)
@@ -150,8 +173,8 @@ namespace AdvancedGears
             if (isDiff) {
                 indexes.Clear();
 
-                foreach(var h in indexes) {
-                    indexes.Add(new HexIndex(hexDic[h.Index].EntityId.EntityId, h.Index));
+                foreach(var id in hashes) {
+                    indexes.Add(new HexIndex(hexDic[id].EntityId.EntityId, id, null));
                 }
             }
         }

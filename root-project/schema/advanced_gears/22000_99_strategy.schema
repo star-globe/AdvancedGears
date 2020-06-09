@@ -56,6 +56,7 @@ component StrategyHexManager {
 type HexIndex {
     EntityId entity_id = 1;
     uint32 index = 2;
+    list<improbable.Coordinates> front_corners = 3;
 }
 
 type FrontHexInfo {

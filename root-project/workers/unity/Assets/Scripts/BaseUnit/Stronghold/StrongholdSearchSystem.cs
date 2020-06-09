@@ -68,10 +68,12 @@ namespace AdvancedGears
 
                 var targets = sight.TargetStrongholds;
                 var vector = sight.StrategyVector.Vector.ToUnityVector();
+                var corners = sight.FrontlineCorners;
                 var indexes = portal.FrontHexInfo.Indexes;
                 var order = GetTargetStronghold(trans.position, status.Side, vector, entityId.EntityId, indexes, targets);
 
                 sight.TargetStrongholds = targets;
+                sight.FrontlineCorners = corners;
                 status.Order = order;
             });
         }
