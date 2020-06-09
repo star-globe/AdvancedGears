@@ -43,8 +43,7 @@ namespace AdvancedGears
             portalGroup = GetEntityQuery(
                 ComponentType.ReadWrite<StrategyHexAccessPortal.Component>(),
                 ComponentType.ReadOnly<StrategyHexAccessPortal.HasAuthority>(),
-                ComponentType.ReadOnly<SpatialEntityId>(),
-                ComponentType.ReadOnly<Transform>()
+                ComponentType.ReadOnly<SpatialEntityId>()
             );
 
             hexGroup = GetEntityQuery(
@@ -77,10 +76,10 @@ namespace AdvancedGears
                 if (status.Side == UnitSide.None)
                     return;
 
-                var hashes = BorderHexList(status.Side);
+                var dic = BorderHexList(status.Side);
 
                 var info = strategy.FrontHexInfo;
-                CompairList(info.Indexes, hashes);
+                CompairList(info.Indexes, dic);
 
                 strategy.FrontHexInfo = info;
             });
@@ -108,9 +107,9 @@ namespace AdvancedGears
             return;
         }
 
-        private HashSet<uint> BorderHexList(UnitSide side)
+        private Dictionary<uint,List<Coordinates>> BorderHexList(UnitSide side)
         {
-            HashSet<uint> indexes = null;
+            Dictionary<uint,List<Coordinates>> indexes = null;
 
             foreach(var kvp in hexDic) {
                 if (kvp.Value.Side != side)
@@ -119,13 +118,13 @@ namespace AdvancedGears
                 bool isFront = false;
                 var index = kvp.Value.Index;
 
-                var baseCorners = new Vector3[6];
-                var checkCorners = new Vector3[6];
+                var baseCorners = new Vector3[7];
+                var checkCorners = new Vector3[7];
 
                 HexUtils.SetHexCorners(this.Origin, index, baseCorners, HexDictionary.HexEdgeLength);
                 var ids = HexUtils.GetNeighborHexIndexes(index);
 
-                HashSet<int> cornerIndexes = new HashSet<int>{0,1,2,3,4,5};
+                HashSet<int> cornerIndexes = new HashSet<int>() {0,1,2,3,4,5};
                 foreach (var cornerIndex in cornerIndexes.ToArray()) {
                     var tgt = baseCorners[cornerIndex];
 
@@ -139,7 +138,7 @@ namespace AdvancedGears
 
                         HexUtils.SetHexCorners(this.Origin, id, checkCorners, HexDictionary.HexEdgeLength);
 
-                        if (checkCorners.Any(c => (c - tgt).sqrMagnitude < HexDictionary.HexEdgeLength * 0.01f))
+                        if (checkCorners.Any(c => (c - tgt).sqrMagnitude < HexDictionary.HexEdgeLength / 10000))
                             isTouched = true;
                     }
 
@@ -150,31 +149,33 @@ namespace AdvancedGears
                 if (!isFront)
                     continue;
 
-                indexes = indexes ?? new HashSet<uint>();
-                indexes.Add(index);
+                var list = cornerIndexes.OrderByDescending(i => i)
+                                        .Select(i => baseCorners[i].ToWorldPosition(this.Origin).ToCoordinates()).ToList();
+                indexes = indexes ?? new Dictionary<uint,List<Coordinates>>();
+                indexes.Add(index, list);
             }
 
             return indexes;
         }
 
-        private void CompairList(List<HexIndex> indexes, HashSet<uint> hashes)
+        private void CompairList(List<HexIndex> indexes, Dictionary<uint,List<Coordinates>> dic)
         {
-            if (hashes == null)
+            if (dic == null)
                 return;
 
-            bool isDiff = indexes.Count != hashes.Count;
+            bool isDiff = indexes.Count != dic.Count;
             foreach (var h in indexes) {
                 if (isDiff)
                     break;
 
-                isDiff |= !hashes.Contains(h.Index);
+                isDiff |= !dic.Contains(h.Index);
             }
 
             if (isDiff) {
                 indexes.Clear();
 
                 foreach(var id in hashes) {
-                    indexes.Add(new HexIndex(hexDic[id].EntityId.EntityId, id, null));
+                    indexes.Add(new HexIndex(hexDic[id].EntityId.EntityId, id, dic[id]));
                 }
             }
         }

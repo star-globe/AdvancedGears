@@ -136,6 +136,7 @@ namespace AdvancedGears
                         break;
             }
 
+            // another calculate method
             for(uint i = 0; i <= 5; i++) {
                 uint ind = (direct + i) % 6;
                 uint num = 0;

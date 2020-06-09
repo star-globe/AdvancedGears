@@ -70,12 +70,36 @@ namespace AdvancedGears
                 var vector = sight.StrategyVector.Vector.ToUnityVector();
                 var corners = sight.FrontlineCorners;
                 var indexes = portal.FrontHexInfo.Indexes;
-                var order = GetTargetStronghold(trans.position, status.Side, vector, entityId.EntityId, indexes, targets);
+                var order = GetTargetFrontLine(trans.position, indexes, corners);//GetTargetStronghold(trans.position, status.Side, vector, entityId.EntityId, indexes, targets);
 
                 sight.TargetStrongholds = targets;
                 sight.FrontlineCorners = corners;
                 status.Order = order;
             });
+        }
+
+        private OrderType GetTargetFrontLine(in Vector3 pos, List<HexIndex> indexes, List<Coordinates> corners)
+        {
+            HexIndex? targetIndex = null;
+            float length = float.MaxValue;
+            foreach (var hex in indexes) {
+                h_pos = GetHexCenter(hex.Index);
+                var l = (pos - h_pos).sqrMagnitude;
+                if (l >= length)
+                    continue;
+
+                length = l;
+                targetIndex = hex;
+            }
+
+            if (targetIndex.HasValue) {
+                corners.Clear();
+                corners.AddRange(targetIndex.Value.FrontCorners);
+                return OrderType.Keep;
+            }
+            else {
+                return OrderType.Idle;
+            }
         }
 
         private OrderType GetTargetStronghold(in Vector3 pos, UnitSide side, in Vector3 vector, EntityId selfId, Dictionary<EntityId,TargetStrongholdInfo> targets)
