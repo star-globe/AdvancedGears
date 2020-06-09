@@ -212,6 +212,12 @@ namespace AdvancedGears
                 var info = team.TargetStronghold;
                 if (info.StrongholdId.IsValid())
                     tgt = getUnitInfo(info.StrongholdId);
+                else {
+                    var line = team.TargetFrontline;
+                    if (line.IsValid()) {
+                        
+                    }
+                }
             }
 
             TargetInfo targetInfo;

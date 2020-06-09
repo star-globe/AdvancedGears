@@ -324,6 +324,11 @@ namespace AdvancedGears
             return targetInfo.Side == UnitSide.None ||
                    targetInfo.State == UnitState.Dead;
         }
+
+        public static bool IsValid(this TargetFrontLineInfo targetInfo)
+        {
+            return targetInfo.LeftCorner.Equals(targetInfo.RightCorner) == false;
+        }
     }
 
     public static class IntervalCheckerInitializer
