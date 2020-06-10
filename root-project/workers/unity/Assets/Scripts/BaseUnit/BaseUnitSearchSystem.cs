@@ -77,6 +77,10 @@ namespace AdvancedGears
                         sight.TargetPosition = target.TargetInfo.Position;
                         target.State = CalcTargetState(sight.TargetPosition.ToUnityVector() - pos, sightRange); 
                     }
+                    else if (target.FrontLine.IsValid()) {
+                        sight.TargetPosition = target.FrontLine.GetOnLinePosition(this.Origin, pos);
+                        target.State = CalcTargetState.OutOfRange;
+                    }
                 }
                 else {
                     target.State = TargetState.ActionTarget;

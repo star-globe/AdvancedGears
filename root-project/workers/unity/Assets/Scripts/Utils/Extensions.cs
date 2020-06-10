@@ -329,6 +329,23 @@ namespace AdvancedGears
         {
             return targetInfo.LeftCorner.Equals(targetInfo.RightCorner) == false;
         }
+
+        public static Vector3 GetOnLinePosition(this TargetFrontLineInfo info, Vector3 origin, Vector3 current)
+        {
+            var left = info.LeftCorner.ToWorkerPosition(origin);
+            var right = info.RightCorner.ToWorkerPosition(origin);
+
+            var diff = origin - left;
+            var line = right - left;
+
+            var dot = Vector3.Dot(diff, line.normalized);
+            if (dot <= 0)
+                return left;
+            else if (dot >= line.magnitude)
+                return right;
+
+            return line.normalized * dot + left;
+        }
     }
 
     public static class IntervalCheckerInitializer

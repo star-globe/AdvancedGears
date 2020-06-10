@@ -133,13 +133,20 @@ enum TargetState {
     OutOfRange = 3;
 }
 
+type TargetFrontLineInfo {
+    improbable.Coordinates left_corner = 1;
+    improbable.Coordinates right_corner = 2;
+}
+
 component BaseUnitTarget {
     id = 20013;
 
     TargetState state = 1;
     TargetInfo target_info = 2;
+    TargetFrontLineInfo front_line = 3;
 
     command improbable.gdk.core.Empty set_target(TargetInfo);
+    command improbable.gdk.core.Empty set_front_line(TargetFrontLineInfo);
 }
 
 type PostureData {
@@ -216,11 +223,6 @@ type TargetStrongholdInfo {
     EntityId stronghold_id = 1;
     UnitSide side = 2;
     improbable.Coordinates position = 3;
-}
-
-type TargetFrontLineInfo {
-    improbable.Coordinates left_corner = 1;
-    improbable.Coordinates right_corner = 2;
 }
 
 component CommanderTeam {

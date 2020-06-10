@@ -16,6 +16,7 @@ namespace AdvancedGears
         public void OnEnable()
         {
             targetCommandReceiver.OnSetTargetRequestReceived += OnSetTargetRequest;
+            targetCommandReceiver.OnSetFrontLine += OnSetFrontLineRequest;
             sightReader.OnBoidDiffedEvent += OnBoidDiffed;
         }
 
@@ -26,6 +27,16 @@ namespace AdvancedGears
             targetWriter.SendUpdate(new BaseUnitTarget.Update()
             {
                 TargetInfo = request.Payload,
+            });
+        }
+
+        private void OnSetFrontLineRequest(BaseUnitTarget.SetFrontLine.ReceivedRequest request)
+        {
+            targetCommandReceiver.SendSetFrontLineResponse(new BaseUnitTarget.SetFrontLine.Response(request.RequestId, new Empty()));
+
+            targetWriter.SendUpdate(new BaseUnitTarget.Update()
+            {
+                FrontLine = request.Payload,
             });
         }
 

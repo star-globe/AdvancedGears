@@ -212,12 +212,6 @@ namespace AdvancedGears
                 var info = team.TargetStronghold;
                 if (info.StrongholdId.IsValid())
                     tgt = getUnitInfo(info.StrongholdId);
-                else {
-                    var line = team.TargetFrontLine;
-                    if (line.IsValid()) {
-                        
-                    }
-                }
             }
 
             TargetInfo targetInfo;
@@ -233,7 +227,11 @@ namespace AdvancedGears
 
             commander.Order.Self(current.Value);
 
-            SetOrderFollowers(team.FollowerInfo.GetAllFollowers(), targetInfo, current.Value);
+            var line = team.TargetFrontLine;
+            if (tgt == null && line.IsValid())
+                SetOrderFollowers(team.FollowerInfo.GetAllFollowers(), line, current.Value);
+            else
+                SetOrderFollowers(team.FollowerInfo.GetAllFollowers(), targetInfo, current.Value);
 
             return tgt != null;
         }
@@ -286,11 +284,24 @@ namespace AdvancedGears
 
             SetCommand(targetInfo.CommanderId, targetInfo, order);
         }
+        private void SetOrderFollowers(List<EntityId> followers, in TargetFrontLineInfo lineInfo, OrderType order)
+        {
+            foreach (var id in followers)
+            {
+                SetCommand(id, lineInfo, order);
+            }
 
+            SetCommand(targetInfo.CommanderId, lineInfo, order);
+        }
         private void SetCommand(EntityId id, in TargetInfo targetInfo, OrderType order)
         {
             base.SetCommand(id, order);
             this.CommandSystem.SendCommand(new BaseUnitTarget.SetTarget.Request(id, targetInfo));
+        }
+        private void SetCommand(EntityId id, in TargetFrontLineInfo lineInfo, OrderType order)
+        {
+            base.SetCommand(id, order);
+            this.CommandSystem.SendCommand(new BaseUnitTarget.SetFrontLine.Request(id, lineInfo));
         }
         #endregion
     }
