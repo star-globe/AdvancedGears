@@ -16,7 +16,7 @@ namespace AdvancedGears
         public void OnEnable()
         {
             targetCommandReceiver.OnSetTargetRequestReceived += OnSetTargetRequest;
-            targetCommandReceiver.OnSetFrontLine += OnSetFrontLineRequest;
+            targetCommandReceiver.OnSetFrontLineRequestReceived += OnSetFrontLineRequest;
             sightReader.OnBoidDiffedEvent += OnBoidDiffed;
         }
 

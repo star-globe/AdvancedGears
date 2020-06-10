@@ -332,8 +332,8 @@ namespace AdvancedGears
 
         public static Vector3 GetOnLinePosition(this TargetFrontLineInfo info, Vector3 origin, Vector3 current)
         {
-            var left = info.LeftCorner.ToWorkerPosition(origin);
-            var right = info.RightCorner.ToWorkerPosition(origin);
+            var left = info.LeftCorner.ToUnityVector() + origin;
+            var right = info.RightCorner.ToUnityVector() + origin;
 
             var diff = origin - left;
             var line = right - left;

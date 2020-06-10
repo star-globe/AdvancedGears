@@ -229,9 +229,9 @@ namespace AdvancedGears
 
             var line = team.TargetFrontLine;
             if (tgt == null && line.IsValid())
-                SetOrderFollowers(team.FollowerInfo.GetAllFollowers(), line, current.Value);
+                SetOrderFollowers(team.FollowerInfo.GetAllFollowers(), entityId.EntityId, line, current.Value);
             else
-                SetOrderFollowers(team.FollowerInfo.GetAllFollowers(), targetInfo, current.Value);
+                SetOrderFollowers(team.FollowerInfo.GetAllFollowers(), entityId.EntityId, targetInfo, current.Value);
 
             return tgt != null;
         }
@@ -275,23 +275,23 @@ namespace AdvancedGears
         #endregion
 
         #region SetMethod
-        private void SetOrderFollowers(List<EntityId> followers, in TargetInfo targetInfo, OrderType order)
+        private void SetOrderFollowers(List<EntityId> followers, in EntityId entityId, in TargetInfo targetInfo, OrderType order)
         {
             foreach (var id in followers)
             {
                 SetCommand(id, targetInfo, order);
             }
 
-            SetCommand(targetInfo.CommanderId, targetInfo, order);
+            SetCommand(entityId, targetInfo, order);
         }
-        private void SetOrderFollowers(List<EntityId> followers, in TargetFrontLineInfo lineInfo, OrderType order)
+        private void SetOrderFollowers(List<EntityId> followers, in EntityId entityId, in TargetFrontLineInfo lineInfo, OrderType order)
         {
             foreach (var id in followers)
             {
                 SetCommand(id, lineInfo, order);
             }
 
-            SetCommand(targetInfo.CommanderId, lineInfo, order);
+            SetCommand(entityId, lineInfo, order);
         }
         private void SetCommand(EntityId id, in TargetInfo targetInfo, OrderType order)
         {
