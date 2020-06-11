@@ -43,7 +43,7 @@ namespace AdvancedGears
 
         private void OnSetHexRequest(BaseUnitTarget.SetHex.ReceivedRequest request)
         {
-            targetCommandReceiver.SendSetFrontLineResponse(new BaseUnitTarget.SetHex.Response(request.RequestId, new Empty()));
+            targetCommandReceiver.SendSetHexResponse(new BaseUnitTarget.SetHex.Response(request.RequestId, new Empty()));
 
             targetWriter.SendUpdate(new BaseUnitTarget.Update()
             {

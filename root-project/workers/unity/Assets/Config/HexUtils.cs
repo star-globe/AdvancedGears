@@ -2,6 +2,7 @@ using Improbable.Gdk.Core;
 using Improbable.Gdk.GameObjectCreation;
 using Improbable.Gdk.PlayerLifecycle;
 using Improbable.Gdk.TransformSynchronization;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace AdvancedGears

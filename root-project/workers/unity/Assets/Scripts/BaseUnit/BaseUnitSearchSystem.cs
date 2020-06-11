@@ -73,7 +73,7 @@ namespace AdvancedGears
                 enemy = getNearestEnemy(status.Side, pos, sightRange);
 
                 if (enemy == null) {
-                    SetStrategyTarget(ref sight, ref target);
+                    SetStrategyTarget(pos, sightRange, ref sight, ref target);
                 }
                 else {
                     target.State = TargetState.ActionTarget;
@@ -124,14 +124,14 @@ namespace AdvancedGears
                 return TargetState.OutOfRange;
         }
 
-        private void SetStrategyTarget(ref BaseUnitSight.Component sight, ref BaseUnitTarget.Component target)
+        private void SetStrategyTarget(Vector3 pos, float sightRange, ref BaseUnitSight.Component sight, ref BaseUnitTarget.Component target)
         {
             if (target.TargetInfo.IsTarget) {
                 sight.TargetPosition = target.TargetInfo.Position;
                 target.State = CalcTargetState(sight.TargetPosition.ToUnityVector() - pos, sightRange); 
             }
             else if (target.HexInfo.IsTarget) {
-                sight.TargetPosition = HexUtils.GetHexCenter(this.Origin, target.HexInfo.HexIndex, HexDictionary.HexEdgeLength);
+                sight.TargetPosition = HexUtils.GetHexCenter(this.Origin, target.HexInfo.HexIndex, HexDictionary.HexEdgeLength).ToFixedPointVector3();
                 target.State = TargetState.OutOfRange;
             }
             else if (target.FrontLine.IsValid()) {
