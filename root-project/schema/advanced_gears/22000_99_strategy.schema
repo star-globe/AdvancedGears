@@ -67,5 +67,5 @@ type FrontHexInfo {
 component StrategyHexAccessPortal {
     id = 220011;
 
-    FrontHexInfo front_hex_info = 1;
+    map<UnitSide,FrontHexInfo> front_hexes = 1;
 }

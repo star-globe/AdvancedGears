@@ -31,6 +31,7 @@ enum UnitSide {
     A = 1;  // AltriaUnion = 1;
     B = 2;  // GlobalEconomicalCommons = 2;
     C = 3;  // JormuTreatyOrganization = 3;
+    Num = 4;
     Others = 99;
 }
 

@@ -76,12 +76,20 @@ namespace AdvancedGears
                 if (status.Side == UnitSide.None)
                     return;
 
-                var dic = BorderHexList(status.Side);
+                var hexes = strategy.FrontHexes;
 
-                var info = strategy.FrontHexInfo;
-                CompairList(info.Indexes, dic);
+                foreach(var side in HexUtils.AllSides) {
+                    var dic = BorderHexList(side);
 
-                strategy.FrontHexInfo = info;
+                    if (hexes.ContainsKey(side) == false)
+                        hexes[side] = new FrontHexInfo { Indexes = new List<HexIndex>() };
+                    
+                    var info = hexes[side];
+                    CompairList(info.Indexes, dic);
+                    hexes[side] = info;
+                }
+
+                strategy.FrontHexes = hexes;
             });
         }
 

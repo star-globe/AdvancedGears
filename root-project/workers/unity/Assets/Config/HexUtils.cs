@@ -193,5 +193,17 @@ namespace AdvancedGears
 
             return type;
         }
+
+        public static IEnumerable<UnitSide> AllSides
+        {
+            get
+            {
+                var side = UnitSide.None;
+                while (side < UnitSide.Num) {
+                    yield return side;
+                    side++;
+                }
+            }
+        }
     }
 }

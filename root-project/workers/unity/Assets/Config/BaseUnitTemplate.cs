@@ -109,7 +109,7 @@ namespace AdvancedGears
                                                                          TargetHexes = new Dictionary<EntityId, TargetHexInfo>() }, writeAccess);
                     //template.AddComponent(new UnitFactory.Snapshot().DefaultSnapshot(), writeAccess);
                     //template.AddComponent(new DominationStamina.Snapshot().DefaultSnapshot(), writeAccess);
-                    template.AddComponent(new StrategyHexAccessPortal.Snapshot { FrontHexInfo = new FrontHexInfo { Indexes = new List<HexIndex>() } });
+                    template.AddComponent(new StrategyHexAccessPortal.Snapshot { FrontHexes = new Dictionary<UnitSide,FrontHexInfo>() });
                     template.AddComponent(new ResourceComponent.Snapshot(), writeAccess);
                     template.AddComponent(new ResourceSupplyer.Snapshot(), writeAccess);
                     template.AddComponent(new RecoveryComponent.Snapshot { State = RecoveryState.Supplying }, writeAccess);
