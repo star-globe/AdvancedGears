@@ -138,15 +138,23 @@ type TargetFrontLineInfo {
     improbable.Coordinates right_corner = 2;
 }
 
+type TargetHexInfo {
+    bool is_target = 1;
+    uint32 hex_index = 2;
+    UnitSide side = 3;
+}
+
 component BaseUnitTarget {
     id = 20013;
 
     TargetState state = 1;
     TargetInfo target_info = 2;
     TargetFrontLineInfo front_line = 3;
+    TargetHexInfo hex_info = 4;
 
     command improbable.gdk.core.Empty set_target(TargetInfo);
     command improbable.gdk.core.Empty set_front_line(TargetFrontLineInfo);
+    command improbable.gdk.core.Empty set_hex(TargetHexInfo);
 }
 
 type PostureData {
@@ -233,13 +241,16 @@ component CommanderTeam {
 
     TargetStrongholdInfo target_stronghold = 4;
     TargetFrontLineInfo target_front_line = 5;
-    EntityId stronghold_entity_id = 6;
+    TargetHexInfo target_hex_info = 6;
+
+    EntityId stronghold_entity_id = 10;
 
     command improbable.gdk.core.Empty add_follower(FollowerInfo);
     command improbable.gdk.core.Empty set_superior(SuperiorInfo);
     command TeamInfoResponse get_team_info(TeamInfoRequest);
     command improbable.gdk.core.Empty set_target_stroghold(TargetStrongholdInfo);
     command improbable.gdk.core.Empty set_target_frontline(TargetFrontLineInfo);
+    command improbable.gdk.core.Empty set_target_hex(TargetHexInfo);
 }
 
 type WarPower {
@@ -316,7 +327,8 @@ component StrongholdSight {
     IntervalChecker interval = 1;
     StrategyVector strategy_vector = 2;
     map<EntityId,TargetStrongholdInfo> target_strongholds = 4;
-    list<improbable.Coordinates> frontline_corners = 5;
+    list<improbable.Coordinates> front_line_corners = 5;
+    map<EntityId,TargetHexInfo> target_hexes = 6;
 
     command improbable.gdk.core.Empty set_strategy_vector(StrategyVector);
 }

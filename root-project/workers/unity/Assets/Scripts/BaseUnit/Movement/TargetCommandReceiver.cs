@@ -17,6 +17,7 @@ namespace AdvancedGears
         {
             targetCommandReceiver.OnSetTargetRequestReceived += OnSetTargetRequest;
             targetCommandReceiver.OnSetFrontLineRequestReceived += OnSetFrontLineRequest;
+            targetCommandReceiver.OnSetHexRequestReceived += OnSetHexRequest;
             sightReader.OnBoidDiffedEvent += OnBoidDiffed;
         }
 
@@ -37,6 +38,16 @@ namespace AdvancedGears
             targetWriter.SendUpdate(new BaseUnitTarget.Update()
             {
                 FrontLine = request.Payload,
+            });
+        }
+
+        private void OnSetHexRequest(BaseUnitTarget.SetHex.ReceivedRequest request)
+        {
+            targetCommandReceiver.SendSetFrontLineResponse(new BaseUnitTarget.SetHex.Response(request.RequestId, new Empty()));
+
+            targetWriter.SendUpdate(new BaseUnitTarget.Update()
+            {
+                HexInfo = request.Payload,
             });
         }
 

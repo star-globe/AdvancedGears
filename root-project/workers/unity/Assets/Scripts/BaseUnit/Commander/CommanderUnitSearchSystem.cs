@@ -228,8 +228,11 @@ namespace AdvancedGears
             commander.Order.Self(current.Value);
 
             var line = team.TargetFrontLine;
+            var hex = team.TargetHexInfo;
             if (tgt == null && line.IsValid())
                 SetOrderFollowers(team.FollowerInfo.GetAllFollowers(), entityId.EntityId, line, current.Value);
+            else if (tgt == null && hex.IsTarget)
+                SetOrderFollowers(team.FollowerInfo.GetAllFollowers(), entityId.EntityId, hex, current.Value);
             else
                 SetOrderFollowers(team.FollowerInfo.GetAllFollowers(), entityId.EntityId, targetInfo, current.Value);
 
@@ -293,6 +296,15 @@ namespace AdvancedGears
 
             SetCommand(entityId, lineInfo, order);
         }
+        private void SetOrderFollowers(List<EntityId> followers, in EntityId entityId, in TargetHexInfo hexInfo, OrderType order)
+        {
+            foreach (var id in followers)
+            {
+                SetCommand(id, hexInfo, order);
+            }
+
+            SetCommand(entityId, hexInfo, order);
+        }
         private void SetCommand(EntityId id, in TargetInfo targetInfo, OrderType order)
         {
             base.SetCommand(id, order);
@@ -302,6 +314,11 @@ namespace AdvancedGears
         {
             base.SetCommand(id, order);
             this.CommandSystem.SendCommand(new BaseUnitTarget.SetFrontLine.Request(id, lineInfo));
+        }
+        private void SetCommand(EntityId id, in TargetHexInfo hexInfo, OrderType order)
+        {
+            base.SetCommand(id, order);
+            this.CommandSystem.SendCommand(new BaseUnitTarget.SetHex.Request(id, hexInfo));
         }
         #endregion
     }
