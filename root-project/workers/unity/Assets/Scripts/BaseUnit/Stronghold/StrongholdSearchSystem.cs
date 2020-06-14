@@ -107,7 +107,7 @@ namespace AdvancedGears
             }
         }
 
-        private OrderType GetTargetHex(in Vector3 pos, List<HexIndex> indexes, Dictionary<EntityId,TargetHexInfo> hexes)
+        private OrderType GetTargetHex(in Vector3 pos, List<HexIndex> indexes, Dictionary<UnitSide,FrontHexInfo> fronts, Dictionary<EntityId,TargetHexInfo> hexes)
         {
             HexIndex? targetIndex = null;
             float length = float.MaxValue;
@@ -122,13 +122,32 @@ namespace AdvancedGears
             }
 
             if (targetIndex.HasValue) {
-                //corners.Clear();
-                //corners.AddRange(targetIndex.Value.FrontCorners);
-                return OrderType.Keep;
+                return GetNeighborTargetHexes(UnitSide.None, targetIndex.Value.Index, fronts, hexes);
             }
             else {
                 return OrderType.Idle;
             }
+        }
+
+        private OrderType GetNeighborTargetHexes(UnitSide side, uint index, Dictionary<UnitSide, FrontHexInfo> fronts, Dictionary<EntityId, TargetHexInfo> hexes)
+        {
+            bool isTarget = false;
+            if (fronts.TryGetValue(side, out var info))
+            {
+                var neighbors = HexUtils.GetNeighborHexIndexes(index);
+                foreach (var n in neighbors)
+                {
+                    var i = info.Indexes.FindIndex(h => h.Index == n);
+                    if (i < 0)
+                        continue;
+
+                    isTarget = true;
+                    var hx = info.Indexes[i];
+                    hexes[hx.EntityId] = new TargetHexInfo(true, hx.Index, UnitSide.None);
+                }
+            }
+
+            return isTarget ? OrderType.Attack: OrderType.Keep;
         }
 
         private OrderType GetTargetStronghold(in Vector3 pos, UnitSide side, in Vector3 vector, EntityId selfId, Dictionary<EntityId,TargetStrongholdInfo> targets)

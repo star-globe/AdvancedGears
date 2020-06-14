@@ -346,6 +346,19 @@ namespace AdvancedGears
 
             return line.normalized * dot + left;
         }
+
+        public static bool IsDominatable(this HexAttribute attribute)
+        {
+            switch (attribute)
+            {
+                case HexAttribute.Field:
+                case HexAttribute.ForwardBase:
+                    return true;
+
+                default:
+                    return false;
+            }
+        }
     }
 
     public static class IntervalCheckerInitializer
