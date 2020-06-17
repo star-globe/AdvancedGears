@@ -1,4 +1,4 @@
-using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -40,7 +40,7 @@ namespace AdvancedGears
                         var end = basePoints[i];
                         var total = cutNumber + 1;
                         foreach (var c in Enumerable.Range(0,cutNumber)) {
-                            list.Add((end * c + pont * (total - c)) / total);
+                            list.Add((end * c + point * (total - c)) / total);
                         }
 
                         point = end;
@@ -56,8 +56,8 @@ namespace AdvancedGears
                 newPoints[i] = new Vector3(p.x, hit.point.y + buffer, p.z);
             }
 
-            line.positionCount = newPoints.Length;
-            line.SetPositions(newPoints);
+            this.Renderer.positionCount = newPoints.Length;
+            this.Renderer.SetPositions(newPoints);
         }
     }
 }
