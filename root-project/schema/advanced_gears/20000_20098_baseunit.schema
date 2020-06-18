@@ -464,3 +464,22 @@ component StrategyOrderManager {
 
     TargetHeadQuartersInfo target_hq = 2;
 }
+
+// turret:20050~
+type TurretInfo {
+    UnitSide side = 1;
+    int32 master_id = 2;
+    EntityId entity_id = 3;
+}
+
+component TurretHub {
+    id = 20050;
+
+    map<EntityId,TurretInfo> turrets_datas = 1;
+}
+
+component TurretComponent {
+    id = 20051;
+
+    int32 mastet_id = 1;
+}
