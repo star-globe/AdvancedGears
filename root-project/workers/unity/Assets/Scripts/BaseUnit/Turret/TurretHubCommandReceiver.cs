@@ -11,30 +11,30 @@ namespace AdvancedGears
     public class TurretHubCommandReceiver : MonoBehaviour
     {
         [Require] World world;
-        [Require] TurretHubReder turretHub;
+        [Require] TurretHubReader turretHub;
         [Require] BaseUnitStatusReader status;
 
-        UpdateSystem updateSystem = null;
-        UpdateSystem UpdateSystem
+        ComponentUpdateSystem updateSystem = null;
+        ComponentUpdateSystem UpdateSystem
         {
             get
             {
-                updateSystem = updateSystem ?? world.GetExistingSystem<UpdateSystem>();
+                updateSystem = updateSystem ?? world.GetExistingSystem<ComponentUpdateSystem>();
                 return updateSystem;
             }
         }
 
         public void OnEnable()
         {
-            status.OnForceStateRequestReceived += OnSetFrontlineRequest;
+            status.OnForceStateEvent += OnForceState;
         }
 
-        private void OnForceStateRequest(BaseUnitStatus.ForceState forceState)
+        private void OnForceState(ForceStateChange forceState)
         {
-            var datas = turretHub.Data.TurresDatas;
+            var datas = turretHub.Data.TurretsDatas;
 
             foreach (var kvp in datas) {
-                UpdateSystem.SendEvent(new BaseUnitStatus.ForceState.Event(forState), kvp.Value.EntityId);
+                UpdateSystem.SendEvent(new BaseUnitStatus.ForceState.Event(forceState), kvp.Value.EntityId);
             }
         }
     }

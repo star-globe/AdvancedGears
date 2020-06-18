@@ -481,5 +481,5 @@ component TurretHub {
 component TurretComponent {
     id = 20051;
 
-    int32 mastet_id = 1;
+    int32 master_id = 1;
 }

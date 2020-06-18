@@ -15,7 +15,7 @@ namespace AdvancedGears
         public void OnEnable()
         {
             statusCommandReceiver.OnSetOrderRequestReceived += OnSetOrderRequest;
-            statusCommandReceiver.OnForceStateRequestReceived += OnForceStateRequest;
+            statusWriter.OnForceStateEvent += OnForceState;
         }
 
         private void OnSetOrderRequest(BaseUnitStatus.SetOrder.ReceivedRequest request)
@@ -28,11 +28,8 @@ namespace AdvancedGears
             });
         }
 
-        private void OnForceStateRequest(BaseUnitStatus.ForceState.ReceivedRequest request)
+        private void OnForceState(ForceStateChange change)
         {
-            statusCommandReceiver.SendForceStateResponse(new BaseUnitStatus.ForceState.Response(request.RequestId, new Empty()));
-
-            var change = request.Payload;
             statusWriter.SendUpdate(new BaseUnitStatus.Update()
             {
                 Side = change.Side,
