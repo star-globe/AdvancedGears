@@ -36,7 +36,7 @@ component BaseUnitStatus {
     OrderType order = 4;
 
     command improbable.gdk.core.Empty set_order(OrderInfo);
-    command improbable.gdk.core.Empty force_state(ForceStateChange);
+    event ForceStateChange force_state;
 }
 
 type HealthModifier {

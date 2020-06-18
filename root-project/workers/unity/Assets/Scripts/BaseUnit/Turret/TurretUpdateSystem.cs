@@ -49,6 +49,21 @@ namespace AdvancedGears
 
                 if (status.Type != UnitType.Stronghold)
                     return;
+
+                var trans = EntityManager.GetComponentObject<Transform>(entity);
+                var units = getAllyUnits(status.Side, trans.position, RangeDictionary.Get(FixedRangeType.StrongholdRange), UnitType.Turret);
+
+                var datas = turret.TurretsDatas;
+                datas.Clear();
+
+                foreach(var u in units) {
+                    if (TryGetComponent<TurretComponent.Component>(u.id, out var comp) == false)
+                        continue;
+
+                    datas[u.id] = new TurretInfo(u.side, comp.Value.MasterId, u.id);
+                }
+
+                turret.TurretsDatas = datas;
             });
         }
     }
