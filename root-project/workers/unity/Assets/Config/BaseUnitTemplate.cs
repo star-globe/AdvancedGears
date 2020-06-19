@@ -107,13 +107,11 @@ namespace AdvancedGears
                     template.AddComponent(new StrongholdSight.Snapshot { TargetStrongholds = new Dictionary<EntityId, TargetStrongholdInfo>(),
                                                                          FrontLineCorners = new List<Coordinates>(),
                                                                          TargetHexes = new Dictionary<EntityId, TargetHexInfo>() }, writeAccess);
-                    //template.AddComponent(new UnitFactory.Snapshot().DefaultSnapshot(), writeAccess);
-                    //template.AddComponent(new DominationStamina.Snapshot().DefaultSnapshot(), writeAccess);
                     template.AddComponent(new StrategyHexAccessPortal.Snapshot { FrontHexes = new Dictionary<UnitSide,FrontHexInfo>() });
                     template.AddComponent(new ResourceComponent.Snapshot(), writeAccess);
                     template.AddComponent(new ResourceSupplyer.Snapshot(), writeAccess);
                     template.AddComponent(new RecoveryComponent.Snapshot { State = RecoveryState.Supplying }, writeAccess);
-                    //template.AddComponent(new SpawnPoint.Snapshot { Type = SpawnType.Revive }, writeAccess);
+                    template.AddComponent(new TurretHub.Snapshot { TurresDatas = new Dictionary<EntityId,TurretInfo>() }, writeAccess);
                     var commandersQuery = InterestQuery.Query(Constraint.Component<CommanderStatus.Component>())
                                             .FilterResults(Position.ComponentId, BaseUnitStatus.ComponentId);
                     var commanderInterest = InterestTemplate.Create().AddQueries<StrongholdStatus.Component>(commandersQuery);
@@ -121,17 +119,15 @@ namespace AdvancedGears
                     break;
 
                 case UnitType.HeadQuarter:
-                    //template.AddComponent(new HeadQuarters.Snapshot { UpperRank = 0,
-                    //                                                 FactoryDatas = new FactoryMap { Reserves = new Dictionary<EntityId,ReserveMap>() },
-                    //                                                 Orders = new List<OrganizeOrder>() }, writeAccess);
-                    //template.AddComponent(new CommandersManager.Snapshot { State = CommanderManagerState.None,
-                    //                                                       CommanderDatas = new Dictionary<EntityId, TeamInfo>() }, writeAccess);
                     template.AddComponent(new StrategyOrderManager.Snapshot { }, writeAccess);
                     var strongholdQuery = InterestQuery.Query(Constraint.Component<StrongholdStatus.Component>())
                                           .FilterResults(Position.ComponentId, BaseUnitStatus.ComponentId);
                     var strongholdInterest = InterestTemplate.Create().AddQueries<StrategyOrderManager.Component>(strongholdQuery);
                     template.AddComponent(strongholdInterest.ToSnapshot(), writeAccess);
-                    //template.AddComponent(new SpawnPoint.Snapshot { Type = SpawnType.Start }, writeAccess);
+                    break;
+
+                case UnitType.Turret:
+                    template.AddComponent(new TurretComponent.Snapshot(), writeAccess);
                     break;
 
                 case UnitType.ArmyCloud:
@@ -207,6 +203,20 @@ namespace AdvancedGears
 
             template.SetReadAccess(UnityClientConnector.WorkerType, MobileClientWorkerConnector.WorkerType, WorkerUtils.UnityGameLogic);
             template.SetComponentWriteAccess(EntityAcl.ComponentId, WorkerUtils.UnityGameLogic);
+
+            return template;
+        }
+
+        public static EntityTemplate CreateTurretUnitTemplate(UnitSide side, Coordinates coords, int masterId)
+        {
+            var template = CreateBaseUnitEntityTemplate(side, coords, UnitType.Turret);
+            var turret = template.GetComponent<TurretComponent.Snapshot>();
+            if (turret != null) {
+                var t = turret.Value;
+                t.MasterId = masterId;
+
+                template.SetComponent(t);
+            }
 
             return template;
         }
