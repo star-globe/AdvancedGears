@@ -31,6 +31,23 @@ namespace AdvancedGears
             SetHexCorners(GetHexCenter(origin, index, edge), corners, edge);
         }
 
+        public static bool IsInsideHex(in Vector3 origin, uint index, in Vector3 pos, float edge = edgeLength)
+        {
+            var corners = new Vector3[7];
+            SetHexCorners(origin, index, corners, edge);
+
+            for(var i = 0; i < 6; i++) {
+                var from = corners[i];
+                var to = corners[i+1];
+
+                var cross = Vector3.Cross(pos-from, to-from);
+                if (Vector3.Dot(cross, Vector3.up) < 0)
+                    return false;
+            }
+
+            return true;
+        }
+
         private static void CalcIndex(uint index, out uint n, out uint direct, out uint rest)
         {
             var i = index;
