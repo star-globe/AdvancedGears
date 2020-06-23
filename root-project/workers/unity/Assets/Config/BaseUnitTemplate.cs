@@ -111,7 +111,7 @@ namespace AdvancedGears
                     template.AddComponent(new ResourceComponent.Snapshot(), writeAccess);
                     template.AddComponent(new ResourceSupplyer.Snapshot(), writeAccess);
                     template.AddComponent(new RecoveryComponent.Snapshot { State = RecoveryState.Supplying }, writeAccess);
-                    template.AddComponent(new TurretHub.Snapshot { TurresDatas = new Dictionary<EntityId,TurretInfo>() }, writeAccess);
+                    template.AddComponent(new TurretHub.Snapshot { TurretsDatas = new Dictionary<EntityId,TurretInfo>() }, writeAccess);
                     var commandersQuery = InterestQuery.Query(Constraint.Component<CommanderStatus.Component>())
                                             .FilterResults(Position.ComponentId, BaseUnitStatus.ComponentId);
                     var commanderInterest = InterestTemplate.Create().AddQueries<StrongholdStatus.Component>(commandersQuery);
