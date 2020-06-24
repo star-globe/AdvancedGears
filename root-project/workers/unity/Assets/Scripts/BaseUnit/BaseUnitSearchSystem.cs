@@ -70,12 +70,12 @@ namespace AdvancedGears
                 UnitInfo enemy = null;
                 var sightRange = action.SightRange;
                 
+                if (SetStrategyTarget(pos, sightRange, ref sight, ref target))
+                    sightRange -= (sight.TargetPosition.ToUnityVector() - pos).magnitude;
+
                 enemy = getNearestEnemy(status.Side, pos, sightRange);
 
-                if (enemy == null) {
-                    SetStrategyTarget(pos, sightRange, ref sight, ref target);
-                }
-                else {
+                if (enemy != null) {
                     target.State = TargetState.ActionTarget;
                     var epos = enemy.pos.ToWorldPosition(this.Origin);
 
@@ -124,20 +124,26 @@ namespace AdvancedGears
                 return TargetState.OutOfRange;
         }
 
-        private void SetStrategyTarget(Vector3 pos, float sightRange, ref BaseUnitSight.Component sight, ref BaseUnitTarget.Component target)
+        private bool SetStrategyTarget(Vector3 pos, float sightRange, ref BaseUnitSight.Component sight, ref BaseUnitTarget.Component target)
         {
+            bool isTarget = false;
             if (target.TargetInfo.IsTarget) {
                 sight.TargetPosition = target.TargetInfo.Position;
                 target.State = CalcTargetState(sight.TargetPosition.ToUnityVector() - pos, sightRange); 
+                isTarget = true;
             }
             else if (target.HexInfo.IsTarget) {
                 sight.TargetPosition = HexUtils.GetHexCenter(this.Origin, target.HexInfo.HexIndex, HexDictionary.HexEdgeLength).ToFixedPointVector3();
                 target.State = TargetState.OutOfRange;
+                isTarget = true;
             }
             else if (target.FrontLine.IsValid()) {
                 sight.TargetPosition = target.FrontLine.GetOnLinePosition(this.Origin, pos).ToFixedPointVector3();
                 target.State = TargetState.OutOfRange;
+                isTarget = true;
             }
+
+            return isTarget;
         }
     }
 
