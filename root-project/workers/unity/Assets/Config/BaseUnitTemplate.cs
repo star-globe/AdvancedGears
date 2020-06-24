@@ -119,6 +119,8 @@ namespace AdvancedGears
                     break;
 
                 case UnitType.HeadQuarter:
+                    template.AddComponent(new StrategyHexAccessPortal.Snapshot { FrontHexes = new Dictionary<UnitSide, FrontHexInfo>() });
+                    template.AddComponent(new ResourceComponent.Snapshot(), writeAccess);
                     template.AddComponent(new StrategyOrderManager.Snapshot { }, writeAccess);
                     var strongholdQuery = InterestQuery.Query(Constraint.Component<StrongholdStatus.Component>())
                                           .FilterResults(Position.ComponentId, BaseUnitStatus.ComponentId);

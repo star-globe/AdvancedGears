@@ -30,7 +30,7 @@ namespace AdvancedGears
 
         readonly protected Dictionary<uint, HexInfo> hexDic = new Dictionary<uint, HexInfo>();
 
-        protected hexChanged { get; private set; } = false;
+        protected bool hexChanged { get; private set; } = false;
         protected float hexEdge => HexDictionary.HexEdgeLength;
 
         protected override void OnCreate()

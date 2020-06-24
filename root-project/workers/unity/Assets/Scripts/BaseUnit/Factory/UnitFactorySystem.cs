@@ -133,7 +133,7 @@ namespace AdvancedGears
                 if (status.State != UnitState.Alive)
                     return;
 
-                if (status.Type != UnitType.Stronghold)
+                if (UnitUtils.IsBuilding(status.Type) == false)
                     return;
 
                 if (status.Order == OrderType.Idle)

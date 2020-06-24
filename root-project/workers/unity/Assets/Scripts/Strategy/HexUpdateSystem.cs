@@ -42,7 +42,7 @@ namespace AdvancedGears
 
         private void UpdateHexAccess()
         {
-            if (base.hexChanged = false && CheckTime(ref interAccess) == false)
+            if (base.hexChanged == false && CheckTime(ref interAccess) == false)
                 return;
 
             Entities.With(portalGroup).ForEach((Entity entity,
