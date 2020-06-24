@@ -14,28 +14,11 @@ namespace AdvancedGears
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
-    public class HexUpdateSystem : SpatialComponentSystem
+    public class HexUpdateSystem : HexUpdateBaseSystem
     {
-        class HexInfo
-        {
-            public uint Index;
-            public int HexId;
-            public UnitSide Side;
-            public SpatialEntityId EntityId;
-        }
-
-
         EntityQuery portalGroup;
-        EntityQuery hexGroup;
         IntervalChecker interAccess;
-        IntervalChecker interHex;
         const int frequencyManager = 5;
-        const int frequencyHex = 5;
-
-        bool hexChanged = false;
-        readonly Dictionary<uint, HexInfo> hexDic = new Dictionary<uint, HexInfo>();
-
-        float hexEdge => HexDictionary.HexEdgeLength;
 
         protected override void OnCreate()
         {
@@ -47,28 +30,19 @@ namespace AdvancedGears
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
 
-            hexGroup = GetEntityQuery(
-                ComponentType.ReadOnly<HexBase.Component>(),
-                ComponentType.ReadOnly<Position.Component>(),
-                ComponentType.ReadOnly<SpatialEntityId>()
-            );
-
             interAccess = IntervalCheckerInitializer.InitializedChecker(1.0f / frequencyManager);
-            interHex = IntervalCheckerInitializer.InitializedChecker(1.0f / frequencyHex);
         }
 
         protected override void OnUpdate()
         {
-            UpdateHexInfo();
+            base.OnUpdate();
 
             UpdateHexAccess();
-
-            hexChanged = false;
         }
 
         private void UpdateHexAccess()
         {
-            if (hexChanged = false && CheckTime(ref interAccess) == false)
+            if (base.hexChanged = false && CheckTime(ref interAccess) == false)
                 return;
 
             Entities.With(portalGroup).ForEach((Entity entity,
@@ -97,34 +71,11 @@ namespace AdvancedGears
             });
         }
 
-        private void UpdateHexInfo()
-        {
-            if (hexChanged == false && CheckTime(ref interHex) == false)
-                return;
-
-            Entities.With(hexGroup).ForEach((Entity entity,
-                                      ref HexBase.Component hex,
-                                      ref Position.Component position,
-                                      ref SpatialEntityId entityId) =>
-            {
-                if (hex.Attribute.IsDominatable() == false)
-                    return;
-
-                if (hexDic.ContainsKey(hex.Index) == false)
-                    hexDic[hex.Index] = new HexInfo();
-
-                hexDic[hex.Index].Index = hex.Index;
-                hexDic[hex.Index].HexId = hex.HexId;
-                hexDic[hex.Index].Side = hex.Side;
-                hexDic[hex.Index].EntityId = entityId;
-            });
-        }
-
         private Dictionary<uint, List<Coordinates>> BorderHexList(UnitSide side)
         {
             Dictionary<uint, List<Coordinates>> indexes = null;
 
-            foreach (var kvp in hexDic)
+            foreach (var kvp in base.hexDic)
             {
                 if (kvp.Value.Side != side)
                     continue;
@@ -146,7 +97,7 @@ namespace AdvancedGears
                     bool isTouched = false;
                     foreach (var id in ids)
                     {
-                        if (hexDic.TryGetValue(id, out var hex) == false ||
+                        if (base.hexDic.TryGetValue(id, out var hex) == false ||
                             hex.Side == side)
                             continue;
 
@@ -195,15 +146,9 @@ namespace AdvancedGears
                 foreach (var kvp in dic)
                 {
                     var id = kvp.Key;
-                    indexes.Add(new HexIndex(hexDic[id].EntityId.EntityId, id, dic[id]));
+                    indexes.Add(new HexIndex(base.hexDic[id].EntityId.EntityId, id, dic[id]));
                 }
             }
-        }
-
-        public void HexChanged(uint index, UnitSide side)
-        {
-            if (hexDic.ContainsKey(index) && hexDic[index].Side != side)
-                hexChanged = true;
         }
     }
 }
