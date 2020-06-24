@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Improbable;
 using Improbable.Gdk.Core;
 using Improbable.Worker.CInterop;
 using Unity.Entities;
@@ -73,7 +74,14 @@ namespace AdvancedGears
                 }
 
                 // order check
+                // Strongholds
                 CheckOrder(status.Order, sight.TargetStrongholds, datas);
+
+                // FrontLineCorners
+                CheckOrder(status.Order, sight.FrontLineCorners, datas);
+
+                // Hex
+                CheckOrder(status.Order, sight.TargetHexes, datas);
             });
         }
 
@@ -163,8 +171,88 @@ namespace AdvancedGears
             this.CommandSystem.SendCommand(new CommanderTeam.SetTargetStroghold.Request(id, targetInfo));
         }
 
+        private void SetCommand(EntityId id, in TargetFrontLineInfo targetInfo, OrderType order)
+        {
+            base.SetCommand(id, order);
+            this.CommandSystem.SendCommand(new CommanderTeam.SetTargetFrontline.Request(id, targetInfo));
+        }
+
+        private void SetCommand(EntityId id, in TargetHexInfo targetInfo, OrderType order)
+        {
+            base.SetCommand(id, order);
+            this.CommandSystem.SendCommand(new CommanderTeam.SetTargetHex.Request(id, targetInfo));
+        }
+
         readonly Dictionary<EntityId, List<EntityId>> entityIds = new Dictionary<EntityId, List<EntityId>>();
         private void CheckOrder(OrderType order, Dictionary<EntityId,TargetStrongholdInfo> targets, Dictionary<EntityId,TeamInfo> datas)
+        {
+            entityIds.Clear();
+
+            var count = targets.Count;
+            if (count == 0)
+                return;
+
+            foreach(var kvp in datas) {
+                 if(targets.ContainsKey(kvp.Value.TargetEntityId) == false) {
+                    var key = targets.Keys.ElementAt(UnityEngine.Random.Range(0,count));
+
+                    if (entityIds.ContainsKey(key) == false)
+                        entityIds[key] = new List<EntityId>();
+
+                    entityIds[key].Add(kvp.Key);
+                 }
+            }
+
+            foreach (var kvp in entityIds)
+            {
+                var target = targets[kvp.Key];
+                foreach (var id in kvp.Value) {
+                    SetCommand(id, target, order);
+                }
+            }
+        }
+
+        private void CheckOrder(OrderType order, List<Coordinates> corners, Dictionary<EntityId,TeamInfo> datas)
+        {
+            entityIds.Clear();
+
+            var count = corners.Count;
+            if (count <= 1)
+                return;
+
+            int index = 0;
+            foreach(var kvp in datas) {
+                if (index + 1 >= corners.Count)
+                    index = 0;
+
+                var line = new TargetFrontLineInfo()
+                {
+                    LeftCorner = corners[index],
+                    RightCorner = corners[index + 1]
+                };
+
+                SetCommand(kvp.Key, line, order);
+                index++;
+                // if(targets.ContainsKey(kvp.Value.TargetEntityId) == false) {
+                //    var key = targets.Keys.ElementAt(UnityEngine.Random.Range(0,count));
+                //
+                //    if (entityIds.ContainsKey(key) == false)
+                //        entityIds[key] = new List<EntityId>();
+                //
+                //    entityIds[key].Add(kvp.Key);
+                // }
+            }
+
+            //foreach (var kvp in entityIds)
+            //{
+            //    var target = targets[kvp.Key];
+            //    foreach (var id in kvp.Value) {
+            //        SetCommand(id, target, order);
+            //    }
+            //}
+        }
+
+        private void CheckOrder(OrderType order, Dictionary<EntityId,TargetHexInfo> targets, Dictionary<EntityId,TeamInfo> datas)
         {
             entityIds.Clear();
 

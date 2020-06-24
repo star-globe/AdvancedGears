@@ -87,6 +87,7 @@ namespace AdvancedGears
             world.GetOrCreateSystem<BulletMovementSystem>();
             world.GetOrCreateSystem<BaseUnitReviveTimerSystem>();
             world.GetOrCreateSystem<FieldQueryServerSystem>();
+            world.GetOrCreateSystem<HexUpdateSystem>();
         }
 
         public static void AddStrategyLogicSystems(World world, UnityEngine.GameObject gameObject)

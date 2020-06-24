@@ -324,6 +324,41 @@ namespace AdvancedGears
             return targetInfo.Side == UnitSide.None ||
                    targetInfo.State == UnitState.Dead;
         }
+
+        public static bool IsValid(this TargetFrontLineInfo targetInfo)
+        {
+            return targetInfo.LeftCorner.Equals(targetInfo.RightCorner) == false;
+        }
+
+        public static Vector3 GetOnLinePosition(this TargetFrontLineInfo info, Vector3 origin, Vector3 current)
+        {
+            var left = info.LeftCorner.ToUnityVector() + origin;
+            var right = info.RightCorner.ToUnityVector() + origin;
+
+            var diff = origin - left;
+            var line = right - left;
+
+            var dot = Vector3.Dot(diff, line.normalized);
+            if (dot <= 0)
+                return left;
+            else if (dot >= line.magnitude)
+                return right;
+
+            return line.normalized * dot + left;
+        }
+
+        public static bool IsDominatable(this HexAttribute attribute)
+        {
+            switch (attribute)
+            {
+                case HexAttribute.Field:
+                case HexAttribute.ForwardBase:
+                    return true;
+
+                default:
+                    return false;
+            }
+        }
     }
 
     public static class IntervalCheckerInitializer

@@ -18,9 +18,9 @@ namespace AdvancedGears.Editor
             scene = strategy;
         }
 
-        public override void OnInspectorGUI ()
+        protected override void SnapshotGUI()
         {
-            base.OnInspectorGUI();
+            base.SnapshotGUI();
 
             if (GUILayout.Button("Align Hexes"))
                 strategy.AlignHexes();

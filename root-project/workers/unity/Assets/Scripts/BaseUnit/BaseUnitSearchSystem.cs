@@ -70,15 +70,12 @@ namespace AdvancedGears
                 UnitInfo enemy = null;
                 var sightRange = action.SightRange;
                 
+                if (SetStrategyTarget(pos, sightRange, ref sight, ref target))
+                    sightRange -= (sight.TargetPosition.ToUnityVector() - pos).magnitude;
+
                 enemy = getNearestEnemy(status.Side, pos, sightRange);
 
-                if (enemy == null) {
-                    if (target.TargetInfo.IsTarget) {
-                        sight.TargetPosition = target.TargetInfo.Position;
-                        target.State = CalcTargetState(sight.TargetPosition.ToUnityVector() - pos, sightRange); 
-                    }
-                }
-                else {
+                if (enemy != null) {
                     target.State = TargetState.ActionTarget;
                     var epos = enemy.pos.ToWorldPosition(this.Origin);
 
@@ -125,6 +122,28 @@ namespace AdvancedGears
                 return TargetState.MovementTarget;
             else
                 return TargetState.OutOfRange;
+        }
+
+        private bool SetStrategyTarget(Vector3 pos, float sightRange, ref BaseUnitSight.Component sight, ref BaseUnitTarget.Component target)
+        {
+            bool isTarget = false;
+            if (target.TargetInfo.IsTarget) {
+                sight.TargetPosition = target.TargetInfo.Position;
+                target.State = CalcTargetState(sight.TargetPosition.ToUnityVector() - pos, sightRange); 
+                isTarget = true;
+            }
+            else if (target.HexInfo.IsTarget) {
+                sight.TargetPosition = HexUtils.GetHexCenter(this.Origin, target.HexInfo.HexIndex, HexDictionary.HexEdgeLength).ToFixedPointVector3();
+                target.State = TargetState.OutOfRange;
+                isTarget = true;
+            }
+            else if (target.FrontLine.IsValid()) {
+                sight.TargetPosition = target.FrontLine.GetOnLinePosition(this.Origin, pos).ToFixedPointVector3();
+                target.State = TargetState.OutOfRange;
+                isTarget = true;
+            }
+
+            return isTarget;
         }
     }
 
@@ -339,6 +358,11 @@ namespace AdvancedGears
             this.CommandSystem.SendCommand(new BaseUnitStatus.SetOrder.Request(id, new OrderInfo() { Order = order }), send);
             return true;
         }
+
+        protected Vector3 GetHexCenter(uint index)
+        {
+            return HexUtils.GetHexCenter(this.Origin, index, HexDictionary.HexEdgeLength);
+        } 
     }
 
     // Utils

@@ -1,4 +1,5 @@
 package advanced_gears;
+import "improbable/standard_library.schema";
 import "improbable/gdk/core/common.schema";
 import "advanced_gears/common.schema";
 import "improbable/gdk/transform_synchronization/transform_internal.schema";
@@ -29,11 +30,17 @@ component HexBase {
     UnitSide side = 4;
 }
 
+type HexChangedEvent {
+    uint32 hex_index = 1;
+    UnitSide side = 2;
+}
+
 // attach to stronghold
 component HexFacility {
     id = 22001;
 
     uint32 hex_index = 1;
+    event HexChangedEvent hex_changed;
 }
 
 type HexInfo {
@@ -51,4 +58,20 @@ type StrategyHexVector {
 // manager
 component StrategyHexManager {
     id = 220010;
+}
+
+type HexIndex {
+    EntityId entity_id = 1;
+    uint32 index = 2;
+    list<improbable.Coordinates> front_corners = 3;
+}
+
+type FrontHexInfo {
+    list<HexIndex> indexes = 1;
+}
+
+component StrategyHexAccessPortal {
+    id = 220011;
+
+    map<UnitSide,FrontHexInfo> front_hexes = 1;
 }

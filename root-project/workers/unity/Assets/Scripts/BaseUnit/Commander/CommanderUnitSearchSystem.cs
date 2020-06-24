@@ -227,7 +227,14 @@ namespace AdvancedGears
 
             commander.Order.Self(current.Value);
 
-            SetOrderFollowers(team.FollowerInfo.GetAllFollowers(), targetInfo, current.Value);
+            var line = team.TargetFrontLine;
+            var hex = team.TargetHexInfo;
+            if (tgt == null && line.IsValid())
+                SetOrderFollowers(team.FollowerInfo.GetAllFollowers(), entityId.EntityId, line, current.Value);
+            else if (tgt == null && hex.IsTarget)
+                SetOrderFollowers(team.FollowerInfo.GetAllFollowers(), entityId.EntityId, hex, current.Value);
+            else
+                SetOrderFollowers(team.FollowerInfo.GetAllFollowers(), entityId.EntityId, targetInfo, current.Value);
 
             return tgt != null;
         }
@@ -271,20 +278,47 @@ namespace AdvancedGears
         #endregion
 
         #region SetMethod
-        private void SetOrderFollowers(List<EntityId> followers, in TargetInfo targetInfo, OrderType order)
+        private void SetOrderFollowers(List<EntityId> followers, in EntityId entityId, in TargetInfo targetInfo, OrderType order)
         {
             foreach (var id in followers)
             {
                 SetCommand(id, targetInfo, order);
             }
 
-            SetCommand(targetInfo.CommanderId, targetInfo, order);
+            SetCommand(entityId, targetInfo, order);
         }
+        private void SetOrderFollowers(List<EntityId> followers, in EntityId entityId, in TargetFrontLineInfo lineInfo, OrderType order)
+        {
+            foreach (var id in followers)
+            {
+                SetCommand(id, lineInfo, order);
+            }
 
+            SetCommand(entityId, lineInfo, order);
+        }
+        private void SetOrderFollowers(List<EntityId> followers, in EntityId entityId, in TargetHexInfo hexInfo, OrderType order)
+        {
+            foreach (var id in followers)
+            {
+                SetCommand(id, hexInfo, order);
+            }
+
+            SetCommand(entityId, hexInfo, order);
+        }
         private void SetCommand(EntityId id, in TargetInfo targetInfo, OrderType order)
         {
             base.SetCommand(id, order);
             this.CommandSystem.SendCommand(new BaseUnitTarget.SetTarget.Request(id, targetInfo));
+        }
+        private void SetCommand(EntityId id, in TargetFrontLineInfo lineInfo, OrderType order)
+        {
+            base.SetCommand(id, order);
+            this.CommandSystem.SendCommand(new BaseUnitTarget.SetFrontLine.Request(id, lineInfo));
+        }
+        private void SetCommand(EntityId id, in TargetHexInfo hexInfo, OrderType order)
+        {
+            base.SetCommand(id, order);
+            this.CommandSystem.SendCommand(new BaseUnitTarget.SetHex.Request(id, hexInfo));
         }
         #endregion
     }

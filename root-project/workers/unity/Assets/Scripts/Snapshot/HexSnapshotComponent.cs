@@ -24,22 +24,8 @@ namespace AdvancedGears
 
                 if (unit) {
                     unit.side = side;
-
-                    var type = UnitType.None;
-                    switch (attribute)
-                    {
-                        case HexAttribute.Field:
-                        case HexAttribute.ForwardBase:
-                            type = UnitType.Stronghold;
-                            break;
-
-                        case HexAttribute.CentralBase:
-                            type = UnitType.HeadQuarter;
-                            break;
-                    }
-
-                    unit.type = type;
-                    unit.gameObject.SetActive(type != UnitType.None);
+                    unit.type = HexUtils.GetUnitType(attribute);
+                    unit.gameObject.SetActive(unit.type != UnitType.None);
                 }
             }
         }
@@ -59,15 +45,18 @@ namespace AdvancedGears
         [SerializeField]
         LineRenderer line;
 
+        [SerializeField]
         uint index = 0;
+        public uint Index => index;
 
         public void SetPosition(Vector3 pos, uint index, float edge)
         {
             this.index = index;
             this.transform.position = pos;
 
-            var corners = new Vector3[6];
+            var corners = new Vector3[7];
             HexUtils.SetHexCorners(pos, corners, edge);
+            line.positionCount = 7;
             line.SetPositions(corners);
         }
 
@@ -84,17 +73,28 @@ namespace AdvancedGears
             };
         }
 
-        public void SyncUnitSide()
+        public void SyncUnitSettings()
         {
+            SearchChildren();
             pair.SetHexInfo(this.side, this.index, this.attribute);
         }
 
-        public void SearchChildren()
+        private void SearchChildren()
         {
             var list = new List<UnitSnapshotPair>();
-            var u = GetComponentInChildren<UnitSnapshotComponent>();
-            if (u)
-                this.pair = new UnitSnapshotPair() { unit = u, hex = u.GetComponent<HexSnapshotAttachment>() };
+            var units = GetComponentsInChildren<UnitSnapshotComponent>();
+
+            bool isSet = false;
+            foreach (var u in units) {
+                if (!isSet && u != null && u.type == HexUtils.GetUnitType(attribute)) {
+                    this.pair = new UnitSnapshotPair() { unit = u, hex = u.GetComponent<HexSnapshotAttachment>() };
+                    isSet = true;
+                    u.gameObject.SetActive(true);
+                }
+                else {
+                    u.gameObject.SetActive(false);
+                }
+            }
         }
     }
 
@@ -123,11 +123,8 @@ namespace AdvancedGears
         {
             base.OnInspectorGUI();
 
-            if (GUILayout.Button("SyncUnitSide"))
-                component.SyncUnitSide();
-
-            if (GUILayout.Button("SearchChildren"))
-                component.SearchChildren();
+            if (GUILayout.Button("SyncUnitSetings"))
+                component.SyncUnitSettings();
         }
     }
 #endif

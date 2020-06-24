@@ -19,7 +19,7 @@ namespace AdvancedGears
         IntervalChecker inter;
         IntervalChecker retryInter;
         private int queryRetries;
-        private long? entityQueryId;
+        private CommandRequestId? entityQueryId;
 
         public event Action OnQueriedEvent;
 

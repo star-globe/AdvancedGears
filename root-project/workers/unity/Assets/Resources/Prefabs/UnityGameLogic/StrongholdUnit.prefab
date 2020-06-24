@@ -24,6 +24,7 @@ GameObject:
   - component: {fileID: 287512054483124519}
   - component: {fileID: 8525274799260527892}
   - component: {fileID: 5626431488711200078}
+  - component: {fileID: 2852426682652613271}
   m_Layer: 11
   m_Name: StrongholdUnit
   m_TagString: Untagged
@@ -223,7 +224,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   postures: []
-  groundDetect: {fileID: 9144116667004569332}
+  boxDetect: {fileID: 0}
+  sphereDetect: {fileID: 0}
 --- !u!114 &8525274799260527892
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -250,6 +252,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5006a44182c46174eaf68783a58dcd75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2852426682652613271
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7117998853217099108}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d77272cbbc30424e8bf0c746b86bb78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &4419458866152112006
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -257,11 +271,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 957390273250086089}
     m_Modifications:
-    - target: {fileID: 7117998853217099108, guid: c0f2863b65d61cc4ba5df322a50a9ec9,
-        type: 3}
-      propertyPath: m_Name
-      value: StrongholdUnit_Object
-      objectReference: {fileID: 0}
     - target: {fileID: 957390273250086089, guid: c0f2863b65d61cc4ba5df322a50a9ec9,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -317,6 +326,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7117998853217099108, guid: c0f2863b65d61cc4ba5df322a50a9ec9,
+        type: 3}
+      propertyPath: m_Name
+      value: StrongholdUnit_Object
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c0f2863b65d61cc4ba5df322a50a9ec9, type: 3}
 --- !u!4 &3466723938154722127 stripped
@@ -358,12 +372,6 @@ MeshRenderer:
 --- !u!23 &1477009644268083907 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 2966313176873739589, guid: c0f2863b65d61cc4ba5df322a50a9ec9,
-    type: 3}
-  m_PrefabInstance: {fileID: 4419458866152112006}
-  m_PrefabAsset: {fileID: 0}
---- !u!65 &9144116667004569332 stripped
-BoxCollider:
-  m_CorrespondingSourceObject: {fileID: 4878383306833082738, guid: c0f2863b65d61cc4ba5df322a50a9ec9,
     type: 3}
   m_PrefabInstance: {fileID: 4419458866152112006}
   m_PrefabAsset: {fileID: 0}

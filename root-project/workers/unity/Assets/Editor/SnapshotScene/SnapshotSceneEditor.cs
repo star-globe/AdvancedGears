@@ -29,6 +29,14 @@ namespace AdvancedGears.Editor
         {
             base.OnInspectorGUI ();
 
+            SnapshotGUI();
+
+            if (GUILayout.Button("Generate Snapshot"))
+                GenerateSnapshot();
+        }
+
+        protected virtual void SnapshotGUI()
+        {
             if (GUILayout.Button("Set Default Path") || outputPath == null)
             {
                 outputPath = SnapshotGenerator.DefaultSnapshotRelativePath;
@@ -48,9 +56,6 @@ namespace AdvancedGears.Editor
 
             if (GUILayout.Button("Search and Convert"))
                 scene.SearchAndConvert();
-
-            if(GUILayout.Button("Generate Snapshot"))
-                GenerateSnapshot();
         }
 
         protected virtual void GenerateSnapshot()
@@ -65,7 +70,7 @@ namespace AdvancedGears.Editor
 
             var snapshot = scene.GenerateSnapshot();
             Debug.Log($"Writing snapshot to: {outputPath}");
-            snapshot.WriteToFile(outputPath);
+            snapshot.WriteToFile(arguments.OutputPath);
         }
     }
 }

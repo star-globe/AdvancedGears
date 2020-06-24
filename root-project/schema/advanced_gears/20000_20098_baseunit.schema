@@ -36,7 +36,7 @@ component BaseUnitStatus {
     OrderType order = 4;
 
     command improbable.gdk.core.Empty set_order(OrderInfo);
-    command improbable.gdk.core.Empty force_state(ForceStateChange);
+    event ForceStateChange force_state;
 }
 
 type HealthModifier {
@@ -133,13 +133,28 @@ enum TargetState {
     OutOfRange = 3;
 }
 
+type TargetFrontLineInfo {
+    improbable.Coordinates left_corner = 1;
+    improbable.Coordinates right_corner = 2;
+}
+
+type TargetHexInfo {
+    bool is_target = 1;
+    uint32 hex_index = 2;
+    UnitSide side = 3;
+}
+
 component BaseUnitTarget {
     id = 20013;
 
     TargetState state = 1;
     TargetInfo target_info = 2;
+    TargetFrontLineInfo front_line = 3;
+    TargetHexInfo hex_info = 4;
 
     command improbable.gdk.core.Empty set_target(TargetInfo);
+    command improbable.gdk.core.Empty set_front_line(TargetFrontLineInfo);
+    command improbable.gdk.core.Empty set_hex(TargetHexInfo);
 }
 
 type PostureData {
@@ -225,12 +240,17 @@ component CommanderTeam {
     SuperiorInfo superior_info = 2;
 
     TargetStrongholdInfo target_stronghold = 4;
-    EntityId stronghold_entity_id = 5;
+    TargetFrontLineInfo target_front_line = 5;
+    TargetHexInfo target_hex_info = 6;
+
+    EntityId stronghold_entity_id = 10;
 
     command improbable.gdk.core.Empty add_follower(FollowerInfo);
     command improbable.gdk.core.Empty set_superior(SuperiorInfo);
     command TeamInfoResponse get_team_info(TeamInfoRequest);
     command improbable.gdk.core.Empty set_target_stroghold(TargetStrongholdInfo);
+    command improbable.gdk.core.Empty set_target_frontline(TargetFrontLineInfo);
+    command improbable.gdk.core.Empty set_target_hex(TargetHexInfo);
 }
 
 type WarPower {
@@ -307,6 +327,8 @@ component StrongholdSight {
     IntervalChecker interval = 1;
     StrategyVector strategy_vector = 2;
     map<EntityId,TargetStrongholdInfo> target_strongholds = 4;
+    list<improbable.Coordinates> front_line_corners = 5;
+    map<EntityId,TargetHexInfo> target_hexes = 6;
 
     command improbable.gdk.core.Empty set_strategy_vector(StrategyVector);
 }
@@ -441,4 +463,23 @@ component StrategyOrderManager {
     IntervalChecker interval = 1;
 
     TargetHeadQuartersInfo target_hq = 2;
+}
+
+// turret:20050~
+type TurretInfo {
+    UnitSide side = 1;
+    int32 master_id = 2;
+    EntityId entity_id = 3;
+}
+
+component TurretHub {
+    id = 20050;
+
+    map<EntityId,TurretInfo> turrets_datas = 1;
+}
+
+component TurretComponent {
+    id = 20051;
+
+    int32 master_id = 1;
 }

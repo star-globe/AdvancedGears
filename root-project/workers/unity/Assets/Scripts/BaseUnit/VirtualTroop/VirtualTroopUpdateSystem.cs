@@ -170,7 +170,7 @@ namespace AdvancedGears
                 //float attack_range = 6;
                 dic.Add(u.id, simple);
 
-                this.CommandSystem.SendCommand(new BaseUnitStatus.ForceState.Request(u.id, new ForceStateChange(side, UnitState.Sleep)));
+                this.UpdateSystem.SendEvent(new BaseUnitStatus.ForceState.Event(new ForceStateChange(side, UnitState.Sleep)), u.id);
             }
         }
 
@@ -192,7 +192,7 @@ namespace AdvancedGears
                 
                 var state = health.Value.Health > 0 ? UnitState.Alive: UnitState.Dead;
 
-                this.CommandSystem.SendCommand(new BaseUnitStatus.ForceState.Request(id, new ForceStateChange(side, state)));
+                this.UpdateSystem.SendEvent(new BaseUnitStatus.ForceState.Event(new ForceStateChange(side, state)), id);
             }
 
             dic.Clear();

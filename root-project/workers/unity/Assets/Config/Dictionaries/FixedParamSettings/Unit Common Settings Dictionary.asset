@@ -9,12 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 4254fd32d0170de4584ecfe8a9caf344, type: 3}
   m_Name: Unit Common Settings Dictionary
-  m_EditorClassIdentifier: AdvancedGears:AdvancedGears:UnitCommonSettingsDictionary
+  m_EditorClassIdentifier: 
   settgins:
-  - {fileID: 11400000, guid: 7652a880fb5972d48ad2975de01a5475, type: 2}
-  - {fileID: 11400000, guid: 035fff9a803c2734297cdcb97946a271, type: 2}
-  - {fileID: 11400000, guid: 2001bae22e8df5f4c9de3cc90e0f4a4d, type: 2}
-  - {fileID: 11400000, guid: 3bebc78a1bff531499ae9fb96cf38bef, type: 2}
-  - {fileID: 11400000, guid: 53004734c5f8ede428133f295867a02e, type: 2}
+  - {fileID: 11400000, guid: ae7cf3b453204724d9a844ca9294f20b, type: 2}
+  - {fileID: 11400000, guid: ff29b1e2a02432f4c967542ee17bb510, type: 2}
+  - {fileID: 11400000, guid: d1bb1cd1837194b4096b15ea7dd8a29e, type: 2}
+  - {fileID: 11400000, guid: c492afd46fc16794fa9b96d909fb4501, type: 2}
+  - {fileID: 11400000, guid: 21d9dd705e388f544b3e144d825a1df2, type: 2}

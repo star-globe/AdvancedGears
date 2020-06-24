@@ -57,7 +57,8 @@ namespace AdvancedGears
         {
             commandReceiver.OnAddFollowerRequestReceived += OnAddFollowerRequest;
             commandReceiver.OnGetTeamInfoRequestReceived += OnTeamInfoRequest;
-            commandReceiver.OnSetTargetStrogholdRequestReceived += OnSetTargerRequest;
+            commandReceiver.OnSetTargetStrogholdRequestReceived += OnSetStrongholdRequest;
+            commandReceiver.OnSetTargetFrontlineRequestReceived += OnSetFrontlineRequest;
         }
 
         private void Update()
@@ -115,11 +116,20 @@ namespace AdvancedGears
             //}));
         }
 
-        private void OnSetTargerRequest(CommanderTeam.SetTargetStroghold.ReceivedRequest request)
+        private void OnSetStrongholdRequest(CommanderTeam.SetTargetStroghold.ReceivedRequest request)
         {
             writer.SendUpdate(new CommanderTeam.Update()
             {
                 TargetStronghold = request.Payload,
+                StrongholdEntityId = new EntityId(request.RequestId),
+            });
+        }
+
+        private void OnSetFrontlineRequest(CommanderTeam.SetTargetFrontline.ReceivedRequest request)
+        {
+            writer.SendUpdate(new CommanderTeam.Update()
+            {
+                TargetFrontLine = request.Payload,
                 StrongholdEntityId = new EntityId(request.RequestId),
             });
         }

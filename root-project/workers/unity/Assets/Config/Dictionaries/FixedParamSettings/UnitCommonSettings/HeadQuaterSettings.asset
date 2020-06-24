@@ -9,9 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 020cef5471585e641877c451677b4859, type: 3}
   m_Name: HeadQuaterSettings
-  m_EditorClassIdentifier: AdvancedGears:AdvancedGears:UnitCommonSettings
+  m_EditorClassIdentifier: 
   type: 103
   isBuilding: 1
   isAutomaticallyMoving: 0
+  isOfficer: 0
