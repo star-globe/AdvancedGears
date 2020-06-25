@@ -55,6 +55,8 @@ component BaseUnitHealth {
 
     int32 defense = 3;
 
+    float recovery_amount = 4;
+
     command improbable.gdk.core.Empty modify_health(HealthModifier);
     event HealthDiff health_diffed;
 }

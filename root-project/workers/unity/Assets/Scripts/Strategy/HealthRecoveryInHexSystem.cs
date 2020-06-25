@@ -16,7 +16,7 @@ namespace AdvancedGears
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     public class HealthRecoveryInHexSystem : HexUpdateBaseSystem
     {
-        EntityQuery group;
+        EntityQuery unitGroup;
         IntervalChecker inter;
         const int frequency = 1; 
 
@@ -24,14 +24,71 @@ namespace AdvancedGears
         {
             base.OnCreate();
 
-            group = GetEntityQuery(
-                ComponentType.ReadOnly<BaseUnitHealth.Component>(),
+            unitGroup = GetEntityQuery(
+                ComponentType.ReadWrite<BaseUnitHealth.Component>(),
                 ComponentType.ReadOnly<BaseUnitHealth.HasAuthority>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<Transform>()
             );
 
             inter = IntervalCheckerInitializer.InitializedChecker(1.0f / frequency);
+        }
+
+        protected override void OnUpdate()
+        {
+            base.OnUpdate();
+
+            UpdateRecovery();
+        }
+
+        private void UpdateRecovery()
+        {
+            if (CheckTime(ref inter) == false)
+                return;
+
+            var interval = 1.0f;
+
+            Entities.With(unitGroup).ForEach((Entity entity,
+                                      ref BaseUnitHealth.Component health,
+                                      ref BaseUnitStatus.Component status,
+                                      ref SpatialEntityId entityId) =>
+            {
+                if (status.State == UnitState.Dead)
+                    return;
+
+                var trans = EntityManager.GetComponentObject<Transform>(entity);
+                var pos = trans.position;
+
+                int? hexMasterId = null;
+                foreach(var  kvp in base.hexDic) {
+                    if (kvp.Value.Side != status.Side)
+                        continue;
+
+                    if (HexUtils.IsInsideHex(this.Origin, kvp.Key, pos, HexDictionary.HexEdgeLength)) {
+                        hexMasterId = kvp.Value.HexMasterId;
+                        break;
+                    }
+                }
+
+                if (hexMasterId == null)
+                    return;
+
+                if (health.Health >= health.MaxHealth)
+                    return;
+
+                // rate from hexMasterId
+                var rate = 1.0f/ 100;
+                var amount = health.RecoveryAmount;
+                amount += rate * interval;
+
+                var floor = Mathf.FloorToInt(amount);
+                if (floor > 0) {
+                    health.Health = Mathf.Min(health.Health + floor, health.MaxHealth);
+                    amount -= floor;
+                }
+
+                health.RecoveryAmount = amount;
+            });
         }
     }
 }
