@@ -65,7 +65,7 @@ namespace AdvancedGears
                         continue;
 
                     if (HexUtils.IsInsideHex(this.Origin, kvp.Key, pos, HexDictionary.HexEdgeLength)) {
-                        hexMasterId = kvp.Value.HexMasterId;
+                        hexMasterId = kvp.Value.HexId;
                         break;
                     }
                 }
