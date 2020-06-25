@@ -49,6 +49,7 @@ namespace AdvancedGears
             healthWriter.SendUpdate(new BaseUnitHealth.Update()
             {
                 Health = health.MaxHealth,
+                RecoveryAmount = 0,
             });
         }
 
