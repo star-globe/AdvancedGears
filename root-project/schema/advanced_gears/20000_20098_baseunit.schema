@@ -346,11 +346,22 @@ type TeamOrderList {
     list<TeamOrder> orders = 1;
 }
 
+type TurretOrder {
+    int32 turret_id = 1;
+    int32 turrets_number = 2;
+    int32 stack = 3;
+}
+
+type TurretOrderList {
+    list<TurretOrder> orders = 1;
+}
+
 enum FactoryOrderType {
     None = 0;
     Follower = 1;
     Superior = 2;
     Team = 3;
+    Turret = 4;
 }
 
 enum ContainerState {
@@ -374,12 +385,14 @@ component UnitFactory {
     transient list<TeamOrder> team_orders = 10;
     transient list<FollowerOrder> follower_orders = 11;
     transient list<SuperiorOrder> superior_orders = 12;
+    transient list<TurretOrder> turret_orders = 13;
 
     IntervalChecker product_interval = 20;
 
     command improbable.gdk.core.Empty add_follower_order(FollowerOrder);
     command improbable.gdk.core.Empty add_superior_order(SuperiorOrder);
     command improbable.gdk.core.Empty add_team_order(TeamOrderList);
+    command improbable.gdk.core.Empty add_turret_order(TurretOrderList);
     command improbable.gdk.core.Empty set_container(UnitContainer);
 }
 

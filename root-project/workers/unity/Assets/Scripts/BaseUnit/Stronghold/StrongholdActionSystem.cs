@@ -85,9 +85,13 @@ namespace AdvancedGears
             });
         }
 
+        readonly List<ReceivedResponse> responseList = new List<ReceivedResponse>();
         void HandleResponses()
         {
-            var responses = this.CommandSystem.GetResponses<UnitFactory.AddTeamOrder.ReceivedResponse>();
+            responseList.Clear();
+            responseList.AddRange(this.CommandSystem.GetResponses<UnitFactory.AddTeamOrder.ReceivedResponse>());
+            responseList.AddRange(this.CommandSystem.GetResponses<UnitFactory.AddTurretOrder.ReceivedResponse>());
+
             for (var i = 0; i < responses.Count; i++) {
                 ref readonly var response = ref responses[i];
                 if (response.StatusCode != StatusCode.Success)
@@ -125,6 +129,12 @@ namespace AdvancedGears
         void SendTeamOrders(EntityId id, List<TeamOrder> teamOrders)
         {
             this.CommandSystem.SendCommand(new UnitFactory.AddTeamOrder.Request(id, new TeamOrderList { Orders = teamOrders }));
+            requestLists.Add(id);
+        }
+
+        void SendTurretOrders(EntityId id, List<TurretOrder> turretOrders)
+        {
+            this.CommandSystem.SendCommand(new UnitFactory.AddTurretOrder.Request(id, new TurretOrderList { Orders = turretOrders }));
             requestLists.Add(id);
         }
 

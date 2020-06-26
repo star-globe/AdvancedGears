@@ -88,7 +88,7 @@ namespace AdvancedGears
                 if (status.State != UnitState.Alive)
                     return;
 
-                if (status.Type != UnitType.Stronghold)
+                if (UnitUtils.IsBuilding(status.Type))
                     return;
 
                 var contaners = factory.Containers;
@@ -142,6 +142,7 @@ namespace AdvancedGears
                 FollowerOrder? f_order = null;
                 SuperiorOrder? s_order = null;
                 TeamOrder? t_order = null;
+                TurretOrder? turret_order = null;
 
                 FactoryOrderType orderType = FactoryOrderType.None;
 
@@ -156,6 +157,10 @@ namespace AdvancedGears
                 else if (factory.TeamOrders.Count > 0) {
                     t_order = factory.TeamOrders[0];
                     orderType = FactoryOrderType.Team;
+                }
+                else if (factory.TurretOrders.Count > 0) {
+                    turret_order = factory.TurretOrders[0];
+                    orderType = FactoryOrderType.Turret;
                 }
 
                 if (orderType == FactoryOrderType.None)

@@ -103,7 +103,7 @@ namespace AdvancedGears
                     break;
 
                 case UnitType.Stronghold:
-                    AddStrongholdTypeComponents(template, 1, writeAccess);
+                    AddStrongholdTypeComponents(template, rank:1, writeAccess);
                     template.AddComponent(new ResourceSupplyer.Snapshot(), writeAccess);
                     template.AddComponent(new RecoveryComponent.Snapshot { State = RecoveryState.Supplying }, writeAccess);
                     var commandersQuery = InterestQuery.Query(Constraint.Component<CommanderStatus.Component>())
@@ -113,7 +113,7 @@ namespace AdvancedGears
                     break;
 
                 case UnitType.HeadQuarter:
-                    AddStrongholdTypeComponents(template, 2, writeAccess);
+                    AddStrongholdTypeComponents(template, rank:2, writeAccess);
                     template.AddComponent(new StrategyOrderManager.Snapshot { }, writeAccess);
                     var strongholdQuery = InterestQuery.Query(Constraint.Component<StrongholdStatus.Component>())
                                           .FilterResults(Position.ComponentId, BaseUnitStatus.ComponentId);
@@ -259,6 +259,7 @@ namespace AdvancedGears
             snapshot.FollowerOrders = new List<FollowerOrder>();
             snapshot.SuperiorOrders = new List<SuperiorOrder>();
             snapshot.TeamOrders = new List<TeamOrder>();
+            snapshot.TurretOrders = new List<TurretOrder>();
             return snapshot;
         }
 
