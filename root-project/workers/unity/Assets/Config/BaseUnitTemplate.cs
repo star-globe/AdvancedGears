@@ -103,15 +103,9 @@ namespace AdvancedGears
                     break;
 
                 case UnitType.Stronghold:
-                    template.AddComponent(new StrongholdStatus.Snapshot { Rank = 1, }, writeAccess);
-                    template.AddComponent(new StrongholdSight.Snapshot { TargetStrongholds = new Dictionary<EntityId, TargetStrongholdInfo>(),
-                                                                         FrontLineCorners = new List<Coordinates>(),
-                                                                         TargetHexes = new Dictionary<EntityId, TargetHexInfo>() }, writeAccess);
-                    template.AddComponent(new StrategyHexAccessPortal.Snapshot { FrontHexes = new Dictionary<UnitSide,FrontHexInfo>() });
-                    template.AddComponent(new ResourceComponent.Snapshot(), writeAccess);
+                    AddStrongholdTypeComponents(template, 1, writeAccess);
                     template.AddComponent(new ResourceSupplyer.Snapshot(), writeAccess);
                     template.AddComponent(new RecoveryComponent.Snapshot { State = RecoveryState.Supplying }, writeAccess);
-                    template.AddComponent(new TurretHub.Snapshot { TurretsDatas = new Dictionary<EntityId,TurretInfo>() }, writeAccess);
                     var commandersQuery = InterestQuery.Query(Constraint.Component<CommanderStatus.Component>())
                                             .FilterResults(Position.ComponentId, BaseUnitStatus.ComponentId);
                     var commanderInterest = InterestTemplate.Create().AddQueries<StrongholdStatus.Component>(commandersQuery);
@@ -119,8 +113,7 @@ namespace AdvancedGears
                     break;
 
                 case UnitType.HeadQuarter:
-                    template.AddComponent(new StrategyHexAccessPortal.Snapshot { FrontHexes = new Dictionary<UnitSide, FrontHexInfo>() });
-                    template.AddComponent(new ResourceComponent.Snapshot(), writeAccess);
+                    AddStrongholdTypeComponents(template, 2, writeAccess);
                     template.AddComponent(new StrategyOrderManager.Snapshot { }, writeAccess);
                     var strongholdQuery = InterestQuery.Query(Constraint.Component<StrongholdStatus.Component>())
                                           .FilterResults(Position.ComponentId, BaseUnitStatus.ComponentId);
@@ -136,6 +129,17 @@ namespace AdvancedGears
                     template.AddComponent(new ArmyCloud.Snapshot { }, writeAccess);
                     break;
             }
+        }
+
+        private static void AddStrongholdTypeComponents(EntityTemplate template, uint rank, string writeAccess)
+        {
+            template.AddComponent(new StrongholdStatus.Snapshot { Rank = rank, }, writeAccess);
+            template.AddComponent(new StrongholdSight.Snapshot { TargetStrongholds = new Dictionary<EntityId, TargetStrongholdInfo>(),
+                                                                 FrontLineCorners = new List<Coordinates>(),
+                                                                 TargetHexes = new Dictionary<EntityId, TargetHexInfo>() }, writeAccess);
+            template.AddComponent(new StrategyHexAccessPortal.Snapshot { FrontHexes = new Dictionary<UnitSide,FrontHexInfo>() }, writeAccess);
+            template.AddComponent(new ResourceComponent.Snapshot(), writeAccess);
+            template.AddComponent(new TurretHub.Snapshot { TurretsDatas = new Dictionary<EntityId,TurretInfo>() }, writeAccess);
         }
 
         public static EntityTemplate CreateCommanderUnitEntityTemplate(UnitSide side, Coordinates coords, uint rank, EntityId? superiorId)
