@@ -431,7 +431,7 @@ namespace AdvancedGears
 
             var posList = GetCoordinates(coords, current.TurretsNumber);
             foreach(var pos in posList) {
-                temp = BaseUnitTemplate.CreateTurretUnitEntityTTemplate(side, pos, current.TurretId);
+                var temp = BaseUnitTemplate.CreateTurretUnitTemplate(side, pos, current.TurretId);
                 templates.Add((temp, UnitType.Turret));
             }
 
