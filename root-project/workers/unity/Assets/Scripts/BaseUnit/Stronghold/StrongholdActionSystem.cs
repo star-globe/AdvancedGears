@@ -85,15 +85,21 @@ namespace AdvancedGears
             });
         }
 
-        readonly List<ReceivedResponse> responseList = new List<ReceivedResponse>();
         void HandleResponses()
         {
-            responseList.Clear();
-            responseList.AddRange(this.CommandSystem.GetResponses<UnitFactory.AddTeamOrder.ReceivedResponse>());
-            responseList.AddRange(this.CommandSystem.GetResponses<UnitFactory.AddTurretOrder.ReceivedResponse>());
+            var responsesTeam = this.CommandSystem.GetResponses<UnitFactory.AddTeamOrder.ReceivedResponse>();
+            for (var i = 0; i < responsesTeam.Count; i++) {
+                ref readonly var response = ref responsesTeam[i];
+                if (response.StatusCode != StatusCode.Success)
+                    continue;
 
-            for (var i = 0; i < responses.Count; i++) {
-                ref readonly var response = ref responses[i];
+                requestLists.Remove(response.EntityId);
+            }
+
+            var responsesTurret = this.CommandSystem.GetResponses<UnitFactory.AddTurretOrder.ReceivedResponse>();
+            for (var i = 0; i < responsesTurret.Count; i++)
+            {
+                ref readonly var response = ref responsesTurret[i];
                 if (response.StatusCode != StatusCode.Success)
                     continue;
 
