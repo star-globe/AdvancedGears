@@ -61,7 +61,7 @@ namespace AdvancedGears
                 var side = status.Side;
                 var speed = movement.MoveSpeed;
                 var forward = trans.forward;
-                var commanderRank = commander.Rank;
+                var commanderRank = status.Rank;
 
                 var soldierRange = RangeDictionary.BaseBoidsRange;
                 var soldiers = getAllyUnits(side, pos, soldierRange, allowDead:false, selfId:entityId.EntityId, UnitType.Soldier);
@@ -75,7 +75,7 @@ namespace AdvancedGears
 
                 var commanderRange = RangeDictionary.GetBoidsRange(commanderRank);
                 var commanders = getAllyUnits(side, pos, commanderRange, allowDead: false, selfId: entityId.EntityId, UnitType.Commander);
-                commanders.RemoveAll(unit => TryGetComponent<CommanderStatus.Component>(unit.id, out var com) == false || com.Value.Rank != commanderRank - 1);
+                commanders.RemoveAll(unit => unit.rank != commanderRank - 1);
 
                 f_length = AttackLogicDictionary.RankScaled(f_length, commanderRank);
                 f_length += commander.AllyRange;

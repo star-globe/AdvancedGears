@@ -23,7 +23,6 @@ namespace AdvancedGears
             base.OnCreate();
 
             group = GetEntityQuery(
-                ComponentType.ReadOnly<StrongholdStatus.Component>(),
                 ComponentType.ReadWrite<UnitFactory.Component>(),
                 ComponentType.ReadOnly<UnitFactory.HasAuthority>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
@@ -47,7 +46,6 @@ namespace AdvancedGears
                 return;
 
             Entities.With(group).ForEach((Unity.Entities.Entity entity,
-                                          ref StrongholdStatus.Component stronghold,
                                           ref UnitFactory.Component factory,
                                           ref BaseUnitStatus.Component status,
                                           ref StrongholdSight.Component sight,
@@ -56,7 +54,7 @@ namespace AdvancedGears
                 if (status.State != UnitState.Alive)
                     return;
 
-                if (status.Type != UnitType.Stronghold)
+                if (UnitUtils.IsBuilding(status.Type) == false)
                     return;
 
                 if (status.Side == UnitSide.None)
@@ -68,7 +66,7 @@ namespace AdvancedGears
                 // number check
                 var id = entityId.EntityId;
                 if (factory.TeamOrders.Count == 0) {
-                    var teamOrders = makeOrders(stronghold.Rank, status.Order, datas);
+                    var teamOrders = makeOrders(status.Rank, status.Order, datas);
                     if (teamOrders != null)
                         factory.TeamOrders.AddRange(teamOrders);
                 }
@@ -114,16 +112,13 @@ namespace AdvancedGears
             var units = getAllyUnits(side, pos, RangeDictionary.Get(FixedRangeType.StrongholdRange), allowDead: false, UnitType.Commander);
 
             foreach (var u in units) {
-                if (TryGetComponent<CommanderStatus.Component>(u.id, out var comd) == false)
-                    continue;
-
                 if (TryGetComponent<CommanderTeam.Component>(u.id, out var team) == false)
                     continue;
 
                 var teamInfo = new TeamInfo()
                 {
                     CommanderId = u.id,
-                    Rank = comd.Value.Rank,
+                    Rank = u.rank,
                     Order = u.order,
                     TargetEntityId = team.Value.TargetStronghold.StrongholdId,
                 };
@@ -297,7 +292,7 @@ namespace AdvancedGears
         }
 
         void ProductAlly(in Vector3 pos, UnitSide side,
-                        in CommanderStatus.Component commander, in CommanderTeam.Component team,
+                        uint rank, in CommanderTeam.Component team,
                         in SpatialEntityId entityId, in BaseUnitTarget.Component tgt, ref CommanderAction.Component action)
         {
             if (action.ActionType == CommandActionType.Product)
@@ -311,7 +306,7 @@ namespace AdvancedGears
             var id = tgt.TargetInfo.TargetId;
             List<UnitFactory.AddFollowerOrder.Request> reqList = new List<UnitFactory.AddFollowerOrder.Request>();
 
-            var n_sol = 0;// commander.TeamConfig.Soldiers - GetFollowerCount(team, false);
+            var n_sol = 0;
             if (n_sol > 0) {
                 reqList.Add(new UnitFactory.AddFollowerOrder.Request(id, new FollowerOrder() { Customer = entityId.EntityId,
                                                                                                //HqEntityId = team.HqInfo.EntityId,
@@ -320,14 +315,14 @@ namespace AdvancedGears
                                                                                                Side = side }));
             }
 
-            var n_com = 0;// commander.TeamConfig.Commanders - GetFollowerCount(team,true);
-            if (n_com > 0 && commander.Rank > 0) {
+            var n_com = 0;
+            if (n_com > 0 && rank > 0) {
                 reqList.Add(new UnitFactory.AddFollowerOrder.Request(id, new FollowerOrder() { Customer = entityId.EntityId,
                                                                                                //HqEntityId = team.HqInfo.EntityId,
                                                                                                Number = n_com,
                                                                                                Type = UnitType.Commander,
                                                                                                Side = side,
-                                                                                               Rank = commander.Rank - 1 }));
+                                                                                               Rank = rank - 1 }));
             }
 
             Unity.Entities.Entity entity;

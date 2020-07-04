@@ -34,6 +34,7 @@ component BaseUnitStatus {
     UnitType type = 2;
     UnitState state = 3;
     OrderType order = 4;
+    uint32 rank = 5;
 
     command improbable.gdk.core.Empty set_order(OrderInfo);
     event ForceStateChange force_state;
@@ -207,7 +208,6 @@ component CommanderStatus {
     id = 20020;
 
     OrderPair order = 1;
-    uint32 rank = 3;
 
     float ally_range = 4;
 }
@@ -315,7 +315,6 @@ component StrongholdStatus {
     id = 20030;
 
     IntervalChecker interval = 1;
-    uint32 rank = 2;
 }
 
 type StrategyVector {

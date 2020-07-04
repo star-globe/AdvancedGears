@@ -43,7 +43,6 @@ namespace AdvancedGears
                 ComponentType.ReadWrite<CommanderTeam.Component>(),
                 ComponentType.ReadOnly<CommanderTeam.HasAuthority>(),
                 ComponentType.ReadOnly<CommanderSight.Component>(),
-                ComponentType.ReadOnly<CommanderStatus.Component>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<Transform>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
@@ -105,7 +104,6 @@ namespace AdvancedGears
         {
             Entities.With(teamingGroup).ForEach((Entity entity,
                               ref CommanderSight.Component sight,
-                              ref CommanderStatus.Component commander,
                               ref CommanderTeam.Component team,
                               ref BaseUnitStatus.Component status,
                               ref SpatialEntityId entityId) =>
@@ -119,7 +117,7 @@ namespace AdvancedGears
                 if (status.Order == OrderType.Idle)
                     return;
 
-                if (commander.Rank == 0)
+                if (status.Rank == 0)
                     return;
 
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
@@ -127,17 +125,17 @@ namespace AdvancedGears
 
                 team.FollowerInfo.UnderCommanders.Clear();
 
-                var rank = commander.Rank - 1;
+                var rank = status.Rank - 1;
                 var allies = getAllyUnits(status.Side, pos, sight.Range, allowDead:false, UnitType.Commander);
                 foreach(var unit in allies) {
                     if (unit.id == entityId.EntityId)
                         continue;
 
-                    CommanderStatus.Component? com;
-                    if (this.TryGetComponent(unit.id, out com) == false)
+                    BaseUnitStatus.Component? sts;
+                    if (this.TryGetComponent(unit.id, out sts) == false)
                         continue;
                     
-                    if (com.Value.Rank != rank)
+                    if (sts.Value.Rank != rank)
                         continue;
 
                     team.FollowerInfo.UnderCommanders.Add(unit.id);
@@ -205,7 +203,7 @@ namespace AdvancedGears
             // check rank
             UnitInfo tgt;
 
-            var range = AttackLogicDictionary.RankScaled(sight.Range, commander.Rank);
+            var range = AttackLogicDictionary.RankScaled(sight.Range, status.Rank);
 
             tgt = getNearestEnemy(status.Side, pos, sight.Range, allowDead: true, UnitType.Stronghold, UnitType.Commander);
             if (tgt == null) {

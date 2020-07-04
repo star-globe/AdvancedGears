@@ -29,6 +29,8 @@ namespace AdvancedGears
             {
                 TargetInfo = request.Payload,
             });
+
+            Debug.Log("OnSetTarget");
         }
 
         private void OnSetFrontLineRequest(BaseUnitTarget.SetFrontLine.ReceivedRequest request)
@@ -39,6 +41,8 @@ namespace AdvancedGears
             {
                 FrontLine = request.Payload,
             });
+
+            Debug.Log("OnSetFrontLine");
         }
 
         private void OnSetHexRequest(BaseUnitTarget.SetHex.ReceivedRequest request)
@@ -49,6 +53,8 @@ namespace AdvancedGears
             {
                 HexInfo = request.Payload,
             });
+
+            Debug.Log("OnSetHex");
         }
 
         private void OnBoidDiffed(BoidVector vector)

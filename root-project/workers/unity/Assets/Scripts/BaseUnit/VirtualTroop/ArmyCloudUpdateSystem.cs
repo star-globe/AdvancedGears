@@ -64,11 +64,11 @@ namespace AdvancedGears
             foreach(var u in allies) {
                 if (!this.TryGetComponent<BaseUnitHealth.Component>(u.id, out var health) ||
                     !this.TryGetComponent<GunComponent.Component>(u.id, out var gun) ||
-                    !this.TryGetComponent<CommanderStatus.Component>(u.id, out var commander)) {
+                    !this.TryGetComponent<BaseUnitStatus.Component>(u.id, out var status)) {
                     continue;
                 }
 
-                var rank = commander.Value.Rank;
+                var rank = status.Value.Rank;
                 if (containers.TryGetValue(rank, out var troop) == false) {
                     troop = new TroopContainer() { Rank = rank };
                 }

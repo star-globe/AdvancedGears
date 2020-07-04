@@ -25,7 +25,6 @@ namespace AdvancedGears
                     ComponentType.ReadOnly<VirtualTroop.HasAuthority>(),
                     ComponentType.ReadOnly<Transform>(),
                     ComponentType.ReadOnly<BaseUnitStatus.Component>(),
-                    ComponentType.ReadOnly<CommanderStatus.Component>(),
                     ComponentType.ReadOnly<SpatialEntityId>()
             );
 
@@ -49,7 +48,6 @@ namespace AdvancedGears
             Entities.With(group).ForEach((Entity entity,
                                           ref VirtualTroop.Component troop,
                                           ref BaseUnitStatus.Component status,
-                                          ref CommanderStatus.Component commander,
                                           ref SpatialEntityId entityId) =>
             {
                 if (status.State != UnitState.Alive)
@@ -58,16 +56,16 @@ namespace AdvancedGears
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
                 var pos = trans.position;
 
-                var boidRange = RangeDictionary.GetBoidsRange(commander.Rank);
+                var boidRange = RangeDictionary.GetBoidsRange(status.Rank);
                 var range = boidRange * sightRate;
                 var unit = getNearestPlayer(pos, range, selfId:null, UnitType.Advanced);
 
                 if ((unit == null) == troop.IsActive) {
-                    if (CheckConflict(ref troop, status.Side, trans, commander.Rank, out var damage))
+                    if (CheckConflict(ref troop, status.Side, trans, status.Rank, out var damage))
                         damageDic[damage.id] = damage;
                 }
                 else {
-                    UpdateContainer(ref troop, unit == null, status.Side, trans, boidRange, commander.Rank);
+                    UpdateContainer(ref troop, unit == null, status.Side, trans, boidRange, status.Rank);
                 }
             });
 
@@ -110,11 +108,10 @@ namespace AdvancedGears
             var pos = trans.position;
             var units = getEnemyUnits(side, pos, range, allowDead:false, UnitType.Commander);
             foreach(var u in units) {
-                if (!this.TryGetComponent<CommanderStatus.Component>(u.id, out var commander) ||
-                    !this.TryGetComponent<VirtualTroop.Component>(u.id, out var tp))
+                if (this.TryGetComponent<VirtualTroop.Component>(u.id, out var tp) == false)
                     continue;
 
-                if (commander.Value.Rank != rank)
+                if (u.rank != rank)
                     continue;
 
                 if (tp.Value.IsActive == false)

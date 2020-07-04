@@ -77,7 +77,7 @@ namespace AdvancedGears
                                       ref Position.Component position,
                                       ref SpatialEntityId entityId) =>
             {
-                if (hex.Attribute.IsDominatable() == false)
+                if (hex.Attribute.IsTargetable() == false)
                     return;
 
                 if (hexDic.ContainsKey(hex.Index) == false)

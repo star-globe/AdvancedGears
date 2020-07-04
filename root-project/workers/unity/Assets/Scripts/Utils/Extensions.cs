@@ -359,6 +359,18 @@ namespace AdvancedGears
                     return false;
             }
         }
+
+        public static bool IsTargetable(this HexAttribute attribute)
+        {
+            switch (attribute)
+            {
+                case HexAttribute.NotBelong:
+                    return false;
+
+                default:
+                    return true;
+            }
+        }
     }
 
     public static class IntervalCheckerInitializer

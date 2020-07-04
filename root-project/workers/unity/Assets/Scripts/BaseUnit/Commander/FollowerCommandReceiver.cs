@@ -59,6 +59,7 @@ namespace AdvancedGears
             commandReceiver.OnGetTeamInfoRequestReceived += OnTeamInfoRequest;
             commandReceiver.OnSetTargetStrogholdRequestReceived += OnSetStrongholdRequest;
             commandReceiver.OnSetTargetFrontlineRequestReceived += OnSetFrontlineRequest;
+            commandReceiver.OnSetTargetHexRequestReceived += OnSetHexRequest;
         }
 
         private void Update()
@@ -130,6 +131,15 @@ namespace AdvancedGears
             writer.SendUpdate(new CommanderTeam.Update()
             {
                 TargetFrontLine = request.Payload,
+                StrongholdEntityId = new EntityId(request.RequestId),
+            });
+        }
+
+        private void OnSetHexRequest(CommanderTeam.SetTargetHex.ReceivedRequest request)
+        {
+            writer.SendUpdate(new CommanderTeam.Update()
+            {
+                TargetHexInfo = request.Payload,
                 StrongholdEntityId = new EntityId(request.RequestId),
             });
         }

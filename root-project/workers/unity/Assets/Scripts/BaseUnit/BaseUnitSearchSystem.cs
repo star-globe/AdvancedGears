@@ -69,9 +69,9 @@ namespace AdvancedGears
 
                 UnitInfo enemy = null;
                 var sightRange = action.SightRange;
-                
+
                 if (SetStrategyTarget(pos, sightRange, ref sight, ref target))
-                    sightRange -= (sight.TargetPosition.ToUnityVector() - pos).magnitude;
+                    sightRange = Mathf.Max(0, sightRange - (sight.TargetPosition.ToWorkerPosition(this.Origin) - pos).magnitude/2);
 
                 enemy = getNearestEnemy(status.Side, pos, sightRange);
 
@@ -84,9 +84,9 @@ namespace AdvancedGears
                 }
 
                 var range = gun.GetAttackRange();
-                if (status.Type == UnitType.Commander && TryGetComponent(entity, out CommanderStatus.Component? com)) {
+                if (status.Type == UnitType.Commander) {
 
-                    var rank = com.Value.Rank;
+                    var rank = status.Rank;
 
                     if (rank == 0 && target.TargetInfo.IsDominationTarget(status.Side))
                         range = GetDominationRange(target.TargetInfo.TargetId) / 2;
@@ -129,17 +129,20 @@ namespace AdvancedGears
             bool isTarget = false;
             if (target.TargetInfo.IsTarget) {
                 sight.TargetPosition = target.TargetInfo.Position;
-                target.State = CalcTargetState(sight.TargetPosition.ToUnityVector() - pos, sightRange); 
+                target.State = CalcTargetState(sight.TargetPosition.ToUnityVector() - pos, sightRange);
+                DebugUtils.RandomlyLog("Stronghold Target",6);
                 isTarget = true;
             }
             else if (target.HexInfo.IsTarget) {
                 sight.TargetPosition = HexUtils.GetHexCenter(this.Origin, target.HexInfo.HexIndex, HexDictionary.HexEdgeLength).ToFixedPointVector3();
                 target.State = TargetState.OutOfRange;
+                DebugUtils.RandomlyLog("Hex Target", 6);
                 isTarget = true;
             }
             else if (target.FrontLine.IsValid()) {
                 sight.TargetPosition = target.FrontLine.GetOnLinePosition(this.Origin, pos).ToFixedPointVector3();
                 target.State = TargetState.OutOfRange;
+                DebugUtils.RandomlyLog("FrontLine Target", 6);
                 isTarget = true;
             }
 
@@ -328,6 +331,7 @@ namespace AdvancedGears
                     info.side = unit.Value.Side;
                     info.order = unit.Value.Order;
                     info.state = unit.Value.State;
+                    info.rank = unit.Value.Rank;
 
                     unitList.Add(info);
                 }
@@ -375,6 +379,7 @@ namespace AdvancedGears
         public UnitSide side;
         public OrderType order;
         public UnitState state;
+        public uint rank;
     }
 
     public static class RandomInterval

@@ -29,7 +29,6 @@ namespace AdvancedGears
                 ComponentType.ReadOnly<StrongholdSight.HasAuthority>(),
                 ComponentType.ReadWrite<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<BaseUnitStatus.HasAuthority>(),
-                ComponentType.ReadOnly<StrongholdStatus.Component>(),
                 ComponentType.ReadOnly<StrategyHexAccessPortal.Component>(),
                 ComponentType.ReadOnly<Transform>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
@@ -45,7 +44,6 @@ namespace AdvancedGears
 
             Entities.With(group).ForEach((Entity entity,
                                           ref StrongholdSight.Component sight,
-                                          ref StrongholdStatus.Component stronghold,
                                           ref BaseUnitStatus.Component status,
                                           ref StrategyHexAccessPortal.Component portal,
                                           ref SpatialEntityId entityId) =>
@@ -53,7 +51,7 @@ namespace AdvancedGears
                 if (status.State != UnitState.Alive)
                     return;
 
-                if (status.Type != UnitType.Stronghold)
+                if (UnitUtils.IsBuilding(status.Type) == false)
                     return;
 
                 if (status.Side == UnitSide.None)
@@ -73,7 +71,8 @@ namespace AdvancedGears
                 var hexes = sight.TargetHexes;
                 var order = OrderType.Idle;
                 if (portal.FrontHexes.TryGetValue(status.Side, out var frontHexInfo)) {
-                    order = GetTargetFrontLine(trans.position, frontHexInfo.Indexes, corners);//GetTargetStronghold(trans.position, status.Side, vector, entityId.EntityId, indexes, targets);
+                    order = GetTargetFrontLine(trans.position, frontHexInfo.Indexes, corners);
+                    //GetTargetStronghold(trans.position, status.Side, vector, entityId.EntityId, indexes, targets);
                 }
 
                 sight.TargetStrongholds = targets;
