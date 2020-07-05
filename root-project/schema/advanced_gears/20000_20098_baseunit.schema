@@ -90,8 +90,9 @@ component BaseUnitMovement {
 component BaseUnitSight {
     id = 20011;
 
-    improbable.gdk.transform_synchronization.FixedPointVector3 target_position = 4;
-    float target_range = 5;
+    bool is_target = 1;
+    improbable.gdk.transform_synchronization.FixedPointVector3 target_position = 2;
+    float target_range = 3;
     
     BoidVector boid_vector = 7;
     double boid_update_time = 8;

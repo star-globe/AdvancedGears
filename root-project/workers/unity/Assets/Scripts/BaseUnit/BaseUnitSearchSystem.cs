@@ -129,20 +129,17 @@ namespace AdvancedGears
             bool isTarget = false;
             if (target.TargetInfo.IsTarget) {
                 sight.TargetPosition = target.TargetInfo.Position;
-                target.State = CalcTargetState(sight.TargetPosition.ToUnityVector() - pos, sightRange);
-                DebugUtils.RandomlyLog("Stronghold Target",6);
+                target.State = CalcTargetState(sight.TargetPosition.ToWorkerPosition(this.Origin) - pos, sightRange);
                 isTarget = true;
             }
             else if (target.HexInfo.IsTarget) {
-                sight.TargetPosition = HexUtils.GetHexCenter(this.Origin, target.HexInfo.HexIndex, HexDictionary.HexEdgeLength).ToFixedPointVector3();
+                sight.TargetPosition = HexUtils.GetHexCenter(this.Origin, target.HexInfo.HexIndex, HexDictionary.HexEdgeLength).ToWorldPosition(this.Origin);
                 target.State = TargetState.OutOfRange;
-                DebugUtils.RandomlyLog("Hex Target", 6);
                 isTarget = true;
             }
             else if (target.FrontLine.IsValid()) {
-                sight.TargetPosition = target.FrontLine.GetOnLinePosition(this.Origin, pos).ToFixedPointVector3();
-                target.State = TargetState.OutOfRange;
-                DebugUtils.RandomlyLog("FrontLine Target", 6);
+                sight.TargetPosition = target.FrontLine.GetOnLinePosition(this.Origin, pos).ToWorldPosition(this.Origin);
+                target.State = TargetState.MovementTarget;
                 isTarget = true;
             }
 

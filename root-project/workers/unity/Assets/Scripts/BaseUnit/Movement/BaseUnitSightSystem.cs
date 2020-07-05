@@ -50,6 +50,9 @@ namespace AdvancedGears
                                           ref BaseUnitTarget.Component target,
                                           ref BaseUnitStatus.Component status) =>
             {
+                movement.MoveSpeed = 0.0f;
+                movement.RotSpeed = 0.0f;
+
                 if (status.State != UnitState.Alive)
                     return;
 
@@ -81,14 +84,10 @@ namespace AdvancedGears
 
                 var isRotate = rotate(rot, trans, positionDiff);
 
-                if (forward == 0.0f)
-                    movement.MoveSpeed = 0.0f;
-                else
+                if (forward != 0.0f)
                     movement.MoveSpeed = forward * speed;
 
-                if (isRotate == 0)
-                    movement.RotSpeed = 0.0f;
-                else
+                if (isRotate != 0)
                     movement.RotSpeed = rot * isRotate;
             });
 
