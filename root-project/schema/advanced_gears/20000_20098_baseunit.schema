@@ -90,7 +90,6 @@ component BaseUnitMovement {
 component BaseUnitSight {
     id = 20011;
 
-    bool is_target = 1;
     improbable.gdk.transform_synchronization.FixedPointVector3 target_position = 2;
     float target_range = 3;
     

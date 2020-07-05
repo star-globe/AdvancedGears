@@ -227,12 +227,15 @@ namespace AdvancedGears
 
             var line = team.TargetFrontLine;
             var hex = team.TargetHexInfo;
+            var followers = team.FollowerInfo.GetAllFollowers();
             if (tgt == null && line.IsValid())
-                SetOrderFollowers(team.FollowerInfo.GetAllFollowers(), entityId.EntityId, line, current.Value);
+                SetOrderFollowers(followers, entityId.EntityId, line, current.Value);
             else if (tgt == null && hex.IsTarget)
-                SetOrderFollowers(team.FollowerInfo.GetAllFollowers(), entityId.EntityId, hex, current.Value);
+                SetOrderFollowers(followers, entityId.EntityId, hex, current.Value);
             else
-                SetOrderFollowers(team.FollowerInfo.GetAllFollowers(), entityId.EntityId, targetInfo, current.Value);
+                SetOrderFollowers(followers, entityId.EntityId, targetInfo, current.Value);
+
+            DebugUtils.RandomlyLog(string.Format("Follower Count : {0}", followers.Count));
 
             return tgt != null;
         }
@@ -354,16 +357,16 @@ namespace AdvancedGears
             else
                 followers = info.Followers;
 
-            var list = followers.Where(f => HasEntity(f)).ToList();
+            //var list = followers.Where(f => HasEntity(f)).ToList();
 
-            if (isUnderCommander)
-                info.UnderCommanders = list;
-            else
-                info.Followers = list;
+            //if (isUnderCommander)
+            //    info.UnderCommanders = list;
+            //else
+            //    info.Followers = list;
+            //
+            //commander.FollowerInfo = info;
 
-            commander.FollowerInfo = info;
-
-            return list.Count(f => CheckAlive(f.Id));
+            return followers.Count(f => CheckAlive(f.Id));//list.Count(f => CheckAlive(f.Id));
         }
         #endregion
     }

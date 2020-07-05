@@ -348,7 +348,7 @@ namespace AdvancedGears
                     if (soldiers == null)
                         return false;
                     
-                    return soldiers.Count > stack && team.CommanderId.IsValid();
+                    return soldiers.Count >= stack && team.CommanderId.IsValid();
                 }
             }
         }
@@ -633,6 +633,12 @@ namespace AdvancedGears
                                                                                      new FollowerInfo() { Followers = requestInfo.soldiers,
                                                                                                           UnderCommanders = new List<EntityId>()}));
                 requestDic[strongholdId].Remove(requestId);
+
+                var solds = string.Empty;
+                foreach (var s in requestInfo.soldiers)
+                    solds += string.Format("{0}, ", s);
+
+                Debug.LogFormat("SetTeam CommanderId:{0} Soldiers:{}", requestInfo.team.CommanderId, solds);
             }
             else {
                 requestDic[strongholdId][requestId] = requestInfo;
