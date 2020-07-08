@@ -83,7 +83,18 @@ namespace AdvancedGears
                     action.EnemyPositions.Add(epos);
                 }
 
-                var range = gun.GetAttackRange();
+                float range;
+                switch (target.TargetState)
+                {
+                    case CalcTargetState.ActionTarget:
+                        range = gun.GetAttackRange();
+                        break;
+
+                    default:
+                        range = RangeDictionary.BodySize;
+                        break;
+                }
+                
                 if (status.Type == UnitType.Commander) {
 
                     var rank = status.Rank;

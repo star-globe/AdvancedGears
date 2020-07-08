@@ -42,6 +42,9 @@ namespace AdvancedGears
         [SerializeField] private float armyCloudRange = 1200.0f;
         public static float ArmyCloudRange => Instance.armyCloudRange;
 
+        [SerializeField] private float bodySize = 3.0f;
+        public static float BodySize => Instance.bodySize;
+
         Dictionary<FixedRangeType, float> rangeDic = null;
         Dictionary<FixedRangeType, float> RangeDic
         {
