@@ -622,6 +622,7 @@ namespace AdvancedGears
             if (requestInfo.hashes.Contains(comId) == false)
                 return;
 
+            requestInfo.hashes.Remove(comId);
             var type = unitOrderContext.type;
             switch (type)
             {
