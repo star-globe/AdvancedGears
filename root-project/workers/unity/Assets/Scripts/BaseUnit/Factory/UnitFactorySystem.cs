@@ -226,7 +226,7 @@ namespace AdvancedGears
                     CreateTeam(factory.TeamOrders, status.Side, entityId.EntityId, coords, out finished);
                 }
                 else if  (turret_order != null) {
-                    
+                    // todo turret
                 }
 
                 if (finished)

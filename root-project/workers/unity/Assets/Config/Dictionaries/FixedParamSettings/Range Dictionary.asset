@@ -27,7 +27,7 @@ MonoBehaviour:
     range: 60
   unitInter: 10
   teamInter: 50
-  moveBufferRate: 0.5
+  moveBufferRate: 0.2
   sightRangeRate: 1.5
   strategyRangeRate: 100
   uiRange: 100
@@ -35,3 +35,4 @@ MonoBehaviour:
   boidsRankRate: 3
   minimapRange: 1000
   armyCloudRange: 1200
+  bodySize: 3
