@@ -61,25 +61,32 @@ namespace AdvancedGears
                     return;
 
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
-                CheckAlive(trans.position, status.Side, out var datas);
+                CheckAlive(trans.position, status.Side, out var teams);
+                CheckAliveTurret(trans.position, status.Side, out var turrets);
 
                 // number check
                 var id = entityId.EntityId;
                 if (factory.TeamOrders.Count == 0) {
-                    var teamOrders = makeOrders(status.Rank, status.Order, datas);
+                    var teamOrders = makeOrders(status.Rank, status.Order, teams);
                     if (teamOrders != null)
                         factory.TeamOrders.AddRange(teamOrders);
                 }
 
+                if (factory.TurretOrders.Count == 0) {
+                    var turretOrders = makeOrders(status.Rank, turrets);
+                    if (turretOrders != null)
+                        factory.TurretOrders.Add(turretOrders);
+                }
+
                 // order check
                 // Strongholds
-                CheckOrder(status.Order, sight.TargetStrongholds, datas);
+                CheckOrder(status.Order, sight.TargetStrongholds, teams);
 
                 // FrontLineCorners
-                CheckOrder(status.Order, sight.FrontLineCorners, datas);
+                CheckOrder(status.Order, sight.FrontLineCorners, teams);
 
                 // Hex
-                CheckOrder(status.Order, sight.TargetHexes, datas);
+                CheckOrder(status.Order, sight.TargetHexes, teams);
             });
         }
 
@@ -124,6 +131,19 @@ namespace AdvancedGears
                 };
 
                 datas.Add(u.id, teamInfo);
+            }
+        }
+
+        void CheckAliveTurret(in Vector3 pos, UnitSide side, out List<UnitInfo> turrets)
+        {
+            turrets = new List<UnitInfo>();
+            var units = getAllyUnits(side, pos, RangeDictionary.Get(FixedRangeType.StrongholdRange), allowDead: false, UnitType.Turret);
+
+            foreach (var u in units) {
+                if (TryGetComponent<TurretComponent.Component>(u.id, out var turret) == false)
+                    continue;
+
+                turrets.Add(u);
             }
         }
 
@@ -175,6 +195,37 @@ namespace AdvancedGears
 
             return teamOrders;
         }
+
+        List<TurretOrder> makeOrders(uint rank, OrderType order, List<UnitInfo> currentTurrets)
+        {
+            var underTurrets = AttackLogicDictionary.DefenseTurrets;
+
+            List<TurretOrder> turretOrders = null;
+            int coms = 1;
+            for(var r = rank; r >= 0; r--) {
+                var count = currentTurrets.Count(kvp => kvp.Value.Rank == r);
+                Debug.LogFormat("Turrets Count:{0} Rank:{1}", count, r);
+
+                if (count < coms) {
+                    turretOrders = turretOrders ?? new List<TurretOrder>();
+                    turretOrders.Add(new TurretOrder()
+                    {
+                        TurretId = 1,
+                        TurretsNumber = underTurrets,
+                        Order = order,
+                        Stack = coms - count,
+                    });
+                }
+
+                coms *= underTurrets;
+
+                if (r == 0)
+                    break;
+            }
+
+            return turretOrders;
+        }
+
 
         private void SetCommand(EntityId id, in TargetStrongholdInfo targetInfo, OrderType order)
         {
