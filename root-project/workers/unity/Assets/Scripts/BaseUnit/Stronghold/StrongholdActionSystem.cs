@@ -75,7 +75,7 @@ namespace AdvancedGears
                 if (factory.TurretOrders.Count == 0) {
                     var turretOrders = makeOrders(status.Rank, turrets);
                     if (turretOrders != null)
-                        factory.TurretOrders.Add(turretOrders);
+                        factory.TurretOrders.AddRange(turretOrders);
                 }
 
                 // order check
@@ -196,14 +196,14 @@ namespace AdvancedGears
             return teamOrders;
         }
 
-        List<TurretOrder> makeOrders(uint rank, OrderType order, List<UnitInfo> currentTurrets)
+        List<TurretOrder> makeOrders(uint rank, List<UnitInfo> currentTurrets)
         {
-            var underTurrets = AttackLogicDictionary.DefenseTurrets;
+            var underTurrets = AttackLogicDictionary.UnderTurrets;
 
             List<TurretOrder> turretOrders = null;
             int coms = 1;
             for(var r = rank; r >= 0; r--) {
-                var count = currentTurrets.Count(kvp => kvp.Value.Rank == r);
+                var count = currentTurrets.Count(u => u.rank == r);
                 Debug.LogFormat("Turrets Count:{0} Rank:{1}", count, r);
 
                 if (count < coms) {
@@ -212,7 +212,6 @@ namespace AdvancedGears
                     {
                         TurretId = 1,
                         TurretsNumber = underTurrets,
-                        Order = order,
                         Stack = coms - count,
                     });
                 }

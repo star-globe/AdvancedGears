@@ -84,9 +84,9 @@ namespace AdvancedGears
                 }
 
                 float range;
-                switch (target.TargetState)
+                switch (target.State)
                 {
-                    case CalcTargetState.ActionTarget:
+                    case TargetState.ActionTarget:
                         range = gun.GetAttackRange();
                         break;
 
