@@ -20,7 +20,7 @@ namespace AdvancedGears
             }
         }
 
-        public void SetLines(Vector3[] basePoints, int layerMask, int cutNumber, float fromHeight, float buffer)
+        public void SetLines(Vector3[] basePoints, int layerMask, int cutNumber, float fromHeight, float underHeight, float buffer)
         {
             if (basePoints == null)
                 return;
@@ -38,19 +38,20 @@ namespace AdvancedGears
                     }
                     else {
                         var end = basePoints[i];
-                        var total = cutNumber + 1;
-                        foreach (var c in Enumerable.Range(0,cutNumber)) {
-                            list.Add((end * c + point * (total - c)) / total);
+                        foreach (var c in Enumerable.Range(1,cutNumber)) {
+                            list.Add((end * c + point * (cutNumber - c)) / cutNumber);
                         }
 
                         point = end;
                     }
                 }
+
+                newPoints = list.ToArray();
             }
 
             for(var i = 0; i < newPoints.Length; i++) {
                 var p = newPoints[i];
-                if (Physics.Raycast(new Vector3(p.x, fromHeight, p.z), Vector3.down, out var hit, maxDistance:Mathf.Infinity, layerMask:layerMask) == false)
+                if (Physics.Raycast(new Vector3(p.x, fromHeight, p.z), Vector3.down, out var hit, fromHeight - underHeight, layerMask:layerMask) == false)
                     continue;
                 
                 newPoints[i] = new Vector3(p.x, hit.point.y + buffer, p.z);

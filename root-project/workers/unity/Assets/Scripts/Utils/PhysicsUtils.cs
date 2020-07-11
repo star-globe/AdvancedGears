@@ -8,11 +8,11 @@ namespace AdvancedGears
 {
     public static class PhysicsUtils
     {
-        static readonly int mask = LayerMask.GetMask("Ground");
+        public static readonly int GroundMask = LayerMask.GetMask("Ground");
         public static Vector3 GetGroundPosition(Vector3 origin)
         {
             var ray = new Ray(origin, Vector3.down);
-            Physics.Raycast(ray, out var hit, mask);
+            Physics.Raycast(ray, out var hit, GroundMask);
 
             return hit.point;
         }

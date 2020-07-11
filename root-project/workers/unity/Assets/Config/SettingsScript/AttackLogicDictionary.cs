@@ -93,7 +93,7 @@ namespace AdvancedGears
             if (rank < 1)
                 return range;
             else
-                return range * Mathf.Pow(UnderCommanders, rank);
+                return range * Mathf.Pow(UnderCommanders, rank * 0.5f);
         }
     }
 }

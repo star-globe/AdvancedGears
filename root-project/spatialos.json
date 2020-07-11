@@ -1,8 +1,5 @@
 {
     "name": "beta_eighteen_pluto_911",
     "project_version": "0.0.1",
-    "sdk_version": "14.4.1",
-    "dependencies": [
-        {"name": "standard_library", "version": "14.4.1"}
-    ]
+    "sdk_version": "14.6.1"
 }
