@@ -31,10 +31,8 @@ namespace AdvancedGears
         }
     }
 
-    public abstract class BulletFireBase : MonoBehaviour
+    public abstract class BulletFireBase : WorldInfoReader
     {
-        protected abstract World World { get; }
-
         BulletMovementSystem bulletSystem = null;
         BulletMovementSystem BulletSystem
         {

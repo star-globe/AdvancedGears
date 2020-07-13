@@ -325,17 +325,17 @@ namespace AdvancedGears
                    targetInfo.State == UnitState.Dead;
         }
 
-        public static bool IsValid(this TargetFrontLineInfo targetInfo)
+        public static bool IsValid(this FrontLineInfo info)
         {
-            return targetInfo.LeftCorner.Equals(targetInfo.RightCorner) == false;
+            return info.LeftCorner.Equals(info.RightCorner) == false;
         }
 
-        public static Vector3 GetOnLinePosition(this TargetFrontLineInfo info, Vector3 origin, Vector3 current)
+        public static Vector3 GetOnLinePosition(this FrontLineInfo info, Vector3 origin, Vector3 current)
         {
             var left = info.LeftCorner.ToUnityVector() + origin;
             var right = info.RightCorner.ToUnityVector() + origin;
 
-            var diff = origin - left;
+            var diff = current - left;
             var line = right - left;
 
             var dot = Vector3.Dot(diff, line.normalized);

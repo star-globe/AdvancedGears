@@ -7,9 +7,11 @@ using UnityEngine;
 
 namespace AdvancedGears
 {
-    public class HexInfoRealizer : MonoBehaviour
+    public class HexInfoRealizer : WorldInfoReader
     {
         [Require] World world;
+        protected override World World => world;
+
         [Require] HexBaseReader reader;
         [SerializeField] LandLineRenderer line;
         [SerializeField] int cutNumber = 5;
@@ -19,11 +21,10 @@ namespace AdvancedGears
 
         void Start()
         {
-            origin = world.GetExistingSystem<WorkerSystem>().Origin;
-            SetLandLine();
+            SetLandLine(this.Origin);
         }
 
-        void SetLandLine()
+        void SetLandLine(Vector3 origin)
         {
             if (line != null)
             {
