@@ -82,7 +82,7 @@ namespace AdvancedGears
             });
         }
 
-        private OrderType GetTargetFrontLine(in Vector3 pos, List<HexIndex> indexes, List<Coordinates> corners)
+        private OrderType GetTargetFrontLine(in Vector3 pos, List<HexIndex> indexes, List<FrontLineInfo> corners)
         {
             HexIndex? targetIndex = null;
             float length = float.MaxValue;
@@ -98,7 +98,7 @@ namespace AdvancedGears
 
             if (targetIndex.HasValue) {
                 corners.Clear();
-                corners.AddRange(targetIndex.Value.FrontCorners);
+                corners.AddRange(targetIndex.Value.FrontLines);
                 return OrderType.Keep;
             }
             else {

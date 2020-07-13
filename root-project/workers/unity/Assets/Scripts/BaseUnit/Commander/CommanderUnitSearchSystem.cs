@@ -228,7 +228,7 @@ namespace AdvancedGears
             var line = team.TargetFrontLine;
             var hex = team.TargetHexInfo;
             var followers = team.FollowerInfo.GetAllFollowers();
-            if (tgt == null && line.IsValid())
+            if (tgt == null && line.FrontLine.IsValid())
                 SetOrderFollowers(followers, entityId.EntityId, line, current.Value);
             else if (tgt == null && hex.IsTarget)
                 SetOrderFollowers(followers, entityId.EntityId, hex, current.Value);

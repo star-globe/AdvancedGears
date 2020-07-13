@@ -80,13 +80,13 @@ namespace AdvancedGears
 
                 // order check
                 // Strongholds
-                CheckOrder(status.Order, sight.TargetStrongholds, teams);
+                CheckOrder(status.Order, sight.TargetStrongholds, sight.StrategyVector.Vector.ToUnityVector(), teams);
 
                 // FrontLineCorners
-                CheckOrder(status.Order, sight.FrontLineCorners, teams);
+                CheckOrder(status.Order, sight.FrontLineCorners, sight.StrategyVector.Vector.ToUnityVector(), teams);
 
                 // Hex
-                CheckOrder(status.Order, sight.TargetHexes, teams);
+                CheckOrder(status.Order, sight.TargetHexes, sight.StrategyVector.Vector.ToUnityVector(), teams);
             });
         }
 
@@ -245,7 +245,7 @@ namespace AdvancedGears
         }
 
         readonly Dictionary<EntityId, List<EntityId>> entityIds = new Dictionary<EntityId, List<EntityId>>();
-        private void CheckOrder(OrderType order, Dictionary<EntityId,TargetStrongholdInfo> targets, Dictionary<EntityId,TeamInfo> datas)
+        private void CheckOrder(OrderType order, Dictionary<EntityId,TargetStrongholdInfo> targets, Vector3 strategyVector, Dictionary<EntityId,TeamInfo> datas)
         {
             entityIds.Clear();
 
@@ -273,26 +273,33 @@ namespace AdvancedGears
             }
         }
 
-        private void CheckOrder(OrderType order, List<Coordinates> corners, Dictionary<EntityId,TeamInfo> datas)
+        private void CheckOrder(OrderType order, List<FrontLineInfo> lines, Vector3 strategyVector, Dictionary<EntityId,TeamInfo> datas)
         {
             entityIds.Clear();
 
-            var count = corners.Count;
+            var count = lines.Count;
             if (count <= 1)
                 return;
 
+            //var lines = Enumerable.Range(0, count - 1).Select(i => new TargetFrontLineInfo() { LeftCorner = corners[i], RightCorner = corners[i+1] }).ToList();
+            //lines = lines.OrderByDescending(l => Vector3.Dot((l.LeftCorner + l.RightCorner).ToUnityVector(), strategyVector)).ToList();
+
             int index = 0;
             foreach(var kvp in datas) {
-                if (index + 1 >= corners.Count)
+                if (index+1 >= count) //lines.Count)//
                     index = 0;
 
+                //var line = new FrontLineInfo()
+                //{
+                //    LeftCorner = corners[index],
+                //    RightCorner = corners[index + 1]
+                //};
                 var line = new TargetFrontLineInfo()
                 {
-                    LeftCorner = corners[index],
-                    RightCorner = corners[index + 1]
+                    FrontLine = lines[index],
                 };
 
-                SetCommand(kvp.Key, line, order);
+                SetCommand(kvp.Key, line, order);//lines[index], order);
                 index++;
                 // if(targets.ContainsKey(kvp.Value.TargetEntityId) == false) {
                 //    var key = targets.Keys.ElementAt(UnityEngine.Random.Range(0,count));
@@ -313,7 +320,7 @@ namespace AdvancedGears
             //}
         }
 
-        private void CheckOrder(OrderType order, Dictionary<EntityId,TargetHexInfo> targets, Dictionary<EntityId,TeamInfo> datas)
+        private void CheckOrder(OrderType order, Dictionary<EntityId,TargetHexInfo> targets, Vector3 strategyVector, Dictionary<EntityId,TeamInfo> datas)
         {
             entityIds.Clear();
 

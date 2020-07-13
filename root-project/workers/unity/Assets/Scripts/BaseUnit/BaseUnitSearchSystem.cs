@@ -148,8 +148,8 @@ namespace AdvancedGears
                 target.State = TargetState.OutOfRange;
                 isTarget = true;
             }
-            else if (target.FrontLine.IsValid()) {
-                sight.TargetPosition = target.FrontLine.GetOnLinePosition(this.Origin, pos).ToWorldPosition(this.Origin);
+            else if (target.FrontLine.FrontLine.IsValid()) {
+                sight.TargetPosition = target.FrontLine.FrontLine.GetOnLinePosition(this.Origin, pos).ToWorldPosition(this.Origin);
                 target.State = TargetState.MovementTarget;
                 isTarget = true;
             }

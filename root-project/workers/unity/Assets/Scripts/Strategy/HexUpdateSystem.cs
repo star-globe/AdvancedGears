@@ -71,16 +71,15 @@ namespace AdvancedGears
             });
         }
 
-        private Dictionary<uint, List<Coordinates>> BorderHexList(UnitSide side)
+        private Dictionary<uint, List<FrontLineInfo>> BorderHexList(UnitSide side)
         {
-            Dictionary<uint, List<Coordinates>> indexes = null;
+            Dictionary<uint, List<FrontLineInfo>> indexes = null;
 
             foreach (var kvp in base.hexDic)
             {
                 if (kvp.Value.Side != side)
                     continue;
 
-                bool isFront = false;
                 var index = kvp.Value.Index;
 
                 var baseCorners = new Vector3[7];
@@ -89,43 +88,69 @@ namespace AdvancedGears
                 HexUtils.SetHexCorners(this.Origin, index, baseCorners, HexDictionary.HexEdgeLength);
                 var ids = HexUtils.GetNeighborHexIndexes(index);
 
-                HashSet<int> cornerIndexes = new HashSet<int>() { 0, 1, 2, 3, 4, 5 };
-                foreach (var cornerIndex in cornerIndexes.ToArray())
+                ///HashSet<int> cornerIndexes = new HashSet<int>() { 0, 1, 2, 3, 4, 5, 6 };
+                List<FrontLineInfo> lines = null;
+                int[] cornerIndexes = new int[] { 0, 1, 2, 3, 4, 5 };
+                foreach (var cornerIndex in cornerIndexes)
                 {
-                    var tgt = baseCorners[cornerIndex];
+                    var right = baseCorners[cornerIndex];
+                    var left = baseCorners[cornerIndex + 1];
 
-                    bool isTouched = false;
-                    foreach (var id in ids)
-                    {
-                        if (base.hexDic.TryGetValue(id, out var hex) == false ||
-                            hex.Side == side)
-                            continue;
-
-                        isFront = true;
-
-                        HexUtils.SetHexCorners(this.Origin, id, checkCorners, HexDictionary.HexEdgeLength);
-
-                        if (checkCorners.Any(c => (c - tgt).sqrMagnitude < HexDictionary.HexEdgeLength / 10000))
-                            isTouched = true;
+                    if (CheckTouch(side, right, checkCorners, ids) &&
+                        CheckTouch(side, left, checkCorners, ids)) {
+                        lines = lines ?? new List<FrontLineInfo>();
+                        lines.Add(new FrontLineInfo() { LeftCorner = left.ToWorldPosition(this.Origin).ToCoordinates(),
+                                                              RightCorner = right.ToWorldPosition(this.Origin).ToCoordinates()});
                     }
-
-                    if (isTouched == false)
-                        cornerIndexes.Remove(cornerIndex);
+                    //bool isTouched = false;
+                    //foreach (var id in ids)
+                    //{
+                    //    if (base.hexDic.TryGetValue(id, out var hex) == false ||
+                    //        hex.Side == side)
+                    //        continue;
+                    //
+                    //    isFront = true;
+                    //
+                    //    HexUtils.SetHexCorners(this.Origin, id, checkCorners, HexDictionary.HexEdgeLength);
+                    //
+                    //    if (checkCorners.Any(c => (c - tgt).sqrMagnitude < HexDictionary.HexEdgeLength / 10000))
+                    //        isTouched = true;
+                    //}
+                    //
+                    //if (isTouched == false)
+                    //    cornerIndexes.Remove(cornerIndex);
                 }
 
-                if (!isFront)
+                if (lines == null)
                     continue;
 
-                var list = cornerIndexes.OrderByDescending(i => i)
-                                        .Select(i => baseCorners[i].ToWorldPosition(this.Origin).ToCoordinates()).ToList();
-                indexes = indexes ?? new Dictionary<uint, List<Coordinates>>();
-                indexes.Add(index, list);
+                //var list = cornerIndexes.OrderByDescending(i => i)
+                //                        .Select(i => baseCorners[i].ToWorldPosition(this.Origin).ToCoordinates()).ToList();
+                indexes = indexes ?? new Dictionary<uint, List<FrontLineInfo>>();
+                indexes.Add(index, lines);
             }
 
             return indexes;
         }
 
-        private void CompairList(List<HexIndex> indexes, Dictionary<uint, List<Coordinates>> dic)
+        bool CheckTouch(UnitSide side, Vector3 tgt, Vector3[] checkCorners, uint[] ids)
+        {
+            foreach (var id in ids)
+            {
+                if (base.hexDic.TryGetValue(id, out var hex) == false ||
+                    hex.Side == side)
+                    continue;
+
+                HexUtils.SetHexCorners(this.Origin, id, checkCorners, HexDictionary.HexEdgeLength);
+
+                if (checkCorners.Any(c => (c - tgt).sqrMagnitude < HexDictionary.HexEdgeLength / 10000))
+                    return true;
+            }
+
+            return false;
+        }
+
+        private void CompairList(List<HexIndex> indexes, Dictionary<uint, List<FrontLineInfo>> dic)
         {
             if (dic == null)
                 return;

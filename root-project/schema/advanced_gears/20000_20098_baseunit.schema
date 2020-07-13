@@ -137,8 +137,7 @@ enum TargetState {
 }
 
 type TargetFrontLineInfo {
-    improbable.Coordinates left_corner = 1;
-    improbable.Coordinates right_corner = 2;
+    FrontLineInfo front_line = 1;
 }
 
 type TargetHexInfo {
@@ -328,7 +327,7 @@ component StrongholdSight {
     IntervalChecker interval = 1;
     StrategyVector strategy_vector = 2;
     map<EntityId,TargetStrongholdInfo> target_strongholds = 4;
-    list<improbable.Coordinates> front_line_corners = 5;
+    list<FrontLineInfo> front_line_corners = 5;
     map<EntityId,TargetHexInfo> target_hexes = 6;
 
     command improbable.gdk.core.Empty set_strategy_vector(StrategyVector);

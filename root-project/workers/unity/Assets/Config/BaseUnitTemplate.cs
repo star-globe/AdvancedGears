@@ -146,7 +146,7 @@ namespace AdvancedGears
         private static void AddStrongholdTypeComponents(EntityTemplate template, string writeAccess)
         {
             template.AddComponent(new StrongholdSight.Snapshot { TargetStrongholds = new Dictionary<EntityId, TargetStrongholdInfo>(),
-                                                                 FrontLineCorners = new List<Coordinates>(),
+                                                                 FrontLineCorners = new List<FrontLineInfo>(),
                                                                  TargetHexes = new Dictionary<EntityId, TargetHexInfo>() }, writeAccess);
             template.AddComponent(new StrategyHexAccessPortal.Snapshot { FrontHexes = new Dictionary<UnitSide,FrontHexInfo>() }, writeAccess);
             template.AddComponent(new ResourceComponent.Snapshot(), writeAccess);
