@@ -66,6 +66,22 @@ namespace AdvancedGears
             }
         }
 
+        public static bool CheckLine(Vector3 left, Vector3 right, Vector3[] corners, float checkLength)
+        {
+            if (corners.Length != 7)
+                return false;
+
+            for (var i = 0; i < corners.Length - 1; i++) {
+                if ((corners[i] - right).sqrMagnitude >= checkLength)
+                    continue;
+
+                if((corners[i+1] - left).sqrMagnitude >= checkLength)
+                    continue;
+            }
+
+            return false;
+        }
+
         public static Vector3 GetHexCenter(in Vector3 origin, uint index, float edge = edgeLength)
         {
             if (index == 0)

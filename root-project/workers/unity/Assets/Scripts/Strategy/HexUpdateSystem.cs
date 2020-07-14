@@ -96,11 +96,10 @@ namespace AdvancedGears
                     var right = baseCorners[cornerIndex];
                     var left = baseCorners[cornerIndex + 1];
 
-                    if (CheckTouch(side, right, checkCorners, ids) &&
-                        CheckTouch(side, left, checkCorners, ids)) {
+                    if (CheckTouch(side, left, right, checkCorners, ids)){
                         lines = lines ?? new List<FrontLineInfo>();
                         lines.Add(new FrontLineInfo() { LeftCorner = left.ToWorldPosition(this.Origin).ToCoordinates(),
-                                                              RightCorner = right.ToWorldPosition(this.Origin).ToCoordinates()});
+                                                        RightCorner = right.ToWorldPosition(this.Origin).ToCoordinates()});
                     }
                     //bool isTouched = false;
                     //foreach (var id in ids)
@@ -133,7 +132,7 @@ namespace AdvancedGears
             return indexes;
         }
 
-        bool CheckTouch(UnitSide side, Vector3 tgt, Vector3[] checkCorners, uint[] ids)
+        bool CheckTouch(UnitSide side, Vector3 tgtLeft, Vector3 tgtRight, Vector3[] checkCorners, uint[] ids)
         {
             foreach (var id in ids)
             {
@@ -143,7 +142,7 @@ namespace AdvancedGears
 
                 HexUtils.SetHexCorners(this.Origin, id, checkCorners, HexDictionary.HexEdgeLength);
 
-                if (checkCorners.Any(c => (c - tgt).sqrMagnitude < HexDictionary.HexEdgeLength / 10000))
+                if (HexUtils.CheckLine(tgtRight, tgtLeft, checkCorners, HexDictionary.HexEdgeLength / 10000))
                     return true;
             }
 

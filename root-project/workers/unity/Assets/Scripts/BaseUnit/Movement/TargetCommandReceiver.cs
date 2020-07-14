@@ -37,12 +37,13 @@ namespace AdvancedGears
         {
             targetCommandReceiver.SendSetFrontLineResponse(new BaseUnitTarget.SetFrontLine.Response(request.RequestId, new Empty()));
 
+            var line = request.Payload;
             targetWriter.SendUpdate(new BaseUnitTarget.Update()
             {
                 FrontLine = request.Payload,
             });
 
-            Debug.Log("OnSetFrontLine");
+            Debug.LogFormat("OnSetFrontLine: Left:{0} Right{1}", line.FrontLine.LeftCorner, line.FrontLine.RightCorner);
         }
 
         private void OnSetHexRequest(BaseUnitTarget.SetHex.ReceivedRequest request)

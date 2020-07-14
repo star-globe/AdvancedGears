@@ -277,16 +277,17 @@ namespace AdvancedGears
         {
             entityIds.Clear();
 
-            var count = lines.Count;
-            if (count <= 1)
-                return;
+            //var count = lines.Count;
+            //if (count <= 1)
+            //    return;
+            DebugUtils.RandomlyLog(string.Format("LinesCount:{0}", lines.Count));
 
             //var lines = Enumerable.Range(0, count - 1).Select(i => new TargetFrontLineInfo() { LeftCorner = corners[i], RightCorner = corners[i+1] }).ToList();
             //lines = lines.OrderByDescending(l => Vector3.Dot((l.LeftCorner + l.RightCorner).ToUnityVector(), strategyVector)).ToList();
 
             int index = 0;
             foreach(var kvp in datas) {
-                if (index+1 >= count) //lines.Count)//
+                if (index+1 >= lines.Count)//
                     index = 0;
 
                 //var line = new FrontLineInfo()
