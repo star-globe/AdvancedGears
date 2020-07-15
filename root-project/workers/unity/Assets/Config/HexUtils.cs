@@ -1,7 +1,3 @@
-using Improbable.Gdk.Core;
-using Improbable.Gdk.GameObjectCreation;
-using Improbable.Gdk.PlayerLifecycle;
-using Improbable.Gdk.TransformSynchronization;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -75,8 +71,10 @@ namespace AdvancedGears
                 if ((corners[i] - right).sqrMagnitude >= checkLength)
                     continue;
 
-                if((corners[i+1] - left).sqrMagnitude >= checkLength)
+                if ((corners[i+1] - left).sqrMagnitude >= checkLength)
                     continue;
+
+                return true;
             }
 
             return false;
@@ -116,6 +114,9 @@ namespace AdvancedGears
         public static uint[] GetNeighborHexIndexes(uint index)
         {
             var ids = new uint[6] { 1, 2, 3, 4, 5, 6};
+
+            if (index == 0)
+                return ids;
 
             CalcIndex(index, out var n, out var direct, out var rest);
 
@@ -169,6 +170,8 @@ namespace AdvancedGears
                         ids[5] = index + 6*n+5;
                         break;
             }
+
+            return ids;
 
             // another calculate method
             for(uint i = 0; i <= 5; i++) {

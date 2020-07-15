@@ -96,10 +96,13 @@ namespace AdvancedGears
                     var right = baseCorners[cornerIndex];
                     var left = baseCorners[cornerIndex + 1];
 
-                    if (CheckTouch(side, left, right, checkCorners, ids)){
+                    var id = CheckTouch(side, left, right, checkCorners, ids);
+                    if (id != null) {
                         lines = lines ?? new List<FrontLineInfo>();
                         lines.Add(new FrontLineInfo() { LeftCorner = left.ToWorldPosition(this.Origin).ToCoordinates(),
                                                         RightCorner = right.ToWorldPosition(this.Origin).ToCoordinates()});
+
+                        //Debug.LogFormat("side:{0} id:{1} LinesCount:{2}", side, id.Value, lines.Count);
                     }
                     //bool isTouched = false;
                     //foreach (var id in ids)
@@ -132,7 +135,7 @@ namespace AdvancedGears
             return indexes;
         }
 
-        bool CheckTouch(UnitSide side, Vector3 tgtLeft, Vector3 tgtRight, Vector3[] checkCorners, uint[] ids)
+        uint? CheckTouch(UnitSide side, Vector3 tgtLeft, Vector3 tgtRight, Vector3[] checkCorners, uint[] ids)
         {
             foreach (var id in ids)
             {
@@ -143,10 +146,10 @@ namespace AdvancedGears
                 HexUtils.SetHexCorners(this.Origin, id, checkCorners, HexDictionary.HexEdgeLength);
 
                 if (HexUtils.CheckLine(tgtRight, tgtLeft, checkCorners, HexDictionary.HexEdgeLength / 10000))
-                    return true;
+                    return id;
             }
 
-            return false;
+            return null;
         }
 
         private void CompairList(List<HexIndex> indexes, Dictionary<uint, List<FrontLineInfo>> dic)

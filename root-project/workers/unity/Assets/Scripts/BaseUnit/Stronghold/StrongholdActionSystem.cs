@@ -83,7 +83,7 @@ namespace AdvancedGears
                 CheckOrder(status.Order, sight.TargetStrongholds, sight.StrategyVector.Vector.ToUnityVector(), teams);
 
                 // FrontLineCorners
-                CheckOrder(status.Order, sight.FrontLineCorners, sight.StrategyVector.Vector.ToUnityVector(), teams);
+                CheckOrder(status.Order, status.Side, sight.FrontLineCorners, sight.StrategyVector.Vector.ToUnityVector(), teams);
 
                 // Hex
                 CheckOrder(status.Order, sight.TargetHexes, sight.StrategyVector.Vector.ToUnityVector(), teams);
@@ -273,14 +273,14 @@ namespace AdvancedGears
             }
         }
 
-        private void CheckOrder(OrderType order, List<FrontLineInfo> lines, Vector3 strategyVector, Dictionary<EntityId,TeamInfo> datas)
+        private void CheckOrder(OrderType order, UnitSide side, List<FrontLineInfo> lines, Vector3 strategyVector, Dictionary<EntityId,TeamInfo> datas)
         {
             entityIds.Clear();
 
             //var count = lines.Count;
             //if (count <= 1)
             //    return;
-            DebugUtils.RandomlyLog(string.Format("LinesCount:{0}", lines.Count));
+            DebugUtils.RandomlyLog(string.Format("Side:{0} LinesCount:{1}", side, lines.Count));
 
             //var lines = Enumerable.Range(0, count - 1).Select(i => new TargetFrontLineInfo() { LeftCorner = corners[i], RightCorner = corners[i+1] }).ToList();
             //lines = lines.OrderByDescending(l => Vector3.Dot((l.LeftCorner + l.RightCorner).ToUnityVector(), strategyVector)).ToList();
