@@ -119,27 +119,36 @@ namespace AdvancedGears
 
         private void OnSetStrongholdRequest(CommanderTeam.SetTargetStroghold.ReceivedRequest request)
         {
+            var target = writer.Data.TargetInfoSet;
+            target.Stronghold = request.Payload;
+
             writer.SendUpdate(new CommanderTeam.Update()
             {
-                TargetStronghold = request.Payload,
+                TargetInfoSet = target,
                 StrongholdEntityId = new EntityId(request.RequestId),
             });
         }
 
         private void OnSetFrontlineRequest(CommanderTeam.SetTargetFrontline.ReceivedRequest request)
         {
+            var target = writer.Data.TargetInfoSet;
+            target.FrontLine = request.Payload;
+
             writer.SendUpdate(new CommanderTeam.Update()
             {
-                TargetFrontLine = request.Payload,
+                TargetInfoSet = target,
                 StrongholdEntityId = new EntityId(request.RequestId),
             });
         }
 
         private void OnSetHexRequest(CommanderTeam.SetTargetHex.ReceivedRequest request)
         {
+            var target = writer.Data.TargetInfoSet;
+            target.HexInfo = request.Payload;
+
             writer.SendUpdate(new CommanderTeam.Update()
             {
-                TargetHexInfo = request.Payload,
+                TargetInfoSet = target,
                 StrongholdEntityId = new EntityId(request.RequestId),
             });
         }

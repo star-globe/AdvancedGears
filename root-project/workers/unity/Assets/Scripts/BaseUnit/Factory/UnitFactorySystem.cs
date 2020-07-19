@@ -404,7 +404,7 @@ namespace AdvancedGears
                 team = new TeamInfo() { CommanderId = new EntityId(),
                                         Rank = current.CommanderRank,
                                         Order = current.Order,
-                                        TargetEntityId = new EntityId(),
+                                        TargetInfoSet = TargetUtils.DefaultTargteInfoSet(),
                                         StrongholdEntityId = id },
                 soldiers = new List<EntityId>(),
                 soldiersNumber = current.SoldiersNumber,

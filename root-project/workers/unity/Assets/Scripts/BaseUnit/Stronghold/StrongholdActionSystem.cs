@@ -127,7 +127,7 @@ namespace AdvancedGears
                     CommanderId = u.id,
                     Rank = u.rank,
                     Order = u.order,
-                    TargetEntityId = team.Value.TargetStronghold.StrongholdId,
+                    TargetInfoSet = team.Value.TargetInfoSet,
                 };
 
                 datas.Add(u.id, teamInfo);
@@ -244,29 +244,30 @@ namespace AdvancedGears
             this.CommandSystem.SendCommand(new CommanderTeam.SetTargetHex.Request(id, targetInfo));
         }
 
-        readonly Dictionary<EntityId, List<EntityId>> entityIds = new Dictionary<EntityId, List<EntityId>>();
-        private void CheckOrder(OrderType order, Dictionary<EntityId,TargetStrongholdInfo> targets, Vector3 strategyVector, Dictionary<EntityId,TeamInfo> datas)
+        readonly Dictionary<EntityId, List<EntityId>> strongholdEntityIds = new Dictionary<EntityId, List<EntityId>>();
+        readonly Dictionary<uint, List<EntityId>> hexEntityIds = new Dictionary<uint, List<EntityId>>();
+        private void CheckOrder(OrderType order, Dictionary<EntityId,TargetStrongholdInfo> targetStrongholds, Vector3 strategyVector, Dictionary<EntityId,TeamInfo> datas)
         {
-            entityIds.Clear();
+            strongholdEntityIds.Clear();
 
-            var count = targets.Count;
+            var count = targetStrongholds.Count;
             if (count == 0)
                 return;
 
             foreach(var kvp in datas) {
-                 if(targets.ContainsKey(kvp.Value.TargetEntityId) == false) {
-                    var key = targets.Keys.ElementAt(UnityEngine.Random.Range(0,count));
+                 if(targetStrongholds.ContainsKey(kvp.Value.TargetInfoSet.Stronghold.StrongholdId) == false) {
+                    var key = targetStrongholds.Keys.ElementAt(UnityEngine.Random.Range(0,count));
 
-                    if (entityIds.ContainsKey(key) == false)
-                        entityIds[key] = new List<EntityId>();
+                    if (strongholdEntityIds.ContainsKey(key) == false)
+                        strongholdEntityIds[key] = new List<EntityId>();
 
-                    entityIds[key].Add(kvp.Key);
+                    strongholdEntityIds[key].Add(kvp.Key);
                  }
             }
 
-            foreach (var kvp in entityIds)
+            foreach (var kvp in strongholdEntityIds)
             {
-                var target = targets[kvp.Key];
+                var target = targetStrongholds[kvp.Key];
                 foreach (var id in kvp.Value) {
                     SetCommand(id, target, order);
                 }
@@ -275,72 +276,48 @@ namespace AdvancedGears
 
         private void CheckOrder(OrderType order, UnitSide side, List<FrontLineInfo> lines, Vector3 strategyVector, Dictionary<EntityId,TeamInfo> datas)
         {
-            entityIds.Clear();
+            var count = lines.Count;
+            if (count == 0)
+                return;
 
-            //var count = lines.Count;
-            //if (count <= 1)
-            //    return;
             DebugUtils.RandomlyLog(string.Format("Side:{0} LinesCount:{1}", side, lines.Count));
 
-            //var lines = Enumerable.Range(0, count - 1).Select(i => new TargetFrontLineInfo() { LeftCorner = corners[i], RightCorner = corners[i+1] }).ToList();
-            //lines = lines.OrderByDescending(l => Vector3.Dot((l.LeftCorner + l.RightCorner).ToUnityVector(), strategyVector)).ToList();
-
-            int index = 0;
             foreach(var kvp in datas) {
-                if (index+1 >= lines.Count)//
-                    index = 0;
+                var frontLine = kvp.Value.TargetInfoSet.FrontLine.FrontLine;
+                if (frontLine.IsValid() && lines.Contains(frontLine))
+                    continue;
 
-                //var line = new FrontLineInfo()
-                //{
-                //    LeftCorner = corners[index],
-                //    RightCorner = corners[index + 1]
-                //};
+                var index = UnityEngine.Random.Range(0, lines.Count);
+
                 var line = new TargetFrontLineInfo()
                 {
                     FrontLine = lines[index],
                 };
 
-                SetCommand(kvp.Key, line, order);//lines[index], order);
-                index++;
-                // if(targets.ContainsKey(kvp.Value.TargetEntityId) == false) {
-                //    var key = targets.Keys.ElementAt(UnityEngine.Random.Range(0,count));
-                //
-                //    if (entityIds.ContainsKey(key) == false)
-                //        entityIds[key] = new List<EntityId>();
-                //
-                //    entityIds[key].Add(kvp.Key);
-                // }
+                SetCommand(kvp.Key, line, order);
             }
-
-            //foreach (var kvp in entityIds)
-            //{
-            //    var target = targets[kvp.Key];
-            //    foreach (var id in kvp.Value) {
-            //        SetCommand(id, target, order);
-            //    }
-            //}
         }
 
-        private void CheckOrder(OrderType order, Dictionary<EntityId,TargetHexInfo> targets, Vector3 strategyVector, Dictionary<EntityId,TeamInfo> datas)
+        private void CheckOrder(OrderType order, Dictionary<uint,TargetHexInfo> targets, Vector3 strategyVector, Dictionary<EntityId,TeamInfo> datas)
         {
-            entityIds.Clear();
+            hexEntityIds.Clear();
 
             var count = targets.Count;
             if (count == 0)
                 return;
 
             foreach(var kvp in datas) {
-                 if(targets.ContainsKey(kvp.Value.TargetEntityId) == false) {
+                 if(targets.ContainsKey(kvp.Value.TargetInfoSet.HexInfo.HexIndex) == false) {
                     var key = targets.Keys.ElementAt(UnityEngine.Random.Range(0,count));
 
-                    if (entityIds.ContainsKey(key) == false)
-                        entityIds[key] = new List<EntityId>();
+                    if (hexEntityIds.ContainsKey(key) == false)
+                        hexEntityIds[key] = new List<EntityId>();
 
-                    entityIds[key].Add(kvp.Key);
+                    hexEntityIds[key].Add(kvp.Key);
                  }
             }
 
-            foreach (var kvp in entityIds)
+            foreach (var kvp in hexEntityIds)
             {
                 var target = targets[kvp.Key];
                 foreach (var id in kvp.Value) {

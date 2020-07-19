@@ -207,7 +207,7 @@ namespace AdvancedGears
 
             tgt = getNearestEnemy(status.Side, pos, sight.Range, allowDead: true, UnitType.Stronghold, UnitType.Commander);
             if (tgt == null) {
-                var info = team.TargetStronghold;
+                var info = team.TargetInfoSet.Stronghold;
                 if (info.StrongholdId.IsValid())
                     tgt = getUnitInfo(info.StrongholdId);
             }
@@ -225,12 +225,12 @@ namespace AdvancedGears
 
             commander.Order.Self(current.Value);
 
-            var line = team.TargetFrontLine;
-            var hex = team.TargetHexInfo;
+            var line = team.TargetInfoSet.FrontLine;
+            var hex = team.TargetInfoSet.HexInfo;
             var followers = team.FollowerInfo.GetAllFollowers();
             if (tgt == null && line.FrontLine.IsValid())
                 SetOrderFollowers(followers, entityId.EntityId, line, current.Value);
-            else if (tgt == null && hex.IsTarget)
+            else if (tgt == null && hex.IsValid())
                 SetOrderFollowers(followers, entityId.EntityId, hex, current.Value);
             else
                 SetOrderFollowers(followers, entityId.EntityId, targetInfo, current.Value);

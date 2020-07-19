@@ -105,15 +105,15 @@ namespace AdvancedGears
                         rank = r;
 
                     var team = kvp.Value;
-                    if (SelectTarget(ref enemyIndex, ref team.TargetEntityId, enemies))
+                    if (SelectTarget(ref enemyIndex, ref team.TargetInfoSet.Stronghold.StrongholdId, enemies))
                     {
                         manager.CommanderDatas[kvp.Key] = team;
 
-                        var info = strongDic[team.TargetEntityId];
+                        var info = strongDic[team.TargetInfoSet.Stronghold.StrongholdId];
 
                         var request = new CommanderTeam.SetTargetStroghold.Request(kvp.Key, new TargetStrongholdInfo()
                         {
-                            StrongholdId = team.TargetEntityId,
+                            StrongholdId = team.TargetInfoSet.Stronghold.StrongholdId,
                             Position = info.coords,
                             Side = info.side,
                         });

@@ -325,6 +325,11 @@ namespace AdvancedGears
                    targetInfo.State == UnitState.Dead;
         }
 
+        public static bool IsValid(this TargetHexInfo targetHexInfo)
+        {
+            return targetHexInfo.HexIndex < uint.MaxValue;
+        }
+
         public static bool IsValid(this FrontLineInfo info)
         {
             return info.LeftCorner.Equals(info.RightCorner) == false;
