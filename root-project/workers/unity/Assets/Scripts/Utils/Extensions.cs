@@ -152,13 +152,13 @@ namespace AdvancedGears
         public static void SetFollowers(this FollowerInfo info, List<EntityId> followers, List<EntityId> commanders)
         {
             foreach (var f in followers) {
-                if (info.Followers.Exists(en => en.Id ==f.Id) == false)
+                if (info.Followers.Any(en => en.Id ==f.Id) == false)
                     info.Followers.Add(f);
             }
 
             foreach (var c in commanders)
             {
-                if (info.UnderCommanders.Exists(en => en.Id == c.Id) == false)
+                if (info.UnderCommanders.Any(en => en.Id == c.Id) == false)
                     info.UnderCommanders.Add(c);
             }
         }
@@ -340,8 +340,16 @@ namespace AdvancedGears
             var left = info.LeftCorner.ToUnityVector() + origin;
             var right = info.RightCorner.ToUnityVector() + origin;
 
+            var center = (right + left) / 2;
             var diff = current - left;
             var line = right - left;
+            var radius = line.magnitude / 2;
+
+            if (Vector3.Dot(Vector3.Cross(line, diff), Vector3.up) < 0 ||
+                (current - center).sqrMagnitude > radius * radius) {
+
+                return Vector3.Cross(line, Vector3.down).normalized * radius / 2 + center;
+            }
 
             var dot = Vector3.Dot(diff, line.normalized);
             if (dot <= 0)
