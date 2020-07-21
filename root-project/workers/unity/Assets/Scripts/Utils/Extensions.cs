@@ -345,7 +345,7 @@ namespace AdvancedGears
             var line = right - left;
             var radius = line.magnitude / 2;
 
-            if (Vector3.Dot(Vector3.Cross(line, diff), Vector3.up) < 0 ||
+            if (Vector3.Dot(Vector3.Cross(line.normalized, diff), Vector3.up) < -radius / 4 ||
                 (current - center).sqrMagnitude > radius * radius) {
 
                 return Vector3.Cross(line, Vector3.down).normalized * radius / 2 + center;

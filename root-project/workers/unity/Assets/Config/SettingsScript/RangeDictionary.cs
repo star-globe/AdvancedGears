@@ -42,11 +42,13 @@ namespace AdvancedGears
         [SerializeField] private float armyCloudRange = 1200.0f;
         public static float ArmyCloudRange => Instance.armyCloudRange;
 
-        [SerializeField] private float bodySize = 3.0f;
+        [SerializeField] private float bodySize = 5.0f;
         public static float BodySize => Instance.bodySize;
 
-        [SerializeField] private float spreadRate = 3.0f;
+        [SerializeField] private float spreadRate = 5.0f;
         public static float SpreadSize => Instance.bodySize * Instance.spreadRate;
+
+        [SerializeField] private float spreadMin = 0.1f;
 
         Dictionary<FixedRangeType, float> rangeDic = null;
         Dictionary<FixedRangeType, float> RangeDic
@@ -89,6 +91,11 @@ namespace AdvancedGears
                 return baseRange;
 
             return baseRange * Mathf.Pow(BoidsRankRate, rank);
+        }
+
+        public static bool IsSpreadValid(in Vector3 spread)
+        {
+            return spread.sqrMagnitude > Instance.spreadMin * Instance.spreadMin;
         }
 
         [Serializable]

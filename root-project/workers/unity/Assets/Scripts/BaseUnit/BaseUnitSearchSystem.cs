@@ -110,7 +110,7 @@ namespace AdvancedGears
 
                 range = AttackLogicDictionary.GetOrderRange(status.Order, range);
                 sight.TargetRange = range;
-                sight.TargetState = target.State;
+                sight.State = target.State;
             });
         }
 

@@ -1,4 +1,4 @@
-using System;
+using System.Collections.Generic;
 using Improbable;
 using Improbable.Gdk.Core;
 using Improbable.Gdk.TransformSynchronization;
@@ -12,7 +12,7 @@ namespace AdvancedGears
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     internal class BaseUnitSightSystem : BaseSearchSystem
     {
-        struct VectorContainer
+        class VectorContainer
         {
             public Vector3? boidTarget;
             public Vector3 spread;
@@ -71,8 +71,9 @@ namespace AdvancedGears
 
             var keys = vectorDic.Keys;
             foreach(var k in keys) {
-                vectorDic[k].boidTarget = null;
-                vectorDic[k].spread = Vector3.zero;
+                var container = vectorDic[k];
+                container.boidTarget = null;
+                container.spread = Vector3.zero;
             }
 
             Entities.With(boidGroup).ForEach((Entity entity,
@@ -92,22 +93,32 @@ namespace AdvancedGears
                 if (unit == null || unit.GetGrounded(out var hitInfo) == false)
                     return;
 
-                var pos = trans.position;
+                var pos = unit.transform.position;
 
                 Vector3? tgt = calc_update_boid(ref sight, sight.State, pos);
                 Vector3 spread = Vector3.zero;
 
-                var units = getAllyUnits(status.Side, pos, RangeDictionary.SpreadSize, allowDead:true);
+                var range = RangeDictionary.SpreadSize;
+                var bodySize = RangeDictionary.BodySize;
+                var units = getAllyUnits(status.Side, pos, range, allowDead:true);
                 foreach(var u in units) {
-                    spread += pos - u.pos;
+                    var diff = pos - u.pos;
+                    var mag = Mathf.Max(bodySize, diff.magnitude);
+
+                    spread += diff.normalized * ((range / mag) - 1.0f) * bodySize;
                 }
 
                 if (units.Count > 0)
                     spread /= units.Count;
 
-                if (vectorDic.ContainsKey(entityId.EntityId)) {
-                    vectorDic[entityId.EntityId].boidTarget = tgt;
-                    vectorDic[entityId.EntityId].spread = spread;
+                if (spread != Vector3.zero)
+                    DebugUtils.RandomlyLog(string.Format("Spread Vector:{0}",spread));
+
+                var id = entityId.EntityId;
+                if (vectorDic.ContainsKey(id)) {
+                    var container = vectorDic[id];
+                    container.boidTarget = tgt;
+                    container.spread = spread;
                 }
                 else {
                     vectorDic[entityId.EntityId] = new VectorContainer() { boidTarget = tgt, spread = spread };
@@ -152,15 +163,19 @@ namespace AdvancedGears
                 Vector3? tgt = null;
                 Vector3 spread = Vector3.zero;
 
-                if (vectorDic.ContainsKey(entityId.EntityId)) {
-                    tgt = vectorDic[entityId.EntityId].boidTarget;
-                    spread = vectorDic[entityId.EntityId].spread;
+                var id = entityId.EntityId;
+                if (vectorDic.ContainsKey(id)) {
+                    tgt = vectorDic[id].boidTarget;
+                    spread = vectorDic[id].spread;
                 }
 
                 if (tgt == null)
                     tgt = sight.TargetPosition.ToWorkerPosition(this.Origin);
 
-                tgt += spread;
+                if (RangeDictionary.IsSpreadValid(spread)) {
+                    var length = (tgt.Value - pos).magnitude;
+                    tgt += spread * Mathf.Max(1.0f, (length / RangeDictionary.SpreadSize));
+                }
 
                 var positionDiff = tgt.Value - pos;
 
