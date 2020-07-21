@@ -87,9 +87,17 @@ component BaseUnitMovement {
     float consume_rate = 8;
 }
 
+enum TargetState {
+    None = 0;
+    MovementTarget = 1;
+    ActionTarget = 2;
+    OutOfRange = 3;
+}
+
 component BaseUnitSight {
     id = 20011;
 
+    TargetState state = 1;
     improbable.gdk.transform_synchronization.FixedPointVector3 target_position = 2;
     float target_range = 3;
     
@@ -127,13 +135,6 @@ type TargetInfo {
     UnitState state = 6;
     EntityId commander_id = 7;
     float ally_range = 8;
-}
-
-enum TargetState {
-    None = 0;
-    MovementTarget = 1;
-    ActionTarget = 2;
-    OutOfRange = 3;
 }
 
 type TargetFrontLineInfo {

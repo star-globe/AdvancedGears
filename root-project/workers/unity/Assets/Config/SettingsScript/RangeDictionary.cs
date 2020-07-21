@@ -45,6 +45,9 @@ namespace AdvancedGears
         [SerializeField] private float bodySize = 3.0f;
         public static float BodySize => Instance.bodySize;
 
+        [SerializeField] private float spreadRate = 3.0f;
+        public static float SpreadSize => Instance.bodySize * Instance.spreadRate;
+
         Dictionary<FixedRangeType, float> rangeDic = null;
         Dictionary<FixedRangeType, float> RangeDic
         {

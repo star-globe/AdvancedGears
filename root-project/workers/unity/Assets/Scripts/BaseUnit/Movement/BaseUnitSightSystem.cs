@@ -10,45 +10,123 @@ namespace AdvancedGears
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
-    internal class BaseUnitSightSystem : SpatialComponentSystem
+    internal class BaseUnitSightSystem : BaseSearchSystem
     {
-        EntityQuery group;
-        IntervalChecker interval;
+        struct VectorContainer
+        {
+            public Vector3? boidTarget;
+            public Vector3 spread;
+        }
+
+        EntityQuery movementGroup;
+        EntityQuery boidGroup;
+
+        IntervalChecker intervalMovement;
+        IntervalChecker intervalBoid;
+
         double deltaTime = -1.0;
 
-        const int period = 10; 
+        const int periodMovement = 10;
+        const int periodBoid = 2;
+
+        readonly Dictionary<EntityId, VectorContainer> vectorDic = new Dictionary<EntityId, VectorContainer>();
+
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            group = GetEntityQuery(
-                    ComponentType.ReadOnly<UnitTransform>(),
-                    ComponentType.ReadWrite<BaseUnitMovement.Component>(),
-                    ComponentType.ReadOnly<BaseUnitMovement.HasAuthority>(),
-                    ComponentType.ReadWrite<BaseUnitSight.Component>(),
-                    ComponentType.ReadOnly<BaseUnitSight.HasAuthority>(),
-                    ComponentType.ReadOnly<BaseUnitTarget.Component>(),
-                    ComponentType.ReadOnly<BaseUnitStatus.Component>(),
-                    ComponentType.ReadOnly<BaseUnitAction.Component>()
+            movementGroup = GetEntityQuery(
+                ComponentType.ReadOnly<UnitTransform>(),
+                ComponentType.ReadWrite<BaseUnitMovement.Component>(),
+                ComponentType.ReadOnly<BaseUnitMovement.HasAuthority>(),
+                ComponentType.ReadOnly<BaseUnitSight.Component>(),
+                ComponentType.ReadOnly<BaseUnitStatus.Component>(),
+                ComponentType.ReadOnly<SpatialEntityId>()
             );
 
-            interval = IntervalCheckerInitializer.InitializedChecker(period);
+            boidGroup = GetEntityQuery(
+                ComponentType.ReadOnly<UnitTransform>(),
+                ComponentType.ReadWrite<BaseUnitSight.Component>(),
+                ComponentType.ReadOnly<BaseUnitSight.HasAuthority>(),
+                ComponentType.ReadOnly<BaseUnitStatus.Component>(),
+                ComponentType.ReadOnly<SpatialEntityId>()
+            );
+
+            intervalMovement = IntervalCheckerInitializer.InitializedChecker(periodMovement);
+            intervalBoid = IntervalCheckerInitializer.InitializedChecker(periodBoid);
 
             deltaTime = Time.ElapsedTime;
         }
 
         protected override void OnUpdate()
         {
-            if (CheckTime(ref interval) == false)
+            UpdateBoid();
+            UpdateMovement();
+        }
+
+        private void UpdateBoid()
+        {
+            if (CheckTime(ref intervalBoid) == false)
+                return;
+
+            var keys = vectorDic.Keys;
+            foreach(var k in keys) {
+                vectorDic[k].boidTarget = null;
+                vectorDic[k].spread = Vector3.zero;
+            }
+
+            Entities.With(boidGroup).ForEach((Entity entity,
+                              ref BaseUnitSight.Component sight,
+                              ref BaseUnitStatus.Component status,
+                              ref SpatialEntityId entityId) =>
+            {
+                if (status.State != UnitState.Alive)
+                    return;
+                
+                if (UnitUtils.IsAutomaticallyMoving(status.Type) == false)
+                    return;
+
+                var unit = EntityManager.GetComponentObject<UnitTransform>(entity);
+
+                // check ground
+                if (unit == null || unit.GetGrounded(out var hitInfo) == false)
+                    return;
+
+                var pos = trans.position;
+
+                Vector3? tgt = calc_update_boid(ref sight, sight.State, pos);
+                Vector3 spread = Vector3.zero;
+
+                var units = getAllyUnits(status.Side, pos, RangeDictionary.SpreadSize, allowDead:true);
+                foreach(var u in units) {
+                    spread += pos - u.pos;
+                }
+
+                if (units.Count > 0)
+                    spread /= units.Count;
+
+                if (vectorDic.ContainsKey(entityId.EntityId)) {
+                    vectorDic[entityId.EntityId].boidTarget = tgt;
+                    vectorDic[entityId.EntityId].spread = spread;
+                }
+                else {
+                    vectorDic[entityId.EntityId] = new VectorContainer() { boidTarget = tgt, spread = spread };
+                }
+            });
+        }
+        
+        private void UpdateMovement()
+        {
+            if (CheckTime(ref intervalMovement) == false)
                 return;
 
             deltaTime = Time.ElapsedTime - deltaTime;
 
-            Entities.With(group).ForEach((Entity entity,
+            Entities.With(movementGroup).ForEach((Entity entity,
                                           ref BaseUnitMovement.Component movement,
                                           ref BaseUnitSight.Component sight,
-                                          ref BaseUnitTarget.Component target,
-                                          ref BaseUnitStatus.Component status) =>
+                                          ref BaseUnitStatus.Component status,
+                                          ref SpatialEntityId entityId) =>
             {
                 movement.MoveSpeed = 0.0f;
                 movement.RotSpeed = 0.0f;
@@ -65,16 +143,24 @@ namespace AdvancedGears
                 if (unit == null || unit.GetGrounded(out var hitInfo) == false)
                     return;
 
-                if (target.State == TargetState.None)
+                if (sight.State == TargetState.None)
                     return;
 
                 var trans = unit.transform;
                 var pos = trans.position;
 
-                Vector3? tgt = calc_update_boid(ref sight, target.State, pos);
+                Vector3? tgt = null;
+                Vector3 spread = Vector3.zero;
+
+                if (vectorDic.ContainsKey(entityId.EntityId)) {
+                    tgt = vectorDic[entityId.EntityId].boidTarget;
+                    spread = vectorDic[entityId.EntityId].spread;
+                }
 
                 if (tgt == null)
                     tgt = sight.TargetPosition.ToWorkerPosition(this.Origin);
+
+                tgt += spread;
 
                 var positionDiff = tgt.Value - pos;
 
