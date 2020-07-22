@@ -66,13 +66,17 @@ namespace AdvancedGears
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
 
                 var targets = sight.TargetStrongholds;
+                var targetSide = UnitSide.None;//sight.StrategyVector.Side;
                 var vector = sight.StrategyVector.Vector.ToUnityVector();
                 var corners = sight.FrontLineCorners;
                 var hexes = sight.TargetHexes;
                 var order = OrderType.Idle;
                 if (portal.FrontHexes.TryGetValue(status.Side, out var frontHexInfo)) {
-                    order = GetTargetFrontLine(trans.position, frontHexInfo.Indexes, corners);
-                    //GetTargetStronghold(trans.position, status.Side, vector, entityId.EntityId, indexes, targets);
+                    if (portal.FrontHexes.TryGetValue(targetSide, out var targetHexInfo))
+                        order = GetTargetHex(trans.position, frontHexInfo.Indexes, targetHexInfo, hexes);
+
+                    if (order == OrderType.Idle)
+                        order = GetTargetFrontLine(trans.position, frontHexInfo.Indexes, corners);
                 }
 
                 sight.TargetStrongholds = targets;
@@ -101,12 +105,11 @@ namespace AdvancedGears
                 corners.AddRange(targetIndex.Value.FrontLines);
                 return OrderType.Keep;
             }
-            else {
-                return OrderType.Idle;
-            }
+
+            return OrderType.Idle;
         }
 
-        private OrderType GetTargetHex(in Vector3 pos, List<HexIndex> indexes, Dictionary<UnitSide,FrontHexInfo> fronts, Dictionary<uint,TargetHexInfo> hexes)
+        private OrderType GetTargetHex(in Vector3 pos, List<HexIndex> indexes, FrontHexInfo targetFront, Dictionary<uint,TargetHexInfo> hexes)
         {
             HexIndex? targetIndex = null;
             float length = float.MaxValue;
@@ -120,30 +123,24 @@ namespace AdvancedGears
                 targetIndex = hex;
             }
 
-            if (targetIndex.HasValue) {
-                return GetNeighborTargetHexes(UnitSide.None, targetIndex.Value.Index, fronts, hexes);
-            }
-            else {
-                return OrderType.Idle;
-            }
+            if (targetIndex.HasValue)
+                return GetNeighborTargetHexes(targetIndex.Value.Index, fronts, hexes);
+
+            return OrderType.Idle;
         }
 
-        private OrderType GetNeighborTargetHexes(UnitSide side, uint index, Dictionary<UnitSide, FrontHexInfo> fronts, Dictionary<uint, TargetHexInfo> hexes)
+        private OrderType GetNeighborTargetHexes(uint index,  FrontHexInfo targetFront, Dictionary<uint, TargetHexInfo> hexes)
         {
             bool isTarget = false;
-            if (fronts.TryGetValue(side, out var info))
+            var neighbors = HexUtils.GetNeighborHexIndexes(index);
+            foreach (var n in neighbors)
             {
-                var neighbors = HexUtils.GetNeighborHexIndexes(index);
-                foreach (var n in neighbors)
-                {
-                    var i = info.Indexes.FindIndex(h => h.Index == n);
-                    if (i < 0)
-                        continue;
-
-                    isTarget = true;
-                    var hx = info.Indexes[i];
-                    hexes[n] = new TargetHexInfo(hx.Index, UnitSide.None);
-                }
+                var i = targetFront.Indexes.FindIndex(h => h.Index == n);
+                if (i < 0)
+                    continue;
+                isTarget = true;
+                var hx = targetFront.Indexes[i];
+                hexes[n] = new TargetHexInfo(hx.Index, UnitSide.None);
             }
 
             return isTarget ? OrderType.Attack: OrderType.Keep;
