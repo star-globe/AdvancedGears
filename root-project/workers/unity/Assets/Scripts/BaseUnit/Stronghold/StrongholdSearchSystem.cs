@@ -66,24 +66,41 @@ namespace AdvancedGears
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
 
                 var targets = sight.TargetStrongholds;
-                var targetSide = UnitSide.None;//sight.StrategyVector.Side;
+                var enemySide = sight.StrategyVector.Side;
                 var vector = sight.StrategyVector.Vector.ToUnityVector();
                 var corners = sight.FrontLineCorners;
                 var hexes = sight.TargetHexes;
-                var order = OrderType.Idle;
-                if (portal.FrontHexes.TryGetValue(status.Side, out var frontHexInfo)) {
-                    if (portal.FrontHexes.TryGetValue(targetSide, out var targetHexInfo))
-                        order = GetTargetHex(trans.position, frontHexInfo.Indexes, targetHexInfo, hexes);
 
-                    if (order == OrderType.Idle)
-                        order = GetTargetFrontLine(trans.position, frontHexInfo.Indexes, corners);
-                }
+                var order = GetTarget(trans.position, portal.FrontHexes, status.Side, enemySide, hexes, corners);
 
                 sight.TargetStrongholds = targets;
                 sight.FrontLineCorners = corners;
                 sight.TargetHexes = hexes;
                 status.Order = order;
             });
+        }
+
+        private OrderType GetTarget(Vector3 pos, Dictionary<UnitSide,FrontHexInfo> frontHexes, UnitSide selfSide, UnitSide enemySide, Dictionary<uint,TargetHexInfo> hexes, List<FrontLineInfo> corners)
+        {
+            var order = OrderType.Idle;
+            if (frontHexes.TryGetValue(selfSide, out var frontHexInfo) == false)
+                return order;
+            
+            FrontHexInfo targetHexInfo;
+            if (frontHexes.TryGetValue(UnitSide.None, out targetHexInfo))
+                order = GetTargetHex(pos, frontHexInfo.Indexes, targetHexInfo, hexes);
+            
+            if (order != OrderType.Idle)
+                return order;
+
+            if (frontHexes.TryGetValue(enemySide, out targetHexInfo))
+                order = GetTargetHex(pos, frontHexInfo.Indexes, targetHexInfo, hexes);
+
+            if (order != OrderType.Idle)
+                return order;
+
+            order = GetTargetFrontLine(pos, frontHexInfo.Indexes, corners);
+            return order;
         }
 
         private OrderType GetTargetFrontLine(in Vector3 pos, List<HexIndex> indexes, List<FrontLineInfo> corners)
