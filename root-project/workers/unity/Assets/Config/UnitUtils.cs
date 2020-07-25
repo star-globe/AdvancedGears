@@ -27,5 +27,15 @@ namespace AdvancedGears
             var set = UnitCommonSettingsDictionary.GetSettings(type);
             return set != null && set.isOfficer;
         }
+
+        public static bool IsNeedUpdate(int bitNumber, TargetInfoType type)
+        {
+            return (bitNumber & 1 << (int)type) != 0;
+        }
+
+        public static int UpdateTargetBit(int bitNumber, TargetInfoType type)
+        {
+            return bitNumber + (1 << (int)type);
+        }
     }
 }

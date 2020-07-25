@@ -96,15 +96,12 @@ namespace AdvancedGears
                 }
                 
                 if (status.Type == UnitType.Commander) {
-
-                    var rank = status.Rank;
-
-                    if (rank == 0 && target.TargetInfo.IsDominationTarget(status.Side))
+                    if (target.TargetInfo.IsDominationTarget(status.Side))
                         range = GetDominationRange(target.TargetInfo.TargetId) / 2;
                     else
                     {
                         var addRange = target.TargetInfo.AllyRange / 2;
-                        range += AttackLogicDictionary.RankScaled(addRange, rank);
+                        range += AttackLogicDictionary.RankScaled(addRange, status.Rank);
                     }
                 }
 
@@ -143,19 +140,19 @@ namespace AdvancedGears
                 sight.TargetPosition = target.TargetInfo.Position;
                 target.State = CalcTargetState(sight.TargetPosition.ToWorkerPosition(this.Origin) - pos, sightRange);
                 isTarget = true;
-                DebugUtils.RandomlyLog(string.Format("Target Position:{0}", sight.TargetPosition));
+                DebugUtils.RandomlyLog(string.Format("Target Position:{0}", sight.TargetPosition.ToWorkerPosition(this.Origin)));
             }
             else if (target.HexInfo.IsValid()) {
                 sight.TargetPosition = HexUtils.GetHexCenter(this.Origin, target.HexInfo.HexIndex, HexDictionary.HexEdgeLength).ToWorldPosition(this.Origin);
-                target.State = TargetState.OutOfRange;
-                isTarget = true;
-                DebugUtils.RandomlyLog(string.Format("Hex Position:{0}", sight.TargetPosition));
-            }
-            else if (target.FrontLine.FrontLine.IsValid()) {
-                sight.TargetPosition = target.FrontLine.FrontLine.GetOnLinePosition(this.Origin, pos).ToWorldPosition(this.Origin);
                 target.State = TargetState.MovementTarget;
                 isTarget = true;
-                DebugUtils.RandomlyLog(string.Format("FrontLine Position:{0}", sight.TargetPosition));
+                DebugUtils.RandomlyLog(string.Format("Hex Position:{0}", sight.TargetPosition.ToWorkerPosition(this.Origin)));
+            }
+            else if (target.FrontLine.FrontLine.IsValid()) {
+                sight.TargetPosition = target.FrontLine.FrontLine.GetOnLinePosition(this.Origin, pos, -sightRange / 2).ToWorldPosition(this.Origin);
+                target.State = TargetState.MovementTarget;
+                isTarget = true;
+                DebugUtils.RandomlyLog(string.Format("FrontLine Position:{0}", sight.TargetPosition.ToWorkerPosition(this.Origin)));
             }
 
             return isTarget;

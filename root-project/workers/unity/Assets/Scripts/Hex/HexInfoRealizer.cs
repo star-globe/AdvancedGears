@@ -19,12 +19,22 @@ namespace AdvancedGears
 
         Vector3 origin;
 
-        void Start()
+        private void OnEnable()
         {
-            SetLandLine(this.Origin);
+            reader.OnSideUpdate += UpdateSide;
         }
 
-        void SetLandLine(Vector3 origin)
+        void Start()
+        {
+            SetLandLine(this.Origin, reader.Data.Side);
+        }
+
+        void UpdateSide(UnitSide side)
+        {
+            SetLandLine(this.Origin, side);
+        }
+
+        void SetLandLine(Vector3 origin, UnitSide side)
         {
             if (line != null)
             {
@@ -32,7 +42,7 @@ namespace AdvancedGears
                 Vector3[] corners = new Vector3[7];
                 HexUtils.SetHexCorners(origin, index, corners, HexDictionary.HexEdgeLength);
 
-                line.SetLines(corners, PhysicsUtils.GroundMask, cutNumber, origin.y + height, origin.y, height/100);
+                line.SetLines(side, corners, PhysicsUtils.GroundMask, cutNumber, origin.y + height, origin.y, height/100);
             }
         }
 

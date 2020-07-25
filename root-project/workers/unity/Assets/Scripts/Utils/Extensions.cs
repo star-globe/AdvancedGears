@@ -335,20 +335,33 @@ namespace AdvancedGears
             return info.LeftCorner.Equals(info.RightCorner) == false;
         }
 
-        public static Vector3 GetOnLinePosition(this FrontLineInfo info, Vector3 origin, Vector3 current)
+        public static bool IsValid(this TargetStrongholdInfo info)
+        {
+            return info.StrongholdId.IsValid();
+        }
+
+        public static Vector3 GetOnLinePosition(this FrontLineInfo info, Vector3 origin, Vector3 current, float fowardBuffer = 0.0f)
         {
             var left = info.LeftCorner.ToUnityVector() + origin;
             var right = info.RightCorner.ToUnityVector() + origin;
 
+            var line = right - left;
+            var foward = Vector3.Cross(line, Vector3.up).normalized;
+
+            if (fowardBuffer != 0) {
+                left += foward * fowardBuffer;
+                right += foward * fowardBuffer;
+            }
+
             var center = (right + left) / 2;
             var diff = current - left;
-            var line = right - left;
+
             var radius = line.magnitude / 2;
 
             if (Vector3.Dot(Vector3.Cross(line.normalized, diff), Vector3.up) < -radius / 4 ||
                 (current - center).sqrMagnitude > radius * radius) {
 
-                return Vector3.Cross(line, Vector3.down).normalized * radius / 2 + center;
+                return -foward * radius / 2 + center;
             }
 
             var dot = Vector3.Dot(diff, line.normalized);

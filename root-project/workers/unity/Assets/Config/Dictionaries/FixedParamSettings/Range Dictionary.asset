@@ -35,4 +35,6 @@ MonoBehaviour:
   boidsRankRate: 3
   minimapRange: 1000
   armyCloudRange: 1200
-  bodySize: 3
+  bodySize: 5
+  spreadRate: 5
+  spreadMin: 0.1

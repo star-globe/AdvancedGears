@@ -93,11 +93,13 @@ namespace AdvancedGears
             if (order != OrderType.Idle)
                 return order;
 
-            if (frontHexes.TryGetValue(enemySide, out targetHexInfo))
+#if false
+            if (enemySide != UnitSide.None && frontHexes.TryGetValue(enemySide, out targetHexInfo))
                 order = GetTargetHex(pos, frontHexInfo.Indexes, targetHexInfo, hexes);
 
             if (order != OrderType.Idle)
                 return order;
+#endif
 
             order = GetTargetFrontLine(pos, frontHexInfo.Indexes, corners);
             return order;
@@ -141,7 +143,7 @@ namespace AdvancedGears
             }
 
             if (targetIndex.HasValue)
-                return GetNeighborTargetHexes(targetIndex.Value.Index, fronts, hexes);
+                return GetNeighborTargetHexes(targetIndex.Value.Index, targetFront, hexes);
 
             return OrderType.Idle;
         }

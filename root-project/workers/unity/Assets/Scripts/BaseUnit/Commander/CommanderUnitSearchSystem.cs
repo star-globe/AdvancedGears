@@ -15,11 +15,14 @@ namespace AdvancedGears
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     public class CommanderUnitSearchSystem : BaseCommanderSearch
     {
-        private EntityQuery targettingGroup;
-        private EntityQuery teamingGroup;
+        private EntityQuerySet targettingQuerySet;
+        private EntityQuerySet teamingQuerySet;
 
-        IntervalChecker teamingInter;
-        IntervalChecker targettingInter;
+        //private EntityQuery targettingGroup;
+        //private EntityQuery teamingGroup;
+        //
+        //IntervalChecker teamingInter;
+        //IntervalChecker targettingInter;
 
         const float teaminTime = 1.0f;
         const int period = 15;
@@ -28,46 +31,56 @@ namespace AdvancedGears
         {
             base.OnCreate();
 
-            targettingGroup = GetEntityQuery(
-                ComponentType.ReadWrite<CommanderSight.Component>(),
-                ComponentType.ReadWrite<CommanderStatus.Component>(),
-                ComponentType.ReadWrite<CommanderAction.Component>(),
-                ComponentType.ReadOnly<CommanderAction.HasAuthority>(),
-                ComponentType.ReadOnly<CommanderTeam.Component>(),
-                ComponentType.ReadOnly<BaseUnitStatus.Component>(),
-                ComponentType.ReadOnly<Transform>(),
-                ComponentType.ReadOnly<SpatialEntityId>()
-            );
+            targettingQuerySet = new EntityQuerySet(GetEntityQuery(
+                                                    ComponentType.ReadWrite<CommanderStatus.Component>(),
+                                                    ComponentType.ReadOnly<CommanderStatus.HasAuthority>(),
+                                                    ComponentType.ReadWrite<CommanderTeam.Component>(),
+                                                    ComponentType.ReadOnly<CommanderTeam.HasAuthority>(),
+                                                    ComponentType.ReadOnly<BaseUnitStatus.Component>(),
+                                                    ComponentType.ReadOnly<BaseUnitAction.Component>(),
+                                                    ComponentType.ReadOnly<BaseUnitTarget.Component>(),
+                                                    ComponentType.ReadOnly<Transform>(),
+                                                    ComponentType.ReadOnly<SpatialEntityId>()
+                                                    ), period);
 
-            teamingGroup = GetEntityQuery(
-                ComponentType.ReadWrite<CommanderTeam.Component>(),
-                ComponentType.ReadOnly<CommanderTeam.HasAuthority>(),
-                ComponentType.ReadOnly<CommanderSight.Component>(),
-                ComponentType.ReadOnly<BaseUnitStatus.Component>(),
-                ComponentType.ReadOnly<Transform>(),
-                ComponentType.ReadOnly<SpatialEntityId>()
-            );
+            teamingQuerySet = new EntityQuerySet(GetEntityQuery(
+                                                 ComponentType.ReadWrite<CommanderTeam.Component>(),
+                                                 ComponentType.ReadOnly<CommanderTeam.HasAuthority>(),
+                                                 ComponentType.ReadOnly<CommanderSight.Component>(),
+                                                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
+                                                 ComponentType.ReadOnly<Transform>(),
+                                                 ComponentType.ReadOnly<SpatialEntityId>()
+                                                ), teaminTime);
 
-            teamingInter = IntervalCheckerInitializer.InitializedChecker(teaminTime);
-            targettingInter = IntervalCheckerInitializer.InitializedChecker(period);
+            //teamingGroup = GetEntityQuery(
+            //    ComponentType.ReadWrite<CommanderTeam.Component>(),
+            //    ComponentType.ReadOnly<CommanderTeam.HasAuthority>(),
+            //    ComponentType.ReadOnly<CommanderSight.Component>(),
+            //    ComponentType.ReadOnly<BaseUnitStatus.Component>(),
+            //    ComponentType.ReadOnly<Transform>(),
+            //    ComponentType.ReadOnly<SpatialEntityId>()
+            //);
+            //
+            //teamingInter = IntervalCheckerInitializer.InitializedChecker(teaminTime);
+            //targettingInter = IntervalCheckerInitializer.InitializedChecker(period);
         }
 
         protected override void OnUpdate()
         {
-            if (CheckTime(ref teamingInter))
-                HandleTeaming();
-
-            if (CheckTime(ref targettingInter))
-                HandleTargetting();
+            HandleTeaming();
+            HandleTargetting();
         }
         private void HandleTargetting()
         {
-            Entities.With(targettingGroup).ForEach((Entity entity,
-                              ref CommanderSight.Component sight,
+            if (CheckTime(ref targettingQuerySet.inter) == false)
+                return;
+
+            Entities.With(targettingQuerySet.group).ForEach((Entity entity,
                               ref CommanderStatus.Component commander,
                               ref CommanderTeam.Component team,
-                              ref CommanderAction.Component action,
                               ref BaseUnitStatus.Component status,
+                              ref BaseUnitAction.Component action,
+                              ref BaseUnitTarget.Component target,
                               ref SpatialEntityId entityId) =>
             {
                 if (status.State != UnitState.Alive)
@@ -79,30 +92,20 @@ namespace AdvancedGears
                 if (status.Order == OrderType.Idle)
                     return;
 
-                var inter = sight.Interval;
-                if (CheckTime(ref inter) == false)
-                    return;
-
-                sight.Interval = inter;
-
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
                 var pos = trans.position;
 
                 bool is_target;
-                //int sol = commander.TeamConfig.Soldiers / 2;
-                //int com = commander.TeamConfig.Commanders / 2;
-                //if (CheckNeedsFollowers(ref team, sol, com, commander.Rank))
-                //    is_target = escapeOrder(status, entityId, pos, ref sight, ref commander);
-                //else
-                is_target = attackOrder(status, entityId, pos, ref sight, ref commander, ref team);
-
-                action.IsTarget = is_target;
+                is_target = attackOrder(status, entityId, pos, target.TargetInfo, action.SightRange, ref commander, ref team);
             });
         }
         
         private void HandleTeaming()
         {
-            Entities.With(teamingGroup).ForEach((Entity entity,
+            if (CheckTime(ref teamingQuerySet.inter) == false)
+                return;
+
+            Entities.With(teamingQuerySet.group).ForEach((Entity entity,
                               ref CommanderSight.Component sight,
                               ref CommanderTeam.Component team,
                               ref BaseUnitStatus.Component status,
@@ -144,8 +147,7 @@ namespace AdvancedGears
         }
         #endregion
 
-        void commonTargeting(UnitInfo tgt, in SpatialEntityId entityId, in CommanderStatus.Component commander,
-                            ref CommanderSight.Component sight, out TargetInfo targetInfo)
+        void commonTargeting(UnitInfo tgt, in SpatialEntityId entityId, in CommanderStatus.Component commander, out TargetInfo targetInfo)
         {
             TargetBaseInfo baseInfo; 
             baseInfo.IsTarget = tgt != null;
@@ -168,8 +170,6 @@ namespace AdvancedGears
             baseInfo.Type = type;
             baseInfo.Side = side;
             baseInfo.State = state;
-
-            sight.TargetInfo = baseInfo;
 
             targetInfo = new TargetInfo(baseInfo.IsTarget,
                                         baseInfo.TargetId,
@@ -195,28 +195,22 @@ namespace AdvancedGears
         //    return tgt != null;
         //}
 
-        bool attackOrder(in BaseUnitStatus.Component status, in SpatialEntityId entityId, in Vector3 pos,
-                         ref CommanderSight.Component sight,
+        bool attackOrder(in BaseUnitStatus.Component status, in SpatialEntityId entityId, in Vector3 pos, in TargetInfo currentTarget, float attackRange,
                          ref CommanderStatus.Component commander,
                          ref CommanderTeam.Component team)
         {
             // check rank
             UnitInfo tgt;
 
-            var range = AttackLogicDictionary.RankScaled(sight.Range, status.Rank);
+            var scaledRange = AttackLogicDictionary.RankScaled(attackRange, status.Rank);
 
-            tgt = getNearestEnemy(status.Side, pos, sight.Range, allowDead: true, UnitType.Stronghold, UnitType.Commander);
-            if (tgt == null) {
-                var info = team.TargetInfoSet.Stronghold;
-                if (info.StrongholdId.IsValid())
-                    tgt = getUnitInfo(info.StrongholdId);
-            }
+            tgt = getNearestEnemy(status.Side, pos, scaledRange, allowDead: true, UnitType.Stronghold, UnitType.Commander);
 
             TargetInfo targetInfo;
-            commonTargeting(tgt, entityId, commander, ref sight, out targetInfo);
+            commonTargeting(tgt, entityId, commander, out targetInfo);
 
             // check power
-            var current = GetOrder(status.Side, pos, sight.Range);
+            var current = GetOrder(status.Side, pos, scaledRange);
             if (current == null)
             {
                 current = commander.Order.Upper == OrderType.Guard ?
@@ -227,15 +221,24 @@ namespace AdvancedGears
 
             var line = team.TargetInfoSet.FrontLine;
             var hex = team.TargetInfoSet.HexInfo;
+            var stronghold = team.TargetInfoSet.Stronghold;
             var followers = team.FollowerInfo.GetAllFollowers();
-            if (tgt == null && line.FrontLine.IsValid())
-                SetOrderFollowers(followers, entityId.EntityId, line, current.Value);
-            else if (tgt == null && hex.IsValid())
-                SetOrderFollowers(followers, entityId.EntityId, hex, current.Value);
-            else
-                SetOrderFollowers(followers, entityId.EntityId, targetInfo, current.Value);
 
-            DebugUtils.RandomlyLog(string.Format("Follower Count : {0}", followers.Count));
+            var targetBit = team.IsNeedUpdate;
+
+            if (UnitUtils.IsNeedUpdate(targetBit, TargetInfoType.FrontLine) && line.FrontLine.IsValid())
+                SetOrderFollowers(followers, entityId.EntityId, line, current.Value);
+
+            if (UnitUtils.IsNeedUpdate(targetBit, TargetInfoType.Hex) && hex.IsValid())
+                SetOrderFollowers(followers, entityId.EntityId, hex, current.Value);
+
+            if (UnitUtils.IsNeedUpdate(targetBit, TargetInfoType.Stronghold) && stronghold.IsValid())
+                SetOrderFollowers(followers, entityId.EntityId, stronghold, current.Value);
+
+            team.IsNeedUpdate = 0;
+
+            if (targetInfo.Equals(currentTarget) == false)
+                SetOrderFollowers(followers, entityId.EntityId, targetInfo, current.Value);
 
             return tgt != null;
         }
@@ -306,6 +309,15 @@ namespace AdvancedGears
 
             SetCommand(entityId, hexInfo, order);
         }
+        private void SetOrderFollowers(List<EntityId> followers, in EntityId entityId, in TargetStrongholdInfo strongholdInfo, OrderType order)
+        {
+            foreach (var id in followers)
+            {
+                SetCommand(id, strongholdInfo, order);
+            }
+
+            SetCommand(entityId, strongholdInfo, order);
+        }
         private void SetCommand(EntityId id, in TargetInfo targetInfo, OrderType order)
         {
             base.SetCommand(id, order);
@@ -320,6 +332,11 @@ namespace AdvancedGears
         {
             base.SetCommand(id, order);
             this.CommandSystem.SendCommand(new BaseUnitTarget.SetHex.Request(id, hexInfo));
+        }
+        private void SetCommand(EntityId id, in TargetStrongholdInfo strongholdInfo, OrderType order)
+        {
+            base.SetCommand(id, order);
+            this.CommandSystem.SendCommand(new BaseUnitTarget.SetStronghold.Request(id, strongholdInfo));
         }
         #endregion
     }

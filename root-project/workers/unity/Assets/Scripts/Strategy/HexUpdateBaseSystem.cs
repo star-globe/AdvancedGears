@@ -59,9 +59,12 @@ namespace AdvancedGears
             for (var i = 0; i < hexChangedEvents.Count; i++)
             {
                 var change = hexChangedEvents[i].Event.Payload;
-                if (hexDic.ContainsKey(change.HexIndex)) {
-                    hexDic[change.HexIndex].Side = change.Side;
-                }
+                if (hexDic.ContainsKey(change.HexIndex) == false)
+                    continue;
+
+                var hex = hexDic[change.HexIndex];
+                hex.Side = change.Side;
+                this.UpdateSystem.SendUpdate(new HexBase.Update { Side = change.Side }, hex.EntityId.EntityId);
             }
 
             hexChanged = hexChangedEvents.Count > 0;

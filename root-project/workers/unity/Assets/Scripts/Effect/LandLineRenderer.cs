@@ -9,6 +9,9 @@ namespace AdvancedGears
     [RequireComponent(typeof(LineRenderer))]
     public class LandLineRenderer : MonoBehaviour
     {
+        [SerializeField]
+        BaseUnitStateColorSettings colorSettings;
+
         private LineRenderer lineRenderer;
 
         public LineRenderer Renderer
@@ -20,7 +23,7 @@ namespace AdvancedGears
             }
         }
 
-        public void SetLines(Vector3[] basePoints, int layerMask, int cutNumber, float fromHeight, float underHeight, float buffer)
+        public void SetLines(UnitSide side, Vector3[] basePoints, int layerMask, int cutNumber, float fromHeight, float underHeight, float buffer)
         {
             if (basePoints == null)
                 return;
@@ -56,6 +59,10 @@ namespace AdvancedGears
                 
                 newPoints[i] = new Vector3(p.x, hit.point.y + buffer, p.z);
             }
+
+            var col = colorSettings.GetSideColor(side);
+            this.Renderer.startColor = col;
+            this.Renderer.endColor = col;
 
             this.Renderer.positionCount = newPoints.Length;
             this.Renderer.SetPositions(newPoints);

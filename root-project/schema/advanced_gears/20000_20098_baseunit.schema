@@ -152,6 +152,13 @@ type TargetStrongholdInfo {
     improbable.Coordinates position = 3;
 }
 
+enum TargetInfoType {
+    None = 0;
+    Stronghold = 1;
+    FrontLine = 2;
+    Hex = 3;
+}
+
 type TargetInfoSet {
     TargetStrongholdInfo stronghold = 1;
     TargetFrontLineInfo front_line = 2;
@@ -169,6 +176,7 @@ component BaseUnitTarget {
     command improbable.gdk.core.Empty set_target(TargetInfo);
     command improbable.gdk.core.Empty set_front_line(TargetFrontLineInfo);
     command improbable.gdk.core.Empty set_hex(TargetHexInfo);
+    command improbable.gdk.core.Empty set_stronghold(TargetStrongholdInfo);
 }
 
 type PostureData {
@@ -247,6 +255,7 @@ component CommanderTeam {
     SuperiorInfo superior_info = 2;
 
     TargetInfoSet target_info_set = 3;
+    int32 is_need_update = 4;
 
     EntityId stronghold_entity_id = 10;
 
@@ -265,11 +274,6 @@ type WarPower {
 
 component CommanderSight {
     id = 20022;
-
-    float range = 1;
-    IntervalChecker interval = 2;
-
-    TargetBaseInfo target_info = 5;
 
     list<WarPower> war_powers = 7;
 }

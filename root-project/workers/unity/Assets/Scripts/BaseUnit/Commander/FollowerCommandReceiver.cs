@@ -121,11 +121,13 @@ namespace AdvancedGears
         {
             var target = writer.Data.TargetInfoSet;
             target.Stronghold = request.Payload;
+            var bitNumber = writer.Data.IsNeedUpdate;
 
             writer.SendUpdate(new CommanderTeam.Update()
             {
                 TargetInfoSet = target,
                 StrongholdEntityId = new EntityId(request.RequestId),
+                IsNeedUpdate = UnitUtils.UpdateTargetBit(bitNumber, TargetInfoType.Stronghold),
             });
         }
 
@@ -133,11 +135,13 @@ namespace AdvancedGears
         {
             var target = writer.Data.TargetInfoSet;
             target.FrontLine = request.Payload;
+            var bitNumber = writer.Data.IsNeedUpdate;
 
             writer.SendUpdate(new CommanderTeam.Update()
             {
                 TargetInfoSet = target,
                 StrongholdEntityId = new EntityId(request.RequestId),
+                IsNeedUpdate = UnitUtils.UpdateTargetBit(bitNumber, TargetInfoType.FrontLine),
             });
         }
 
@@ -145,11 +149,13 @@ namespace AdvancedGears
         {
             var target = writer.Data.TargetInfoSet;
             target.HexInfo = request.Payload;
+            var bitNumber = writer.Data.IsNeedUpdate;
 
             writer.SendUpdate(new CommanderTeam.Update()
             {
                 TargetInfoSet = target,
                 StrongholdEntityId = new EntityId(request.RequestId),
+                IsNeedUpdate = UnitUtils.UpdateTargetBit(bitNumber, TargetInfoType.Hex),
             });
         }
     }
