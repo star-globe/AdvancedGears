@@ -65,6 +65,8 @@ namespace AdvancedGears
                 var hex = hexDic[change.HexIndex];
                 hex.Side = change.Side;
                 this.UpdateSystem.SendUpdate(new HexBase.Update { Side = change.Side }, hex.EntityId.EntityId);
+
+                Debug.LogFormat("Updated Index:{0} Side:{1}", change.HexIndex, change.Side);
             }
 
             hexChanged = hexChangedEvents.Count > 0;
