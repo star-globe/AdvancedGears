@@ -2,6 +2,7 @@ using System;
 using Improbable;
 using Improbable.Gdk.Core;
 using Improbable.Gdk.PlayerLifecycle;
+using Improbable.Gdk.Core.Representation;
 using Improbable.Worker.CInterop;
 using Improbable.Gdk.GameObjectCreation;
 using Improbable.Gdk.Subscriptions;
@@ -12,6 +13,8 @@ namespace AdvancedGears
 {
     public class UnityClientConnector : WorkerConnector
     {
+        [SerializeField] private EntityRepresentationMapping entityRepresentationMapping = default;
+
         [SerializeField]
         UnitSide side;
 
@@ -52,7 +55,7 @@ namespace AdvancedGears
 
         protected override void HandleWorkerConnectionEstablished()
         {
-            WorkerUtils.AddClientSystems(Worker.World, this.gameObject, false);
+            WorkerUtils.AddClientSystems(Worker.World, entityRepresentationMapping, false);
 
             var spawnPointSystem = Worker.World.GetExistingSystem<SpawnPointQuerySystem>();
             if (spawnPointSystem == null)

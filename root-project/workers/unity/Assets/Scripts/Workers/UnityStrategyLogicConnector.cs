@@ -1,5 +1,6 @@
 using Improbable;
 using Improbable.Gdk.Core;
+using Improbable.Gdk.Core.Representation;
 using Improbable.Gdk.PlayerLifecycle;
 using Improbable.Gdk.TransformSynchronization;
 using Improbable.Worker.CInterop;
@@ -9,6 +10,8 @@ namespace AdvancedGears
 {
     public class UnityStrategyLogicConnector : WorkerConnector
     {
+        [SerializeField] private EntityRepresentationMapping entityRepresentationMapping = default;
+
         public const string WorkerType = WorkerUtils.UnityStrategyLogic;
 
         private async void Start()
@@ -38,7 +41,7 @@ namespace AdvancedGears
 
         protected override void HandleWorkerConnectionEstablished()
         {
-            WorkerUtils.AddStrategyLogicSystems(Worker.World, this.gameObject);
+            WorkerUtils.AddStrategyLogicSystems(Worker.World, entityRepresentationMapping);
         }
     }
 }

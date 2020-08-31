@@ -39,7 +39,7 @@ namespace AdvancedGears.MonoBehaviours
 
         private void Update()
         {
-            if (playerInputWriter.Authority != Authority.Authoritative)
+            if (playerInputWriter.HasAuthority == false)
             {
                 // Only send commands if we're the player with input.
                 return;

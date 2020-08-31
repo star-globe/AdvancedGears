@@ -1,4 +1,5 @@
 using Improbable.Gdk.Core;
+using Improbable.Gdk.Core.Representation;
 using Improbable.Gdk.GameObjectCreation;
 using Improbable.Gdk.PlayerLifecycle;
 using Improbable.Gdk.TransformSynchronization;
@@ -35,11 +36,11 @@ namespace AdvancedGears
             }
         }
 
-        public static void AddClientSystems(World world, UnityEngine.GameObject gameObject, bool autoRequestPlayerCreation = true)
+        public static void AddClientSystems(World world, EntityRepresentationMapping entityRepresentationMapping, bool autoRequestPlayerCreation = true)
         {
             TransformSynchronizationHelper.AddClientSystems(world);
             PlayerLifecycleHelper.AddClientSystems(world, autoRequestPlayerCreation);
-            GameObjectCreationHelper.EnableStandardGameObjectCreation(world, gameObject);
+            GameObjectCreationHelper.EnableStandardGameObjectCreation(world, entityRepresentationMapping);
             world.GetOrCreateSystem<ProcessColorChangeSystem>();
             world.GetOrCreateSystem<AdvancedPlayerInputSync>();
             world.GetOrCreateSystem<MoveAdvancedUnitSystem>();
@@ -56,11 +57,11 @@ namespace AdvancedGears
             world.GetOrCreateSystem<MiniMapUISystem>();
         }
 
-        public static void AddGameLogicSystems(World world, UnityEngine.GameObject gameObject)
+        public static void AddGameLogicSystems(World world, EntityRepresentationMapping entityRepresentationMapping)
         {
             TransformSynchronizationHelper.AddServerSystems(world);
             PlayerLifecycleHelper.AddServerSystems(world);
-            GameObjectCreationHelper.EnableStandardGameObjectCreation(world, gameObject);
+            GameObjectCreationHelper.EnableStandardGameObjectCreation(world, entityRepresentationMapping);
 
             world.GetOrCreateSystem<ProcessLaunchCommandSystem>();
             world.GetOrCreateSystem<ProcessRechargeSystem>();
@@ -90,11 +91,11 @@ namespace AdvancedGears
             world.GetOrCreateSystem<HexUpdateSystem>();
         }
 
-        public static void AddStrategyLogicSystems(World world, UnityEngine.GameObject gameObject)
+        public static void AddStrategyLogicSystems(World world, EntityRepresentationMapping entityRepresentationMapping)
         {
             TransformSynchronizationHelper.AddServerSystems(world);
             PlayerLifecycleHelper.AddServerSystems(world);
-            GameObjectCreationHelper.EnableStandardGameObjectCreation(world, gameObject);
+            GameObjectCreationHelper.EnableStandardGameObjectCreation(world, entityRepresentationMapping);
 
             world.GetOrCreateSystem<ProcessLaunchCommandSystem>();
             world.GetOrCreateSystem<MetricSendSystem>();
