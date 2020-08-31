@@ -29,7 +29,6 @@ namespace AdvancedGears
                 ComponentType.ReadOnly<StrongholdSight.HasAuthority>(),
                 ComponentType.ReadWrite<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<BaseUnitStatus.HasAuthority>(),
-                ComponentType.ReadOnly<StrongholdStatus.Component>(),
                 ComponentType.ReadOnly<StrategyHexAccessPortal.Component>(),
                 ComponentType.ReadOnly<Transform>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
@@ -45,7 +44,6 @@ namespace AdvancedGears
 
             Entities.With(group).ForEach((Entity entity,
                                           ref StrongholdSight.Component sight,
-                                          ref StrongholdStatus.Component stronghold,
                                           ref BaseUnitStatus.Component status,
                                           ref StrategyHexAccessPortal.Component portal,
                                           ref SpatialEntityId entityId) =>
@@ -53,7 +51,7 @@ namespace AdvancedGears
                 if (status.State != UnitState.Alive)
                     return;
 
-                if (status.Type != UnitType.Stronghold)
+                if (UnitUtils.IsBuilding(status.Type) == false)
                     return;
 
                 if (status.Side == UnitSide.None)
@@ -68,13 +66,12 @@ namespace AdvancedGears
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
 
                 var targets = sight.TargetStrongholds;
+                var enemySide = sight.StrategyVector.Side;
                 var vector = sight.StrategyVector.Vector.ToUnityVector();
                 var corners = sight.FrontLineCorners;
                 var hexes = sight.TargetHexes;
-                var order = OrderType.Idle;
-                if (portal.FrontHexes.TryGetValue(status.Side, out var frontHexInfo)) {
-                    order = GetTargetFrontLine(trans.position, frontHexInfo.Indexes, corners);//GetTargetStronghold(trans.position, status.Side, vector, entityId.EntityId, indexes, targets);
-                }
+
+                var order = GetTarget(trans.position, portal.FrontHexes, status.Side, enemySide, hexes, corners);
 
                 sight.TargetStrongholds = targets;
                 sight.FrontLineCorners = corners;
@@ -83,7 +80,32 @@ namespace AdvancedGears
             });
         }
 
-        private OrderType GetTargetFrontLine(in Vector3 pos, List<HexIndex> indexes, List<Coordinates> corners)
+        private OrderType GetTarget(Vector3 pos, Dictionary<UnitSide,FrontHexInfo> frontHexes, UnitSide selfSide, UnitSide enemySide, Dictionary<uint,TargetHexInfo> hexes, List<FrontLineInfo> corners)
+        {
+            var order = OrderType.Idle;
+            if (frontHexes.TryGetValue(selfSide, out var frontHexInfo) == false)
+                return order;
+            
+            FrontHexInfo targetHexInfo;
+            if (frontHexes.TryGetValue(UnitSide.None, out targetHexInfo))
+                order = GetTargetHex(pos, frontHexInfo.Indexes, targetHexInfo, hexes);
+            
+            if (order != OrderType.Idle)
+                return order;
+
+#if false
+            if (enemySide != UnitSide.None && frontHexes.TryGetValue(enemySide, out targetHexInfo))
+                order = GetTargetHex(pos, frontHexInfo.Indexes, targetHexInfo, hexes);
+
+            if (order != OrderType.Idle)
+                return order;
+#endif
+
+            order = GetTargetFrontLine(pos, frontHexInfo.Indexes, corners);
+            return order;
+        }
+
+        private OrderType GetTargetFrontLine(in Vector3 pos, List<HexIndex> indexes, List<FrontLineInfo> corners)
         {
             HexIndex? targetIndex = null;
             float length = float.MaxValue;
@@ -99,15 +121,14 @@ namespace AdvancedGears
 
             if (targetIndex.HasValue) {
                 corners.Clear();
-                corners.AddRange(targetIndex.Value.FrontCorners);
+                corners.AddRange(targetIndex.Value.FrontLines);
                 return OrderType.Keep;
             }
-            else {
-                return OrderType.Idle;
-            }
+
+            return OrderType.Idle;
         }
 
-        private OrderType GetTargetHex(in Vector3 pos, List<HexIndex> indexes, Dictionary<UnitSide,FrontHexInfo> fronts, Dictionary<EntityId,TargetHexInfo> hexes)
+        private OrderType GetTargetHex(in Vector3 pos, List<HexIndex> indexes, FrontHexInfo targetFront, Dictionary<uint,TargetHexInfo> hexes)
         {
             HexIndex? targetIndex = null;
             float length = float.MaxValue;
@@ -121,30 +142,24 @@ namespace AdvancedGears
                 targetIndex = hex;
             }
 
-            if (targetIndex.HasValue) {
-                return GetNeighborTargetHexes(UnitSide.None, targetIndex.Value.Index, fronts, hexes);
-            }
-            else {
-                return OrderType.Idle;
-            }
+            if (targetIndex.HasValue)
+                return GetNeighborTargetHexes(targetIndex.Value.Index, targetFront, hexes);
+
+            return OrderType.Idle;
         }
 
-        private OrderType GetNeighborTargetHexes(UnitSide side, uint index, Dictionary<UnitSide, FrontHexInfo> fronts, Dictionary<EntityId, TargetHexInfo> hexes)
+        private OrderType GetNeighborTargetHexes(uint index,  FrontHexInfo targetFront, Dictionary<uint, TargetHexInfo> hexes)
         {
             bool isTarget = false;
-            if (fronts.TryGetValue(side, out var info))
+            var neighbors = HexUtils.GetNeighborHexIndexes(index);
+            foreach (var n in neighbors)
             {
-                var neighbors = HexUtils.GetNeighborHexIndexes(index);
-                foreach (var n in neighbors)
-                {
-                    var i = info.Indexes.FindIndex(h => h.Index == n);
-                    if (i < 0)
-                        continue;
-
-                    isTarget = true;
-                    var hx = info.Indexes[i];
-                    hexes[hx.EntityId] = new TargetHexInfo(true, hx.Index, UnitSide.None);
-                }
+                var i = targetFront.Indexes.FindIndex(h => h.Index == n);
+                if (i < 0)
+                    continue;
+                isTarget = true;
+                var hx = targetFront.Indexes[i];
+                hexes[n] = new TargetHexInfo(hx.Index, UnitSide.None);
             }
 
             return isTarget ? OrderType.Attack: OrderType.Keep;

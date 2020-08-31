@@ -42,6 +42,10 @@ namespace AdvancedGears
         int underCommanders = 3;
         public static int UnderCommanders => Instance.underCommanders;
 
+        [SerializeField]
+        int underTurrets = 3;
+        public static int UnderTurrets => Instance.underCommanders;
+
         public static AttackLogicDictionary Instance { private get; set; }
 
         readonly Dictionary<OrderType, OrderRate> orderDic = new Dictionary<OrderType, OrderRate>();
@@ -89,7 +93,7 @@ namespace AdvancedGears
             if (rank < 1)
                 return range;
             else
-                return range * Mathf.Pow(UnderCommanders, rank);
+                return range * Mathf.Pow(UnderCommanders, rank * 0.5f);
         }
     }
 }

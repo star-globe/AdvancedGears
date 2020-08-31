@@ -30,7 +30,7 @@ namespace AdvancedGears
 
         readonly protected Dictionary<uint, HexInfo> hexDic = new Dictionary<uint, HexInfo>();
 
-        protected hexChanged { get; private set; } = false;
+        protected bool hexChanged { get; private set; } = false;
         protected float hexEdge => HexDictionary.HexEdgeLength;
 
         protected override void OnCreate()
@@ -59,9 +59,14 @@ namespace AdvancedGears
             for (var i = 0; i < hexChangedEvents.Count; i++)
             {
                 var change = hexChangedEvents[i].Event.Payload;
-                if (hexDic.ContainsKey(change.HexIndex)) {
-                    hexDic[change.HexIndex].Side = change.Side;
-                }
+                if (hexDic.ContainsKey(change.HexIndex) == false)
+                    continue;
+
+                var hex = hexDic[change.HexIndex];
+                hex.Side = change.Side;
+                this.UpdateSystem.SendUpdate(new HexBase.Update { Side = change.Side }, hex.EntityId.EntityId);
+
+                Debug.LogFormat("Updated Index:{0} Side:{1}", change.HexIndex, change.Side);
             }
 
             hexChanged = hexChangedEvents.Count > 0;
@@ -77,7 +82,7 @@ namespace AdvancedGears
                                       ref Position.Component position,
                                       ref SpatialEntityId entityId) =>
             {
-                if (hex.Attribute.IsDominatable() == false)
+                if (hex.Attribute.IsTargetable() == false)
                     return;
 
                 if (hexDic.ContainsKey(hex.Index) == false)

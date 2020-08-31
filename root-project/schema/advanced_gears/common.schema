@@ -1,4 +1,5 @@
 package advanced_gears;
+import "improbable/standard_library.schema";
 import "improbable/gdk/core/common.schema";
 
 enum UnitType {
@@ -67,6 +68,11 @@ enum FixedRangeType
     CommanderRange = 6;
 }
 
+type FrontLineInfo
+{
+    improbable.Coordinates left_corner = 1;
+    improbable.Coordinates right_corner = 2;
+}
 //type Som
 //{
 //    float k = 1;

@@ -34,6 +34,7 @@ component BaseUnitStatus {
     UnitType type = 2;
     UnitState state = 3;
     OrderType order = 4;
+    uint32 rank = 5;
 
     command improbable.gdk.core.Empty set_order(OrderInfo);
     event ForceStateChange force_state;
@@ -54,6 +55,8 @@ component BaseUnitHealth {
     int32 max_health = 2;
 
     int32 defense = 3;
+
+    float recovery_amount = 4;
 
     command improbable.gdk.core.Empty modify_health(HealthModifier);
     event HealthDiff health_diffed;
@@ -84,11 +87,19 @@ component BaseUnitMovement {
     float consume_rate = 8;
 }
 
+enum TargetState {
+    None = 0;
+    MovementTarget = 1;
+    ActionTarget = 2;
+    OutOfRange = 3;
+}
+
 component BaseUnitSight {
     id = 20011;
 
-    improbable.gdk.transform_synchronization.FixedPointVector3 target_position = 4;
-    float target_range = 5;
+    TargetState state = 1;
+    improbable.gdk.transform_synchronization.FixedPointVector3 target_position = 2;
+    float target_range = 3;
     
     BoidVector boid_vector = 7;
     double boid_update_time = 8;
@@ -126,22 +137,32 @@ type TargetInfo {
     float ally_range = 8;
 }
 
-enum TargetState {
-    None = 0;
-    MovementTarget = 1;
-    ActionTarget = 2;
-    OutOfRange = 3;
-}
-
 type TargetFrontLineInfo {
-    improbable.Coordinates left_corner = 1;
-    improbable.Coordinates right_corner = 2;
+    FrontLineInfo front_line = 1;
 }
 
 type TargetHexInfo {
-    bool is_target = 1;
     uint32 hex_index = 2;
     UnitSide side = 3;
+}
+
+type TargetStrongholdInfo {
+    EntityId stronghold_id = 1;
+    UnitSide side = 2;
+    improbable.Coordinates position = 3;
+}
+
+enum TargetInfoType {
+    None = 0;
+    Stronghold = 1;
+    FrontLine = 2;
+    Hex = 3;
+}
+
+type TargetInfoSet {
+    TargetStrongholdInfo stronghold = 1;
+    TargetFrontLineInfo front_line = 2;
+    TargetHexInfo hex_info = 3;
 }
 
 component BaseUnitTarget {
@@ -155,6 +176,7 @@ component BaseUnitTarget {
     command improbable.gdk.core.Empty set_target(TargetInfo);
     command improbable.gdk.core.Empty set_front_line(TargetFrontLineInfo);
     command improbable.gdk.core.Empty set_hex(TargetHexInfo);
+    command improbable.gdk.core.Empty set_stronghold(TargetStrongholdInfo);
 }
 
 type PostureData {
@@ -205,7 +227,6 @@ component CommanderStatus {
     id = 20020;
 
     OrderPair order = 1;
-    uint32 rank = 3;
 
     float ally_range = 4;
 }
@@ -214,7 +235,7 @@ type TeamInfo {
     EntityId commander_id = 1;
     uint32 rank = 2;
     OrderType order = 4;
-    EntityId target_entity_id = 5;
+    TargetInfoSet target_info_set = 5;
     EntityId stronghold_entity_id = 6;
 }
 
@@ -227,21 +248,14 @@ type TeamInfoRequest {
     EntityId hq_entitt_id = 1;
 }
 
-type TargetStrongholdInfo {
-    EntityId stronghold_id = 1;
-    UnitSide side = 2;
-    improbable.Coordinates position = 3;
-}
-
 component CommanderTeam {
     id = 20021;
 
     FollowerInfo follower_info = 1;
     SuperiorInfo superior_info = 2;
 
-    TargetStrongholdInfo target_stronghold = 4;
-    TargetFrontLineInfo target_front_line = 5;
-    TargetHexInfo target_hex_info = 6;
+    TargetInfoSet target_info_set = 3;
+    int32 is_need_update = 4;
 
     EntityId stronghold_entity_id = 10;
 
@@ -260,11 +274,6 @@ type WarPower {
 
 component CommanderSight {
     id = 20022;
-
-    float range = 1;
-    IntervalChecker interval = 2;
-
-    TargetBaseInfo target_info = 5;
 
     list<WarPower> war_powers = 7;
 }
@@ -313,7 +322,6 @@ component StrongholdStatus {
     id = 20030;
 
     IntervalChecker interval = 1;
-    uint32 rank = 2;
 }
 
 type StrategyVector {
@@ -327,8 +335,8 @@ component StrongholdSight {
     IntervalChecker interval = 1;
     StrategyVector strategy_vector = 2;
     map<EntityId,TargetStrongholdInfo> target_strongholds = 4;
-    list<improbable.Coordinates> front_line_corners = 5;
-    map<EntityId,TargetHexInfo> target_hexes = 6;
+    list<FrontLineInfo> front_line_corners = 5;
+    map<uint32,TargetHexInfo> target_hexes = 6;
 
     command improbable.gdk.core.Empty set_strategy_vector(StrategyVector);
 }
@@ -344,11 +352,22 @@ type TeamOrderList {
     list<TeamOrder> orders = 1;
 }
 
+type TurretOrder {
+    int32 turret_id = 1;
+    int32 turrets_number = 2;
+    int32 stack = 3;
+}
+
+type TurretOrderList {
+    list<TurretOrder> orders = 1;
+}
+
 enum FactoryOrderType {
     None = 0;
     Follower = 1;
     Superior = 2;
     Team = 3;
+    Turret = 4;
 }
 
 enum ContainerState {
@@ -372,12 +391,14 @@ component UnitFactory {
     transient list<TeamOrder> team_orders = 10;
     transient list<FollowerOrder> follower_orders = 11;
     transient list<SuperiorOrder> superior_orders = 12;
+    transient list<TurretOrder> turret_orders = 13;
 
     IntervalChecker product_interval = 20;
 
     command improbable.gdk.core.Empty add_follower_order(FollowerOrder);
     command improbable.gdk.core.Empty add_superior_order(SuperiorOrder);
     command improbable.gdk.core.Empty add_team_order(TeamOrderList);
+    command improbable.gdk.core.Empty add_turret_order(TurretOrderList);
     command improbable.gdk.core.Empty set_container(UnitContainer);
 }
 

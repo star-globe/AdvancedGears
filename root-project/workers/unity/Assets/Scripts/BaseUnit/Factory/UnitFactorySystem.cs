@@ -88,7 +88,7 @@ namespace AdvancedGears
                 if (status.State != UnitState.Alive)
                     return;
 
-                if (status.Type != UnitType.Stronghold)
+                if (UnitUtils.IsBuilding(status.Type))
                     return;
 
                 var contaners = factory.Containers;
@@ -133,7 +133,7 @@ namespace AdvancedGears
                 if (status.State != UnitState.Alive)
                     return;
 
-                if (status.Type != UnitType.Stronghold)
+                if (UnitUtils.IsBuilding(status.Type) == false)
                     return;
 
                 if (status.Order == OrderType.Idle)
@@ -141,7 +141,8 @@ namespace AdvancedGears
 
                 FollowerOrder? f_order = null;
                 SuperiorOrder? s_order = null;
-                TeamOrder? t_order = null;
+                TeamOrder? team_order = null;
+                TurretOrder? turret_order = null;
 
                 FactoryOrderType orderType = FactoryOrderType.None;
 
@@ -154,8 +155,12 @@ namespace AdvancedGears
                     orderType = FactoryOrderType.Follower;
                 }
                 else if (factory.TeamOrders.Count > 0) {
-                    t_order = factory.TeamOrders[0];
+                    team_order = factory.TeamOrders[0];
                     orderType = FactoryOrderType.Team;
+                }
+                else if (factory.TurretOrders.Count > 0) {
+                    turret_order = factory.TurretOrders[0];
+                    orderType = FactoryOrderType.Turret;
                 }
 
                 if (orderType == FactoryOrderType.None)
@@ -164,7 +169,7 @@ namespace AdvancedGears
                 // calc time cost
                 int resourceCost;
                 float timeCost;
-                if (CalcOrderCost(out resourceCost, out timeCost, f_order, s_order, t_order) == false)
+                if (CalcOrderCost(out resourceCost, out timeCost, f_order, s_order, team_order) == false)
                     return;
 
                 Debug.LogFormat("ResourceCost:{0} TimeCost:{1}", resourceCost, timeCost);
@@ -217,8 +222,11 @@ namespace AdvancedGears
                     );
                     this.CommandSystem.SendCommand(request);
                 }
-                else if (t_order != null) {
+                else if (team_order != null) {
                     CreateTeam(factory.TeamOrders, status.Side, entityId.EntityId, coords, out finished);
+                }
+                else if  (turret_order != null) {
+                    // todo turret
                 }
 
                 if (finished)
@@ -247,7 +255,7 @@ namespace AdvancedGears
         }
 
         private bool CalcOrderCost(out int resourceCost, out float timeCost,
-                                    FollowerOrder? f_order = null, SuperiorOrder? s_order = null, TeamOrder? t_order = null)
+                                    FollowerOrder? f_order = null, SuperiorOrder? s_order = null, TeamOrder? team_order = null)
         {
             resourceCost = 0;
             timeCost = 0;
@@ -258,8 +266,8 @@ namespace AdvancedGears
             if (s_order != null && UnitFactoryDictionary.TryGetCost(UnitType.Commander, out resourceCost, out timeCost))
                 return true;
 
-            if (t_order != null) {
-                var number = t_order.Value.SoldiersNumber;
+            if (team_order != null) {
+                var number = team_order.Value.SoldiersNumber;
                 int solResource;
                 float solTime;
                 if (UnitFactoryDictionary.TryGetCost(UnitType.Commander, out resourceCost, out timeCost) &&
@@ -331,7 +339,8 @@ namespace AdvancedGears
         {
             public TeamInfo team;
             public List<EntityId> soldiers;
-            public int stack;
+            public int soldiersNumber;
+            public HashSet<CommandRequestId> hashes;
 
             public bool IsReady
             {
@@ -340,18 +349,18 @@ namespace AdvancedGears
                     if (soldiers == null)
                         return false;
                     
-                    return soldiers.Count > stack && team.CommanderId.IsValid();
+                    return soldiers.Count >= soldiersNumber && team.CommanderId.IsValid();
                 }
             }
         }
 
         readonly Dictionary<EntityId,Dictionary<int,RequestInfo>> requestDic = new Dictionary<EntityId, Dictionary<int, RequestInfo>>();
-        int currentRequestId = 0;
+        int currentRequestGroupId = 0;
 
-        private class TeamOrderContext
+        private class UnitOrderContext
         {
             public UnitType type;
-            public int requestId; 
+            public int requestGroupId;
             public EntityId strongholdEntityId;
         }
 
@@ -373,33 +382,38 @@ namespace AdvancedGears
                 templates.Add((temp, UnitType.Soldier));
             }
 
+            var hashes = new HashSet<CommandRequestId>();
+
             foreach(var pair in templates) {
-                this.CommandSystem.SendCommand(new WorldCommands.CreateEntity.Request(
+                var comId = this.CommandSystem.SendCommand(new WorldCommands.CreateEntity.Request(
                     pair.Item1,
-                    context: new TeamOrderContext() { type = pair.Item2, 
-                                                      requestId = currentRequestId,
+                    context: new UnitOrderContext() { type = pair.Item2, 
+                                                      requestGroupId = currentRequestGroupId,
                                                       strongholdEntityId = id }
                 ));
+
+                hashes.Add(comId);
             }
 
             Dictionary<int, RequestInfo> dic = null;
             if (requestDic.TryGetValue(id, out dic) == false)
                 dic = new Dictionary<int, RequestInfo>();
 
-            dic.Add(currentRequestId, new RequestInfo()
+            dic.Add(currentRequestGroupId, new RequestInfo()
             {
                 team = new TeamInfo() { CommanderId = new EntityId(),
                                         Rank = current.CommanderRank,
                                         Order = current.Order,
-                                        TargetEntityId = new EntityId(),
+                                        TargetInfoSet = TargetUtils.DefaultTargteInfoSet(),
                                         StrongholdEntityId = id },
                 soldiers = new List<EntityId>(),
-                stack = current.Stack
+                soldiersNumber = current.SoldiersNumber,
+                hashes = hashes
             });
 
             requestDic[id] = dic;
 
-            currentRequestId++;
+            currentRequestGroupId++;
 
             if (current.Stack <= 1)
                 orders.RemoveAt(0);
@@ -407,6 +421,60 @@ namespace AdvancedGears
                 current.Stack--;
                 orders[0] = current;
             }
+
+            finished = true;
+        }
+
+        void CreateTurret(List<TurretOrder> orders, UnitSide side, EntityId id, in Coordinates coords, out bool finished)
+        {
+            finished = false;
+            if (orders.Count == 0)
+                return;
+
+            var current = orders[0];
+            // create unit
+            List<ValueTuple<EntityTemplate,UnitType>> templates = new List<ValueTuple<EntityTemplate,UnitType>>();
+
+            var posList = GetCoordinates(coords, current.TurretsNumber);
+            foreach(var pos in posList) {
+                var temp = BaseUnitTemplate.CreateTurretUnitTemplate(side, pos, current.TurretId);
+                templates.Add((temp, UnitType.Turret));
+            }
+
+            foreach(var pair in templates) {
+                this.CommandSystem.SendCommand(new WorldCommands.CreateEntity.Request(
+                    pair.Item1,
+                    context: new UnitOrderContext() { type = pair.Item2, 
+                                                      requestGroupId = currentRequestGroupId,
+                                                      strongholdEntityId = id }
+                ));
+            }
+
+            //Dictionary<int, RequestInfo> dic = null;
+            //if (requestDic.TryGetValue(id, out dic) == false)
+            //    dic = new Dictionary<int, RequestInfo>();
+            //
+            //dic.Add(currentRequestId, new RequestInfo()
+            //{
+            //    team = new TeamInfo() { CommanderId = new EntityId(),
+            //                            Rank = current.CommanderRank,
+            //                            Order = current.Order,
+            //                            TargetEntityId = new EntityId(),
+            //                            StrongholdEntityId = id },
+            //    soldiers = new List<EntityId>(),
+            //    stack = current.Stack
+            //});
+            //
+            //requestDic[id] = dic;
+            //
+            currentRequestGroupId++;
+            //
+            //if (current.Stack <= 1)
+            //    orders.RemoveAt(0);
+            //else {
+            //    current.Stack--;
+            //    orders[0] = current;
+            //}
 
             finished = true;
         }
@@ -441,8 +509,8 @@ namespace AdvancedGears
                     continue;
                 }
 
-                if (response.Context is TeamOrderContext teamOrderContext) {
-                    HandleTeamOrderContext(teamOrderContext, response.EntityId.Value);
+                if (response.Context is UnitOrderContext unitOrderContext) {
+                    HandleUnitOrderContext(unitOrderContext, response.RequestId, response.EntityId.Value);
                     continue;
                 }
             }
@@ -539,19 +607,23 @@ namespace AdvancedGears
             superiorDic[superior] = list;
         }
 
-        private void HandleTeamOrderContext(TeamOrderContext teamOrderContext, EntityId entityId)
+        private void HandleUnitOrderContext(UnitOrderContext unitOrderContext, CommandRequestId comId, EntityId entityId)
         {
-            var strongholdId = teamOrderContext.strongholdEntityId;
+            var strongholdId = unitOrderContext.strongholdEntityId;
             if (requestDic.ContainsKey(strongholdId) == false)
                 return;
 
             var dic = requestDic[strongholdId];
-            var requestId = teamOrderContext.requestId;
+            var requestId = unitOrderContext.requestGroupId;
             if (dic.ContainsKey(requestId) == false)
                 return;
 
             var requestInfo = dic[requestId];
-            var type = teamOrderContext.type;
+            if (requestInfo.hashes.Contains(comId) == false)
+                return;
+
+            requestInfo.hashes.Remove(comId);
+            var type = unitOrderContext.type;
             switch (type)
             {
                 case UnitType.Soldier:
@@ -571,6 +643,12 @@ namespace AdvancedGears
                                                                                      new FollowerInfo() { Followers = requestInfo.soldiers,
                                                                                                           UnderCommanders = new List<EntityId>()}));
                 requestDic[strongholdId].Remove(requestId);
+
+                var solds = string.Empty;
+                foreach (var s in requestInfo.soldiers)
+                    solds += string.Format("{0}, ", s);
+
+                Debug.LogFormat("SetTeam CommanderId:{0} Soldiers:{1}", requestInfo.team.CommanderId, solds);
             }
             else {
                 requestDic[strongholdId][requestId] = requestInfo;

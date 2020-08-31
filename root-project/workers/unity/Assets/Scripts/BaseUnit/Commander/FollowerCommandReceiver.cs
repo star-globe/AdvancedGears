@@ -59,6 +59,7 @@ namespace AdvancedGears
             commandReceiver.OnGetTeamInfoRequestReceived += OnTeamInfoRequest;
             commandReceiver.OnSetTargetStrogholdRequestReceived += OnSetStrongholdRequest;
             commandReceiver.OnSetTargetFrontlineRequestReceived += OnSetFrontlineRequest;
+            commandReceiver.OnSetTargetHexRequestReceived += OnSetHexRequest;
         }
 
         private void Update()
@@ -118,19 +119,43 @@ namespace AdvancedGears
 
         private void OnSetStrongholdRequest(CommanderTeam.SetTargetStroghold.ReceivedRequest request)
         {
+            var target = writer.Data.TargetInfoSet;
+            target.Stronghold = request.Payload;
+            var bitNumber = writer.Data.IsNeedUpdate;
+
             writer.SendUpdate(new CommanderTeam.Update()
             {
-                TargetStronghold = request.Payload,
+                TargetInfoSet = target,
                 StrongholdEntityId = new EntityId(request.RequestId),
+                IsNeedUpdate = UnitUtils.UpdateTargetBit(bitNumber, TargetInfoType.Stronghold),
             });
         }
 
         private void OnSetFrontlineRequest(CommanderTeam.SetTargetFrontline.ReceivedRequest request)
         {
+            var target = writer.Data.TargetInfoSet;
+            target.FrontLine = request.Payload;
+            var bitNumber = writer.Data.IsNeedUpdate;
+
             writer.SendUpdate(new CommanderTeam.Update()
             {
-                TargetFrontLine = request.Payload,
+                TargetInfoSet = target,
                 StrongholdEntityId = new EntityId(request.RequestId),
+                IsNeedUpdate = UnitUtils.UpdateTargetBit(bitNumber, TargetInfoType.FrontLine),
+            });
+        }
+
+        private void OnSetHexRequest(CommanderTeam.SetTargetHex.ReceivedRequest request)
+        {
+            var target = writer.Data.TargetInfoSet;
+            target.HexInfo = request.Payload;
+            var bitNumber = writer.Data.IsNeedUpdate;
+
+            writer.SendUpdate(new CommanderTeam.Update()
+            {
+                TargetInfoSet = target,
+                StrongholdEntityId = new EntityId(request.RequestId),
+                IsNeedUpdate = UnitUtils.UpdateTargetBit(bitNumber, TargetInfoType.Hex),
             });
         }
     }

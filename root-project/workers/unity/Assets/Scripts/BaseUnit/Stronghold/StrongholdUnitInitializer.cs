@@ -12,7 +12,6 @@ namespace AdvancedGears
     public class StrongholdUnitInitializer : MonoBehaviour
     {
         [Require] StrongholdSightWriter sight;
-        [Require] StrongholdStatusWriter status;
         [Require] DominationStaminaWriter stamina;
 
         [SerializeField]
@@ -21,11 +20,6 @@ namespace AdvancedGears
         void Start()
         {
             sight.SendUpdate(new StrongholdSight.Update
-            {
-                Interval = IntervalCheckerInitializer.InitializedChecker(settings.Inter),
-            });
-
-            status.SendUpdate(new StrongholdStatus.Update
             {
                 Interval = IntervalCheckerInitializer.InitializedChecker(settings.Inter),
             });

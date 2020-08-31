@@ -73,11 +73,6 @@ namespace AdvancedGears
 
                 var list = getAllyUnits(status.Side, pos, RangeDictionary.Get(FixedRangeType.BaseRange), allowDead:false, UnitType.Commander);
                 foreach (var unit in list) {
-
-                    CommanderStatus.Component? comp;
-                    if (TryGetComponent(unit.id, out comp) == false)
-                        return;
-
                     CommanderTeam.Component? team;
                     if (TryGetComponent(unit.id, out team) == false)
                         return;
@@ -94,7 +89,7 @@ namespace AdvancedGears
                     var request = new HeadQuarters.AddOrder.Request(hq.id, new OrganizeOrder()
                     {
                         Customer = unit.id,
-                        CustomerRank = comp.Value.Rank,
+                        CustomerRank = status.Rank,
                         Pos = pos.ToFixedPointVector3(),
                         Side = status.Side
                     });

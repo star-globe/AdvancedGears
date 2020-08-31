@@ -17,7 +17,7 @@ namespace AdvancedGears.Editor
 
         void OnEnable ()
         {
-                AttachScene();
+            AttachScene();
         }
 
         protected virtual void AttachScene()

@@ -10,5 +10,11 @@ namespace AdvancedGears
             fmt = "<color=#" + ColorUtility.ToHtmlStringRGBA(col) + ">" + fmt + "</color>";
             Debug.LogFormat(fmt, args);
         }
+
+        public static void RandomlyLog(string log, int count = 30)
+        {
+            if (Random.Range(0, count) == 0)
+                Debug.Log(log);
+        }
     }
 }

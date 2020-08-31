@@ -16,6 +16,7 @@ namespace AdvancedGears
             commandReceiver.OnAddFollowerOrderRequestReceived += OnAddFollowerOrderRequest;
             commandReceiver.OnAddSuperiorOrderRequestReceived += OnAddSuperiorOrderRequest;
             commandReceiver.OnAddTeamOrderRequestReceived += OnAddTeamOrderRequest;
+            commandReceiver.OnAddTurretOrderRequestReceived += OnAddTurretOrderRequest;
             commandReceiver.OnSetContainerRequestReceived += OnSetEmptyRequest;
         }
 
@@ -52,6 +53,18 @@ namespace AdvancedGears
             writer.SendUpdate(new UnitFactory.Update()
             {
                 TeamOrders = list,
+            });
+        }
+
+        private void OnAddTurretOrderRequest(UnitFactory.AddTurretOrder.ReceivedRequest request)
+        {
+            commandReceiver.SendAddTurretOrderResponse(new UnitFactory.AddTurretOrder.Response(request.RequestId, new Empty()));
+
+            var list = writer.Data.TurretOrders;
+            list.AddRange(request.Payload.Orders);
+            writer.SendUpdate(new UnitFactory.Update()
+            {
+                TurretOrders = list,
             });
         }
 

@@ -14,22 +14,13 @@ namespace AdvancedGears
 
         public void OnEnable()
         {
-            statusReader.OnSideUpdate += OnSideUpdated;
-            statusReader.OnStateUpdate += OnStateChanged;
+            statusReader.OnForceStateEvent += OnForceState;
         }
 
-        private void OnSideUpdated(UnitSide side)
+        private void OnForceState(ForceStateChange change)
         {
             var index = facilityWriter.Data.HexIndex;
-            facilityWriter.SendHexChangedEvent(new HexChangedEvent(index,side));
-        }
-
-        private void OnStateChanged(UnitState state)
-        {
-            if (state != UnitState.Dead)
-                return;
-
-            OnSideUpdated(UnitSide.None);
+            facilityWriter.SendHexChangedEvent(new HexChangedEvent(index, change.Side));
         }
     }
 }

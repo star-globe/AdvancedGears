@@ -69,9 +69,9 @@ namespace AdvancedGears
 
                 UnitInfo enemy = null;
                 var sightRange = action.SightRange;
-                
+
                 if (SetStrategyTarget(pos, sightRange, ref sight, ref target))
-                    sightRange -= (sight.TargetPosition.ToUnityVector() - pos).magnitude;
+                    sightRange = Mathf.Max(0, sightRange - (sight.TargetPosition.ToWorkerPosition(this.Origin) - pos).magnitude/2);
 
                 enemy = getNearestEnemy(status.Side, pos, sightRange);
 
@@ -83,22 +83,31 @@ namespace AdvancedGears
                     action.EnemyPositions.Add(epos);
                 }
 
-                var range = gun.GetAttackRange();
-                if (status.Type == UnitType.Commander && TryGetComponent(entity, out CommanderStatus.Component? com)) {
+                float range;
+                switch (target.State)
+                {
+                    case TargetState.ActionTarget:
+                        range = gun.GetAttackRange();
+                        break;
 
-                    var rank = com.Value.Rank;
-
-                    if (rank == 0 && target.TargetInfo.IsDominationTarget(status.Side))
+                    default:
+                        range = RangeDictionary.BodySize;
+                        break;
+                }
+                
+                if (status.Type == UnitType.Commander) {
+                    if (target.TargetInfo.IsDominationTarget(status.Side))
                         range = GetDominationRange(target.TargetInfo.TargetId) / 2;
                     else
                     {
                         var addRange = target.TargetInfo.AllyRange / 2;
-                        range += AttackLogicDictionary.RankScaled(addRange, rank);
+                        range += AttackLogicDictionary.RankScaled(addRange, status.Rank);
                     }
                 }
 
                 range = AttackLogicDictionary.GetOrderRange(status.Order, range);
                 sight.TargetRange = range;
+                sight.State = target.State;
             });
         }
 
@@ -129,18 +138,21 @@ namespace AdvancedGears
             bool isTarget = false;
             if (target.TargetInfo.IsTarget) {
                 sight.TargetPosition = target.TargetInfo.Position;
-                target.State = CalcTargetState(sight.TargetPosition.ToUnityVector() - pos, sightRange); 
+                target.State = CalcTargetState(sight.TargetPosition.ToWorkerPosition(this.Origin) - pos, sightRange);
                 isTarget = true;
+                DebugUtils.RandomlyLog(string.Format("Target Position:{0}", sight.TargetPosition.ToWorkerPosition(this.Origin)));
             }
-            else if (target.HexInfo.IsTarget) {
-                sight.TargetPosition = HexUtils.GetHexCenter(this.Origin, target.HexInfo.HexIndex, HexDictionary.HexEdgeLength).ToFixedPointVector3();
-                target.State = TargetState.OutOfRange;
+            else if (target.HexInfo.IsValid()) {
+                sight.TargetPosition = HexUtils.GetHexCenter(this.Origin, target.HexInfo.HexIndex, HexDictionary.HexEdgeLength).ToWorldPosition(this.Origin);
+                target.State = TargetState.MovementTarget;
                 isTarget = true;
+                DebugUtils.RandomlyLog(string.Format("Hex Position:{0}", sight.TargetPosition.ToWorkerPosition(this.Origin)));
             }
-            else if (target.FrontLine.IsValid()) {
-                sight.TargetPosition = target.FrontLine.GetOnLinePosition(this.Origin, pos).ToFixedPointVector3();
-                target.State = TargetState.OutOfRange;
+            else if (target.FrontLine.FrontLine.IsValid()) {
+                sight.TargetPosition = target.FrontLine.FrontLine.GetOnLinePosition(this.Origin, pos, -sightRange / 2).ToWorldPosition(this.Origin);
+                target.State = TargetState.MovementTarget;
                 isTarget = true;
+                DebugUtils.RandomlyLog(string.Format("FrontLine Position:{0}", sight.TargetPosition.ToWorkerPosition(this.Origin)));
             }
 
             return isTarget;
@@ -328,6 +340,7 @@ namespace AdvancedGears
                     info.side = unit.Value.Side;
                     info.order = unit.Value.Order;
                     info.state = unit.Value.State;
+                    info.rank = unit.Value.Rank;
 
                     unitList.Add(info);
                 }
@@ -375,6 +388,7 @@ namespace AdvancedGears
         public UnitSide side;
         public OrderType order;
         public UnitState state;
+        public uint rank;
     }
 
     public static class RandomInterval

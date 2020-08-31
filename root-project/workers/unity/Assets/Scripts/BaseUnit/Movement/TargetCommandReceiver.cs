@@ -29,16 +29,21 @@ namespace AdvancedGears
             {
                 TargetInfo = request.Payload,
             });
+
+            Debug.Log("OnSetTarget");
         }
 
         private void OnSetFrontLineRequest(BaseUnitTarget.SetFrontLine.ReceivedRequest request)
         {
             targetCommandReceiver.SendSetFrontLineResponse(new BaseUnitTarget.SetFrontLine.Response(request.RequestId, new Empty()));
 
+            var line = request.Payload;
             targetWriter.SendUpdate(new BaseUnitTarget.Update()
             {
                 FrontLine = request.Payload,
             });
+
+            Debug.LogFormat("OnSetFrontLine: Left:{0} Right{1}", line.FrontLine.LeftCorner, line.FrontLine.RightCorner);
         }
 
         private void OnSetHexRequest(BaseUnitTarget.SetHex.ReceivedRequest request)
@@ -49,6 +54,8 @@ namespace AdvancedGears
             {
                 HexInfo = request.Payload,
             });
+
+            Debug.Log("OnSetHex");
         }
 
         private void OnBoidDiffed(BoidVector vector)

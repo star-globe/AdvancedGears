@@ -25,7 +25,6 @@ namespace AdvancedGears
             group = GetEntityQuery(
                 ComponentType.ReadWrite<CommanderAction.Component>(),
                 ComponentType.ReadOnly<CommanderAction.HasAuthority>(),
-                ComponentType.ReadOnly<CommanderStatus.Component>(),
                 ComponentType.ReadOnly<CommanderTeam.Component>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<BaseUnitTarget.Component>(),
@@ -43,7 +42,6 @@ namespace AdvancedGears
 
             Entities.With(group).ForEach((Entity entity,
                                           ref CommanderAction.Component action,
-                                          ref CommanderStatus.Component commander,
                                           ref CommanderTeam.Component team,
                                           ref BaseUnitStatus.Component status,
                                           ref BaseUnitTarget.Component tgt,
@@ -58,8 +56,8 @@ namespace AdvancedGears
                 if (!action.IsTarget)
                     return;
 
-                var trans = EntityManager.GetComponentObject<Transform>(entity);
-                ApplyOrder(trans.position, status.Side, status.Order, commander.Rank, tgt);
+                //var trans = EntityManager.GetComponentObject<Transform>(entity);
+                //ApplyOrder(trans.position, status.Side, status.Order, status.Rank, tgt);
 
                 //switch (status.Order)
                 //{
@@ -95,7 +93,7 @@ namespace AdvancedGears
         }
 
         void ProductAlly(in Vector3 pos, UnitSide side,
-                        in CommanderStatus.Component commander, in CommanderTeam.Component team,
+                        uint rank, in CommanderTeam.Component team,
                         in SpatialEntityId entityId, in BaseUnitTarget.Component tgt, ref CommanderAction.Component action)
         {
             if (action.ActionType == CommandActionType.Product)
@@ -109,7 +107,7 @@ namespace AdvancedGears
             var id = tgt.TargetInfo.TargetId;
             List<UnitFactory.AddFollowerOrder.Request> reqList = new List<UnitFactory.AddFollowerOrder.Request>();
 
-            var n_sol = 0;//commander.TeamConfig.Soldiers - GetFollowerCount(team, false);
+            var n_sol = 0;
             if (n_sol > 0) {
                 reqList.Add(new UnitFactory.AddFollowerOrder.Request(id, new FollowerOrder() { Customer = entityId.EntityId,
                                                                                                //HqEntityId = team.HqInfo.EntityId,
@@ -118,14 +116,14 @@ namespace AdvancedGears
                                                                                                Side = side }));
             }
 
-            var n_com = 0;//commander.TeamConfig.Commanders - GetFollowerCount(team,true);
-            if (n_com > 0 && commander.Rank > 0) {
+            var n_com = 0;
+            if (n_com > 0 && rank > 0) {
                 reqList.Add(new UnitFactory.AddFollowerOrder.Request(id, new FollowerOrder() { Customer = entityId.EntityId,
                                                                                                //HqEntityId = team.HqInfo.EntityId,
                                                                                                Number = n_com,
                                                                                                Type = UnitType.Commander,
                                                                                                Side = side,
-                                                                                               Rank = commander.Rank - 1 }));
+                                                                                               Rank = rank - 1 }));
             }
 
             Entity entity;

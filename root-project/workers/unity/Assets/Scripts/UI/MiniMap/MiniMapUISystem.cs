@@ -34,6 +34,7 @@ namespace AdvancedGears.UI
 
             playerGroup = GetEntityQuery(
                 ComponentType.ReadOnly<PlayerInfo.Component>(),
+                ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<Position.Component>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37cb6d2bdd35aee42b301ab1cf3b20a3, type: 3}
   m_Name: CommanderUnitInitSettings
   m_EditorClassIdentifier: 
-  sightRange: 200
+  sightRange: 60
   allyRange: 50
   inter: 3
   forwardLength: 10

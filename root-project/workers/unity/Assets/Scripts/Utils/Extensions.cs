@@ -152,13 +152,13 @@ namespace AdvancedGears
         public static void SetFollowers(this FollowerInfo info, List<EntityId> followers, List<EntityId> commanders)
         {
             foreach (var f in followers) {
-                if (info.Followers.Exists(en => en.Id ==f.Id) == false)
+                if (info.Followers.Any(en => en.Id ==f.Id) == false)
                     info.Followers.Add(f);
             }
 
             foreach (var c in commanders)
             {
-                if (info.UnderCommanders.Exists(en => en.Id == c.Id) == false)
+                if (info.UnderCommanders.Any(en => en.Id == c.Id) == false)
                     info.UnderCommanders.Add(c);
             }
         }
@@ -325,18 +325,44 @@ namespace AdvancedGears
                    targetInfo.State == UnitState.Dead;
         }
 
-        public static bool IsValid(this TargetFrontLineInfo targetInfo)
+        public static bool IsValid(this TargetHexInfo targetHexInfo)
         {
-            return targetInfo.LeftCorner.Equals(targetInfo.RightCorner) == false;
+            return targetHexInfo.HexIndex < uint.MaxValue;
         }
 
-        public static Vector3 GetOnLinePosition(this TargetFrontLineInfo info, Vector3 origin, Vector3 current)
+        public static bool IsValid(this FrontLineInfo info)
+        {
+            return info.LeftCorner.Equals(info.RightCorner) == false;
+        }
+
+        public static bool IsValid(this TargetStrongholdInfo info)
+        {
+            return info.StrongholdId.IsValid();
+        }
+
+        public static Vector3 GetOnLinePosition(this FrontLineInfo info, Vector3 origin, Vector3 current, float fowardBuffer = 0.0f)
         {
             var left = info.LeftCorner.ToUnityVector() + origin;
             var right = info.RightCorner.ToUnityVector() + origin;
 
-            var diff = origin - left;
             var line = right - left;
+            var foward = Vector3.Cross(line, Vector3.up).normalized;
+
+            if (fowardBuffer != 0) {
+                left += foward * fowardBuffer;
+                right += foward * fowardBuffer;
+            }
+
+            var center = (right + left) / 2;
+            var diff = current - left;
+
+            var radius = line.magnitude / 2;
+
+            if (Vector3.Dot(Vector3.Cross(line.normalized, diff), Vector3.up) < -radius / 4 ||
+                (current - center).sqrMagnitude > radius * radius) {
+
+                return -foward * radius / 2 + center;
+            }
 
             var dot = Vector3.Dot(diff, line.normalized);
             if (dot <= 0)
@@ -357,6 +383,18 @@ namespace AdvancedGears
 
                 default:
                     return false;
+            }
+        }
+
+        public static bool IsTargetable(this HexAttribute attribute)
+        {
+            switch (attribute)
+            {
+                case HexAttribute.NotBelong:
+                    return false;
+
+                default:
+                    return true;
             }
         }
     }
