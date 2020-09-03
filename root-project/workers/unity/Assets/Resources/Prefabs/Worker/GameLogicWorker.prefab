@@ -44,3 +44,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MaxConnectionAttempts: 3
+  entityRepresentationMapping: {fileID: 11400000, guid: 4ae3308c8dbad2c4b9a417e9436ba64c,
+    type: 2}
