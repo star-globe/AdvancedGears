@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f0598980a22146e5bb63df7b024cf2b0, type: 3}
-  m_Name: Client Entity Representation
+  m_Name: GameLogic Entity Representation
   m_EditorClassIdentifier: 
   EntityRepresentationResolvers:
   - id: 0
@@ -22,52 +22,50 @@ MonoBehaviour:
   references:
     version: 1
     00000000:
-      type: {class: OwningWorkerEntityResolver, ns: Improbable.Gdk.PlayerLifecycle.Representation.Types,
-        asm: Improbable.Gdk.PlayerLifecycle}
+      type: {class: SimpleEntityResolver, ns: Improbable.Gdk.Core.Representation.Types,
+        asm: Improbable.Gdk.Core}
       data:
-        entityType: Player
-        ownedPrefab: {fileID: 1292271339760838, guid: f72ca5ec6c21da4449d9991839f06c92,
-          type: 3}
-        unownedPrefab: {fileID: 1292271339760838, guid: c9bca2606b801ce4598c7ea21c54cc95,
+        entityType: BaseUnit
+        prefab: {fileID: 9077667431196485703, guid: 71ff9af77dc6701498dbb3fd6fbb5396,
           type: 3}
         requiredComponents: 
     00000001:
       type: {class: SimpleEntityResolver, ns: Improbable.Gdk.Core.Representation.Types,
         asm: Improbable.Gdk.Core}
       data:
-        entityType: BaseUnit
-        prefab: {fileID: 2510352248528691622, guid: 66095abda5d811d48812e85c630880a3,
+        entityType: CommanderUnit
+        prefab: {fileID: 5181175297171742801, guid: bb3b3217ca55e964fab08610477ed2f5,
           type: 3}
         requiredComponents: 
     00000002:
       type: {class: SimpleEntityResolver, ns: Improbable.Gdk.Core.Representation.Types,
         asm: Improbable.Gdk.Core}
       data:
-        entityType: CommanderUnit
-        prefab: {fileID: 5181175297171742801, guid: 9d43a097c6308294283c982d4c1ea6a6,
+        entityType: HeadQuarterUnit
+        prefab: {fileID: 7541166145706494584, guid: cd51b25462caeea4880a3bc23e496b11,
           type: 3}
         requiredComponents: 
     00000003:
       type: {class: SimpleEntityResolver, ns: Improbable.Gdk.Core.Representation.Types,
         asm: Improbable.Gdk.Core}
       data:
-        entityType: HeadQuarterUnit
-        prefab: {fileID: 7541166145706494584, guid: cd2274418fb500c4f9707c0d05a777cc,
+        entityType: StrongholdUnit
+        prefab: {fileID: 7117998853217099108, guid: 6a40792e9bc5ed143a403648adedc6f3,
           type: 3}
         requiredComponents: 
     00000004:
       type: {class: SimpleEntityResolver, ns: Improbable.Gdk.Core.Representation.Types,
         asm: Improbable.Gdk.Core}
       data:
-        entityType: StrongholdUnit
-        prefab: {fileID: 7117998853217099108, guid: 4f8ede473cd625e4087bc1e1a7337097,
+        entityType: HexBase
+        prefab: {fileID: 2460800935532791291, guid: f9c8a19e6d8d4dc4bb3afb10b8fcf9ba,
           type: 3}
         requiredComponents: 
     00000005:
       type: {class: SimpleEntityResolver, ns: Improbable.Gdk.Core.Representation.Types,
         asm: Improbable.Gdk.Core}
       data:
-        entityType: HexBase
-        prefab: {fileID: 2460800935532791291, guid: 6bd6adc8a95e0e2479d173d9015d8817,
+        entityType: Player
+        prefab: {fileID: 1292271339760838, guid: 71d077fff5da0e441ba8fc0dee7e861d,
           type: 3}
         requiredComponents: 
