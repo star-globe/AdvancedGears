@@ -55,6 +55,7 @@ namespace AdvancedGears
 
         private void UpdateHexChangedEvents()
         {
+            int changedCount = 0;
             var hexChangedEvents = this.UpdateSystem.GetEventsReceived<HexFacility.HexChanged.Event>();
             for (var i = 0; i < hexChangedEvents.Count; i++)
             {
@@ -63,13 +64,17 @@ namespace AdvancedGears
                     continue;
 
                 var hex = hexDic[change.HexIndex];
+                if (hex.Side == change.Side)
+                    continue;
+
+                changedCount++;
                 hex.Side = change.Side;
                 this.UpdateSystem.SendUpdate(new HexBase.Update { Side = change.Side }, hex.EntityId.EntityId);
 
                 Debug.LogFormat("Updated Index:{0} Side:{1}", change.HexIndex, change.Side);
             }
 
-            hexChanged = hexChangedEvents.Count > 0;
+            hexChanged = changedCount > 0;
         }
 
         private void UpdateHexInfo()

@@ -64,6 +64,7 @@ namespace AdvancedGears.Editor
             foreach (var h in GetHexBaseObjects(edgeNumber)) {
                 var center = HexUtils.GetHexCenter(centerPos, index, edge);
                 h.SetPosition(center,index, edge);
+                h.SyncUnitSettings();
                 index++;
             }
         }

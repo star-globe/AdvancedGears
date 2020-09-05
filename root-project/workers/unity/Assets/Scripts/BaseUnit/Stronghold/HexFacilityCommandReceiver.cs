@@ -12,15 +12,23 @@ namespace AdvancedGears
         [Require] HexFacilityWriter facilityWriter;
         [Require] BaseUnitStatusReader statusReader;
 
+        UnitSide currentSide;
+
         public void OnEnable()
         {
-            statusReader.OnForceStateEvent += OnForceState;
+            statusReader.OnSideUpdate += OnSideUpdated;
+            currentSide = statusReader.Data.Side;
         }
 
-        private void OnForceState(ForceStateChange change)
+        private void OnSideUpdated(UnitSide side)
         {
+            if (currentSide == side)
+                return;
+
+            currentSide = side;
             var index = facilityWriter.Data.HexIndex;
-            facilityWriter.SendHexChangedEvent(new HexChangedEvent(index, change.Side));
+            facilityWriter.SendHexChangedEvent(new HexChangedEvent(index, side));
+            Debug.LogFormat("HexChangedEvent: Index{0} Side:{1}", index, side);
         }
     }
 }

@@ -144,7 +144,7 @@ namespace AdvancedGears
         Vector3 Origin;
 
         readonly Dictionary<uint,BulletsContainer> containerDic = new Dictionary<uint,BulletsContainer>();
-        readonly Dictionary<long,BulletVanishEvent> entityDic = new Dictionary<long,BulletVanishEvent>();
+        readonly Dictionary<long, (GameObject,BulletVanishEvent)> entityDic = new Dictionary<long,(GameObject,BulletVanishEvent)>();
 
         float checkTime = 0.0f;
         const float interval = 3.0f;
@@ -164,13 +164,13 @@ namespace AdvancedGears
             this.Origin = origin;
         }
 
-        public void RegisterTriggerEntityId(EntityId entityId, BulletVanishEvent action)
+        public void RegisterTriggerEntityId(EntityId entityId, (GameObject,BulletVanishEvent) pair)
         {
             long id = entityId.Id;
             if (entityDic.ContainsKey(id))
-                entityDic[id] = action;
+                entityDic[id] = pair;
             else
-                entityDic.Add(id, action);
+                entityDic.Add(id, pair);
         }
 
         public void RemoveTriggerEntity(EntityId entityId)
@@ -180,8 +180,14 @@ namespace AdvancedGears
 
         public void InvokeVanishAction(long entity_id, uint type, ulong bullet_id)
         {
-            if (entityDic.ContainsKey(entity_id))
-                entityDic[entity_id](type, bullet_id);
+            if (entityDic.ContainsKey(entity_id) == false)
+                return;
+
+            var pair = entityDic[entity_id];
+            if (pair.Item1 == null || pair.Item1.Equals(null))
+                return;
+
+            pair.Item2(type, bullet_id);
         }
 
         public void OnFire(BulletFireInfo info)

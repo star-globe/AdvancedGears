@@ -52,7 +52,7 @@ namespace AdvancedGears
         private void Start()
         {
             Assert.IsNotNull(unitTransform);
-            base.Creator?.RegisterTriggerEntityId(this.SpatialComp.EntityId, VanishBullet);
+            base.Creator?.RegisterTriggerEntityId(this.SpatialComp.EntityId, (this.gameObject, VanishBullet));
         }
 
         protected virtual void OnEnable()

@@ -26,7 +26,7 @@ namespace AdvancedGears
 
         double deltaTime = -1.0;
 
-        const int periodMovement = 10;
+        const int periodMovement = 20;
         const int periodBoid = 2;
 
         readonly Dictionary<EntityId, VectorContainer> vectorDic = new Dictionary<EntityId, VectorContainer>();
