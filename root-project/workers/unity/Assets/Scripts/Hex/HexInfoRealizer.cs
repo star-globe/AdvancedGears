@@ -4,6 +4,8 @@ using Improbable.Gdk.Core;
 using Improbable.Gdk.Subscriptions;
 using Unity.Entities;
 using UnityEngine;
+using TMPro;
+using UnityEngine.Assertions;
 
 namespace AdvancedGears
 {
@@ -16,6 +18,7 @@ namespace AdvancedGears
         [SerializeField] LandLineRenderer line;
         [SerializeField] int cutNumber = 5;
         [SerializeField] float height = 100.0f;
+        [SerializeField] HexInfoText text;
 
         Vector3 origin;
 
@@ -26,6 +29,9 @@ namespace AdvancedGears
 
         void Start()
         {
+            if (reader == null)
+                return;
+
             SetLandLine(this.Origin, reader.Data.Side);
         }
 
@@ -36,15 +42,16 @@ namespace AdvancedGears
 
         void SetLandLine(Vector3 origin, UnitSide side)
         {
-            if (line != null)
-            {
-                var index = reader.Data.Index;
-                Vector3[] corners = new Vector3[7];
-                HexUtils.SetHexCorners(origin, index, corners, HexDictionary.HexEdgeLength);
+            if (line == null || reader == null)
+                return;
 
-                line.SetLines(side, corners, PhysicsUtils.GroundMask, cutNumber, origin.y + height, origin.y, height/100);
-            }
+            var index = reader.Data.Index;
+            Vector3[] corners = new Vector3[7];
+            HexUtils.SetHexCorners(origin, index, corners, HexDictionary.HexEdgeLength);
+
+            line.SetLines(side, corners, PhysicsUtils.GroundMask, cutNumber, origin.y + height, origin.y, height/100);
+
+            text?.SetHexInfo(reader.Data.Index, reader.Data.HexId, side);
         }
-
     }
 }

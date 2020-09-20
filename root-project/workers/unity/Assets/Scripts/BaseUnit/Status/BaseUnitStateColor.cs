@@ -17,9 +17,6 @@ namespace AdvancedGears
         [SerializeField]
         Renderer sideRenderer;
 
-        [SerializeField]
-        BaseUnitStateColorSettings colorSettings;
-
         private void OnEnable()
         {
             reader.OnStateUpdate += UpdateState;
@@ -30,12 +27,12 @@ namespace AdvancedGears
 
         void UpdateState(UnitState state)
         {
-            stateRenderer.material.color = colorSettings.GetStateColor(state);
+            stateRenderer.material.color = ColorDictionary.GetStateColor(state);
         }
 
         void UpdateSide(UnitSide side)
         {
-            sideRenderer.material.color = colorSettings.GetSideColor(side);
+            sideRenderer.material.color = ColorDictionary.GetSideColor(side);
         }
     }
 }

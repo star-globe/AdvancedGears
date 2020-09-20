@@ -9,14 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e5c27a9c37a4a03488c31ae248e5883b, type: 3}
-  m_Name: Movement Dictionary
+  m_Script: {fileID: 11500000, guid: 22a87ad36f680884887b0e4d96fdb90d, type: 3}
+  m_Name: Color Dictionary
   m_EditorClassIdentifier: 
-  movementSettings:
-  - type: 1
-    speed: 4
-    rot: 20
-  - type: 2
-    speed: 4
-    rot: 20
-  rotateLimitRate: 15
+  baseUnitStateColorSettings: {fileID: 11400000, guid: e9653011b1bcf4847b2c0b2d702b450d,
+    type: 2}

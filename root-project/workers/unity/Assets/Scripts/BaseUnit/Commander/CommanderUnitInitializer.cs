@@ -26,8 +26,8 @@ namespace AdvancedGears
         {
             sight.SendUpdate(new CommanderSight.Update
             {
-                Interval = IntervalCheckerInitializer.InitializedChecker(settings.Inter),
-                Range = settings.SightRange,
+                //Interval = IntervalCheckerInitializer.InitializedChecker(settings.Inter),
+                //Range = settings.SightRange,
             });
 
             commander.SendUpdate(new CommanderStatus.Update

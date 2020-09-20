@@ -23,6 +23,9 @@ namespace AdvancedGears
 
         protected override void OnHit(BulletInfo info)
         {
+            if (healthReader == null)
+                return;
+
             var current = healthReader.Data.Health;
             current -= info.Power;
             if (current < 0)

@@ -44,5 +44,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MaxConnectionAttempts: 3
+  entityRepresentationMapping: {fileID: 11400000, guid: e6d1240516eee3c4abbb50040cd3185a,
+    type: 2}
   side: 1
-  pos: {x: -50, y: 0, z: 0}

@@ -9,9 +9,6 @@ namespace AdvancedGears
     [RequireComponent(typeof(LineRenderer))]
     public class LandLineRenderer : MonoBehaviour
     {
-        [SerializeField]
-        BaseUnitStateColorSettings colorSettings;
-
         private LineRenderer lineRenderer;
 
         public LineRenderer Renderer
@@ -60,7 +57,7 @@ namespace AdvancedGears
                 newPoints[i] = new Vector3(p.x, hit.point.y + buffer, p.z);
             }
 
-            var col = colorSettings.GetSideColor(side);
+            var col = ColorDictionary.GetSideColor(side);
             this.Renderer.startColor = col;
             this.Renderer.endColor = col;
 

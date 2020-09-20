@@ -1,6 +1,7 @@
 using Improbable;
 using Improbable.Gdk.Core;
 using Improbable.Gdk.PlayerLifecycle;
+using Improbable.Gdk.Core.Representation;
 using Improbable.Gdk.TransformSynchronization;
 using Improbable.Worker.CInterop;
 using UnityEngine;
@@ -9,6 +10,8 @@ namespace AdvancedGears
 {
     public class UnityGameLogicConnector : WorkerConnector
     {
+        [SerializeField] private EntityRepresentationMapping entityRepresentationMapping = default;
+
         public const string WorkerType = WorkerUtils.UnityGameLogic;
 
         private async void Start()
@@ -41,7 +44,7 @@ namespace AdvancedGears
 
         protected override void HandleWorkerConnectionEstablished()
         {
-            WorkerUtils.AddGameLogicSystems(Worker.World, this.gameObject);
+            WorkerUtils.AddGameLogicSystems(Worker.World, entityRepresentationMapping);
         }
 
         private static EntityTemplate CreatePlayerEntityTemplate(EntityId entityId, string workerId, byte[] serializedArguments)

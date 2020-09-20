@@ -16,7 +16,7 @@ namespace AdvancedGears.MonoBehaviours
 
         private void Update()
         {
-            if (reader.Authority != Authority.NotAuthoritative)
+            if (reader.HasAuthority == false)
             {
                 // Perform sending logic only on non-authoritative workers.
                 return;
