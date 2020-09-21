@@ -13,7 +13,7 @@ using UnityEngine;
 namespace AdvancedGears
 {
     [DisableAutoCreation]
-    [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
+    [UpdateInGroup(typeof(SpatialOSUpdateGroup))]
     public class HealthRecoveryInHexSystem : HexUpdateBaseSystem
     {
         EntityQuery unitGroup;

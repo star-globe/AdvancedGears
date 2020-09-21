@@ -43,7 +43,7 @@ namespace AdvancedGears
                 template.AddComponent(new UnitFactory.Snapshot().DefaultSnapshot(), writeAccess);
 
             if (isFactory || isDominatable)
-                template.AddComponent(new HexFacility.Snapshot(hexIndex: hexIndex), writeAccess);
+                template.AddComponent(new HexFacility.Snapshot(hexIndex: hexIndex, sideChanged:false), writeAccess);
 
             if (spawnType != SpawnType.None)
                 template.AddComponent(new SpawnPoint.Snapshot { Type = spawnType }, writeAccess);

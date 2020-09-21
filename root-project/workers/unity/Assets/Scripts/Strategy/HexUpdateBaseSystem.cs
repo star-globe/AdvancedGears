@@ -13,7 +13,7 @@ using UnityEngine;
 namespace AdvancedGears
 {
     [DisableAutoCreation]
-    [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
+    [UpdateInGroup(typeof(SpatialOSUpdateGroup))]
     public class HexUpdateBaseSystem : SpatialComponentSystem
     {
         protected class HexInfo
@@ -25,6 +25,7 @@ namespace AdvancedGears
         }
 
         EntityQuery hexGroup;
+        EntityQuery facilityGroup;
         IntervalChecker interHex;
         const int updateInter = 5;
 
@@ -43,36 +44,52 @@ namespace AdvancedGears
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
 
+            facilityGroup = GetEntityQuery(
+                ComponentType.ReadWrite<HexFacility.Component>(),
+                ComponentType.ReadOnly<HexFacility.HasAuthority>(),
+                ComponentType.ReadOnly<BaseUnitStatus.Component>(),
+                ComponentType.ReadOnly<SpatialEntityId>()
+            );
+
             interHex = IntervalCheckerInitializer.InitializedChecker(updateInter);
         }
 
         protected override void OnUpdate()
         {
-            UpdateHexChangedEvents();
+            UpdateHexFacility();
 
             UpdateHexInfo();
         }
 
-        private void UpdateHexChangedEvents()
+        private void UpdateHexFacility()
         {
             int changedCount = 0;
-            var hexChangedEvents = this.UpdateSystem.GetEventsReceived<HexFacility.HexChanged.Event>();
-            for (var i = 0; i < hexChangedEvents.Count; i++)
+            Entities.With(facilityGroup).ForEach((Entity entity,
+                                      ref HexFacility.Component facility,
+                                      ref BaseUnitStatus.Component status,
+                                      ref SpatialEntityId entityId) =>
             {
-                var change = hexChangedEvents[i].Event.Payload;
-                if (hexDic.ContainsKey(change.HexIndex) == false)
-                    continue;
+                if (facility.SideChanged == false)
+                    return;
 
-                var hex = hexDic[change.HexIndex];
-                if (hex.Side == change.Side)
-                    continue;
+                facility.SideChanged = false;
+
+                var hexIndex = facility.HexIndex;
+                var side = status.Side;
+
+                if (hexDic.ContainsKey(hexIndex) == false)
+                    return;
+
+                var hex = hexDic[hexIndex];
+                if (hex.Side == status.Side)
+                    return;
 
                 changedCount++;
-                hex.Side = change.Side;
-                this.UpdateSystem.SendUpdate(new HexBase.Update { Side = change.Side }, hex.EntityId.EntityId);
+                hex.Side = status.Side;
+                this.UpdateSystem.SendEvent(new HexBase.SideChanged.Event(new SideChangedEvent(side)), hex.EntityId.EntityId);
 
-                Debug.LogFormat("Updated Index:{0} Side:{1}", change.HexIndex, change.Side);
-            }
+                Debug.LogFormat("Updated Index:{0} Side:{1}", hexIndex, side);
+            });
 
             hexChanged = changedCount > 0;
         }

@@ -21,6 +21,7 @@ namespace AdvancedGears
         [SerializeField] HexInfoText text;
 
         Vector3 origin;
+        UnitSide currentSide;
 
         private void OnEnable()
         {
@@ -32,11 +33,16 @@ namespace AdvancedGears
             if (reader == null)
                 return;
 
+            currentSide = reader.Data.Side;
             SetLandLine(this.Origin, reader.Data.Side);
         }
 
         void UpdateSide(UnitSide side)
         {
+            if (side == currentSide)
+                return;
+
+            currentSide = side;
             SetLandLine(this.Origin, side);
         }
 

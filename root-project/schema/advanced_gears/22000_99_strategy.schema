@@ -21,6 +21,10 @@ enum HexDirection {
 }
 
 // strategy:22000~22099
+type SideChangedEvent {
+    UnitSide side = 1;
+}
+
 component HexBase {
     id = 22000;
 
@@ -28,11 +32,7 @@ component HexBase {
     HexAttribute attribute = 2;
     int32 hex_id = 3;
     UnitSide side = 4;
-}
-
-type HexChangedEvent {
-    uint32 hex_index = 1;
-    UnitSide side = 2;
+    event SideChangedEvent side_changed;
 }
 
 // attach to stronghold
@@ -40,7 +40,7 @@ component HexFacility {
     id = 22001;
 
     uint32 hex_index = 1;
-    event HexChangedEvent hex_changed;
+    bool side_changed = 2;
 }
 
 type HexInfo {

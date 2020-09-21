@@ -19,4 +19,4 @@ MonoBehaviour:
   separeteWeight: 2.5
   alignmentWeight: 0.1
   cohesionWeight: 3
-  captureSpeed: 1.5
+  captureSpeed: 5
