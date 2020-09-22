@@ -1,0 +1,30 @@
+package advanced_gears;
+import "improbable/standard_library.schema";
+import "improbable/gdk/core/common.schema";
+import "improbable/gdk/transform_synchronization/transform_internal.schema";
+import "advanced_gears/common.schema";
+
+type CompressedLocalTrandform
+{
+    improbable.gdk.transform_synchronization.FixedPointVector3 position = 1;
+    improbable.gdk.transform_synchronization.FixedPointVector3 size = 2;
+    improbable.gdk.transform_synchronization.CompressedQuaternion rotation = 3;
+}
+
+type PostureTarget
+{
+    improbable.gdk.transform_synchronization.FixedPointVector3 position = 1;
+}
+
+component Posture {
+    id = 25000;
+
+    CompressedLocalTrandform local_trans = 1;
+}
+
+component PostureInternal {
+    id = 25001;
+
+    CompressedLocalTrandform local_init = 1;
+    PostureTarget target = 2;
+}
