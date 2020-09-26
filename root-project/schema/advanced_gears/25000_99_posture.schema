@@ -16,15 +16,15 @@ type PostureTarget
     improbable.gdk.transform_synchronization.FixedPointVector3 position = 1;
 }
 
-component Posture {
+component PostureCurrent {
     id = 25000;
 
-    CompressedLocalTrandform local_trans = 1;
+    CompressedLocalTrandform trans = 1;
 }
 
 component PostureInternal {
     id = 25001;
 
-    CompressedLocalTrandform local_init = 1;
+    CompressedLocalTrandform init = 1;
     PostureTarget target = 2;
 }
