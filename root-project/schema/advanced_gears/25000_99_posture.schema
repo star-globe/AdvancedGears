@@ -16,15 +16,31 @@ type PostureTarget
     improbable.gdk.transform_synchronization.FixedPointVector3 position = 1;
 }
 
-component PostureCurrent {
+component PostureRoot {
     id = 25000;
 
-    CompressedLocalTrandform trans = 1;
+    CompressedLocalTrandform root_trans = 1;
 }
 
-component PostureInternal {
+type PostureTransData
+{
+    PosturePoint point = 1;
+    list<CompressedLocalTrandform> transforms = 2;
+}
+
+type AnimData
+{
+    int32 anim_state = 1;
+    EntityId target_id = 2;
+    improbable.gdk.transform_synchronization.FixedPointVector3 position = 3;
+}
+
+component PostureAnimation {
     id = 25001;
 
-    CompressedLocalTrandform init = 1;
-    PostureTarget target = 2;
+    map<PosturePoint, PostureTransData> posture_map = 1;
+    AnimData anim_data = 2;
+
+    event PostureTransData reset_posture;
+    event AnimData anim_changed;
 }
