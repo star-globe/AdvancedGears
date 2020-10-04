@@ -293,10 +293,10 @@ namespace AdvancedGears
             switch (current.Type)
             {
                 case UnitType.Commander:
-                    template = BaseUnitTemplate.CreateCommanderUnitEntityTemplate(current.Side, coords, current.Rank, superiorId);
+                    template = BaseUnitTemplate.CreateCommanderUnitEntityTemplate(current.Side, current.Rank, superiorId, coords, TransformUtils.ToAngleAxis(current.Rot, Vector3.up));
                     break;
                 default:
-                    template = BaseUnitTemplate.CreateBaseUnitEntityTemplate(current.Side, coords, current.Type);
+                    template = BaseUnitTemplate.CreateBaseUnitEntityTemplate(current.Side, current.Type, coords, TransformUtils.ToAngleAxis(current.Rot, Vector3.up));
                     break;
             }
 
@@ -321,7 +321,7 @@ namespace AdvancedGears
 
             var current = orders[0];
             // create unit
-            EntityTemplate template = BaseUnitTemplate.CreateCommanderUnitEntityTemplate(current.Side, coords, current.Rank, null);
+            EntityTemplate template = BaseUnitTemplate.CreateCommanderUnitEntityTemplate(current.Side, current.Rank, null, coords, TransformUtils.ToAngleAxis(current.Rot, Vector3.up));
             var snap = template.GetComponent<CommanderTeam.Snapshot>();
             if (snap != null) {
                 var s = snap.Value;
@@ -373,12 +373,12 @@ namespace AdvancedGears
             var current = orders[0];
             // create unit
             List<ValueTuple<EntityTemplate,UnitType>> templates = new List<ValueTuple<EntityTemplate,UnitType>>();
-            var temp = BaseUnitTemplate.CreateCommanderUnitEntityTemplate(side, coords, current.CommanderRank, null);
+            var temp = BaseUnitTemplate.CreateCommanderUnitEntityTemplate(side, current.CommanderRank, null, coords, TransformUtils.ToAngleAxis(current.Rot, Vector3.up));
             templates.Add((temp, UnitType.Commander));
 
             var posList = GetCoordinates(coords, current.SoldiersNumber);
             foreach(var pos in posList) {
-                temp = BaseUnitTemplate.CreateBaseUnitEntityTemplate(side, pos, UnitType.Soldier);
+                temp = BaseUnitTemplate.CreateBaseUnitEntityTemplate(side, UnitType.Soldier, pos, TransformUtils.ToAngleAxis(current.Rot, Vector3.up));
                 templates.Add((temp, UnitType.Soldier));
             }
 
@@ -437,7 +437,7 @@ namespace AdvancedGears
 
             var posList = GetCoordinates(coords, current.TurretsNumber);
             foreach(var pos in posList) {
-                var temp = BaseUnitTemplate.CreateTurretUnitTemplate(side, pos, current.TurretId);
+                var temp = BaseUnitTemplate.CreateTurretUnitTemplate(side, current.TurretId, pos, TransformUtils.ToAngleAxis(current.Rot, Vector3.up));
                 templates.Add((temp, UnitType.Turret));
             }
 

@@ -33,6 +33,7 @@ namespace AdvancedGears
                                                 ComponentType.ReadWrite<UnitFactory.Component>(),
                                                 ComponentType.ReadOnly<UnitFactory.HasAuthority>(),
                                                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
+                                                ComponentType.ReadOnly<StrongholdSight.Component>(),
                                                 ComponentType.ReadOnly<Transform>()
                                                 ), 2);
         }
@@ -84,7 +85,8 @@ namespace AdvancedGears
 
             Entities.With(factoryQuerySet.group).ForEach((Unity.Entities.Entity entity,
                                                           ref UnitFactory.Component factory,
-                                                          ref BaseUnitStatus.Component status) =>
+                                                          ref BaseUnitStatus.Component status,
+                                                          ref StrongholdSight.Component sight) =>
             {
                 if (status.State != UnitState.Alive)
                     return;
@@ -101,7 +103,7 @@ namespace AdvancedGears
 
                 // number check
                 if (factory.TeamOrders.Count == 0) {
-                    var teamOrders = makeOrders(status.Rank, status.Order, teams);
+                    var teamOrders = makeOrders(status.Rank, PostureUtils.RotFoward(sight.StrategyVector.Vector.ToUnityVector()), status.Order, teams);
                     if (teamOrders != null)
                         factory.TeamOrders.AddRange(teamOrders);
                 }
@@ -183,7 +185,7 @@ namespace AdvancedGears
             requestLists.Add(id);
         }
 
-        List<TeamOrder> makeOrders(uint rank, OrderType order, Dictionary<EntityId,TeamInfo> datas)
+        List<TeamOrder> makeOrders(uint rank, float rot, OrderType order, Dictionary<EntityId,TeamInfo> datas)
         {
             var maxrank = OrderDictionary.GetMaxRank(order, rank);
 
@@ -208,6 +210,7 @@ namespace AdvancedGears
                         SoldiersNumber = solnum,
                         Order = order,
                         Stack = coms - count,
+                        Rot = rot,
                     });
                 }
 

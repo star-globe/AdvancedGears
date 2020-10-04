@@ -27,6 +27,7 @@ GameObject:
   - component: {fileID: 2158315885018568034}
   - component: {fileID: 6931688290098052847}
   - component: {fileID: 6382008209999217825}
+  - component: {fileID: 4562395332445872251}
   m_Layer: 11
   m_Name: CommanderUnit
   m_TagString: Untagged
@@ -144,7 +145,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stateRenderer: {fileID: 60910949287340947}
   sideRenderer: {fileID: 5149953385170116074}
-  colorSettings: {fileID: 11400000, guid: e9653011b1bcf4847b2c0b2d702b450d, type: 2}
 --- !u!114 &1322930615609811082
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -291,6 +291,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   markerObject: {fileID: 8941627388499571744}
+--- !u!114 &4562395332445872251
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5181175297171742801}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3c74bd20ce80c443954725cef4a818a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &6450849777049871262
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -114,7 +114,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stateRenderer: {fileID: 4282357488535139363}
   sideRenderer: {fileID: 4473814464595512740}
-  colorSettings: {fileID: 11400000, guid: e9653011b1bcf4847b2c0b2d702b450d, type: 2}
 --- !u!114 &1390409280015126361
 MonoBehaviour:
   m_ObjectHideFlags: 0

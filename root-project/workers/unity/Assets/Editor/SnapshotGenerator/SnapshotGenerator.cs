@@ -215,7 +215,7 @@ namespace AdvancedGears.Editor
 
                     double pos_x = nx * scale;
                     double pos_z = z * scale;
-                    var entityTemplate = BaseUnitTemplate.CreateBaseUnitEntityTemplate(side, GroundCoordinates(pos_x, pos_z, ground), UnitType.Soldier);
+                    var entityTemplate = BaseUnitTemplate.CreateBaseUnitEntityTemplate(side, UnitType.Soldier, GroundCoordinates(pos_x, pos_z, ground));
                     snapshot.AddEntity(entityTemplate);
                 }
             }
@@ -227,7 +227,7 @@ namespace AdvancedGears.Editor
         {
             foreach(var u in units)
             {
-                var template = BaseUnitTemplate.CreateBaseUnitEntityTemplate(u.side, GroundCoordinates(u.pos.x, u.pos.y, u.pos.z), u.type);
+                var template = BaseUnitTemplate.CreateBaseUnitEntityTemplate(u.side, u.type, GroundCoordinates(u.pos.x, u.pos.y, u.pos.z), u.rotate.ToCompressedQuaternion());
                 if (u.attachments != null) {
                     foreach (var attach in u.attachments) {
                         attach.AddComponent(template);
@@ -247,18 +247,18 @@ namespace AdvancedGears.Editor
         {
             var gridLength = (int)Math.Ceiling(Math.Sqrt(16));
             var len = gridLength * scale;
-            var templateA = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.A, GroundCoordinates(-len * 3, 0, ground), UnitType.Stronghold);
-            var templateB = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.B, GroundCoordinates(len * 3, 0, ground), UnitType.Stronghold);
+            var templateA = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.A, UnitType.Stronghold, GroundCoordinates(-len * 3, 0, ground));
+            var templateB = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.B, UnitType.Stronghold, GroundCoordinates(len * 3, 0, ground));
             snapshot.AddEntity(templateA);
             snapshot.AddEntity(templateB);
 
-            var templateCa = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.A, GroundCoordinates(-len * 2, 0, ground), UnitType.Commander);
-            var templateCb = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.B, GroundCoordinates(len * 2, 0, ground), UnitType.Commander);
+            var templateCa = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.A, UnitType.Commander, GroundCoordinates(-len * 2, 0, ground));
+            var templateCb = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.B, UnitType.Commander, GroundCoordinates(len * 2, 0, ground));
             snapshot.AddEntity(templateCa);
             snapshot.AddEntity(templateCb);
 
-            var templateHa = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.A, GroundCoordinates(-len * 3.5, 0, ground), UnitType.HeadQuarter);
-            var templateHb = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.B, GroundCoordinates(len * 3.5, 0, ground), UnitType.HeadQuarter);
+            var templateHa = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.A, UnitType.HeadQuarter, GroundCoordinates(-len * 3.5, 0, ground));
+            var templateHb = BaseUnitTemplate.CreateBaseUnitEntityTemplate(UnitSide.B, UnitType.HeadQuarter, GroundCoordinates(len * 3.5, 0, ground));
             snapshot.AddEntity(templateHa);
             snapshot.AddEntity(templateHb);
         }

@@ -284,12 +284,14 @@ type FollowerOrder {
     UnitType type = 4;
     int32 number = 5;
     uint32 rank = 6;
+    float rot = 7;
 }
 
 type SuperiorOrder {
     list<EntityId> followers = 1;
     UnitSide side = 3;
     uint32 rank = 4;
+    float rot = 5;
 }
 
 enum CommandActionType
@@ -345,7 +347,8 @@ type TeamOrder {
     uint32 commander_rank = 1;
     int32 soldiers_number = 2;
     OrderType order = 3;
-    int32 stack = 10;
+    int32 stack = 4;
+    float rot = 5;
 }
 
 type TeamOrderList {
@@ -356,6 +359,7 @@ type TurretOrder {
     int32 turret_id = 1;
     int32 turrets_number = 2;
     int32 stack = 3;
+    float rot = 4;
 }
 
 type TurretOrderList {

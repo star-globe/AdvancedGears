@@ -7,7 +7,7 @@ import "advanced_gears/common.schema";
 type CompressedLocalTrandform
 {
     improbable.gdk.transform_synchronization.FixedPointVector3 position = 1;
-    improbable.gdk.transform_synchronization.FixedPointVector3 size = 2;
+    improbable.gdk.transform_synchronization.FixedPointVector3 scale = 2;
     improbable.gdk.transform_synchronization.CompressedQuaternion rotation = 3;
 }
 

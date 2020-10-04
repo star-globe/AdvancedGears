@@ -25,6 +25,7 @@ GameObject:
   - component: {fileID: 8525274799260527892}
   - component: {fileID: 5626431488711200078}
   - component: {fileID: 2852426682652613271}
+  - component: {fileID: 861358651941488173}
   m_Layer: 11
   m_Name: StrongholdUnit
   m_TagString: Untagged
@@ -118,7 +119,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stateRenderer: {fileID: 1477009644268083907}
   sideRenderer: {fileID: 7603614155944707731}
-  colorSettings: {fileID: 11400000, guid: e9653011b1bcf4847b2c0b2d702b450d, type: 2}
 --- !u!114 &309114750155174671
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -262,6 +262,18 @@ MonoBehaviour:
   m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4d77272cbbc30424e8bf0c746b86bb78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &861358651941488173
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7117998853217099108}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3c74bd20ce80c443954725cef4a818a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &4419458866152112006

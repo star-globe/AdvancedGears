@@ -68,6 +68,7 @@ namespace AdvancedGears
             world.GetOrCreateSystem<MetricSendSystem>();
             world.GetOrCreateSystem<ProcessScoresSystem>();
             world.GetOrCreateSystem<CollisionProcessSystem>();
+            world.GetOrCreateSystem<RootPostureSyncSystem>();
             world.GetOrCreateSystem<BaseUnitMovementSystem>();
             world.GetOrCreateSystem<BaseUnitSightSystem>();
             world.GetOrCreateSystem<BaseUnitPhysicsSystem>();

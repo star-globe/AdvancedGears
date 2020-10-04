@@ -24,6 +24,7 @@ GameObject:
   - component: {fileID: 6219044561266868164}
   - component: {fileID: 526124300522231972}
   - component: {fileID: 5284226851696852331}
+  - component: {fileID: 4465132455541570131}
   m_Layer: 11
   m_Name: HeadQuarterUnit
   m_TagString: Untagged
@@ -117,7 +118,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stateRenderer: {fileID: 8304721226408007717}
   sideRenderer: {fileID: 1061258848052544629}
-  colorSettings: {fileID: 11400000, guid: e9653011b1bcf4847b2c0b2d702b450d, type: 2}
 --- !u!114 &1019395314181219347
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -251,6 +251,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   settings: {fileID: 11400000, guid: d7d6f89784f414849b6a177066a587e2, type: 2}
+--- !u!114 &4465132455541570131
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7541166145706494584}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3c74bd20ce80c443954725cef4a818a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &5766174824716151420
 PrefabInstance:
   m_ObjectHideFlags: 0
