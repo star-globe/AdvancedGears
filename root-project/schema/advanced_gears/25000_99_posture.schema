@@ -24,8 +24,13 @@ component PostureRoot {
 
 type PostureTransData
 {
-    PosturePoint point = 1;
-    list<CompressedLocalTrandform> transforms = 2;
+    int32 hash = 1;
+    CompressedLocalTrandform trans = 2;
+}
+
+type PostureTransDataList
+{
+    list<PostureTransData> datas = 1;
 }
 
 type AnimData
@@ -38,9 +43,9 @@ type AnimData
 component PostureAnimation {
     id = 25001;
 
-    map<PosturePoint, PostureTransData> posture_map = 1;
+    map<int32, CompressedLocalTrandform> posture_map = 1;
     AnimData anim_data = 2;
 
-    event PostureTransData reset_posture;
+    event PostureTransDataList reset_posture;
     event AnimData anim_changed;
 }
