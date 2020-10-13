@@ -2,6 +2,7 @@ using Improbable;
 using Improbable.Gdk.Core;
 using Improbable.Gdk.PlayerLifecycle;
 using Improbable.Gdk.Core.Representation;
+using Improbable.Gdk.GameObjectCreation;
 using Improbable.Gdk.TransformSynchronization;
 using Improbable.Worker.CInterop;
 using UnityEngine;
@@ -44,7 +45,8 @@ namespace AdvancedGears
 
         protected override void HandleWorkerConnectionEstablished()
         {
-            WorkerUtils.AddGameLogicSystems(Worker.World, entityRepresentationMapping);
+            GameObjectCreationHelper.EnableStandardGameObjectCreation(Worker.World, new SyncRootObjectCreation(Worker), entityRepresentationMapping);
+            WorkerUtils.AddGameLogicSystems(Worker.World);
         }
 
         private static EntityTemplate CreatePlayerEntityTemplate(EntityId entityId, string workerId, byte[] serializedArguments)

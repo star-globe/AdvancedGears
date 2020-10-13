@@ -36,11 +36,10 @@ namespace AdvancedGears
             }
         }
 
-        public static void AddClientSystems(World world, EntityRepresentationMapping entityRepresentationMapping, bool autoRequestPlayerCreation = true)
+        public static void AddClientSystems(World world, bool autoRequestPlayerCreation = true)
         {
             TransformSynchronizationHelper.AddClientSystems(world);
             PlayerLifecycleHelper.AddClientSystems(world, autoRequestPlayerCreation);
-            GameObjectCreationHelper.EnableStandardGameObjectCreation(world, entityRepresentationMapping);
             world.GetOrCreateSystem<ProcessColorChangeSystem>();
             world.GetOrCreateSystem<AdvancedPlayerInputSync>();
             world.GetOrCreateSystem<MoveAdvancedUnitSystem>();
@@ -57,12 +56,10 @@ namespace AdvancedGears
             world.GetOrCreateSystem<MiniMapUISystem>();
         }
 
-        public static void AddGameLogicSystems(World world, EntityRepresentationMapping entityRepresentationMapping)
+        public static void AddGameLogicSystems(World world)
         {
             TransformSynchronizationHelper.AddServerSystems(world);
             PlayerLifecycleHelper.AddServerSystems(world);
-            GameObjectCreationHelper.EnableStandardGameObjectCreation(world, entityRepresentationMapping);
-
             world.GetOrCreateSystem<ProcessLaunchCommandSystem>();
             world.GetOrCreateSystem<ProcessRechargeSystem>();
             world.GetOrCreateSystem<MetricSendSystem>();
