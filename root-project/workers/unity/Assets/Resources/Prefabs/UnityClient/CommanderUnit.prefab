@@ -107,7 +107,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stateRenderer: {fileID: 6944322349181479627}
   sideRenderer: {fileID: 2882049897795820722}
-  colorSettings: {fileID: 11400000, guid: e9653011b1bcf4847b2c0b2d702b450d, type: 2}
 --- !u!54 &7128822156838233223
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -145,11 +144,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 747717006727055777}
     m_Modifications:
-    - target: {fileID: 5181175297171742801, guid: 6ea95b1a84b80ce4099490fd478bd3a9,
-        type: 3}
-      propertyPath: m_Name
-      value: CommanderUnit_Object
-      objectReference: {fileID: 0}
     - target: {fileID: 747717006727055777, guid: 6ea95b1a84b80ce4099490fd478bd3a9,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -204,6 +198,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5181175297171742801, guid: 6ea95b1a84b80ce4099490fd478bd3a9,
+        type: 3}
+      propertyPath: m_Name
+      value: CommanderUnit_Object
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 965182219674110058, guid: 6ea95b1a84b80ce4099490fd478bd3a9, type: 3}
