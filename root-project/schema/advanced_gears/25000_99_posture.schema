@@ -24,7 +24,7 @@ component PostureRoot {
 
 type PostureTransData
 {
-    int32 hash = 1;
+    int32 bone_hash = 1;
     CompressedLocalTrandform trans = 2;
 }
 
@@ -35,7 +35,7 @@ type PostureTransDataList
 
 type AnimData
 {
-    int32 anim_state = 1;
+    int32 anim_state_hash = 1;
     EntityId target_id = 2;
     improbable.gdk.transform_synchronization.FixedPointVector3 position = 3;
 }
@@ -43,7 +43,7 @@ type AnimData
 component PostureAnimation {
     id = 25001;
 
-    map<int32, CompressedLocalTrandform> posture_map = 1;
+    map<int32, CompressedLocalTrandform> bone_map = 1;
     AnimData anim_data = 2;
 
     event PostureTransDataList reset_posture;

@@ -41,6 +41,8 @@ namespace AdvancedGears
             typeof(Transform), typeof(Rigidbody)
         };
 
+        private readonly Dictionary<EntityId, GameObject> gameObjectsCreated = new Dictionary<EntityId, GameObject>();
+
         public SyncRootObjectCreation(WorkerInWorld worker)
         {
             this.worker = worker;
@@ -57,7 +59,8 @@ namespace AdvancedGears
 
             Quaternion rot = Quaternion.identity;
             Vector3 scale = Vector3.one;
-            if (entityManager.HasComponent<PostureRoot.Component>(entityInfo.Entity)) {
+            if (entityManager.HasComponent<PostureRoot.Component>(entityInfo.Entity))
+            {
                 var root = entityManager.GetComponentData<PostureRoot.Component>(entityInfo.Entity);
                 rot = root.RootTrans.Rotation.ToUnityQuaternion();
                 scale = root.RootTrans.Scale.ToUnityVector();
@@ -66,12 +69,20 @@ namespace AdvancedGears
             var gameObject = UnityEngine.Object.Instantiate(prefab, position.ToUnityVector() + this.WorkerOrigin, rot);
             gameObject.transform.localScale = scale;
 
+            gameObjectsCreated.Add(entityInfo.SpatialOSEntityId, gameObject);
             gameObject.name = $"{prefab.name}(SpatialOS: {entityInfo.SpatialOSEntityId}, Worker: {this.WorkerType})";
             linker.LinkGameObjectToSpatialOSEntity(entityInfo.SpatialOSEntityId, gameObject, componentsToAdd);
         }
 
         public void OnEntityRemoved(EntityId entityId)
         {
+            if (!gameObjectsCreated.TryGetValue(entityId, out var gameObject))
+            {
+                return;
+            }
+
+            gameObjectsCreated.Remove(entityId);
+            UnityEngine.Object.Destroy(gameObject);
         }
 
         public void PopulateEntityTypeExpectations(EntityTypeExpectations entityTypeExpectations)
