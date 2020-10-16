@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace AdvancedGears
 {
-    public class SyncRootObjectCreation : IEntityGameObjectCreator
+    public class SyncTransObjectCreation : IEntityGameObjectCreator
     {
         WorkerInWorld worker = null;
 
@@ -41,9 +41,14 @@ namespace AdvancedGears
             typeof(Transform), typeof(Rigidbody)
         };
 
+        private readonly Type[] componentsToAddForAnim =
+        {
+            typeof(Transform), typeof(Rigidbody), typeof(PostureBoneContainer)
+        };
+
         private readonly Dictionary<EntityId, GameObject> gameObjectsCreated = new Dictionary<EntityId, GameObject>();
 
-        public SyncRootObjectCreation(WorkerInWorld worker)
+        public SyncTransObjectCreation(WorkerInWorld worker)
         {
             this.worker = worker;
         }
@@ -51,27 +56,48 @@ namespace AdvancedGears
         public void OnEntityCreated(SpatialOSEntityInfo entityInfo, GameObject prefab, EntityManager entityManager, EntityGameObjectLinker linker)
         {
             Coordinates position = Coordinates.Zero;
-            if (entityManager.HasComponent<Position.Component>(entityInfo.Entity))
-            {
-                var pos = entityManager.GetComponentData<Position.Component>(entityInfo.Entity);
-                position = pos.Coords;
-            }
+            if (TryGetComponent<Position.Component>(entityManager, entityInfo.Entity, out var comp))
+                position = comp.Value.pos.Coords;
 
             Quaternion rot = Quaternion.identity;
             Vector3 scale = Vector3.one;
-            if (entityManager.HasComponent<PostureRoot.Component>(entityInfo.Entity))
-            {
-                var root = entityManager.GetComponentData<PostureRoot.Component>(entityInfo.Entity);
-                rot = root.RootTrans.Rotation.ToUnityQuaternion();
-                scale = root.RootTrans.Scale.ToUnityVector();
+            if (TryGetComponent<PostureRoot.Component>(entityManager, entityInfo.Entity, out var comp)) {
+                rot = comp.Value.RootTrans.Rotation.ToUnityQuaternion();
+                scale = comp.Value.RootTrans.Scale.ToUnityVector();
             }
+
+            Dictionary<int,CompressedLocalTransform> boneMap = null;
+            if (TryGetComponent<PostureRoot.Component>(entityManager, entityInfo.Entity, out var comp))
+                boneMap = comp.Value.BoneMap;
 
             var gameObject = UnityEngine.Object.Instantiate(prefab, position.ToUnityVector() + this.WorkerOrigin, rot);
             gameObject.transform.localScale = scale;
 
+            Type[] types = componentsToAdd;
+            if (boneMap != null) {
+                var container = gameObject.GetComponent<PostureBoneContainer>();
+                container?.SetTrans(boneMap);
+                types = componentsToAddForAnim;
+            }
+
             gameObjectsCreated.Add(entityInfo.SpatialOSEntityId, gameObject);
             gameObject.name = $"{prefab.name}(SpatialOS: {entityInfo.SpatialOSEntityId}, Worker: {this.WorkerType})";
-            linker.LinkGameObjectToSpatialOSEntity(entityInfo.SpatialOSEntityId, gameObject, componentsToAdd);
+            linker.LinkGameObjectToSpatialOSEntity(entityInfo.SpatialOSEntityId, gameObject, types);
+        }
+
+        private bool TryGetComponent<T>(EntityManager entityManager, in Entity entity, out T? comp) where T : struct, IComponentData
+        {
+            comp = null;
+            if (entityManager == null)
+                return false;
+
+            if (entityManager.HasComponent<T>(entity))
+            {
+                comp = entityManager.GetComponentData<T>(entity);
+                return true;
+            }
+            else
+                return false;
         }
 
         public void OnEntityRemoved(EntityId entityId)

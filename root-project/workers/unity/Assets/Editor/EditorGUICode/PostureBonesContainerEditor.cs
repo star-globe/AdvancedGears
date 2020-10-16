@@ -8,14 +8,14 @@ using UnityEditor;
 
 namespace AdvancedGears
 {
-    [CustomEditor(typeof(PostureBonesContainer))]
-    public class PostureBonesContainerEditor : UnityEditor.Editor
+    [CustomEditor(typeof(PostureBoneContainer))]
+    public class PostureBoneContainerEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
 
-            var posture = target as PostureBonesContainer;
+            var posture = target as PostureBoneContainer;
             if (posture == null)
                 return;
 

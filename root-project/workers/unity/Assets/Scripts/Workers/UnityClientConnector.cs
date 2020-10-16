@@ -55,7 +55,7 @@ namespace AdvancedGears
 
         protected override void HandleWorkerConnectionEstablished()
         {
-            GameObjectCreationHelper.EnableStandardGameObjectCreation(Worker.World, new SyncRootObjectCreation(Worker), entityRepresentationMapping);
+            GameObjectCreationHelper.EnableStandardGameObjectCreation(Worker.World, new SyncTransObjectCreation(Worker), entityRepresentationMapping);
             WorkerUtils.AddClientSystems(Worker.World, false);
 
             var spawnPointSystem = Worker.World.GetExistingSystem<SpawnPointQuerySystem>();

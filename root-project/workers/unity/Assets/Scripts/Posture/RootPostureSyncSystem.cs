@@ -43,7 +43,6 @@ namespace AdvancedGears
                 var rootTrans = posture.RootTrans;
 
                 bool changed = false;
-                //changed |= trans.position != rootTrans.Position.ToWorkerPosition(this.Origin);
                 changed |= trans.rotation != rootTrans.Rotation.ToUnityQuaternion();
                 changed |= trans.localScale != rootTrans.Scale.ToUnityVector();
 
@@ -54,9 +53,6 @@ namespace AdvancedGears
                     DebugUtils.RandomlyLog($"angle:{local.Rotation.ToUnityQuaternion().eulerAngles}");
 
                     posture.RootTrans = PostureUtils.ConvertTransform(trans);
-
-                    if (posture.RootTrans.Rotation == CompressedQuaternion.Identity)
-                        Debug.Log($"Rotation Identity! Rotation:{trans.rotation}");
                 }
             });
         }
