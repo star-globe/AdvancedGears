@@ -56,19 +56,19 @@ namespace AdvancedGears
         public void OnEntityCreated(SpatialOSEntityInfo entityInfo, GameObject prefab, EntityManager entityManager, EntityGameObjectLinker linker)
         {
             Coordinates position = Coordinates.Zero;
-            if (TryGetComponent<Position.Component>(entityManager, entityInfo.Entity, out var comp))
-                position = comp.Value.pos.Coords;
+            if (TryGetComponent<Position.Component>(entityManager, entityInfo.Entity, out var pos))
+                position = pos.Value.Coords;
 
             Quaternion rot = Quaternion.identity;
             Vector3 scale = Vector3.one;
-            if (TryGetComponent<PostureRoot.Component>(entityManager, entityInfo.Entity, out var comp)) {
-                rot = comp.Value.RootTrans.Rotation.ToUnityQuaternion();
-                scale = comp.Value.RootTrans.Scale.ToUnityVector();
+            if (TryGetComponent<PostureRoot.Component>(entityManager, entityInfo.Entity, out var posture)) {
+                rot = posture.Value.RootTrans.Rotation.ToUnityQuaternion();
+                scale = posture.Value.RootTrans.Scale.ToUnityVector();
             }
 
             Dictionary<int,CompressedLocalTransform> boneMap = null;
-            if (TryGetComponent<PostureRoot.Component>(entityManager, entityInfo.Entity, out var comp))
-                boneMap = comp.Value.BoneMap;
+            if (TryGetComponent<PostureAnimation.Component>(entityManager, entityInfo.Entity, out var anim))
+                boneMap = anim.Value.BoneMap;
 
             var gameObject = UnityEngine.Object.Instantiate(prefab, position.ToUnityVector() + this.WorkerOrigin, rot);
             gameObject.transform.localScale = scale;

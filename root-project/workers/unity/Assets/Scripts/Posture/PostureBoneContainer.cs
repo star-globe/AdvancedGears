@@ -25,22 +25,22 @@ namespace AdvancedGears
             {
                 bones[index].transform.position = postureData.Trans.Position.ToUnityVector();
                 bones[index].transform.rotation = postureData.Trans.Rotation.ToUnityQuaternion();
-                bones[index].transform.localScale = postureData.Trans.Scale.ToUnityvector();
+                bones[index].transform.localScale = postureData.Trans.Scale.ToUnityVector();
             }
         }
 
-        public void SetTrans(int hash, CompressedLocalTrandform trans)
+        public void SetTrans(int hash, CompressedLocalTransform trans)
         {
             var index = bones.FindIndex(b => b.hash == hash);
             if (index >= 0 && index < bones.Count)
             {
                 bones[index].transform.position = trans.Position.ToUnityVector();
                 bones[index].transform.rotation = trans.Rotation.ToUnityQuaternion();
-                bones[index].transform.localScale = trans.Scale.ToUnityvector();
+                bones[index].transform.localScale = trans.Scale.ToUnityVector();
             }
         }
 
-        public void SetTrans(Dictionary<int,CompressedLocalTrandform> boneMap)
+        public void SetTrans(Dictionary<int,CompressedLocalTransform> boneMap)
         {
             if (boneMap != null)
             {
@@ -66,7 +66,7 @@ namespace AdvancedGears
                 return;
 
             var hashSet = new HashSet<int>();
-            for (var i = 0; i < bones.Length; i++)
+            for (var i = 0; i < bones.Count; i++)
             {
                 var t = bones[i].transform;
                 if (t == null) {

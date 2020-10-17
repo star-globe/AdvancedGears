@@ -7,9 +7,9 @@ namespace AdvancedGears
 {
     public static class PostureUtils
     {
-        public static CompressedLocalTrandform ConvertTransform(Vector3 position, Quaternion rotation, Vector3 scale)
+        public static CompressedLocalTransform ConvertTransform(Vector3 position, Quaternion rotation, Vector3 scale)
         {
-            var trans = new CompressedLocalTrandform();
+            var trans = new CompressedLocalTransform();
             trans.Position = position.ToFixedPointVector3();
             trans.Rotation = rotation.ToCompressedQuaternion();
             trans.Scale = scale.ToFixedPointVector3();
@@ -17,7 +17,7 @@ namespace AdvancedGears
             return trans;
         }
 
-        public static CompressedLocalTrandform ConvertTransform(Transform trans)
+        public static CompressedLocalTransform ConvertTransform(Transform trans)
         {
             if (trans == null)
                 return ConvertTransform(Vector3.zero, Quaternion.identity, Vector3.one);
@@ -25,9 +25,9 @@ namespace AdvancedGears
             return ConvertTransform(trans.position, trans.rotation, trans.localScale);
         }
 
-        public static CompressedLocalTrandform ConvertTransform(Coordinates position, CompressedQuaternion rotation, FixedPointVector3 scale)
+        public static CompressedLocalTransform ConvertTransform(Coordinates position, CompressedQuaternion rotation, FixedPointVector3 scale)
         {
-            var trans = new CompressedLocalTrandform();
+            var trans = new CompressedLocalTransform();
             trans.Position = position.ToFixedPointVector3();
             trans.Rotation = rotation;
             trans.Scale = scale;
@@ -35,7 +35,7 @@ namespace AdvancedGears
             return trans;
         }
 
-        public static CompressedLocalTrandform ConvertTransform(Coordinates position, CompressedQuaternion? rotation, FixedPointVector3? scale)
+        public static CompressedLocalTransform ConvertTransform(Coordinates position, CompressedQuaternion? rotation, FixedPointVector3? scale)
         {
             rotation = rotation ?? TransformUtils.ToAngleAxis(0,Vector3.up);
             scale = scale ?? TransformUtils.OneVector;

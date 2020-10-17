@@ -4,7 +4,7 @@ import "improbable/gdk/core/common.schema";
 import "improbable/gdk/transform_synchronization/transform_internal.schema";
 import "advanced_gears/common.schema";
 
-type CompressedLocalTrandform
+type CompressedLocalTransform
 {
     improbable.gdk.transform_synchronization.FixedPointVector3 position = 1;
     improbable.gdk.transform_synchronization.FixedPointVector3 scale = 2;
@@ -19,13 +19,13 @@ type PostureTarget
 component PostureRoot {
     id = 25000;
 
-    CompressedLocalTrandform root_trans = 1;
+    CompressedLocalTransform root_trans = 1;
 }
 
 type PostureTransData
 {
     int32 bone_hash = 1;
-    CompressedLocalTrandform trans = 2;
+    CompressedLocalTransform trans = 2;
 }
 
 type PostureTransDataList
@@ -43,7 +43,7 @@ type AnimData
 component PostureAnimation {
     id = 25001;
 
-    map<int32, CompressedLocalTrandform> bone_map = 1;
+    map<int32, CompressedLocalTransform> bone_map = 1;
     AnimData anim_data = 2;
 
     event PostureTransDataList reset_posture;
