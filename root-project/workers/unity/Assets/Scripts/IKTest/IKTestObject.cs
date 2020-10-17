@@ -36,7 +36,7 @@ namespace AdvancedGears
             {
                 if (terminal == null)
                 {
-                    terminal = unit.GetTerminal<CannonTransform>(point);
+                    terminal = null;//unit.GetTerminal<CannonTransform>(point);
                 }
 
                 return terminal;

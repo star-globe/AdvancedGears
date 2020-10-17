@@ -112,7 +112,7 @@ namespace AdvancedGears
             this.SourceTransform.position = this.ConstrainedTransform.TransformPoint(baseSource);
         }
 
-        public void SetTargetPosition(Vector3 target)
+        public void SetTargetPosition(Vector3? target)
         {
             this.target = target;
         }

@@ -32,7 +32,7 @@ namespace AdvancedGears
             }
         }
 
-        public GunInfo GetGunInfo(ulong uid)
+        public GunInfo GetGunInfo(ulong uid, int bone)
         {
             var info = new GunInfo
             {
@@ -43,7 +43,7 @@ namespace AdvancedGears
                 AttackRange = atkRange,
                 AttackAngle = atkAngle,
                 Interval = IntervalCheckerInitializer.InitializedChecker(inter),
-                AttachedPosture = attached,
+                AttachedBone = bone,
             };
 
             return info;

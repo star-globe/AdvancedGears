@@ -18,26 +18,58 @@ namespace AdvancedGears
         [SerializeField] List<HashTransform> bones;
         public List<HashTransform> Bones { get { return bones;}}
 
+        Dictionary<int, CannonTransform> cannonDic = null;
+        public Dictionary<int, CannonTransform> CannonDic
+        {
+            get
+            {
+                if (cannonDic == null)
+                {
+                    cannonDic = new Dictionary<int, CannonTransform>();
+                    if (bones != null)
+                    {
+                        foreach (var b in bones)
+                        {
+                            var cannon = b.transform.GetComponent<CannonTransform>();
+                            if (cannon != null)
+                                cannonDic[b.hash] = cannon;
+                        }
+                    }
+                }
+
+                return cannonDic;
+            }
+        }
+
         public void SetTrans(PostureTransData postureData)
         {
-            var index = bones.FindIndex(b => b.hash == postureData.BoneHash);
-            if (index >= 0 && index < bones.Count)
+            var hashTrans = GetHashTransform(postureData.BoneHash);
+            if (hashTrans != null)
             {
-                bones[index].transform.position = postureData.Trans.Position.ToUnityVector();
-                bones[index].transform.rotation = postureData.Trans.Rotation.ToUnityQuaternion();
-                bones[index].transform.localScale = postureData.Trans.Scale.ToUnityVector();
+                hashTrans.transform.position = postureData.Trans.Position.ToUnityVector();
+                hashTrans.transform.rotation = postureData.Trans.Rotation.ToUnityQuaternion();
+                hashTrans.transform.localScale = postureData.Trans.Scale.ToUnityVector();
             }
+        }
+
+        public CannonTransform GetCannon(int bone)
+        {
+            if (this.CannonDic.ContainsKey(bone))
+                return CannonDic[bone];
+            else
+                return null;
         }
 
         public void SetTrans(int hash, CompressedLocalTransform trans)
         {
-            var index = bones.FindIndex(b => b.hash == hash);
-            if (index >= 0 && index < bones.Count)
+            var hashTrans = GetHashTransform(hash);
+            if (hashTrans != null)
             {
-                bones[index].transform.position = trans.Position.ToUnityVector();
-                bones[index].transform.rotation = trans.Rotation.ToUnityQuaternion();
-                bones[index].transform.localScale = trans.Scale.ToUnityVector();
+                hashTrans.transform.position = trans.Position.ToUnityVector();
+                hashTrans.transform.rotation = trans.Rotation.ToUnityQuaternion();
+                hashTrans.transform.localScale = trans.Scale.ToUnityVector();
             }
+
         }
 
         public void SetTrans(Dictionary<int,CompressedLocalTransform> boneMap)
@@ -49,12 +81,12 @@ namespace AdvancedGears
             }
         }
 
-        public Transform GetTransform(int hash)
+        private HashTransform GetHashTransform(int hash)
         {
             var index = bones.FindIndex(b => b.hash == hash);
             if (index >= 0 && index < bones.Count)
             {
-                return bones[index].transform;
+                return bones[index];
             }
             else
                 return null;

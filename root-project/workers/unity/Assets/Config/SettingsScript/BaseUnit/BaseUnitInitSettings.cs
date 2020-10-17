@@ -31,6 +31,5 @@ namespace AdvancedGears
         public int Defense => defense;
         public int MaxFuel => maxFuel;
         public float ConsumeRate => consumeRate;
-        public uint[] GunIds => gunIds;
     }
 }

@@ -15,11 +15,14 @@ namespace AdvancedGears
 
         private void FixedUpdate()
         {
-            if (targetTransform == null)
-                return;
+            Vector3? target = null;
+            if (targetTransform != null)
+            {
+                target = targetTransform.position;
+            }
 
             foreach(var cnt in controllers) {
-                cnt.SetTargetPosition(targetTransform.position);
+                cnt.SetTargetPosition(target);
             }
         }
     }

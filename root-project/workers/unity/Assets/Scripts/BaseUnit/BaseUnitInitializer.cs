@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -19,6 +19,9 @@ namespace AdvancedGears
 
         [SerializeField]
         GunComponentInitializer gunInitializer;
+
+        [SerializeField]
+        PostureBoneContainer container;
 
         void Start()
         {
@@ -51,8 +54,16 @@ namespace AdvancedGears
                 Fuel = settings.MaxFuel,
             });
 
-            if (gunInitializer != null)
-                gunInitializer.SetGunIds(settings.GunIds);
+            if (gunInitializer != null && container != null)
+            {
+                GunIdPair[] gunIds = null;
+                if (container.CannonDic.Count > 0)
+                {
+                    gunIds = container.CannonDic.Select(kvp => new GunIdPair() { Id = kvp.Value.GunId, bone = kvp.Key}).ToArray();
+                }
+
+                gunInitializer.SetGunIds(gunIds);
+            }
         }
     }
 }

@@ -10,6 +10,9 @@ namespace AdvancedGears
 		[SerializeField]
 		BulletFireTrigger trigger;
 
+        [SerializeField]
+        PostureBoneContainer container;
+
 		void Start ()
 		{
 			Assert.IsNotNull(trigger);
@@ -20,9 +23,15 @@ namespace AdvancedGears
             if (!trigger.IsAvailable)
                 return;
 
-			if (Input.GetKey(KeyCode.Space))
-			{
-				trigger.OnFire(PosturePoint.Arm1, 1);
+            if (container == null)
+                return;
+
+            if (Input.GetKey(KeyCode.Space))
+            {
+                foreach (var kvp in container.CannonDic)
+                {
+                    trigger.OnFire(kvp.Key, kvp.Value.GunId);
+                }
 			}
 		}
 	}

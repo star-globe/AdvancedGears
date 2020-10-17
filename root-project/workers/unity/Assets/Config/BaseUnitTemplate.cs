@@ -43,7 +43,7 @@ namespace AdvancedGears
             template.AddComponent(new BaseUnitTarget.Snapshot().DefaultSnapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new Launchable.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new BaseUnitHealth.Snapshot(), WorkerUtils.UnityGameLogic);
-            template.AddComponent(new GunComponent.Snapshot { GunsDic = new Dictionary<PosturePoint, GunInfo>() }, WorkerUtils.UnityGameLogic);
+            template.AddComponent(new GunComponent.Snapshot { GunsDic = new Dictionary<int, GunInfo>() }, WorkerUtils.UnityGameLogic);
             template.AddComponent(new FuelComponent.Snapshot(), WorkerUtils.UnityGameLogic);
 
             if (type.BaseType() == UnitBaseType.Moving)
@@ -94,7 +94,7 @@ namespace AdvancedGears
             switch (type) {
                 case UnitType.Soldier:
                     template.AddComponent(new BulletComponent.Snapshot(), writeAccess);
-                    template.AddComponent(new BaseUnitPosture.Snapshot { Posture = new PostureInfo { Datas = new Dictionary<PosturePoint, PostureData>() } }, writeAccess);
+                    template.AddComponent(new PostureAnimation.Snapshot { BoneMap = new Dictionary<int, CompressedLocalTransform>() }, writeAccess);
                     break;
 
                 case UnitType.Commander:
@@ -105,7 +105,7 @@ namespace AdvancedGears
                                                                        TargetInfoSet = TargetUtils.DefaultTargteInfoSet() }, writeAccess);
                     template.AddComponent(new CommanderSight.Snapshot { WarPowers = new List<WarPower>() }, writeAccess);
                     template.AddComponent(new CommanderAction.Snapshot { ActionType = CommandActionType.None }, writeAccess);
-                    template.AddComponent(new BaseUnitPosture.Snapshot { Posture = new PostureInfo { Datas = new Dictionary<PosturePoint, PostureData>() } }, writeAccess);
+                    template.AddComponent(new PostureAnimation.Snapshot { BoneMap = new Dictionary<int, CompressedLocalTransform>() }, writeAccess);
                     template.AddComponent(new DominationDevice.Snapshot { Type = DominationDeviceType.Capturing }, writeAccess);
                     template.AddComponent(new BoidComponent.Snapshot(), writeAccess);
                     break;
@@ -187,7 +187,7 @@ namespace AdvancedGears
             template.AddComponent(new BulletComponent.Snapshot(), controllAttribute);
             template.AddComponent(new AdvancedUnitController.Snapshot(), controllAttribute);
             template.AddComponent(new BaseUnitHealth.Snapshot(), WorkerUtils.UnityGameLogic);
-            template.AddComponent(new GunComponent.Snapshot { GunsDic = new Dictionary<PosturePoint, GunInfo>() }, WorkerUtils.UnityGameLogic);
+            template.AddComponent(new GunComponent.Snapshot { GunsDic = new Dictionary<int, GunInfo>() }, WorkerUtils.UnityGameLogic);
             template.AddComponent(new FuelComponent.Snapshot(), WorkerUtils.UnityGameLogic);
 
             InterestTemplate interest = InterestTemplate.Create();

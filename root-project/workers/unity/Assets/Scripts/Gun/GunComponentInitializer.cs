@@ -8,24 +8,32 @@ using Improbable.Gdk.Subscriptions;
 
 namespace AdvancedGears
 {
+    public struct GunIdPair
+    {
+        public uint Id;
+        public int bone;
+    }
+
+
     public class GunComponentInitializer : MonoBehaviour
     {
         [Require] GunComponentWriter gunWriter;
 
-        public void SetGunIds(uint[] gunIds)
+        public void SetGunIds(GunIdPair[] gunIds)
         {
             if (gunIds == null)
                 return;
 
-            var gunsList = gunIds.Select(id => GunDictionary.GetGunSettings(id)).ToArray();
-            Dictionary<PosturePoint,GunInfo> dic =  new Dictionary<PosturePoint,GunInfo>();
+            var gunsList = gunIds.Select(pair => GunDictionary.GetGunSettings(pair.Id)).ToArray();
+            Dictionary<int,GunInfo> dic =  new Dictionary<int,GunInfo>();
             ulong uid = 0;
-            foreach (var gun in gunsList)
+            foreach (var pair in gunIds)
             {
-                if (gun == null || dic.ContainsKey(gun.Attached))
+                var gun = GunDictionary.GetGunSettings(pair.Id);
+                if (gun == null || dic.ContainsKey(pair.bone))
                     continue;
 
-                dic.Add(gun.Attached, gun.GetGunInfo(uid));
+                dic.Add(pair.bone, gun.GetGunInfo(uid, pair.bone));
                 uid++;
             }
 

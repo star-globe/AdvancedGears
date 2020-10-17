@@ -23,11 +23,11 @@ namespace AdvancedGears
         protected abstract BulletComponentWriter BulletWriter { get; }
 
         [SerializeField]
-        UnitTransform unitTransform;
+        PostureBoneContainer container;
 
-        protected Transform GetMuzzleTransform(PosturePoint point)
+        protected Transform GetMuzzleTransform(int bone)
         {
-            var cannon = unitTransform.GetCannonTransform(point);
+            var cannon = container.GetCannon(bone);
             return cannon == null ? null: cannon.Muzzle;
         }
 
@@ -51,7 +51,7 @@ namespace AdvancedGears
 
         private void Start()
         {
-            Assert.IsNotNull(unitTransform);
+            Assert.IsNotNull(container);
             base.Creator?.RegisterTriggerEntityId(this.SpatialComp.EntityId, (this.gameObject, VanishBullet));
         }
 
@@ -65,7 +65,7 @@ namespace AdvancedGears
             base.Creator?.RemoveTriggerEntity(this.SpatialComp.EntityId);
         }
 
-        public void OnFire(PosturePoint point, uint gunId)
+        public void OnFire(int bone, uint gunId)
         {
             if (this.SpatialComp == null || this.BulletWriter == null)
                 return;
@@ -78,7 +78,7 @@ namespace AdvancedGears
             if (time - fireTime <= gun.Inter)
                 return;
 
-            var muzzle = GetMuzzleTransform(point);
+            var muzzle = GetMuzzleTransform(bone);
             if (muzzle == null)
                 return;
 

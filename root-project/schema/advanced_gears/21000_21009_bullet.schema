@@ -52,20 +52,19 @@ type GunInfo {
     float attack_range = 5;
     float attack_angle = 6;
     IntervalChecker interval = 7;
-    PosturePoint attached_posture = 8;
+    int32 attached_bone = 8;
 }
 
 type AttackTargetInfo {
     uint32 gun_type_id = 1;
     improbable.gdk.transform_synchronization.FixedPointVector3 target_position = 2;
-    PosturePoint attached = 3;
+    int32 attached_bone = 3;
 }
 
 type SupplyBulletInfo {
     uint64 gun_id = 1;
     uint32 gun_type_id = 2;
-
-    PosturePoint attached = 3;
+    int32 attached_bone = 3;
     int32 amount = 4;
 }
 
@@ -81,7 +80,7 @@ type BulletDiffList {
 component GunComponent {
     id = 21001;
 
-    map<PosturePoint,GunInfo> guns_dic = 1;
+    map<int32,GunInfo> guns_dic = 1;
 
     event AttackTargetInfo fire_triggered;
     event SupplyBulletInfo bullet_supplied;

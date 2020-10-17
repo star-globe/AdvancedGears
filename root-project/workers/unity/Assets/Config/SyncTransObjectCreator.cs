@@ -77,7 +77,6 @@ namespace AdvancedGears
             if (boneMap != null) {
                 var container = gameObject.GetComponent<PostureBoneContainer>();
                 container?.SetTrans(boneMap);
-                types = componentsToAddForAnim;
             }
 
             gameObjectsCreated.Add(entityInfo.SpatialOSEntityId, gameObject);
