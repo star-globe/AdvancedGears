@@ -18,7 +18,6 @@ namespace AdvancedGears
         [SerializeField] int defense = 10;
         [SerializeField] int maxFuel = 50;
         [SerializeField] float consumeRate = 1.0f;
-        [SerializeField] uint[] gunIds = new uint[] { 1 };
 
         public float Speed => speed;
         public float RotSpeed => rotSpeed;
