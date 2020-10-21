@@ -80,7 +80,7 @@ namespace AdvancedGears
             this.speed = speed;
         }
 
-        public void Rotate(double time)
+        public void Rotate(float time)
         {
             if (target == null)
                 return;

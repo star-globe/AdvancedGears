@@ -6,7 +6,7 @@ using Improbable.Gdk.Subscriptions;
 
 namespace AdvancedGears
 {
-    public class PostureAnimationReader : MonoBehaviour
+    public class PostureAnimationRealizer : MonoBehaviour
     {
         [Require] PostureAnimationReader reader;
 

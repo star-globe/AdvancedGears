@@ -25,7 +25,8 @@ namespace AdvancedGears
 
         protected override void OnUpdate()
         {
-            var time = Time.deltaTime;
+            var time = Time.DeltaTime;
+
             Entities.With(group).ForEach((Entity entity,
                                           ref PostureAnimation.Component anim,
                                           ref BaseUnitStatus.Component status) =>
@@ -38,7 +39,7 @@ namespace AdvancedGears
                     return;
 
                 Vector3 pos = Vector3.zero;
-                switch(tracer.AnimTarget.Type)
+                switch(anim.AnimTarget.Type)
                 {
                     case AnimTargetType.None:
                         return;
@@ -48,7 +49,7 @@ namespace AdvancedGears
                         break;
                 }
 
-                tracer.SetTarget(pos);
+                tracer.SetAimTarget(pos);
                 tracer.Rotate(time);
             });
         }

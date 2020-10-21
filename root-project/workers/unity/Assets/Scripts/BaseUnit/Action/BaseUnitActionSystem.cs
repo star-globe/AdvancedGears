@@ -56,10 +56,10 @@ namespace AdvancedGears
                     epos = action.EnemyPositions[0].ToWorkerPosition(this.Origin);
 
                     var container = EntityManager.GetComponentObject<PostureBoneContainer>(entity);
-                    Attack(container, current, epos, entityId, ref gun);
+                    Attack(container, current, epos.Value, entityId, ref gun);
                 }
-                
-                var type = AnimTargetType.None
+
+                var type = AnimTargetType.None;
                 bool isDiff = false;
                 if (epos != null)
                 {
@@ -69,11 +69,11 @@ namespace AdvancedGears
 
                 if (anim.AnimTarget.Type != type || isDiff)
                 {
-                    var target = anim.AnimTarget;
-                    target.Type = type;
-                    target.Position = epos.Value.ToFixedPointVector3();
+                    var animTarget = anim.AnimTarget;
+                    animTarget.Type = type;
+                    animTarget.Position = epos.Value.ToFixedPointVector3();
 
-                    anim.AnimTarget = target;
+                    anim.AnimTarget = animTarget;
                 }
             });
         }

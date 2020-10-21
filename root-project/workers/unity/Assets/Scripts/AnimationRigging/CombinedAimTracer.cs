@@ -16,7 +16,7 @@ namespace AdvancedGears
                 cnt.SetTargetPosition(target);
         }
 
-        public void Rotate(double time)
+        public void Rotate(float time)
         {
             foreach(var cnt in controllers)
                 cnt.Rotate(time);
