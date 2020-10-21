@@ -97,6 +97,7 @@ GameObject:
   - component: {fileID: 2265141752754154573}
   - component: {fileID: 939222968512297602}
   - component: {fileID: 3398081964107930470}
+  - component: {fileID: 1450107279345425933}
   m_Layer: 11
   m_Name: BaseUnit_Object
   m_TagString: Untagged
@@ -217,6 +218,21 @@ MonoBehaviour:
     transform: {fileID: 3637943505742419874}
   - hash: -34465733
     transform: {fileID: 3268532178235258176}
+--- !u!114 &1450107279345425933
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2510352248528691622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6bca8e86911c3542a9008fa81e03520, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  controllers:
+  - {fileID: 2902854008967778585}
+  - {fileID: 4406081571200241031}
 --- !u!1 &2859699810176397514
 GameObject:
   m_ObjectHideFlags: 0
@@ -227,7 +243,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1458322479349099748}
   - component: {fileID: 6875576803621996843}
-  - component: {fileID: 5875980955029048722}
+  - component: {fileID: 4406081571200241031}
   m_Layer: 11
   m_Name: CannonAim
   m_TagString: Untagged
@@ -301,7 +317,7 @@ MonoBehaviour:
       z: 0
   m_SourceObjectsGUIToggle: 1
   m_SettingsGUIToggle: 1
---- !u!114 &5875980955029048722
+--- !u!114 &4406081571200241031
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -310,7 +326,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2859699810176397514}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 89cb86505282c1a42a4a81720ac0a348, type: 3}
+  m_Script: {fileID: 11500000, guid: 51bc9f676603f9c46bca965dabc84268, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   rotSpeed: 10
@@ -463,7 +479,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5692143815774568673}
   - component: {fileID: 758662034122168340}
-  - component: {fileID: 170127516170767281}
+  - component: {fileID: 2902854008967778585}
   m_Layer: 11
   m_Name: RotationAim
   m_TagString: Untagged
@@ -538,7 +554,7 @@ MonoBehaviour:
       z: 0
   m_SourceObjectsGUIToggle: 1
   m_SettingsGUIToggle: 1
---- !u!114 &170127516170767281
+--- !u!114 &2902854008967778585
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -547,7 +563,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3019881014360852099}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 89cb86505282c1a42a4a81720ac0a348, type: 3}
+  m_Script: {fileID: 11500000, guid: 51bc9f676603f9c46bca965dabc84268, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   rotSpeed: 30
@@ -611,8 +627,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controllers:
-  - {fileID: 170127516170767281}
-  - {fileID: 5875980955029048722}
+  - {fileID: 0}
+  - {fileID: 0}
   targetTransform: {fileID: 0}
 --- !u!1 &4705756316081083627
 GameObject:
@@ -878,7 +894,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9e06809d4f4e9c4a99b51cc3808ba79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hingeVectorType: 3
   gunId: 1
   barell: {fileID: 4137161997623122930}
   muzzle: {fileID: 5556187125544116455}

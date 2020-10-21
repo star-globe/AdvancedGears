@@ -41,6 +41,7 @@ namespace AdvancedGears
             TransformSynchronizationHelper.AddClientSystems(world);
             PlayerLifecycleHelper.AddClientSystems(world, autoRequestPlayerCreation);
             world.GetOrCreateSystem<ProcessColorChangeSystem>();
+            world.GetOrCreateSystem<AimAnimationLocalSystem>();
             world.GetOrCreateSystem<AdvancedPlayerInputSync>();
             world.GetOrCreateSystem<MoveAdvancedUnitSystem>();
             world.GetOrCreateSystem<InitCameraSystem>();
@@ -67,6 +68,7 @@ namespace AdvancedGears
             world.GetOrCreateSystem<CollisionProcessSystem>();
             world.GetOrCreateSystem<RootPostureSyncSystem>();
             world.GetOrCreateSystem<PostureAnimationSyncSystem>();
+            world.GetOrCreateSystem<AimAnimationLocalSystem>();
             world.GetOrCreateSystem<BaseUnitMovementSystem>();
             world.GetOrCreateSystem<BaseUnitSightSystem>();
             world.GetOrCreateSystem<BaseUnitPhysicsSystem>();
@@ -78,7 +80,6 @@ namespace AdvancedGears
             world.GetOrCreateSystem<UnitFactorySystem>();
             world.GetOrCreateSystem<StrategyOrderManagerSystem>();
             world.GetOrCreateSystem<ResourceSupplyManagerSystem>();
-            //world.GetOrCreateSystem<HQOrganizeSystem>();
             //world.GetOrCreateSystem<UnitArmyObserveSystem>();
             //world.GetOrCreateSystem<CommandersManagerSystem>();
             world.GetOrCreateSystem<DominationSystem>();
