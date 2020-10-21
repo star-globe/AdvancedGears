@@ -33,9 +33,21 @@ type PostureTransDataList
     list<PostureTransData> datas = 1;
 }
 
-type AnimData
+type AnimState
 {
-    int32 anim_state_hash = 1;
+    int32 state_hash = 1;
+}
+
+enum AnimTargetType
+{
+    None = 0;
+    Entity = 1;
+    Position = 2;
+}
+
+type AnimTarget
+{
+    AnimTargetType type = 1;
     EntityId target_id = 2;
     improbable.gdk.transform_synchronization.FixedPointVector3 position = 3;
 }
@@ -44,8 +56,10 @@ component PostureAnimation {
     id = 25001;
 
     map<int32, CompressedLocalTransform> bone_map = 1;
-    AnimData anim_data = 2;
+    AnimState anim_state = 2;
+    AnimTarget anim_target = 3;
 
     event PostureTransDataList reset_posture;
-    event AnimData anim_changed;
+    event AnimState state_changed;
+    event AnimTarget target_changed;
 }

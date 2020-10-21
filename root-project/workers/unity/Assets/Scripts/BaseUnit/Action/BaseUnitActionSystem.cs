@@ -15,7 +15,6 @@ namespace AdvancedGears
     internal class BaseUnitActionSystem : SpatialComponentSystem
     {
         private EntityQuery group;
-        private double checkedTime = -1.0;
 
         protected override void OnCreate()
         {
@@ -25,10 +24,11 @@ namespace AdvancedGears
                 ComponentType.ReadOnly<BaseUnitAction.Component>(),
                 ComponentType.ReadWrite<GunComponent.Component>(),
                 ComponentType.ReadOnly<GunComponent.HasAuthority>(),
+                ComponentType.ReadWrite<PostureAnimation.Component>(),
+                ComponentType.ReadOnly<PostureAnimation.HasAuthority>(),
                 ComponentType.ReadOnly<BaseUnitTarget.Component>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<PostureBoneContainer>(),
-                ComponentType.ReadOnly<CombinedAimTracer>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
         }
@@ -38,6 +38,7 @@ namespace AdvancedGears
             Entities.With(group).ForEach((Entity entity,
                                           ref BaseUnitAction.Component action,
                                           ref GunComponent.Component gun,
+                                          ref PostureAnimation.Component anim,
                                           ref BaseUnitTarget.Component target,
                                           ref BaseUnitStatus.Component status,
                                           ref SpatialEntityId entityId) =>
@@ -49,32 +50,38 @@ namespace AdvancedGears
                     return;
 
                 var current = Time.ElapsedTime;
-                var diff = checkedTime <= 0 ? 0: current - checkedTime;
-                checkedTime = current;
 
                 Vector3? epos = null;
-                if (action.EnemyPositions.Count > 0)
+                if (action.EnemyPositions.Count > 0) {
                     epos = action.EnemyPositions[0].ToWorkerPosition(this.Origin);
 
-                var container = EntityManager.GetComponentObject<PostureBoneContainer>(entity);
-                var tracer = EntityManager.GetComponentObject<CombinedAimTracer>(entity);
-                Attack(container, tracer, current, diff, epos, entityId, ref gun);
+                    var container = EntityManager.GetComponentObject<PostureBoneContainer>(entity);
+                    Attack(container, current, epos, entityId, ref gun);
+                }
+                
+                var type = AnimTargetType.None
+                bool isDiff = false;
+                if (epos != null)
+                {
+                    isDiff = anim.AnimTarget.Position.ToUnityVector() != epos.Value;
+                    type = AnimTargetType.Position;
+                }
+
+                if (anim.AnimTarget.Type != type || isDiff)
+                {
+                    var target = anim.AnimTarget;
+                    target.Type = type;
+                    target.Position = epos.Value.ToFixedPointVector3();
+
+                    anim.AnimTarget = target;
+                }
             });
         }
 
-        void Attack(PostureBoneContainer container, CombinedAimTracer tracer, double current, double diff, Vector3? epos, in SpatialEntityId entityId, ref GunComponent.Component gun)
+        void Attack(PostureBoneContainer container, double current, in Vector3 epos, in SpatialEntityId entityId, ref GunComponent.Component gun)
         {
             var gunsDic = gun.GunsDic;
             var updGuns = false;
-
-            if (tracer != null)
-            {
-                tracer.SetAimTarget(epos);
-                tracer.Rotate(diff);
-            }
-
-            if (epos == null)
-                return;
 
             if (container == null || container.Bones == null)
                 return;
@@ -85,7 +92,7 @@ namespace AdvancedGears
                 if (gunsDic.TryGetValue(bone.hash, out gunInfo) == false)
                     continue;
 
-                var result = CheckRange(container.GetCannon(bone.hash), epos.Value, gunInfo.AttackRange, gunInfo.AttackAngle);
+                var result = CheckRange(container.GetCannon(bone.hash), epos, gunInfo.AttackRange, gunInfo.AttackAngle);
                 switch (result)
                 {
                     case Result.InRange:

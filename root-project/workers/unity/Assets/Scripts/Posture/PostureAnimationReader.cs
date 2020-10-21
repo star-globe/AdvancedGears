@@ -10,9 +10,16 @@ namespace AdvancedGears
     {
         [Require] PostureAnimationReader reader;
 
+        [SerializeField] PostureBoneContainer container;
+
         private void OnEnable()
         {
-            
+            reader.OnBoneMapUpdate += UpdateBone;
+        }
+
+        private void UpdateBone(Dictionary<int,CompressedLocalTransform> map)
+        {
+            container.SetTrans(map);
         }
     }
 }
