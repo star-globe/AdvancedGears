@@ -110,9 +110,7 @@ component BaseUnitSight {
 component BaseUnitAction {
     id = 20012;
 
-    IntervalChecker interval = 1;
     float sight_range = 2;
-    float angle_speed = 5;
 
     list<improbable.gdk.transform_synchronization.FixedPointVector3> enemy_positions = 7;
 }

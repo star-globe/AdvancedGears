@@ -5,11 +5,8 @@ using UnityEngine.Animations.Rigging;
 
 namespace AdvancedGears
 {
-    public class CombinedTracer : MonoBehaviour
+    public class CombinedAimTracerTest : CombinedAimTracer
     {
-        [SerializeField]
-        List<AimSpeedController> controllers = null;
-
         [SerializeField]
         Transform targetTransform;
 
@@ -21,9 +18,7 @@ namespace AdvancedGears
                 target = targetTransform.position;
             }
 
-            foreach(var cnt in controllers) {
-                cnt.SetTargetPosition(target);
-            }
+            SetAimTarget(target);
         }
     }
 }

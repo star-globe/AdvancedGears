@@ -15,20 +15,20 @@ namespace AdvancedGears
     internal class BaseUnitActionSystem : SpatialComponentSystem
     {
         private EntityQuery group;
+        private double checkedTime = -1.0;
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
             group = GetEntityQuery(
-                ComponentType.ReadWrite<BaseUnitAction.Component>(),
-                ComponentType.ReadOnly<BaseUnitAction.HasAuthority>(),
-                ComponentType.ReadWrite<BaseUnitPosture.Component>(),
-                ComponentType.ReadOnly<BaseUnitPosture.HasAuthority>(),
+                ComponentType.ReadOnly<BaseUnitAction.Component>(),
                 ComponentType.ReadWrite<GunComponent.Component>(),
+                ComponentType.ReadOnly<GunComponent.HasAuthority>(),
                 ComponentType.ReadOnly<BaseUnitTarget.Component>(),
-                ComponentType.ReadOnly<UnitTransform>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
+                ComponentType.ReadOnly<PostureBoneContainer>(),
+                ComponentType.ReadOnly<CombinedAimTracer>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
         }
@@ -37,7 +37,6 @@ namespace AdvancedGears
         {
             Entities.With(group).ForEach((Entity entity,
                                           ref BaseUnitAction.Component action,
-                                          ref BaseUnitPosture.Component posture,
                                           ref GunComponent.Component gun,
                                           ref BaseUnitTarget.Component target,
                                           ref BaseUnitStatus.Component status,
@@ -49,34 +48,35 @@ namespace AdvancedGears
                 if (target.State != TargetState.ActionTarget)
                     return;
 
-                var time = Time.ElapsedTime;
-                var inter = action.Interval;
-                if (inter.CheckTime(time) == false)
-                    return;
+                var current = Time.ElapsedTime;
+                var diff = checkedTime <= 0 ? 0: current - checkedTime;
+                checkedTime = current;
 
-                action.Interval = inter;
-
+                Vector3? epos = null;
                 if (action.EnemyPositions.Count > 0)
-                {
-                    var epos = action.EnemyPositions[0].ToWorkerPosition(this.Origin);
-                    var container = EntityManager.GetComponentObject<PostureBoneContainer>(entity);
-                    Attack(container, time, action.AngleSpeed, epos, entityId, ref gun);
+                    epos = action.EnemyPositions[0].ToWorkerPosition(this.Origin);
 
-                    //if (updPosture)
-                    //    postureData[i] = posture;
-
-                    //if (updGuns)
-                    //    gunData[i] = gun;
-                }
+                var container = EntityManager.GetComponentObject<PostureBoneContainer>(entity);
+                var tracer = EntityManager.GetComponentObject<CombinedAimTracer>(entity);
+                Attack(container, tracer, current, diff, epos, entityId, ref gun);
             });
         }
 
-        void Attack(PostureBoneContainer container, double time, float angleSpeed, in Vector3 epos, in SpatialEntityId entityId, ref GunComponent.Component gun)
+        void Attack(PostureBoneContainer container, CombinedAimTracer tracer, double current, double diff, Vector3? epos, in SpatialEntityId entityId, ref GunComponent.Component gun)
         {
             var gunsDic = gun.GunsDic;
             var updGuns = false;
 
-            if (container.Bones == null)
+            if (tracer != null)
+            {
+                tracer.SetAimTarget(epos);
+                tracer.Rotate(diff);
+            }
+
+            if (epos == null)
+                return;
+
+            if (container == null || container.Bones == null)
                 return;
 
             foreach (var bone in container.Bones)
@@ -85,14 +85,14 @@ namespace AdvancedGears
                 if (gunsDic.TryGetValue(bone.hash, out gunInfo) == false)
                     continue;
 
-                var result = CheckRange(container.GetCannon(bone.hash), epos, gunInfo.AttackRange, gunInfo.AttackAngle, angleSpeed);
+                var result = CheckRange(container.GetCannon(bone.hash), epos.Value, gunInfo.AttackRange, gunInfo.AttackAngle);
                 switch (result)
                 {
                     case Result.InRange:
                         if (gunInfo.StockBullets == 0)
                             break;
                         var inter = gunInfo.Interval;
-                        if (inter.CheckTime(time) == false)
+                        if (inter.CheckTime(current) == false)
                             break;
                         gunInfo.Interval = inter;
                         var atk = new AttackTargetInfo
@@ -121,7 +121,7 @@ namespace AdvancedGears
             Rotate,
         }
 
-        Result CheckRange(CannonTransform cannon, in Vector3 epos, float range, float angle, float angleSpeed)
+        Result CheckRange(CannonTransform cannon, in Vector3 epos, float range, float angle)
         {
             var trans = cannon.Muzzle;
             var diff = epos - trans.position;

@@ -64,17 +64,23 @@ namespace AdvancedGears
             }
         }
 
+        Vector3? target = null;
+        float speed = 0.0f;
+
         [SerializeField]
         float rotSpeed;
 
-        Vector3? target = null;
-
-        private void FixedUpdate()
+        private void Start()
         {
-            Rotate(Time.deltaTime);
+            SetRotSpeed(rotSpeed);
         }
 
-        private void Rotate(float time)
+        public void SetRotSpeed(float speed)
+        {
+            this.speed = speed;
+        }
+
+        public void Rotate(double time)
         {
             if (target == null)
                 return;
@@ -105,7 +111,7 @@ namespace AdvancedGears
 
             var rot = Vector3.Cross(axisVector.Value, source);
 
-            var vector = rot * sign * rotSpeed * Mathf.Deg2Rad * time;
+            var vector = rot * sign * this.speed * time * Mathf.Deg2Rad;
 
             baseSource += vector * sourceRadius;
 

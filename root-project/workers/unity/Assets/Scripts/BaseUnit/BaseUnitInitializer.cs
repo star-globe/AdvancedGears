@@ -36,9 +36,7 @@ namespace AdvancedGears
 
             action.SendUpdate(new BaseUnitAction.Update
             {
-                Interval = IntervalCheckerInitializer.InitializedChecker(settings.Inter),
                 SightRange = settings.SightRange,
-                AngleSpeed = settings.AngleSpeed,
             });
 
             health.SendUpdate(new BaseUnitHealth.Update
