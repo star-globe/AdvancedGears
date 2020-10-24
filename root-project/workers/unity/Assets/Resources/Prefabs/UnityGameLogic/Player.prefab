@@ -165,6 +165,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   settings: {fileID: 11400000, guid: 1296711fde21c844491c2070051366de, type: 2}
   gunInitializer: {fileID: 6196653271714508480}
+  container: {fileID: 467524122114135276}
 --- !u!114 &6196653271714508480
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -262,6 +263,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0ffd8629ba015d048aec624c82eb6e1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &467524122114135276 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 248360860773296852, guid: 1ca7c6aef45df8047b0239f705e7bbe2,
+    type: 3}
+  m_PrefabInstance: {fileID: 364404908206243384}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: deefb691b821d2f4abdcad7beff86cb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!23 &4473814464595512740 stripped
