@@ -877,7 +877,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9e06809d4f4e9c4a99b51cc3808ba79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gunId: 1
+  gunId: 0
   barell: {fileID: 4137161997623122930}
   muzzle: {fileID: 5556187125544116455}
 --- !u!1 &6030546142996595144
