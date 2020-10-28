@@ -19,8 +19,6 @@ namespace AdvancedGears
             base.OnCreate();
 
             group = GetEntityQuery(
-                    ComponentType.ReadWrite<BaseUnitPosture.Component>(),
-                    ComponentType.ReadOnly<BaseUnitPosture.HasAuthority>(),
                     ComponentType.ReadOnly<UnitTransform>(),
                     ComponentType.ReadOnly<BaseUnitMovement.Component>(),
                     ComponentType.ReadOnly<BaseUnitStatus.Component>(),
@@ -32,7 +30,6 @@ namespace AdvancedGears
         protected override void OnUpdate()
         {
             Entities.With(group).ForEach((Entity entity,
-                                          ref BaseUnitPosture.Component posture,
                                           ref BaseUnitMovement.Component movement,
                                           ref BaseUnitStatus.Component status,
                                           ref FuelComponent.Component fuel) =>
@@ -71,16 +68,8 @@ namespace AdvancedGears
                 var pos = rigidbody.position;
                 rigidbody.MovePosition(pos + moveVec);
 
-                if (movement.RotSpeed != 0.0f) {
+                if (movement.RotSpeed != 0.0f)
                     trans.Rotate(trans.up, movement.RotSpeed * Time.fixedDeltaTime);
-
-                    var inter = posture.Interval;
-                    if (posture.Initialized && CheckTime(ref inter))
-                    {
-                        posture.Interval = inter;
-                        posture.Root = rigidbody.transform.rotation.ToCompressedQuaternion();
-                    }
-                }
 
                 var consume = (int)(moveVec.magnitude * movement.ConsumeRate);
                 fuel.Fuel -= consume;

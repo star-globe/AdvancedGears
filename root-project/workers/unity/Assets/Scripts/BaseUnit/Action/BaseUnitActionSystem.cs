@@ -63,7 +63,7 @@ namespace AdvancedGears
                 bool isDiff = false;
                 if (epos != null)
                 {
-                    isDiff = anim.AnimTarget.Position.ToUnityVector() != epos.Value;
+                    isDiff = anim.AnimTarget.Position.ToWorkerPosition(this.Origin) != epos.Value;
                     type = AnimTargetType.Position;
                 }
 
@@ -71,7 +71,7 @@ namespace AdvancedGears
                 {
                     var animTarget = anim.AnimTarget;
                     animTarget.Type = type;
-                    animTarget.Position = epos.Value.ToFixedPointVector3();
+                    animTarget.Position = epos.Value.ToWorldPosition(this.Origin);
 
                     anim.AnimTarget = animTarget;
                 }

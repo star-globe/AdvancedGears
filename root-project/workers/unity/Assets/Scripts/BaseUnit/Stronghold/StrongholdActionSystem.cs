@@ -18,6 +18,8 @@ namespace AdvancedGears
         IntervalChecker inter;
 
         readonly HashSet<EntityId> requestLists = new HashSet<EntityId>();
+        readonly Dictionary<EntityId, TeamInfo> teamsDic = new Dictionary<EntityId, TeamInfo>();
+        readonly List<UnitInfo> turretsList = new List<UnitInfo>();
 
         protected override void OnCreate()
         {
@@ -64,17 +66,17 @@ namespace AdvancedGears
                     return;
 
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
-                CheckAlive(trans.position, status.Side, out var teams);
+                CheckAlive(trans.position, status.Side, teamsDic);
 
                 // order check
                 // Not Set Strongholds
-                CheckOrder(status.Order, sight.TargetStrongholds, sight.StrategyVector.Vector.ToUnityVector(), teams);
+                CheckOrder(status.Order, sight.TargetStrongholds, sight.StrategyVector.Vector.ToUnityVector(), teamsDic);
 
                 // FrontLineCorners
-                CheckOrder(status.Order, status.Side, sight.FrontLineCorners, sight.StrategyVector.Vector.ToUnityVector(), teams);
+                CheckOrder(status.Order, status.Side, sight.FrontLineCorners, sight.StrategyVector.Vector.ToUnityVector(), teamsDic);
 
                 // Hex
-                CheckOrder(status.Order, sight.TargetHexes, sight.StrategyVector.Vector.ToUnityVector(), teams);
+                CheckOrder(status.Order, sight.TargetHexes, sight.StrategyVector.Vector.ToUnityVector(), teamsDic);
             });
         }
 
@@ -98,18 +100,18 @@ namespace AdvancedGears
                     return;
 
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
-                CheckAlive(trans.position, status.Side, out var teams);
-                CheckAliveTurret(trans.position, status.Side, out var turrets);
+                CheckAlive(trans.position, status.Side, teamsDic);
+                CheckAliveTurret(trans.position, status.Side, turretsList);
 
                 // number check
                 if (factory.TeamOrders.Count == 0) {
-                    var teamOrders = makeOrders(status.Rank, PostureUtils.RotFoward(sight.StrategyVector.Vector.ToUnityVector()), status.Order, teams);
+                    var teamOrders = makeOrders(status.Rank, PostureUtils.RotFoward(sight.StrategyVector.Vector.ToUnityVector()), status.Order, teamsDic);
                     if (teamOrders != null)
                         factory.TeamOrders.AddRange(teamOrders);
                 }
 
                 if (factory.TurretOrders.Count == 0) {
-                    var turretOrders = makeOrders(status.Rank, turrets);
+                    var turretOrders = makeOrders(status.Rank, turretsList);
                     if (turretOrders != null)
                         factory.TurretOrders.AddRange(turretOrders);
                 }
@@ -138,9 +140,12 @@ namespace AdvancedGears
             }
         }
 
-        void CheckAlive(in Vector3 pos, UnitSide side, out Dictionary<EntityId,TeamInfo> datas)
+        void CheckAlive(in Vector3 pos, UnitSide side, Dictionary<EntityId,TeamInfo> datas)
         {
-            datas = new Dictionary<EntityId, TeamInfo>();
+            if (datas == null)
+                return;
+
+            datas.Clear();
 
             var units = getAllyUnits(side, pos, RangeDictionary.Get(FixedRangeType.StrongholdRange), allowDead: false, UnitType.Commander);
 
@@ -160,9 +165,12 @@ namespace AdvancedGears
             }
         }
 
-        void CheckAliveTurret(in Vector3 pos, UnitSide side, out List<UnitInfo> turrets)
+        void CheckAliveTurret(in Vector3 pos, UnitSide side, List<UnitInfo> turrets)
         {
-            turrets = new List<UnitInfo>();
+            if (turrets == null)
+                return;
+
+            turrets.Clear();
             var units = getAllyUnits(side, pos, RangeDictionary.Get(FixedRangeType.StrongholdRange), allowDead: false, UnitType.Turret);
 
             foreach (var u in units) {

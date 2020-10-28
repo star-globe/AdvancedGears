@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   movementSettings:
   - type: 1
-    speed: 4
+    speed: 2
     rot: 20
   - type: 2
-    speed: 4
+    speed: 2
     rot: 20
   rotateLimitRate: 15

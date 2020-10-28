@@ -65,6 +65,15 @@ namespace AdvancedGears
         }
 
         Vector3? target = null;
+        Vector3 defaultPosition = Vector3.zero;
+        Vector3 TargetPosition
+        {
+            get
+            {
+                return target != null ? target.Value: defaultPosition;
+            }
+        }
+
         float speed = 0.0f;
 
         [SerializeField]
@@ -73,6 +82,9 @@ namespace AdvancedGears
         private void Start()
         {
             SetRotSpeed(rotSpeed);
+
+            if (this.SourceTransform != null)
+                defaultPosition = this.SourceTransform.position;
         }
 
         public void SetRotSpeed(float speed)
@@ -82,16 +94,13 @@ namespace AdvancedGears
 
         public void Rotate(float time)
         {
-            if (target == null)
-                return;
-
             if (this.SourceTransform == null)
                 return;
 
             if (this.AxisVector == null)
                 return;
 
-            var baseTgt = this.ConstrainedTransform.InverseTransformPoint(target.Value);
+            var baseTgt = this.ConstrainedTransform.InverseTransformPoint(this.TargetPosition);
             var baseSource = this.ConstrainedTransform.InverseTransformPoint(this.SourceTransform.position);
 
             var tgt = Vector3.ProjectOnPlane(baseTgt, axisVector.Value);

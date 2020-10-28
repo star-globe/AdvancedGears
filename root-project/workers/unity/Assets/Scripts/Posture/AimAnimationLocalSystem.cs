@@ -38,14 +38,14 @@ namespace AdvancedGears
                 if (tracer == null)
                     return;
 
-                Vector3 pos = Vector3.zero;
+                Vector3? pos = null;
                 switch(anim.AnimTarget.Type)
                 {
                     case AnimTargetType.None:
                         return;
 
                     case AnimTargetType.Position:
-                        pos = anim.AnimTarget.Position.ToUnityVector();
+                        pos = anim.AnimTarget.Position.ToWorkerPosition(this.Origin);
                         break;
                 }
 

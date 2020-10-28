@@ -112,7 +112,7 @@ namespace AdvancedGears
 
                 case UnitType.Supply:
                     template.AddComponent(new BulletComponent.Snapshot(), writeAccess);
-                    template.AddComponent(new BaseUnitPosture.Snapshot { Posture = new PostureInfo { Datas = new Dictionary<PosturePoint, PostureData>() } }, writeAccess);
+                    template.AddComponent(new PostureAnimation.Snapshot { BoneMap = new Dictionary<int, CompressedLocalTransform>() }, writeAccess);
                     template.AddComponent(new ResourceComponent.Snapshot(), writeAccess);
                     template.AddComponent(new ResourceTransporter.Snapshot(), writeAccess);
                     break;
