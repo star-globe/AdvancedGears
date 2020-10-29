@@ -27,10 +27,10 @@ namespace AdvancedGears
 
             currentSide = side;
             var index = facilityWriter.Data.HexIndex;
-            facilityWriter.SendUpdate(new HexFacility.Update()
-            {
-                SideChanged = true,
-            });
+            //facilityWriter.SendUpdate(new HexFacility.Update()
+            //{
+            //    SideChanged = true,
+            //});
 
             Debug.LogFormat("HexChanged! Index:{0} Side:{1}", index, side);
         }

@@ -60,8 +60,10 @@ namespace AdvancedGears
 
                 var entityId = new EntityId();
                 var enemy = getNearestEnemy(status.Side, trans.position, range, allowDead:true, UnitType.HeadQuarter);
-                if (enemy != null)
-                    entityId = enemy.id;
+                if (enemy == null)
+                    return;
+
+                entityId = enemy.id;
 
                 var target = manager.TargetHq;
                 if (target.HeadQuarterId != entityId) {

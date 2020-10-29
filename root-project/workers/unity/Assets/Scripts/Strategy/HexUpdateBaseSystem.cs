@@ -45,8 +45,7 @@ namespace AdvancedGears
             );
 
             facilityGroup = GetEntityQuery(
-                ComponentType.ReadWrite<HexFacility.Component>(),
-                ComponentType.ReadOnly<HexFacility.HasAuthority>(),
+                ComponentType.ReadOnly<HexFacility.Component>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
@@ -69,11 +68,6 @@ namespace AdvancedGears
                                       ref BaseUnitStatus.Component status,
                                       ref SpatialEntityId entityId) =>
             {
-                if (facility.SideChanged == false)
-                    return;
-
-                facility.SideChanged = false;
-
                 var hexIndex = facility.HexIndex;
                 var side = status.Side;
 

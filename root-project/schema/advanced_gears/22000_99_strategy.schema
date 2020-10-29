@@ -40,7 +40,6 @@ component HexFacility {
     id = 22001;
 
     uint32 hex_index = 1;
-    bool side_changed = 2;
 }
 
 type HexInfo {

@@ -75,7 +75,7 @@ namespace AdvancedGears
 
                 var pos = defaultPosition;
                 if (this.ConstrainedTransform != null)
-                    pos = this.ConstrainedTransform.TransformPosition(pos);
+                    pos = this.ConstrainedTransform.position;
 
                 return pos;
             }
