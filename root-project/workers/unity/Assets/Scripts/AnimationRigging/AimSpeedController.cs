@@ -70,7 +70,14 @@ namespace AdvancedGears
         {
             get
             {
-                return target != null ? target.Value: defaultPosition;
+                if (target != null)
+                    return target.Value;
+
+                var pos = defaultPosition;
+                if (this.ConstrainedTransform != null)
+                    pos = this.ConstrainedTransform.TransformPosition(pos);
+
+                return pos;
             }
         }
 
@@ -83,8 +90,11 @@ namespace AdvancedGears
         {
             SetRotSpeed(rotSpeed);
 
-            if (this.SourceTransform != null)
-                defaultPosition = this.SourceTransform.position;
+            if (this.SourceTransform != null &&
+                this.ConstrainedTransform != null)
+                defaultPosition = this.ConstrainedTransform.InverseTransformPoint(this.SourceTransform.position);
+
+            Debug.Log($"DefaultPosition:{defaultPosition}");
         }
 
         public void SetRotSpeed(float speed)
@@ -94,7 +104,8 @@ namespace AdvancedGears
 
         public void Rotate(float time)
         {
-            if (this.SourceTransform == null)
+            if (this.SourceTransform == null ||
+                this.ConstrainedTransform == null)
                 return;
 
             if (this.AxisVector == null)
