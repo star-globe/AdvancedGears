@@ -66,16 +66,18 @@ namespace AdvancedGears
             inter.LastChecked = Time.time;
         }
 
-        public static OrderPair Self(this OrderPair pair, OrderType self)
+        public static bool Self(this OrderPair pair, OrderType self)
         {
+            bool changed = pair.Self != self;
             pair.Self = self;
-            return pair;
+            return changed;
         }
 
-        public static OrderPair Upper(this OrderPair pair, OrderType upper)
+        public static bool Upper(this OrderPair pair, OrderType upper)
         {
+            bool changed = pair.Upper != upper;
             pair.Upper = upper;
-            return pair;
+            return changed;
         }
 
         public static void SetData(this ref PostureInfo info, PostureData data)

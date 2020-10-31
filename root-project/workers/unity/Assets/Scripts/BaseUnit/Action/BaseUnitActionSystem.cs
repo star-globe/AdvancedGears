@@ -71,7 +71,9 @@ namespace AdvancedGears
                 {
                     var animTarget = anim.AnimTarget;
                     animTarget.Type = type;
-                    animTarget.Position = epos.Value.ToWorldPosition(this.Origin);
+
+                    if (epos != null)
+                        animTarget.Position = epos.Value.ToWorldPosition(this.Origin);
 
                     anim.AnimTarget = animTarget;
                 }

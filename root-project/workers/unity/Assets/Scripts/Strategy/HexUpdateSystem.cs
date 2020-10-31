@@ -155,7 +155,10 @@ namespace AdvancedGears
         private void CompairList(List<HexIndex> indexes, Dictionary<uint, List<FrontLineInfo>> dic)
         {
             if (dic == null)
+            {
+                indexes.Clear();
                 return;
+            }
 
             bool isDiff = indexes.Count != dic.Count;
             foreach (var h in indexes)

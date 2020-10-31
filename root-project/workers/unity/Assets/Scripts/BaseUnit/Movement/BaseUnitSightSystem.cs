@@ -111,9 +111,6 @@ namespace AdvancedGears
                 if (units.Count > 0)
                     spread /= units.Count;
 
-                if (spread != Vector3.zero)
-                    DebugUtils.RandomlyLog(string.Format("Spread Vector:{0}",spread));
-
                 var id = entityId.EntityId;
                 if (vectorDic.ContainsKey(id)) {
                     var container = vectorDic[id];

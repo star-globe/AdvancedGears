@@ -152,6 +152,7 @@ namespace AdvancedGears
         {
             bool isTarget = false;
             var neighbors = HexUtils.GetNeighborHexIndexes(index);
+            hexes.Clear();
             foreach (var n in neighbors)
             {
                 var i = targetFront.Indexes.FindIndex(h => h.Index == n);

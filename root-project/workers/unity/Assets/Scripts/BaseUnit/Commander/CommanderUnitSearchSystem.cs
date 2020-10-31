@@ -196,14 +196,14 @@ namespace AdvancedGears
         //    return tgt != null;
         //}
 
-        bool attackOrder(in BaseUnitStatus.Component status, in SpatialEntityId entityId, in Vector3 pos, in TargetInfo currentTarget, float attackRange,
+        bool attackOrder(in BaseUnitStatus.Component status, in SpatialEntityId entityId, in Vector3 pos, in TargetInfo currentTarget, float sightRange,
                          ref CommanderStatus.Component commander,
                          ref CommanderTeam.Component team)
         {
             // check rank
             UnitInfo tgt;
 
-            var scaledRange = AttackLogicDictionary.RankScaled(attackRange, status.Rank);
+            var scaledRange = AttackLogicDictionary.RankScaled(sightRange, status.Rank);
 
             tgt = getNearestEnemy(status.Side, pos, scaledRange, allowDead: true, UnitType.Stronghold, UnitType.Commander);
 
@@ -218,7 +218,7 @@ namespace AdvancedGears
                             OrderType.Guard : OrderType.Keep;
             }
 
-            commander.Order.Self(current.Value);
+            var changed = commander.Order.Self(current.Value);
 
             var line = team.TargetInfoSet.FrontLine;
             var hex = team.TargetInfoSet.HexInfo;
@@ -238,7 +238,7 @@ namespace AdvancedGears
 
             team.IsNeedUpdate = 0;
 
-            if (targetInfo.Equals(currentTarget) == false)
+            if (targetInfo.Equals(currentTarget) == false || changed)
                 SetOrderFollowers(followers, entityId.EntityId, targetInfo, current.Value);
 
             return tgt != null;

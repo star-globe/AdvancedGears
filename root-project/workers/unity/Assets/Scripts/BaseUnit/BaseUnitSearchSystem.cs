@@ -18,7 +18,7 @@ namespace AdvancedGears
     {
         EntityQuery group;
         IntervalChecker inter;
-        const int frequency = 15; 
+        const int frequency = 20; 
 
         protected override void OnCreate()
         {
@@ -36,7 +36,7 @@ namespace AdvancedGears
                 ComponentType.ReadOnly<Transform>()
             );
 
-            inter = IntervalCheckerInitializer.InitializedChecker(1.0f / frequency);
+            inter = IntervalCheckerInitializer.InitializedChecker(frequency);
         }
 
         protected override void OnUpdate()

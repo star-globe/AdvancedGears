@@ -42,7 +42,7 @@ namespace AdvancedGears
                 switch(anim.AnimTarget.Type)
                 {
                     case AnimTargetType.None:
-                        return;
+                        break;
 
                     case AnimTargetType.Position:
                         pos = anim.AnimTarget.Position.ToWorkerPosition(this.Origin);
