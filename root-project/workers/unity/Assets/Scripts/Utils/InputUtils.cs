@@ -6,29 +6,30 @@ namespace AdvancedGears
 {
     public static class InputUtils
     {
-        private static bool IsMove
-        {
-            get { return Input.GetKey(KeyCode.C) == false; }
-        }
-
         public static Vector3 GetMove(in Vector3 right, in Vector3 forward)
         {
-            if (IsMove)
-                return Input.GetAxisRaw("Horizontal") * right + Input.GetAxisRaw("Vertical") * forward;
-            else
-                return Vector3.zero;
+            return Input.GetAxisRaw("Horizontal") * right + Input.GetAxisRaw("Vertical") * forward;
+        }
+
+        public static Vector2 GetMove()
+        {
+            return Input.GetAxisRaw("Horizontal") * Vector2.right + Input.GetAxisRaw("Vertical") * Vector2.up;
+        }
+
+        public static Vector2 GetCamera()
+        {
+            return Input.GetAxis("Mouse X")*Vector2.right + Input.GetAxis("Mouse Y")*Vector2.up;
         }
 
         public static float CameraX
         {
-            get { return IsMove ? 0.0f: Input.GetAxis("Horizontal"); }
+            get { return Input.GetAxis("Mouse X"); }
         }
 
         public static float CameraY
         {
-            get { return IsMove ? 0.0f: Input.GetAxis("Vertical"); }
+            get { return Input.GetAxis("Mouse Y"); }
         }
     }
-
 }
 
