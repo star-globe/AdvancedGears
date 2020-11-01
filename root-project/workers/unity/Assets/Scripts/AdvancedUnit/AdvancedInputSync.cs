@@ -87,27 +87,6 @@ namespace AdvancedGears
 
         protected void CommonUpdate(in Vector2 inputPos, in Vector3 inputCam, bool isShiftDown, in SpatialEntityId entityId, ref ControllerInfo oldController)
         {
-            //var camX = CutCamera(inputCam.x);
-            //var camY = CutCamera(inputCam.y);
-#if false
-            if (CheckChange(oldController.Horizontal, inputPos.x) ||
-                CheckChange(oldController.Vertical, inputPos.y) ||
-                CheckChange(0, inputCam.x) ||
-                CheckChange(0, inputCam.y) ||
-                oldController.Running != isShiftDown)
-            {
-                var newController = new ControllerInfo
-                {
-                    Horizontal = inputPos.x,
-                    Vertical = inputPos.y,
-                    Yaw = ClampCamera(oldController.Yaw + inputCam.x * Time.DeltaTime),
-                    Pitch = ClampCamera(oldController.Pitch + inputCam.y * Time.DeltaTime),
-                    Running = isShiftDown
-                };
-                oldController = newController;
-                UpdateSystem.SendEvent(new AdvancedUnitController.ControllerChanged.Event(newController), entityId.EntityId);
-            }
-#else
             if (CheckChange(oldController.Horizontal, inputPos.x) ||
                 CheckChange(oldController.Vertical, inputPos.y) ||
                 CheckChange(oldController.Yaw, inputCam.x) ||
@@ -125,7 +104,6 @@ namespace AdvancedGears
                 oldController = newController;
                 UpdateSystem.SendEvent(new AdvancedUnitController.ControllerChanged.Event(newController), entityId.EntityId);
             }
-#endif
         }
 
         private bool CheckChange(float oldValue, float newValue)

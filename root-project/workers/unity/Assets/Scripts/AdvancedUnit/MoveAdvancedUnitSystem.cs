@@ -28,7 +28,7 @@ namespace AdvancedGears
         private const float TurnSpeed = 4.0f;
         private const float MaxTurnSpeed = 5.0f;
 
-        private const float MinTurnSpeed = 0.2f;
+        private const float InverseSpeedRate = 3.0f;
 
         private const float TurnSmoothTime = 0.2f;
         private float turnSmoothVelocity;
@@ -119,14 +119,9 @@ namespace AdvancedGears
 
                 Vector3? rotVector = null;
                 var anglerVelocity = rigidbody.angularVelocity;
-                //if ((anglerVelocity.y > MinTurnSpeed || anglerVelocity.y < -MinTurnSpeed) &&
-                //    inputCam.x * anglerVelocity.y < 0)
-                //{
-                //    rotVector = Vector2.up * -anglerVelocity.y * 1.5f;//Vector3.zero;//-anglerVelocity * 1.5f;
-                //}
                 if (anglerVelocity.y < MaxTurnSpeed && anglerVelocity.y > -MaxTurnSpeed)
                 {
-                    float rate = inputCam.x * anglerVelocity.y < 0 ? 3.0f: 1.0f;
+                    float rate = inputCam.x * anglerVelocity.y < 0 ? InverseSpeedRate : 1.0f;
 
                     var targetSpeed = inputCam.x * TurnSpeed;
                     currentRotSpeed = Mathf.SmoothDamp(currentRotSpeed, targetSpeed, ref speedSmoothRotVelocity, SpeedSmoothTime, MaxTurnSpeed, Time.DeltaTime);
