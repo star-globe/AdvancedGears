@@ -17,8 +17,11 @@ namespace AdvancedGears
     public class HexUpdateSystem : HexUpdateBaseSystem
     {
         EntityQuery portalGroup;
+        EntityQuery facilityGroup;
         IntervalChecker interAccess;
         const int frequencyManager = 5;
+
+        protected bool hexChanged { get; private set; } = false;
 
         protected override void OnCreate()
         {
@@ -30,19 +33,55 @@ namespace AdvancedGears
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
 
+            facilityGroup = GetEntityQuery(
+                ComponentType.ReadOnly<HexFacility.Component>(),
+                ComponentType.ReadOnly<BaseUnitStatus.Component>(),
+                ComponentType.ReadOnly<SpatialEntityId>()
+            );
+
             interAccess = IntervalCheckerInitializer.InitializedChecker(1.0f / frequencyManager);
         }
 
         protected override void OnUpdate()
         {
+            UpdateHexFacility();
+
             base.OnUpdate();
 
             UpdateHexAccess();
         }
 
+        private void UpdateHexFacility()
+        {
+            int changedCount = 0;
+            Entities.With(facilityGroup).ForEach((Entity entity,
+                                      ref HexFacility.Component facility,
+                                      ref BaseUnitStatus.Component status,
+                                      ref SpatialEntityId entityId) =>
+            {
+                var hexIndex = facility.HexIndex;
+                var side = status.Side;
+
+                if (hexDic.ContainsKey(hexIndex) == false)
+                    return;
+
+                var hex = hexDic[hexIndex];
+                if (hex.Side == status.Side)
+                    return;
+
+                changedCount++;
+                hex.Side = status.Side;
+                this.UpdateSystem.SendEvent(new HexBase.SideChanged.Event(new SideChangedEvent(side)), hex.EntityId.EntityId);
+
+                Debug.LogFormat("Updated Index:{0} Side:{1}", hexIndex, side);
+            });
+
+            hexChanged = changedCount > 0;
+        }
+
         private void UpdateHexAccess()
         {
-            if (base.hexChanged == false && CheckTime(ref interAccess) == false)
+            if (hexChanged == false && CheckTime(ref interAccess) == false)
                 return;
 
             Entities.With(portalGroup).ForEach((Entity entity,
@@ -69,116 +108,6 @@ namespace AdvancedGears
 
                 strategy.FrontHexes = hexes;
             });
-        }
-
-        private Dictionary<uint, List<FrontLineInfo>> BorderHexList(UnitSide side)
-        {
-            Dictionary<uint, List<FrontLineInfo>> indexes = null;
-
-            foreach (var kvp in base.hexDic)
-            {
-                if (kvp.Value.Side != side)
-                    continue;
-
-                var index = kvp.Value.Index;
-
-                var baseCorners = new Vector3[7];
-                var checkCorners = new Vector3[7];
-
-                HexUtils.SetHexCorners(this.Origin, index, baseCorners, HexDictionary.HexEdgeLength);
-                var ids = HexUtils.GetNeighborHexIndexes(index);
-
-                ///HashSet<int> cornerIndexes = new HashSet<int>() { 0, 1, 2, 3, 4, 5, 6 };
-                List<FrontLineInfo> lines = null;
-                int[] cornerIndexes = new int[] { 0, 1, 2, 3, 4, 5 };
-                foreach (var cornerIndex in cornerIndexes)
-                {
-                    var right = baseCorners[cornerIndex];
-                    var left = baseCorners[cornerIndex + 1];
-
-                    var id = CheckTouch(side, left, right, checkCorners, ids);
-                    if (id != null) {
-                        lines = lines ?? new List<FrontLineInfo>();
-                        lines.Add(new FrontLineInfo() { LeftCorner = left.ToWorldPosition(this.Origin).ToCoordinates(),
-                                                        RightCorner = right.ToWorldPosition(this.Origin).ToCoordinates()});
-
-                        //Debug.LogFormat("side:{0} id:{1} LinesCount:{2}", side, id.Value, lines.Count);
-                    }
-                    //bool isTouched = false;
-                    //foreach (var id in ids)
-                    //{
-                    //    if (base.hexDic.TryGetValue(id, out var hex) == false ||
-                    //        hex.Side == side)
-                    //        continue;
-                    //
-                    //    isFront = true;
-                    //
-                    //    HexUtils.SetHexCorners(this.Origin, id, checkCorners, HexDictionary.HexEdgeLength);
-                    //
-                    //    if (checkCorners.Any(c => (c - tgt).sqrMagnitude < HexDictionary.HexEdgeLength / 10000))
-                    //        isTouched = true;
-                    //}
-                    //
-                    //if (isTouched == false)
-                    //    cornerIndexes.Remove(cornerIndex);
-                }
-
-                if (lines == null)
-                    continue;
-
-                //var list = cornerIndexes.OrderByDescending(i => i)
-                //                        .Select(i => baseCorners[i].ToWorldPosition(this.Origin).ToCoordinates()).ToList();
-                indexes = indexes ?? new Dictionary<uint, List<FrontLineInfo>>();
-                indexes.Add(index, lines);
-            }
-
-            return indexes;
-        }
-
-        uint? CheckTouch(UnitSide side, Vector3 tgtLeft, Vector3 tgtRight, Vector3[] checkCorners, uint[] ids)
-        {
-            foreach (var id in ids)
-            {
-                if (base.hexDic.TryGetValue(id, out var hex) == false ||
-                    hex.Side == side)
-                    continue;
-
-                HexUtils.SetHexCorners(this.Origin, id, checkCorners, HexDictionary.HexEdgeLength);
-
-                if (HexUtils.CheckLine(tgtRight, tgtLeft, checkCorners, HexDictionary.HexEdgeLength / 10000))
-                    return id;
-            }
-
-            return null;
-        }
-
-        private void CompairList(List<HexIndex> indexes, Dictionary<uint, List<FrontLineInfo>> dic)
-        {
-            if (dic == null)
-            {
-                indexes.Clear();
-                return;
-            }
-
-            bool isDiff = indexes.Count != dic.Count;
-            foreach (var h in indexes)
-            {
-                if (isDiff)
-                    break;
-
-                isDiff |= !dic.ContainsKey(h.Index);
-            }
-
-            if (isDiff)
-            {
-                indexes.Clear();
-
-                foreach (var kvp in dic)
-                {
-                    var id = kvp.Key;
-                    indexes.Add(new HexIndex(base.hexDic[id].EntityId.EntityId, id, dic[id]));
-                }
-            }
         }
     }
 }

@@ -74,3 +74,26 @@ component StrategyHexAccessPortal {
 
     map<UnitSide,FrontHexInfo> front_hexes = 1;
 }
+
+// hex power
+type HexPowerFlow {
+    float flow = 1;
+}
+
+component HexPower {
+    id = 220020;
+
+    bool is_active = 1;
+    float stack_power = 2;
+    float realized_power = 3;
+    int32 front_bits = 4;
+
+    event HexPowerFlow hex_power_flow;
+}
+
+// attach to resource point
+component HexPowerResource {
+    id = 220021;
+
+    int32 level = 1;
+}
