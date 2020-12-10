@@ -63,6 +63,7 @@ type HexIndex {
     EntityId entity_id = 1;
     uint32 index = 2;
     list<FrontLineInfo> front_lines = 3;
+    map<UnitSide,float> side_powers = 4;
 }
 
 type FrontHexInfo {
@@ -84,8 +85,7 @@ component HexPower {
     id = 220020;
 
     bool is_active = 1;
-    float stack_power = 2;
-    float realized_power = 3;
+    map<UnitSide,float> side_powers = 2;
     int32 front_bits = 4;
 
     event HexPowerFlow hex_power_flow;

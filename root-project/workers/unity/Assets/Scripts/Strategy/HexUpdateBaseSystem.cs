@@ -22,7 +22,16 @@ namespace AdvancedGears
             public int HexId;
             public UnitSide Side;
             public SpatialEntityId EntityId;
-            public float TotalPower;
+            public Dictionary<UnitSide,float> Powers;
+
+            public float CurrentPower
+            {
+                get
+                {
+                    Powers.TryGetValue(Side, out var current);
+                    return current;
+                }
+            }
         }
 
         EntityQuery hexGroup;
@@ -73,13 +82,13 @@ namespace AdvancedGears
                 hexDic[hex.Index].HexId = hex.HexId;
                 hexDic[hex.Index].Side = hex.Side;
                 hexDic[hex.Index].EntityId = entityId;
-                hexDic[hex.Index].TotalPower = power.StackPower + power.RealizedPower;
+                hexDic[hex.Index].Powers = power.SidePowers;
             });
         }
 
-        protected Dictionary<uint, List<FrontLineInfo>> BorderHexList(UnitSide side)
+        protected Dictionary<uint, HexDetails> BorderHexList(UnitSide side)
         {
-            Dictionary<uint, List<FrontLineInfo>> indexes = null;
+            Dictionary<uint, HexDetails> indexes = null;
 
             foreach (var kvp in this.hexDic)
             {
@@ -94,6 +103,7 @@ namespace AdvancedGears
                 HexUtils.SetHexCorners(this.Origin, index, baseCorners, HexDictionary.HexEdgeLength);
                 var ids = HexUtils.GetNeighborHexIndexes(index);
 
+                HexDetails hexDetails = null;
                 List<FrontLineInfo> lines = null;
                 int[] cornerIndexes = new int[] { 0, 1, 2, 3, 4, 5 };
                 foreach (var cornerIndex in cornerIndexes)
@@ -116,8 +126,11 @@ namespace AdvancedGears
                 if (lines == null)
                     continue;
 
-                indexes = indexes ?? new Dictionary<uint, List<FrontLineInfo>>();
-                indexes.Add(index, lines);
+                if (hexDetails == null)
+                    continue;
+
+                indexes = indexes ?? new Dictionary<uint, HexDetails>();
+                indexes.Add(index, hexDetails);
             }
 
             return indexes;
@@ -140,7 +153,13 @@ namespace AdvancedGears
             return null;
         }
 
-        protected void CompairList(List<HexIndex> indexes, Dictionary<uint, List<FrontLineInfo>> dic)
+        protected class HexDetails
+        {
+            public List<FrontLineInfo> frontLines;
+            public Dictionary<UnitSide, float> staminas;
+        }
+
+        protected void CompairList(List<HexIndex> indexes, Dictionary<uint, HexDetails> dic)
         {
             if (dic == null)
             {
@@ -164,7 +183,7 @@ namespace AdvancedGears
                 foreach (var kvp in dic)
                 {
                     var id = kvp.Key;
-                    indexes.Add(new HexIndex(this.hexDic[id].EntityId.EntityId, id, dic[id]));
+                    indexes.Add(new HexIndex(this.hexDic[id].EntityId.EntityId, id, dic[id].frontLines, dic[id].staminas));
                 }
             }
         }

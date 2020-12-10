@@ -44,24 +44,27 @@ namespace AdvancedGears
         }
 
         const float flowValue = 3.0f;
+        const float resourceValue = 3.0f;
 
         private void UpdateHexPower()
         {
             if (CheckTime(ref interAccess) == false)
                 return;
 
-            frontLineDic.Clear();
-            foreach (var side in HexUtils.AllSides)
-            {
-                frontLineDic[side] = BorderHexList(side);
-            }
-
             Entities.With(hexpowerGroup).ForEach((Entity entity,
                                       ref HexPower.Component power,
                                       ref HexBase.Component hex,
                                       ref SpatialEntityId entityId) =>
             {
-                int bit = 0;
+                if (hex.Side == UnitSide.None)
+                    return;
+
+                power.SidePowers.TryGetValue(hex.Side, out var current);
+
+                if (hex.Attribute == HexAttribute.CentralBase) {
+                    power.SidePowers[hex.Side] = current + resourceValue;
+                }
+
                 int count = -1;
                 var ids = HexUtils.GetNeighborHexIndexes(hex.Index);
                 foreach (var id in ids)
@@ -72,19 +75,25 @@ namespace AdvancedGears
                         continue;
 
                     var h = base.hexDic[id];
-                    if (h.Side != hex.Side)
+                    bool isFlow = false;
+                    if (h.Side == hex.Side)
                     {
-                        bit += 1 << count;
+                        if (current > h.CurrentPower && current >= flowValue)
+                        {
+                            isFlow = true;
+                        }
                     }
-                    else if (power.RealizedPower + power.StackPower > h.TotalPower &&
-                             power.StackPower >= flowValue)
+                    else if (h.Side == UnitSide.None)
                     {
-                        power.StackPower -= flowValue;
+                        isFlow = true;
+                    }
+
+                    if (isFlow)
+                    {
+                        power.SidePowers[hex.Side] -= flowValue;
                         this.UpdateSystem.SendEvent(new HexPower.HexPowerFlow.Event(new HexPowerFlow() { Flow = flowValue }), h.EntityId.EntityId);
                     }
                 }
-
-                power.FrontBits = bit;
             });
         }
     }

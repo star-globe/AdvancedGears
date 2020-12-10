@@ -13,12 +13,12 @@ namespace AdvancedGears
         [SerializeField]
         private TextMeshPro text;
 
-        public void SetHexInfo(uint index, int hexId, UnitSide side)
+        public void SetHexInfo(uint index, int hexId, UnitSide side, float resource)
         {
             if (text == null)
                 return;
 
-            text.SetText(string.Format("Index:{0} HexId:{1}", index, hexId));
+            text.SetText(string.Format("Index:{0} HexId:{1} Resource:{{2:f2}}", index, hexId, resource));
             text.color = ColorDictionary.GetSideColor(side);
         }
     }
