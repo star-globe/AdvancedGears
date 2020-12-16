@@ -99,7 +99,7 @@ namespace AdvancedGears
                     var dic = BorderHexList(side);
 
                     if (hexes.ContainsKey(side) == false)
-                        hexes[side] = new FrontHexInfo { Indexes = new List<HexIndex>() };
+                        hexes[side] = new FrontHexInfo { Indexes = new List<uint>() };
 
                     var info = hexes[side];
                     CompairList(info.Indexes, dic);

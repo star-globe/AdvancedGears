@@ -11,18 +11,18 @@ namespace AdvancedGears
 {
     public class HexInfoWriter : MonoBehaviour
     {
-        [Require] HexBaseWriter writer;
-        [Require] HexPowerWriter powerWriter;
+        [Require] HexBaseWriter hexBase;
+        [Require] HexPowerWriter power;
 
         private void OnEnable()
         {
-            writer.OnSideChangedEvent += SideChangedEvent;
-            powerWriter.OnHexPowerFlowEvent += HexPowerFlowEvent;
+            hexBase.OnSideChangedEvent += SideChangedEvent;
+            power.OnHexPowerFlowEvent += HexPowerFlowEvent;
         }
 
         void SideChangedEvent(SideChangedEvent sideChanged)
         {
-            writer.SendUpdate(new HexBase.Update()
+            hexBase.SendUpdate(new HexBase.Update()
             {
                 Side = sideChanged.Side,
             });
@@ -30,13 +30,13 @@ namespace AdvancedGears
 
         void HexPowerFlowEvent(HexPowerFlow powerFlow)
         {
-            var powers = writer.Data.SidePowers;
+            var powers = power.Data.SidePowers;
             if (powers.ContainsKey(powerFlow.Side))
                 powers[powerFlow.Side] += powerFlow.Flow;
             else
                 powers[powerFlow.Side] = powerFlow.Flow;
 
-            powerWriter.SendUpdate(new HexPower.Update()
+            power.SendUpdate(new HexPower.Update()
             {
                 SidePowers = powers,
             });

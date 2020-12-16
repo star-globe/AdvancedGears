@@ -150,7 +150,7 @@ namespace AdvancedGears
             template.AddComponent(new StrongholdSight.Snapshot { TargetStrongholds = new Dictionary<EntityId, TargetStrongholdInfo>(),
                                                                  FrontLineCorners = new List<FrontLineInfo>(),
                                                                  TargetHexes = new Dictionary<uint, TargetHexInfo>() }, writeAccess);
-            template.AddComponent(new StrategyHexAccessPortal.Snapshot { FrontHexes = new Dictionary<UnitSide,FrontHexInfo>() }, writeAccess);
+            template.AddComponent(new StrategyHexAccessPortal.Snapshot { FrontHexes = new Dictionary<UnitSide,FrontHexInfo>() , }, writeAccess);
             template.AddComponent(new ResourceComponent.Snapshot(), writeAccess);
             template.AddComponent(new ResourceSupplyer.Snapshot(), writeAccess);
             template.AddComponent(new TurretHub.Snapshot { TurretsDatas = new Dictionary<EntityId,TurretInfo>() }, writeAccess);

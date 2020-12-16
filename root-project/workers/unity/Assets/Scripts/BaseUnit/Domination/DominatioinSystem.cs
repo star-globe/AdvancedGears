@@ -18,36 +18,38 @@ namespace AdvancedGears
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     public class DominationSystem : BaseSearchSystem
     {
-        EntityQuery group;
-
-        IntervalChecker inter;
+        EntityQuerySet deviceGroup;
+        EntityQuerySet hexPowerGroup;
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            group = GetEntityQuery(
-                ComponentType.ReadWrite<DominationStamina.Component>(),
-                ComponentType.ReadOnly<DominationStamina.HasAuthority>(),
-                ComponentType.ReadOnly<BaseUnitStatus.Component>(),
-                ComponentType.ReadOnly<Transform>(),
-                ComponentType.ReadOnly<SpatialEntityId>()
-            );
+            deviceGroup = new EntityQuerySet(GetEntityQuery(
+                                             ComponentType.ReadWrite<DominationStamina.Component>(),
+                                             ComponentType.ReadOnly<DominationStamina.HasAuthority>(),
+                                             ComponentType.ReadOnly<BaseUnitStatus.Component>(),
+                                             ComponentType.ReadOnly<Transform>(),
+                                             ComponentType.ReadOnly<SpatialEntityId>()
+                                             ), 1.0f);
 
-            inter = IntervalCheckerInitializer.InitializedChecker(1.0f);
+            hexPowerGroup = new EntityQuerySet(GetEntityQuery(
+                                             ComponentType.ReadOnly<StrategyHexAccessPortal.Component>()
+                                             ), 1.0f);
         }
 
         protected override void OnUpdate()
         {
-            HandleCaputuring();
+            GatherPortalData();
+            HandleCaputure();
         }
 
-        void HandleCaputuring()
+        void HandleCaputure()
         {
-            if (CheckTime(ref inter) == false)
+            if (CheckTime(ref deviceGroup.inter) == false)
                 return;
 
-            Entities.With(group).ForEach((Unity.Entities.Entity entity,
+            Entities.With(deviceGroup.group).ForEach((Unity.Entities.Entity entity,
                                           ref DominationStamina.Component domination,
                                           ref BaseUnitStatus.Component status,
                                           ref SpatialEntityId entityId) =>
@@ -117,6 +119,20 @@ namespace AdvancedGears
                 }
 
                 domination.SideStaminas = staminas;
+            });
+        }
+
+        private Dictionary<uint, HexIndex> hexIndexes;
+
+        void GatherPortalData()
+        {
+            if (CheckTime(ref hexPowerGroup.inter) == false)
+                return;
+
+            Entities.With(hexPowerGroup.group).ForEach((Unity.Entities.Entity entity,
+                                          ref StrategyHexAccessPortal.Component portal) =>
+            {
+                hexIndexes = portal.HexIndexes;
             });
         }
 
