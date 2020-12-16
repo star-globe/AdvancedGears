@@ -78,7 +78,8 @@ component StrategyHexAccessPortal {
 
 // hex power
 type HexPowerFlow {
-    float flow = 1;
+    UnitSide side = 1;
+    float flow = 2;
 }
 
 component HexPower {

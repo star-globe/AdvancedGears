@@ -91,7 +91,7 @@ namespace AdvancedGears
                     if (isFlow)
                     {
                         power.SidePowers[hex.Side] -= flowValue;
-                        this.UpdateSystem.SendEvent(new HexPower.HexPowerFlow.Event(new HexPowerFlow() { Flow = flowValue }), h.EntityId.EntityId);
+                        this.UpdateSystem.SendEvent(new HexPower.HexPowerFlow.Event(new HexPowerFlow() { Side = hex.Side, Flow = flowValue }), h.EntityId.EntityId);
                     }
                 }
             });

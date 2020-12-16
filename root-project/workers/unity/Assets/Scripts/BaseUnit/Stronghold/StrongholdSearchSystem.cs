@@ -88,28 +88,33 @@ namespace AdvancedGears
             
             FrontHexInfo targetHexInfo;
             if (frontHexes.TryGetValue(UnitSide.None, out targetHexInfo))
-                order = GetTargetHex(pos, frontHexInfo.Indexes, targetHexInfo, hexes);
+                order = GetTargetHex(pos, selfSide, frontHexInfo.Indexes, targetHexInfo, hexes);
             
             if (order != OrderType.Idle)
                 return order;
 
 #if false
             if (enemySide != UnitSide.None && frontHexes.TryGetValue(enemySide, out targetHexInfo))
-                order = GetTargetHex(pos, frontHexInfo.Indexes, targetHexInfo, hexes);
+                order = GetTargetHex(pos, selfSide, frontHexInfo.Indexes, targetHexInfo, hexes);
 
             if (order != OrderType.Idle)
                 return order;
 #endif
 
-            order = GetTargetFrontLine(pos, frontHexInfo.Indexes, corners);
+            order = GetTargetFrontLine(pos, selfSide, frontHexInfo.Indexes, corners);
             return order;
         }
 
-        private OrderType GetTargetFrontLine(in Vector3 pos, List<HexIndex> indexes, List<FrontLineInfo> corners)
+        const float sumLimit = 1.0f / 10000;
+        private OrderType GetTargetFrontLine(in Vector3 pos, UnitSide selfSide, List<HexIndex> indexes, List<FrontLineInfo> corners)
         {
             HexIndex? targetIndex = null;
             float length = float.MaxValue;
             foreach (var hex in indexes) {
+                var otherPower = hex.OtherSideSum(selfSide);
+                if (otherPower < sumLimit)
+                    continue;
+
                 var h_pos = GetHexCenter(hex.Index);
                 var l = (pos - h_pos).sqrMagnitude;
                 if (l >= length)
@@ -128,11 +133,15 @@ namespace AdvancedGears
             return OrderType.Idle;
         }
 
-        private OrderType GetTargetHex(in Vector3 pos, List<HexIndex> indexes, FrontHexInfo targetFront, Dictionary<uint,TargetHexInfo> hexes)
+        private OrderType GetTargetHex(in Vector3 pos, UnitSide selfSide, List<HexIndex> indexes, FrontHexInfo targetFront, Dictionary<uint,TargetHexInfo> hexes)
         {
             HexIndex? targetIndex = null;
             float length = float.MaxValue;
             foreach (var hex in indexes) {
+                var otherPower = hex.OtherSideSum(selfSide);
+                if (otherPower < sumLimit)
+                    continue;
+
                 var h_pos = GetHexCenter(hex.Index);
                 var l = (pos - h_pos).sqrMagnitude;
                 if (l >= length)

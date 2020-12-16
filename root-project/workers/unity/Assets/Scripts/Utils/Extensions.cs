@@ -399,6 +399,11 @@ namespace AdvancedGears
                     return true;
             }
         }
+
+        public static float OtherSideSum(this HexIndex hex, UnitSide selfSide)
+        {
+            return hex.SidePowers.Sum(kvp => kvp.Key == selfSide ? 0: kvp.Value);
+        }
     }
 
     public static class IntervalCheckerInitializer
