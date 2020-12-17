@@ -92,21 +92,31 @@ namespace AdvancedGears
                 if (status.Side == UnitSide.None)
                     return;
 
-                var hexes = strategy.FrontHexes;
+                var fronts = strategy.FrontHexes;
+                var hexes = strategy.HexIndexes;
 
+                hexes.Clear();
                 foreach (var side in HexUtils.AllSides)
                 {
                     var dic = BorderHexList(side);
 
-                    if (hexes.ContainsKey(side) == false)
-                        hexes[side] = new FrontHexInfo { Indexes = new List<uint>() };
+                    if (fronts.ContainsKey(side) == false)
+                        fronts[side] = new FrontHexInfo { Indexes = new List<uint>() };
 
-                    var info = hexes[side];
+                    var info = fronts[side];
                     CompairList(info.Indexes, dic);
-                    hexes[side] = info;
+                    fronts[side] = info;
                 }
 
-                strategy.FrontHexes = hexes;
+                hexes.Clear();
+                foreach (var kvp in this.hexDic) {
+                    var hex = new HexIndex();
+                    var info = kvp.Value;
+                    hex.EntityId = info.EntityId.EntityId;
+                    hexes.Add(kvp.Key, hex);
+                }
+
+                strategy.FrontHexes = fronts;
             });
         }
     }

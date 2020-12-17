@@ -159,7 +159,7 @@ namespace AdvancedGears
             public Dictionary<UnitSide, float> staminas;
         }
 
-        protected void CompairList(List<HexIndex> indexes, Dictionary<uint, HexDetails> dic)
+        protected void CompairList(List<uint> indexes, Dictionary<uint, HexDetails> dic)
         {
             if (dic == null)
             {
@@ -168,12 +168,12 @@ namespace AdvancedGears
             }
 
             bool isDiff = indexes.Count != dic.Count;
-            foreach (var h in indexes)
+            foreach (var id in indexes)
             {
                 if (isDiff)
                     break;
 
-                isDiff |= !dic.ContainsKey(h.Index);
+                isDiff |= !dic.ContainsKey(id);
             }
 
             if (isDiff)
@@ -183,7 +183,7 @@ namespace AdvancedGears
                 foreach (var kvp in dic)
                 {
                     var id = kvp.Key;
-                    indexes.Add(new HexIndex(this.hexDic[id].EntityId.EntityId, id, dic[id].frontLines, dic[id].staminas));
+                    indexes.Add(id);//Add(new HexIndex(this.hexDic[id].EntityId.EntityId, id, dic[id].frontLines, dic[id].staminas));
                 }
             }
         }

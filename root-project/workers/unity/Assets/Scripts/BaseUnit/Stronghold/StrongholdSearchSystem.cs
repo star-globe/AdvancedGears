@@ -71,7 +71,7 @@ namespace AdvancedGears
                 var corners = sight.FrontLineCorners;
                 var hexes = sight.TargetHexes;
 
-                var order = GetTarget(trans.position, portal.FrontHexes, status.Side, enemySide, hexes, corners);
+                var order = GetTarget(trans.position, portal.FrontHexes, portal.HexIndexes, status.Side, enemySide, hexes, corners);
 
                 sight.TargetStrongholds = targets;
                 sight.FrontLineCorners = corners;
@@ -80,15 +80,21 @@ namespace AdvancedGears
             });
         }
 
-        private OrderType GetTarget(Vector3 pos, Dictionary<UnitSide,FrontHexInfo> frontHexes, UnitSide selfSide, UnitSide enemySide, Dictionary<uint,TargetHexInfo> hexes, List<FrontLineInfo> corners)
+        private OrderType GetTarget(Vector3 pos, Dictionary<UnitSide,FrontHexInfo> frontHexes, Dictionary<uint,HexIndex> hexIndexes, UnitSide selfSide, UnitSide enemySide, Dictionary<uint,TargetHexInfo> hexes, List<FrontLineInfo> corners)
         {
             var order = OrderType.Idle;
             if (frontHexes.TryGetValue(selfSide, out var frontHexInfo) == false)
                 return order;
-            
+
+            var hexList = new List<HexIndex>();
+            foreach (var i in frontHexInfo.Indexes) {
+                if (hexIndexes.ContainsKey(i))
+                    hexList.Add(hexIndexes[i]);
+            }
+
             FrontHexInfo targetHexInfo;
             if (frontHexes.TryGetValue(UnitSide.None, out targetHexInfo))
-                order = GetTargetHex(pos, selfSide, frontHexInfo.Indexes, targetHexInfo, hexes);
+                order = GetTargetHex(pos, selfSide, hexList, targetHexInfo, hexes);
             
             if (order != OrderType.Idle)
                 return order;
@@ -101,7 +107,7 @@ namespace AdvancedGears
                 return order;
 #endif
 
-            order = GetTargetFrontLine(pos, selfSide, frontHexInfo.Indexes, corners);
+            order = GetTargetFrontLine(pos, selfSide, hexList, corners);
             return order;
         }
 
@@ -164,12 +170,11 @@ namespace AdvancedGears
             hexes.Clear();
             foreach (var n in neighbors)
             {
-                var i = targetFront.Indexes.FindIndex(h => h.Index == n);
+                var i = targetFront.Indexes.FindIndex(id => id == n);
                 if (i < 0)
                     continue;
                 isTarget = true;
-                var hx = targetFront.Indexes[i];
-                hexes[n] = new TargetHexInfo(hx.Index, UnitSide.None);
+                hexes[n] = new TargetHexInfo(targetFront.Indexes[i], UnitSide.None);
             }
 
             return isTarget ? OrderType.Attack: OrderType.Keep;
