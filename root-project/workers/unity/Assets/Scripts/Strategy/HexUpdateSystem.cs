@@ -79,6 +79,8 @@ namespace AdvancedGears
             hexChanged = changedCount > 0;
         }
 
+        readonly Dictionary<UnitSide,Dictionary<uint, HexDetails>> borderHexListDic = new Dictionary<UnitSide,Dictionary<uint, HexDetails>>();
+
         private void UpdateHexAccess()
         {
             if (hexChanged == false && CheckTime(ref interAccess) == false)
@@ -95,10 +97,12 @@ namespace AdvancedGears
                 var fronts = strategy.FrontHexes;
                 var hexes = strategy.HexIndexes;
 
-                hexes.Clear();
+                borderHexListDic.Clear();
+
                 foreach (var side in HexUtils.AllSides)
                 {
                     var dic = BorderHexList(side);
+                    borderHexListDic[side] = dic;
 
                     if (fronts.ContainsKey(side) == false)
                         fronts[side] = new FrontHexInfo { Indexes = new List<uint>() };
@@ -108,15 +112,22 @@ namespace AdvancedGears
                     fronts[side] = info;
                 }
 
-                hexes.Clear();
                 foreach (var kvp in this.hexDic) {
-                    var hex = new HexIndex();
+                    var index = kvp.Key;
+                    if (hexes.ContainsKey(index) == false)
+                        hexes[index] = new HexIndex();
+
                     var info = kvp.Value;
-                    hex.EntityId = info.EntityId.EntityId;
-                    hexes.Add(kvp.Key, hex);
+                    hexes[index].Index = info.Index;
+                    hexes[index].EntityId = info.EntityId.EntityId;
+                    List<FrontLineInfo> frontLines = null;
+                    if (borderHexListDic.TryGetValue(info.Side, out var borderList) && borderList.TryGetValue(index, out var detail))
+                        frontLines = detail.frontLines;
+                    hexes[index].FrontLines = frontLines;
                 }
 
                 strategy.FrontHexes = fronts;
+                strategy.HexIndexes = hexes;
             });
         }
     }

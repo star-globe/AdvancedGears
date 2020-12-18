@@ -103,7 +103,6 @@ namespace AdvancedGears
                 HexUtils.SetHexCorners(this.Origin, index, baseCorners, HexDictionary.HexEdgeLength);
                 var ids = HexUtils.GetNeighborHexIndexes(index);
 
-                HexDetails hexDetails = null;
                 List<FrontLineInfo> lines = null;
                 int[] cornerIndexes = new int[] { 0, 1, 2, 3, 4, 5 };
                 foreach (var cornerIndex in cornerIndexes)
@@ -126,8 +125,9 @@ namespace AdvancedGears
                 if (lines == null)
                     continue;
 
-                if (hexDetails == null)
-                    continue;
+                var hexDetails = new HexDetails();
+                hexDetails.frontLines = lines;
+                hexDetails.staminas = kvp.Value.Powers;
 
                 indexes = indexes ?? new Dictionary<uint, HexDetails>();
                 indexes.Add(index, hexDetails);
