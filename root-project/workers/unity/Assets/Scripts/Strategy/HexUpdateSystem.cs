@@ -118,12 +118,15 @@ namespace AdvancedGears
                         hexes[index] = new HexIndex();
 
                     var info = kvp.Value;
-                    hexes[index].Index = info.Index;
-                    hexes[index].EntityId = info.EntityId.EntityId;
+                    var hex = hexes[index];
+                    hex.Index = info.Index;
+                    hex.EntityId = info.EntityId.EntityId;
                     List<FrontLineInfo> frontLines = null;
                     if (borderHexListDic.TryGetValue(info.Side, out var borderList) && borderList.TryGetValue(index, out var detail))
                         frontLines = detail.frontLines;
-                    hexes[index].FrontLines = frontLines;
+                    hex.FrontLines = frontLines;
+
+                    hexes[index] = hex;
                 }
 
                 strategy.FrontHexes = fronts;

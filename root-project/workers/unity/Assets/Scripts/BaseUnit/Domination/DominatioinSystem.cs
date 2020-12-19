@@ -87,6 +87,25 @@ namespace AdvancedGears
                     }
                 }
 
+                if (hexIndexes != null)
+                {
+                    foreach (var kvp in hexIndexes)
+                    {
+                        if (HexUtils.IsInsideHex(this.Origin, kvp.Key, pos, HexDictionary.HexEdgeLength) == false)
+                            continue;
+
+                        var hex = kvp.Value;
+                        foreach (var p in hex.SidePowers) {
+                            if (sumsDic.ContainsKey(p.Key))
+                                sumsDic[p.Key] += p.Value;
+                            else
+                                sumsDic[p.Key] = p.Value;
+                        }
+
+                        break;
+                    }
+                }
+
                 // check over
                 var orderedList = sumsDic.OrderByDescending(kvp => kvp.Value).ToList();
                 if (orderedList.Count == 0)
