@@ -20,6 +20,8 @@ namespace AdvancedGears
         IntervalChecker interAccess;
         const int frequencyPower = 5;
 
+        double deltaTime = -1.0;
+
         readonly Dictionary<UnitSide, Dictionary<uint, List<FrontLineInfo>>> frontLineDic = new Dictionary<UnitSide, Dictionary<uint, List<FrontLineInfo>>>();
 
         protected override void OnCreate()
@@ -34,6 +36,8 @@ namespace AdvancedGears
             );
 
             interAccess = IntervalCheckerInitializer.InitializedChecker(1.0f / frequencyPower);
+
+            deltaTime = Time.ElapsedTime;
         }
 
         protected override void OnUpdate()
@@ -43,13 +47,15 @@ namespace AdvancedGears
             UpdateHexPower();
         }
 
-        const float flowValue = 3.0f;
-        const float resourceValue = 3.0f;
+        const float flowValue = 1.0f;
+        const float resourceValue = 1.0f;
 
         private void UpdateHexPower()
         {
             if (CheckTime(ref interAccess) == false)
                 return;
+
+            deltaTime = Time.ElapsedTime - deltaTime;
 
             Entities.With(hexpowerGroup).ForEach((Entity entity,
                                       ref HexPower.Component power,
@@ -62,8 +68,10 @@ namespace AdvancedGears
                 power.SidePowers.TryGetValue(hex.Side, out var current);
 
                 if (hex.Attribute == HexAttribute.CentralBase) {
-                    power.SidePowers[hex.Side] = current + resourceValue;
+                    power.SidePowers[hex.Side] = current + (float)(resourceValue * deltaTime);
                 }
+
+                var flow = (float)(flowValue * deltaTime);
 
                 int count = -1;
                 var ids = HexUtils.GetNeighborHexIndexes(hex.Index);
@@ -78,7 +86,7 @@ namespace AdvancedGears
                     bool isFlow = false;
                     if (h.Side == hex.Side)
                     {
-                        if (current > h.CurrentPower && current >= flowValue)
+                        if (current > h.CurrentPower && current >= flow)
                         {
                             isFlow = true;
                         }
@@ -90,8 +98,8 @@ namespace AdvancedGears
 
                     if (isFlow)
                     {
-                        power.SidePowers[hex.Side] -= flowValue;
-                        this.UpdateSystem.SendEvent(new HexPower.HexPowerFlow.Event(new HexPowerFlow() { Side = hex.Side, Flow = flowValue }), h.EntityId.EntityId);
+                        power.SidePowers[hex.Side] -= flow;
+                        this.UpdateSystem.SendEvent(new HexPower.HexPowerFlow.Event(new HexPowerFlow() { Side = hex.Side, Flow = flow }), h.EntityId.EntityId);
                     }
                 }
             });
