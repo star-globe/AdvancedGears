@@ -11,6 +11,7 @@ namespace AdvancedGears
         public static ColorDictionary Instance { private get; set; }
 
         [SerializeField] private BaseUnitStateColorSettings baseUnitStateColorSettings;
+        [SerializeField] private HexAttributeColorSettings hexAttributeColorSettings;
 
         public override void Initialize()
         {
@@ -25,6 +26,11 @@ namespace AdvancedGears
         public static UnityEngine.Color GetStateColor(UnitState state)
         {
             return Instance.baseUnitStateColorSettings.GetStateColor(state);
+        }
+
+        public static UnityEngine.Color GetHexAttributeColor(HexAttribute attribute)
+        {
+            return Instance.hexAttributeColorSettings.GetHexAttributeColor(attribute);
         }
     }
 }
