@@ -28,7 +28,7 @@ namespace AdvancedGears
         public UnityEngine.Color Color { get { return col; } }
     }
 
-    interface IColor<T> where T : struct
+    public interface IColor<T> where T : struct
     {
         T Tgt { get; }
         UnityEngine.Color Color { get; }

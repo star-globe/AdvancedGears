@@ -46,6 +46,12 @@ namespace AdvancedGears
         LineRenderer line;
 
         [SerializeField]
+        SpriteRenderer hex;
+
+        [SerializeField]
+        HexAttributeColorSettings hexColorSettings;
+
+        [SerializeField]
         uint index = 0;
         public uint Index => index;
 
@@ -58,6 +64,7 @@ namespace AdvancedGears
             HexUtils.SetHexCorners(pos, corners, edge);
             line.positionCount = 7;
             line.SetPositions(corners);
+            hex.transform.localScale = edge * Vector3.one;
         }
 
         public HexSnapshot GetHexSnapshot(float horizontalRate, float virticalRate)
@@ -95,6 +102,8 @@ namespace AdvancedGears
                     u.gameObject.SetActive(false);
                 }
             }
+
+            hex.color = hexColorSettings.GetHexAttributeColor(attribute);
         }
     }
 
