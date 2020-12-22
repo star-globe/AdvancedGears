@@ -31,10 +31,35 @@ namespace AdvancedGears
         void HexPowerFlowEvent(HexPowerFlow powerFlow)
         {
             var powers = power.Data.SidePowers;
-            if (powers.ContainsKey(powerFlow.Side))
-                powers[powerFlow.Side] += powerFlow.Flow;
-            else
-                powers[powerFlow.Side] = powerFlow.Flow;
+            var keys = powers.OrderByDescending(kvp => kvp.Value).Select(kvp => kvp.Key).ToArray();
+            var flow = powerFlow.Flow;
+            if (keys.Length > 0)
+            {
+                foreach (var k in keys)
+                {
+                    if (powerFlow.Side == k) {
+                        powers[k] += flow;
+                        flow = 0;
+                    }
+                    else {
+                        if (powers[k] >= flow) {
+                            powers[k] -= flow;
+                            flow = 0;
+                        }
+                        else
+                        {
+                            flow -= powers[k];
+                            powers[k] = 0;
+                        }
+                    }
+
+                    if (flow == 0)
+                        break;
+                }
+            }
+
+            if (flow > 0 && powers.ContainsKey(powerFlow.Side) == false)
+                powers[powerFlow.Side] = flow;
 
             power.SendUpdate(new HexPower.Update()
             {

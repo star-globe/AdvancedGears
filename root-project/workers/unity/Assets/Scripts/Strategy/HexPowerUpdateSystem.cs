@@ -68,7 +68,8 @@ namespace AdvancedGears
                 power.SidePowers.TryGetValue(hex.Side, out var current);
 
                 if (hex.Attribute == HexAttribute.CentralBase) {
-                    power.SidePowers[hex.Side] = current + (float)(resourceValue * deltaTime);
+                    current += (float)(resourceValue * deltaTime);
+                    power.SidePowers[hex.Side] = current;
                 }
 
                 var flow = (float)(flowValue * deltaTime);
@@ -98,8 +99,14 @@ namespace AdvancedGears
 
                     if (isFlow)
                     {
-                        power.SidePowers[hex.Side] -= flow;
-                        this.UpdateSystem.SendEvent(new HexPower.HexPowerFlow.Event(new HexPowerFlow() { Side = hex.Side, Flow = flow }), h.EntityId.EntityId);
+                        float val = flow;
+                        if (current > flow)
+                            power.SidePowers[hex.Side] -= flow;
+                        else {
+                            val = power.Sidepowers[hex.Side];
+                            power.Sidepowers[hex.Side] = 0;
+                        }
+                        this.UpdateSystem.SendEvent(new HexPower.HexPowerFlow.Event(new HexPowerFlow() { Side = hex.Side, Flow = val }), h.EntityId.EntityId);
                     }
                 }
             });
