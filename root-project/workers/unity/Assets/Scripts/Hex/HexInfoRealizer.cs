@@ -64,8 +64,7 @@ namespace AdvancedGears
 
             line.SetLines(side, corners, PhysicsUtils.GroundMask, cutNumber, origin.y + height, origin.y, height/100);
 
-            powers.TryGetValue(side, out var power);
-            text?.SetHexInfo(reader.Data.Index, reader.Data.HexId, side, power);
+            text?.SetHexInfo(reader.Data.Index, reader.Data.HexId, side, powers);
         }
     }
 }

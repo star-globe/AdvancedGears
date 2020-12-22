@@ -83,6 +83,10 @@ type HexPowerFlow {
     float flow = 2;
 }
 
+type HexActiveChange {
+    bool is_active = 1;
+}
+
 component HexPower {
     id = 220020;
 
@@ -91,6 +95,7 @@ component HexPower {
     int32 front_bits = 4;
 
     event HexPowerFlow hex_power_flow;
+    event HexActiveChange hex_active_change;
 }
 
 // attach to resource point
