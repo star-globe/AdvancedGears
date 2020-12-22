@@ -103,8 +103,8 @@ namespace AdvancedGears
                         if (current > flow)
                             power.SidePowers[hex.Side] -= flow;
                         else {
-                            val = power.Sidepowers[hex.Side];
-                            power.Sidepowers[hex.Side] = 0;
+                            val = power.SidePowers[hex.Side];
+                            power.SidePowers[hex.Side] = 0;
                         }
                         this.UpdateSystem.SendEvent(new HexPower.HexPowerFlow.Event(new HexPowerFlow() { Side = hex.Side, Flow = val }), h.EntityId.EntityId);
                     }

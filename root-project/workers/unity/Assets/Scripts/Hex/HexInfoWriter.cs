@@ -1,4 +1,4 @@
-using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
 using Improbable.Gdk.Core;
 using Improbable.Gdk.Subscriptions;
@@ -59,7 +59,7 @@ namespace AdvancedGears
                 }
             }
 
-            var add = flow + powerFlow * (1.0f - attackRate);
+            var add = flow + powerFlow.Flow * (1.0f - attackRate);
             if (powers.ContainsKey(powerFlow.Side) == false)
                 powers[powerFlow.Side] = add;
             else
