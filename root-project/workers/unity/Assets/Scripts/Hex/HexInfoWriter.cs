@@ -28,11 +28,13 @@ namespace AdvancedGears
             });
         }
 
+        const float attackRate = 0.55f;
+
         void HexPowerFlowEvent(HexPowerFlow powerFlow)
         {
             var powers = power.Data.SidePowers;
             var keys = powers.OrderByDescending(kvp => kvp.Value).Select(kvp => kvp.Key).ToArray();
-            var flow = powerFlow.Flow / 2;
+            var flow = powerFlow.Flow * attackRate;
             if (keys.Length > 0)
             {
                 foreach (var k in keys)
@@ -57,12 +59,11 @@ namespace AdvancedGears
                 }
             }
 
-            var side = powerFlow.Side;
-            var add = flow + powerFlow / 2;
-            if (powers.ContainsKey(side) == false)
-                powers[side] = add;
+            var add = flow + powerFlow * (1.0f - attackRate);
+            if (powers.ContainsKey(powerFlow.Side) == false)
+                powers[powerFlow.Side] = add;
             else
-                powers[side] += add;
+                powers[powerFlow.Side] += add;
 
             power.SendUpdate(new HexPower.Update()
             {
