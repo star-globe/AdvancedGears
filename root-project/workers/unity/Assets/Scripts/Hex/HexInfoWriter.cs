@@ -32,14 +32,13 @@ namespace AdvancedGears
         {
             var powers = power.Data.SidePowers;
             var keys = powers.OrderByDescending(kvp => kvp.Value).Select(kvp => kvp.Key).ToArray();
-            var flow = powerFlow.Flow;
+            var flow = powerFlow.Flow / 2;
             if (keys.Length > 0)
             {
                 foreach (var k in keys)
                 {
                     if (powerFlow.Side == k) {
-                        powers[k] += flow;
-                        flow = 0;
+                        continue;
                     }
                     else {
                         if (powers[k] >= flow) {
@@ -58,8 +57,12 @@ namespace AdvancedGears
                 }
             }
 
-            if (flow > 0 && powers.ContainsKey(powerFlow.Side) == false)
-                powers[powerFlow.Side] = flow;
+            var side = powerFlow.Side;
+            var add = flow + powerFlow / 2;
+            if (powers.ContainsKey(side) == false)
+                powers[side] = add;
+            else
+                powers[side] += add;
 
             power.SendUpdate(new HexPower.Update()
             {
