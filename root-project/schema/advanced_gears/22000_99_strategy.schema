@@ -64,6 +64,7 @@ type HexIndex {
     uint32 index = 2;
     list<FrontLineInfo> front_lines = 3;
     map<UnitSide,float> side_powers = 4;
+    bool is_active = 5;
 }
 
 type FrontHexInfo {
