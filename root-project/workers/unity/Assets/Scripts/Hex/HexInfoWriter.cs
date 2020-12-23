@@ -18,6 +18,7 @@ namespace AdvancedGears
         {
             hexBase.OnSideChangedEvent += SideChangedEvent;
             power.OnHexPowerFlowEvent += HexPowerFlowEvent;
+            power.OnHexActiveChangeEvent += HexActiveChangeEvent;
         }
 
         void SideChangedEvent(SideChangedEvent sideChanged)
@@ -68,6 +69,14 @@ namespace AdvancedGears
             power.SendUpdate(new HexPower.Update()
             {
                 SidePowers = powers,
+            });
+        }
+
+        void HexActiveChangeEvent(HexActiveChange change)
+        {
+            power.SendUpdate(new HexPower.Update()
+            {
+                IsActive = change.IsActive,
             });
         }
     }
