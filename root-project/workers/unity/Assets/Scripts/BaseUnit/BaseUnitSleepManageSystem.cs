@@ -44,10 +44,10 @@ namespace AdvancedGears
 
         void GatherPortalData()
         {
-            if (CheckTime(ref hexPowerGroup.inter) == false)
+            if (CheckTime(ref portalQuerySet.inter) == false)
                 return;
 
-            Entities.With(hexPowerGroup.group).ForEach((Unity.Entities.Entity entity,
+            Entities.With(portalQuerySet.group).ForEach((Unity.Entities.Entity entity,
                                           ref StrategyHexAccessPortal.Component portal) =>
             {
                 hexIndexes = portal.HexIndexes;
@@ -61,7 +61,7 @@ namespace AdvancedGears
 
             Entities.With(unitQuerySet.group).ForEach((Entity entity,
                                           ref BaseUnitStatus.Component status,
-                                          ref BaseUnitTarget.Component position) =>
+                                          ref Position.Component position) =>
             {
                 bool isActive = false;
                 var pos = position.Coords.ToUnityVector() + this.Origin;
@@ -75,15 +75,14 @@ namespace AdvancedGears
 
                 if (isActive) {
                     if (status.State == UnitState.Sleep)
-                        status.State = UnitState.Active;
+                        status.State = UnitState.Alive;
                 }
                 else
                 {
-                    if (status.State == UnitState.Active)
+                    if (status.State == UnitState.Alive)
                         status.State = UnitState.Sleep;
                 }
             });
         }
     }
 }
- 

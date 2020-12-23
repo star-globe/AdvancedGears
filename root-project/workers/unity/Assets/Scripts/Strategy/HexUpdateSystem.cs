@@ -125,7 +125,7 @@ namespace AdvancedGears
                     if (borderHexListDic.TryGetValue(info.Side, out var borderList) && borderList.TryGetValue(index, out var detail))
                         frontLines = detail.frontLines;
                     hex.FrontLines = frontLines;
-                    hex.IsActive = info.IsActive;
+                    hex.IsActive = info.isActive;
 
                     hexes[index] = hex;
                 }
