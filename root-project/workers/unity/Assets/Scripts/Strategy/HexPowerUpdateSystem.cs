@@ -16,8 +16,8 @@ namespace AdvancedGears
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     public class HexPowerUpdateSystem : HexUpdateBaseSystem
     {
-        EntityQuery hexpowerGroup;
-        IntervalChecker interAccess;
+        EntityQuerySet hexpowerQuerySet;
+        EntityQuerySet resourceQuerySet;
         const int frequencyPower = 5;
 
         double deltaTime = -1.0;
@@ -28,14 +28,14 @@ namespace AdvancedGears
         {
             base.OnCreate();
 
-            hexpowerGroup = GetEntityQuery(
-                ComponentType.ReadWrite<HexPower.Component>(),
-                ComponentType.ReadOnly<HexPower.HasAuthority>(),
-                ComponentType.ReadOnly<HexBase.Component>(),
-                ComponentType.ReadOnly<SpatialEntityId>()
-            );
+            hexpowerQuerySet = new hexpowerQuerySet(GetEntityQuery(
+                                                    ComponentType.ReadWrite<HexPower.Component>(),
+                                                    ComponentType.ReadOnly<HexPower.HasAuthority>(),
+                                                    ComponentType.ReadOnly<HexBase.Component>(),
+                                                    ComponentType.ReadOnly<SpatialEntityId>()
+                                                    ), frequencyPower);
 
-            interAccess = IntervalCheckerInitializer.InitializedChecker(1.0f / frequencyPower);
+            
 
             deltaTime = Time.ElapsedTime;
         }
@@ -52,15 +52,15 @@ namespace AdvancedGears
 
         private void UpdateHexPower()
         {
-            if (CheckTime(ref interAccess) == false)
+            if (CheckTime(ref hexpowerQuerySet.inter) == false)
                 return;
 
             deltaTime = Time.ElapsedTime - deltaTime;
 
-            Entities.With(hexpowerGroup).ForEach((Entity entity,
-                                      ref HexPower.Component power,
-                                      ref HexBase.Component hex,
-                                      ref SpatialEntityId entityId) =>
+            Entities.With(hexpowerQuerySet.group).ForEach((Entity entity,
+                                                           ref HexPower.Component power,
+                                                           ref HexBase.Component hex,
+                                                           ref SpatialEntityId entityId) =>
             {
                 if (hex.Side == UnitSide.None)
                     return;
