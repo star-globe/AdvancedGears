@@ -8,7 +8,6 @@ using Improbable.Gdk.Subscriptions;
 using Improbable.Gdk.TransformSynchronization;
 using Unity.Collections;
 using Unity.Entities;
-using Improbable.Restricted;
 
 namespace AdvancedGears
 {
@@ -24,7 +23,7 @@ namespace AdvancedGears
             base.OnCreate();
 
             playerQuerySet = new EntityQuerySet(GetEntityQuery(
-                                                ComponentType.ReadOnly<PlayerClient.Component>(),
+                                                ComponentType.ReadOnly<PlayerInfo.Component>(),
                                                 ComponentType.ReadOnly<Position.Component>(),
                                                 ComponentType.ReadOnly<SpatialEntityId>())
                                                 , frequency);
@@ -44,7 +43,7 @@ namespace AdvancedGears
 
             HashSet<uint> activeIndexes = new HashSet<uint>();
             Entities.With(playerQuerySet.group).ForEach((Entity entity,
-                                      ref PlayerClient.Component player,
+                                      ref PlayerInfo.Component player,
                                       ref Position.Component position,
                                       ref SpatialEntityId entityId) =>
             {
