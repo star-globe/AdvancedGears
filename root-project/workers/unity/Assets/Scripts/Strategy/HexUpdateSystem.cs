@@ -46,13 +46,14 @@ namespace AdvancedGears
         {
             UpdateHexFacility();
 
-            base.OnUpdate();
-
             UpdateHexAccess();
         }
 
         private void UpdateHexFacility()
         {
+            if (base.HexDic == null)
+                return;
+
             int changedCount = 0;
             Entities.With(facilityGroup).ForEach((Entity entity,
                                       ref HexFacility.Component facility,
@@ -62,10 +63,10 @@ namespace AdvancedGears
                 var hexIndex = facility.HexIndex;
                 var side = status.Side;
 
-                if (hexDic.ContainsKey(hexIndex) == false)
+                if (HexDic.ContainsKey(hexIndex) == false)
                     return;
 
-                var hex = hexDic[hexIndex];
+                var hex = HexDic[hexIndex];
                 if (hex.Side == status.Side)
                     return;
 
@@ -112,7 +113,7 @@ namespace AdvancedGears
                     fronts[side] = info;
                 }
 
-                foreach (var kvp in this.hexDic) {
+                foreach (var kvp in this.HexDic) {
                     var index = kvp.Key;
                     if (hexes.ContainsKey(index) == false)
                         hexes[index] = new HexIndex();
@@ -124,8 +125,11 @@ namespace AdvancedGears
                     List<FrontLineInfo> frontLines = null;
                     if (borderHexListDic.TryGetValue(info.Side, out var borderList) && borderList.TryGetValue(index, out var detail))
                         frontLines = detail.frontLines;
+                    else
+                        frontLines = new List<FrontLineInfo>();
                     hex.FrontLines = frontLines;
                     hex.IsActive = info.isActive;
+                    hex.SidePowers = info.Powers;
 
                     hexes[index] = hex;
                 }

@@ -58,6 +58,8 @@ namespace AdvancedGears
             {
                 SetSpawnPointsClear();
             }
+
+            Debug.LogFormat("EntitySnapshotCount:{0}", shots.Count);
         }
 
         private void SetSpawnPoints(Dictionary<EntityId, List<EntitySnapshot>> snapShots)

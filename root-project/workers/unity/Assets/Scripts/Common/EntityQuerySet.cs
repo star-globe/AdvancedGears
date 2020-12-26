@@ -31,7 +31,7 @@ namespace AdvancedGears
         {
             double delta = 0;
             if (this.deltaTime != double.MinValue)
-                delta = this.deltaTime - current;
+                delta = current - this.deltaTime;
 
             this.deltaTime = current;
             return delta;

@@ -88,7 +88,9 @@ namespace AdvancedGears
             world.GetOrCreateSystem<BulletMovementSystem>();
             world.GetOrCreateSystem<BaseUnitReviveTimerSystem>();
             world.GetOrCreateSystem<FieldQueryServerSystem>();
+            world.GetOrCreateSystem<HexBaseSystem>();
             world.GetOrCreateSystem<HexUpdateSystem>();
+            world.GetOrCreateSystem<HexPowerUpdateSystem>();
         }
 
         public static void AddStrategyLogicSystems(World world, EntityRepresentationMapping entityRepresentationMapping)

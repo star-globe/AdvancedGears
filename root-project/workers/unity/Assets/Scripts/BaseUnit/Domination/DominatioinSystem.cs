@@ -95,11 +95,14 @@ namespace AdvancedGears
                             continue;
 
                         var hex = kvp.Value;
-                        foreach (var p in hex.SidePowers) {
-                            if (sumsDic.ContainsKey(p.Key))
-                                sumsDic[p.Key] += p.Value;
-                            else
-                                sumsDic[p.Key] = p.Value;
+                        if (hex.SidePowers != null) {
+                            foreach (var p in hex.SidePowers)
+                            {
+                                if (sumsDic.ContainsKey(p.Key))
+                                    sumsDic[p.Key] += p.Value;
+                                else
+                                    sumsDic[p.Key] = p.Value;
+                            }
                         }
 
                         break;

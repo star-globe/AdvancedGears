@@ -75,7 +75,7 @@ namespace AdvancedGears
                 index = index,
                 attribute = attribute,
                 hexId = masterId,
-                pos = pos,
+                pos = new Vector3(pos.x * horizontalRate, pos.y * virticalRate, pos.z * horizontalRate),
                 side = side,
             };
         }

@@ -14,85 +14,34 @@ namespace AdvancedGears
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(SpatialOSUpdateGroup))]
-    public class HexUpdateBaseSystem : SpatialComponentSystem
+    public abstract class HexUpdateBaseSystem : SpatialComponentSystem
     {
-        protected class HexInfo
-        {
-            public uint Index;
-            public int HexId;
-            public UnitSide Side;
-            public SpatialEntityId EntityId;
-            public Dictionary<UnitSide,float> Powers;
-            public bool isActive;
-
-            public float CurrentPower
-            {
-                get
-                {
-                    Powers.TryGetValue(Side, out var current);
-                    return current;
-                }
-            }
-        }
-
         EntityQuery hexGroup;
         IntervalChecker interHex;
         const int updateInter = 5;
 
-        readonly protected Dictionary<uint, HexInfo> hexDic = new Dictionary<uint, HexInfo>();
-
+        HexBaseSystem hexBaseSystem = null;
+        protected Dictionary<uint, HexLocalInfo> HexDic
+        {
+            get { return hexBaseSystem == null ? null: hexBaseSystem.HexDic; }
+        }
         protected float hexEdge => HexDictionary.HexEdgeLength;
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            hexGroup = GetEntityQuery(
-                ComponentType.ReadOnly<HexBase.Component>(),
-                ComponentType.ReadOnly<HexPower.Component>(),
-                ComponentType.ReadOnly<Position.Component>(),
-                ComponentType.ReadOnly<SpatialEntityId>()
-            );
-
-            interHex = IntervalCheckerInitializer.InitializedChecker(updateInter);
-        }
-
-        protected override void OnUpdate()
-        {
-            UpdateHexInfo();
-        }
-
-        private void UpdateHexInfo()
-        {
-            if (CheckTime(ref interHex) == false && hexDic.Count > 0)
-                return;
-
-            Entities.With(hexGroup).ForEach((Entity entity,
-                                      ref HexBase.Component hex,
-                                      ref HexPower.Component power,
-                                      ref Position.Component position,
-                                      ref SpatialEntityId entityId) =>
-            {
-                if (hex.Attribute.IsTargetable() == false)
-                    return;
-
-                if (hexDic.ContainsKey(hex.Index) == false)
-                    hexDic[hex.Index] = new HexInfo();
-
-                hexDic[hex.Index].Index = hex.Index;
-                hexDic[hex.Index].HexId = hex.HexId;
-                hexDic[hex.Index].Side = hex.Side;
-                hexDic[hex.Index].EntityId = entityId;
-                hexDic[hex.Index].Powers = power.SidePowers;
-                hexDic[hex.Index].isActive = power.IsActive;
-            });
+            hexBaseSystem = this.World.GetExistingSystem<HexBaseSystem>();
         }
 
         protected Dictionary<uint, HexDetails> BorderHexList(UnitSide side)
         {
+            if (this.HexDic == null)
+                return null;
+
             Dictionary<uint, HexDetails> indexes = null;
 
-            foreach (var kvp in this.hexDic)
+            foreach (var kvp in this.HexDic)
             {
                 if (kvp.Value.Side != side)
                     continue;
@@ -140,9 +89,12 @@ namespace AdvancedGears
 
         uint? CheckTouch(UnitSide side, Vector3 tgtLeft, Vector3 tgtRight, Vector3[] checkCorners, uint[] ids)
         {
+            if (this.HexDic == null)
+                return null;
+
             foreach (var id in ids)
             {
-                if (this.hexDic.TryGetValue(id, out var hex) == false ||
+                if (this.HexDic.TryGetValue(id, out var hex) == false ||
                     hex.Side == side)
                     continue;
 
@@ -188,6 +140,80 @@ namespace AdvancedGears
                     indexes.Add(id);//Add(new HexIndex(this.hexDic[id].EntityId.EntityId, id, dic[id].frontLines, dic[id].staminas));
                 }
             }
+        }
+    }
+
+    public class HexLocalInfo
+    {
+        public uint Index;
+        public int HexId;
+        public UnitSide Side;
+        public SpatialEntityId EntityId;
+        public Dictionary<UnitSide, float> Powers;
+        public bool isActive;
+
+        public float CurrentPower
+        {
+            get
+            {
+                Powers.TryGetValue(Side, out var current);
+                return current;
+            }
+        }
+    }
+
+    [DisableAutoCreation]
+    [UpdateInGroup(typeof(SpatialOSUpdateGroup))]
+    public class HexBaseSystem : SpatialComponentSystem
+    {
+        EntityQuerySet hexEntityQuerySet;
+        const int updateInter = 5;
+
+        readonly private Dictionary<uint, HexLocalInfo> hexDic = new Dictionary<uint, HexLocalInfo>();
+        public Dictionary<uint, HexLocalInfo> HexDic => this.hexDic; 
+        protected float hexEdge => HexDictionary.HexEdgeLength;
+
+        protected override void OnCreate()
+        {
+            base.OnCreate();
+
+            hexEntityQuerySet = new EntityQuerySet(GetEntityQuery(
+                                                   ComponentType.ReadOnly<HexBase.Component>(),
+                                                   ComponentType.ReadOnly<HexPower.Component>(),
+                                                   ComponentType.ReadOnly<Position.Component>(),
+                                                   ComponentType.ReadOnly<SpatialEntityId>()
+                                                   ), updateInter);
+        }
+
+        protected override void OnUpdate()
+        {
+            UpdateHexInfo();
+        }
+
+        private void UpdateHexInfo()
+        {
+            if (CheckTime(ref hexEntityQuerySet.inter) == false && hexDic.Count > 0)
+                return;
+
+            Entities.With(hexEntityQuerySet.group).ForEach((Entity entity,
+                                                            ref HexBase.Component hex,
+                                                            ref HexPower.Component power,
+                                                            ref Position.Component position,
+                                                            ref SpatialEntityId entityId) =>
+            {
+                if (hex.Attribute.IsTargetable() == false)
+                    return;
+
+                if (hexDic.ContainsKey(hex.Index) == false)
+                    hexDic[hex.Index] = new HexLocalInfo();
+
+                hexDic[hex.Index].Index = hex.Index;
+                hexDic[hex.Index].HexId = hex.HexId;
+                hexDic[hex.Index].Side = hex.Side;
+                hexDic[hex.Index].EntityId = entityId;
+                hexDic[hex.Index].Powers = power.SidePowers;
+                hexDic[hex.Index].isActive = power.IsActive;
+            });
         }
     }
 }

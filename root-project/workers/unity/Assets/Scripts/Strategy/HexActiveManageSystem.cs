@@ -31,13 +31,14 @@ namespace AdvancedGears
 
         protected override void OnUpdate()
         {
-            base.OnUpdate();
-
-            PlayerCheck();
+             PlayerCheck();
         }
 
         private void PlayerCheck()
         {
+            if (base.HexDic == null)
+                return;
+
             if (CheckTime(ref playerQuerySet.inter) == false)
                 return;
 
@@ -48,13 +49,13 @@ namespace AdvancedGears
                                       ref SpatialEntityId entityId) =>
             {
                 var pos = position.Coords.ToUnityVector() + this.Origin;
-                foreach (var kvp in this.hexDic) {
+                foreach (var kvp in this.HexDic) {
                     if (HexUtils.IsInsideHex(this.Origin, kvp.Key, pos))
                         activeIndexes.Add(kvp.Key);
                 }
             });
 
-            foreach (var kvp in this.hexDic)
+            foreach (var kvp in this.HexDic)
             {
                 bool isActivate = activeIndexes.Contains(kvp.Key);
                 if (kvp.Value.isActive != isActivate)

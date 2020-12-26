@@ -402,6 +402,9 @@ namespace AdvancedGears
 
         public static float OtherSideSum(this HexIndex hex, UnitSide selfSide)
         {
+            if (hex.SidePowers == null)
+                return 0f;
+
             return hex.SidePowers.Sum(kvp => kvp.Key == selfSide ? 0: kvp.Value);
         }
     }

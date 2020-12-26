@@ -44,8 +44,6 @@ namespace AdvancedGears
 
         protected override void OnUpdate()
         {
-            base.OnUpdate();
-
             UpdateHexResource();
 
             UpdateHexPower();
@@ -55,6 +53,9 @@ namespace AdvancedGears
 
         private void UpdateHexPower()
         {
+            if (base.HexDic == null)
+                return;
+
             if (CheckTime(ref hexpowerQuerySet.inter) == false)
                 return;
 
@@ -82,10 +83,10 @@ namespace AdvancedGears
                 {
                     count++;
 
-                    if (base.hexDic.ContainsKey(id) == false)
+                    if (base.HexDic.ContainsKey(id) == false)
                         continue;
 
-                    var h = base.hexDic[id];
+                    var h = base.HexDic[id];
                     bool isFlow = false;
                     if (h.Side == hex.Side)
                     {
@@ -116,6 +117,9 @@ namespace AdvancedGears
 
         private void UpdateHexResource()
         {
+            if (base.HexDic == null)
+                return;
+
             if (CheckTime(ref resourceQuerySet.inter) == false)
                 return;
 
@@ -126,7 +130,7 @@ namespace AdvancedGears
                                                           ref Position.Component position) =>
             {
                 var pos = position.Coords.ToUnityVector() + this.Origin;
-                foreach (var kvp in this.hexDic)
+                foreach (var kvp in this.HexDic)
                 {
                     var index = kvp.Key;
                     if (HexUtils.IsInsideHex(this.Origin, index, pos, HexDictionary.HexEdgeLength) == false)
