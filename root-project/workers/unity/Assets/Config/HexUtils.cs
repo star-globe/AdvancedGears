@@ -126,7 +126,7 @@ namespace AdvancedGears
                         ids[1] = index + 6*n+1;
                         ids[2] = index + 1;
                         ids[3] = index == 1 ? 0: index - 6*(n-1);
-                        ids[4] = rest == 0 ? index + 6*n-1: index - (6*n+1);
+                        ids[4] = rest == 0 ? index + 6*n-1: index - (6*(n-1)+1);
                         ids[5] = rest == 0 ? index + 6*(2*n+1)-1: index - 1;
                         break;
 
@@ -134,20 +134,20 @@ namespace AdvancedGears
                         ids[1] = index + 6*n+1;
                         ids[2] = index + 6*n+2;
                         ids[3] = index + 1;
-                        ids[4] = index == 2 ? 0: index - (6*n+1);
-                        ids[5] = rest == 0 ? index - 1: index - (6*n+2);
+                        ids[4] = index == 2 ? 0: index - (6*(n-1)+1);
+                        ids[5] = rest == 0 ? index - 1: index - (6*(n-1)+2);
                         break;
 
-                case 2: ids[0] = rest == 0 ? index - 1: index - (6*n+3);
+                case 2: ids[0] = rest == 0 ? index - 1: index - (6*(n-1)+3);
                         ids[1] = rest == 0 ? index + 6*n+1: index - 1;
                         ids[2] = index + 6*n+2;
                         ids[3] = index + 6*n+3;
                         ids[4] = index + 1;
-                        ids[5] = index == 3 ? 0: index - (6*n+2);
+                        ids[5] = index == 3 ? 0: index - (6*(n-1)+2);
                         break;
 
-                case 3: ids[0] = index == 4 ? 0: index - (6*n+3);
-                        ids[1] = rest == 0 ? index - 1: index - (6*n-2);
+                case 3: ids[0] = index == 4 ? 0: index - (6*(n-1)+3);
+                        ids[1] = rest == 0 ? index - 1: index - (6*(n-1)+4);
                         ids[2] = rest == 0 ? index + 6*n+2: index - 1;
                         ids[3] = index + 6*n+3;
                         ids[4] = index + 6*n+4;
@@ -155,16 +155,16 @@ namespace AdvancedGears
                         break;
 
                 case 4: ids[0] = index + 1;
-                        ids[1] = index == 5 ? 0: index - (6*n-2);
-                        ids[2] = rest == 0 ? index - 1: index - (6*n-1);
+                        ids[1] = index == 5 ? 0: index - (6*(n-1)+4);
+                        ids[2] = rest == 0 ? index - 1: index - (6*(n-1)+5);
                         ids[3] = rest == 0 ? index + (6*n+3): index - 1;
                         ids[4] = index + 6*n+4;
                         ids[5] = index + 6*n+5; 
                         break;
 
-                case 5: ids[0] = index + 6*n+6;
-                        ids[1] = index + 1;
-                        ids[2] = index == 6 ? 0: index - (6*n+5);
+                case 5: ids[0] = index + 6*(n+1);
+                        ids[1] = index % 6 == 0 ? index - (6*n-1): index + 1;
+                        ids[2] = index == 6 == 0 ? 0: (index % 6 == 0 ? index - (6*(2*n-1)-1): index - (6*(n-1)+5));
                         ids[3] = rest == 0 ? index - 1: index - 6*n;
                         ids[4] = rest == 0 ? index + 6*n+4: index - 1;
                         ids[5] = index + 6*n+5;
