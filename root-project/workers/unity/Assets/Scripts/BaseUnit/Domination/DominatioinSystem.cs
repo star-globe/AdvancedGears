@@ -95,16 +95,13 @@ namespace AdvancedGears
                             continue;
 
                         var hex = kvp.Value;
-                        if (hex.SidePowers != null) {
-                            foreach (var p in hex.SidePowers)
-                            {
-                                if (sumsDic.ContainsKey(p.Key))
-                                    sumsDic[p.Key] += p.Value;
-                                else
-                                    sumsDic[p.Key] = p.Value;
-                            }
+                        if (HexUtils.TryGetOneSidePower(hex, out var side, out var val))
+                        {
+                            if (sumsDic.ContainsKey(side))
+                                sumsDic[side] += val;
+                            else
+                                sumsDic[side] = val;
                         }
-
                         break;
                     }
                 }

@@ -7,6 +7,7 @@ namespace AdvancedGears
     {
         const float edgeLength = 500.0f;
         readonly static float route3 = Mathf.Sqrt(3.0f);
+        const float sumLimit = 1.0f / 10000;
 
         public static void SetHexCorners(in Vector3 center, Vector3[] corners, float edge = edgeLength)
         {
@@ -164,7 +165,7 @@ namespace AdvancedGears
 
                 case 5: ids[0] = index + 6*(n+1);
                         ids[1] = index % 6 == 0 ? index - (6*n-1): index + 1;
-                        ids[2] = index == 6 == 0 ? 0: (index % 6 == 0 ? index - (6*(2*n-1)-1): index - (6*(n-1)+5));
+                        ids[2] = index % 6 == 0 ? 0: (index % 6 == 0 ? index - (6*(2*n-1)-1): index - (6*(n-1)+5));
                         ids[3] = rest == 0 ? index - 1: index - 6*n;
                         ids[4] = rest == 0 ? index + 6*n+4: index - 1;
                         ids[5] = index + 6*n+5;
@@ -241,6 +242,33 @@ namespace AdvancedGears
                     side++;
                 }
             }
+        }
+
+        public static bool ExistOtherSidePowers(HexIndex hex, UnitSide self)
+        {
+            return hex.OtherSideSum(self) > sumLimit;
+        }
+
+        public static bool TryGetOneSidePower(HexIndex hex, out UnitSide side, out float val)
+        {
+            side = UnitSide.None;
+            val = 0;
+            if (hex.SidePowers == null)
+                return false;
+
+            var keys = hex.SidePowers.Keys;
+            foreach (var k in keys)
+            {
+                if (hex.OtherSideSum(k) > sumLimit
+                    || hex.SidePowers[k] <= sumLimit)
+                    continue;
+
+                side = k;
+                val = hex.SidePowers[k];
+                return true;
+            }
+
+            return false;
         }
     }
 }

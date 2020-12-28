@@ -111,14 +111,12 @@ namespace AdvancedGears
             return order;
         }
 
-        const float sumLimit = 1.0f / 10000;
         private OrderType GetTargetFrontLine(in Vector3 pos, UnitSide selfSide, List<HexIndex> indexes, List<FrontLineInfo> corners)
         {
             HexIndex? targetIndex = null;
             float length = float.MaxValue;
             foreach (var hex in indexes) {
-                var otherPower = hex.OtherSideSum(selfSide);
-                if (otherPower < sumLimit)
+                if (HexUtils.ExistOtherSidePowers(hex, selfSide) == false)
                     continue;
 
                 var h_pos = GetHexCenter(hex.Index);
@@ -144,8 +142,7 @@ namespace AdvancedGears
             HexIndex? targetIndex = null;
             float length = float.MaxValue;
             foreach (var hex in indexes) {
-                var otherPower = hex.OtherSideSum(selfSide);
-                if (otherPower < sumLimit)
+                if (HexUtils.ExistOtherSidePowers(hex, selfSide) == false)
                     continue;
 
                 var h_pos = GetHexCenter(hex.Index);
