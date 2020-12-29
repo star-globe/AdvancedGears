@@ -7,7 +7,7 @@ namespace AdvancedGears
     {
         const float edgeLength = 500.0f;
         readonly static float route3 = Mathf.Sqrt(3.0f);
-        const float sumLimit = 1.0f / 10000;
+        const float powerMinLimit = 1.0f / 1000;
 
         public static void SetHexCorners(in Vector3 center, Vector3[] corners, float edge = edgeLength)
         {
@@ -246,25 +246,30 @@ namespace AdvancedGears
 
         public static bool ExistOtherSidePowers(HexIndex hex, UnitSide self)
         {
-            return hex.OtherSideSum(self) > sumLimit;
+            if (hex.SidePowers == null)
+                return false;
+
+            foreach (var kvp in hex.SidePowers)
+            {
+                if (kvp.Key != self && kvp.Value > powerMinLimit)
+                    return true;
+            }
+
+            return false;
         }
 
         public static bool TryGetOneSidePower(HexIndex hex, out UnitSide side, out float val)
         {
             side = UnitSide.None;
             val = 0;
+
             if (hex.SidePowers == null)
                 return false;
 
-            var keys = hex.SidePowers.Keys;
-            foreach (var k in keys)
-            {
-                if (hex.OtherSideSum(k) > sumLimit
-                    || hex.SidePowers[k] <= sumLimit)
-                    continue;
-
-                side = k;
-                val = hex.SidePowers[k];
+            var keys = hex.SidePowers.Where(kvp => kvp.Value > powerMinLimit).Select(kvp => kvp.Key).ToArray();
+            if (keys.Length == 1) {
+                side = keys[0];
+                val = hex.SidePowers[side];
                 return true;
             }
 
