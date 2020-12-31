@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace AdvancedGears
@@ -165,7 +166,7 @@ namespace AdvancedGears
 
                 case 5: ids[0] = index + 6*(n+1);
                         ids[1] = index % 6 == 0 ? index - (6*n-1): index + 1;
-                        ids[2] = index % 6 == 0 ? 0: (index % 6 == 0 ? index - (6*(2*n-1)-1): index - (6*(n-1)+5));
+                        ids[2] = index == 6 ? 0: (index % 6 == 0 ? index - (6*(2*n-1)-1): index - (6*(n-1)+5));
                         ids[3] = rest == 0 ? index - 1: index - 6*n;
                         ids[4] = rest == 0 ? index + 6*n+4: index - 1;
                         ids[5] = index + 6*n+5;

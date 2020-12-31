@@ -41,6 +41,7 @@ namespace AdvancedGears
         }
 
         readonly Dictionary<uint, float> resourceDictionary = new Dictionary<uint, float>();
+        readonly Dictionary<EntityId, Dictionary<UnitSide,float>> flowDictionary = new Dictionary<EntityId, Dictionary<UnitSide,float>>();
 
         protected override void OnUpdate()
         {
@@ -49,7 +50,7 @@ namespace AdvancedGears
             UpdateHexPower();
         }
 
-        const float flowValue = 1.0f;
+        const float flowValueRate = 0.05f;
 
         private void UpdateHexPower()
         {
@@ -61,36 +62,38 @@ namespace AdvancedGears
 
             var deltaTime = hexpowerQuerySet.GetDelta(Time.ElapsedTime);
 
+            foreach (var kvp in flowDictionary)
+                kvp.Value.Clear();
+
             Entities.With(hexpowerQuerySet.group).ForEach((Entity entity,
                                                            ref HexPower.Component power,
                                                            ref HexBase.Component hex,
                                                            ref SpatialEntityId entityId) =>
             {
-                if (hex.Side == UnitSide.None)
+                var hexSide = hex.Side;
+                if (hexSide == UnitSide.None)
                     return;
 
-                power.SidePowers.TryGetValue(hex.Side, out var current);
+                power.SidePowers.TryGetValue(hexSide, out var current);
 
-                resourceDictionary.TryGetValue(hex.Index, out var resourceValue);
+                if (current <= 0) {
+                    power.SidePowers[hexSide] = 0;
+                    current = 0;
+                }
 
-                power.SidePowers[hex.Side] = current + (float)(resourceValue * deltaTime);
+                if (resourceDictionary.TryGetValue(hex.Index, out var resourceValue))
+                    power.SidePowers[hexSide] = current + (float)(resourceValue * deltaTime);
 
-                var flow = (float)(flowValue * deltaTime);
-
-                int count = -1;
-                var ids = HexUtils.GetNeighborHexIndexes(hex.Index);
-                foreach (var id in ids)
+                var ids = HexUtils.GetNeighborHexIndexes(hex.Index).Where(id =>
                 {
-                    count++;
-
                     if (base.HexDic.ContainsKey(id) == false)
-                        continue;
+                        return false;
 
                     var h = base.HexDic[id];
                     bool isFlow = false;
-                    if (h.Side == hex.Side)
+                    if (h.Side == hexSide)
                     {
-                        if (current > h.CurrentPower && current >= flow)
+                        if (current > h.CurrentPower + current * flowValueRate)
                         {
                             isFlow = true;
                         }
@@ -100,19 +103,49 @@ namespace AdvancedGears
                         isFlow = true;
                     }
 
-                    if (isFlow)
+                    return isFlow;
+                });
+
+                var totalFlow = (float) (flowValueRate * deltaTime * current);
+                var count = ids.Count();
+                var flow = totalFlow / count;
+
+                foreach (var id in ids)
+                {
+                    float val = flow;
+                    if(power.SidePowers[hexSide] > flow)
+                       power.SidePowers[hexSide] -= flow;
+                    else {
+                        val = power.SidePowers[hexSide];
+                        power.SidePowers[hexSide] = 0;
+                    }
+
+                    var h = base.HexDic[id];
+                    var key = h.EntityId.EntityId;
+                    if (flowDictionary.ContainsKey(key))
                     {
-                        float val = flow;
-                        if (current > flow)
-                            power.SidePowers[hex.Side] -= flow;
-                        else {
-                            val = power.SidePowers[hex.Side];
-                            power.SidePowers[hex.Side] = 0;
-                        }
-                        this.UpdateSystem.SendEvent(new HexPower.HexPowerFlow.Event(new HexPowerFlow() { Side = hex.Side, Flow = val }), h.EntityId.EntityId);
+                        var powerDic = flowDictionary[key];
+                        if (powerDic.ContainsKey(hexSide))
+                            powerDic[hexSide] += val;
+                        else
+                            powerDic[hexSide] = val;
+                    }
+                    else
+                    {
+                        flowDictionary[key] = new Dictionary<UnitSide, float>();
+                        flowDictionary[key].Add(hexSide, val);
                     }
                 }
             });
+
+            foreach (var kvp in flowDictionary)
+            {
+                var power = kvp.Value;
+                foreach (var pair in power.Where(p => p.Value > 0))
+                {
+                    this.UpdateSystem.SendEvent(new HexPower.HexPowerFlow.Event(new HexPowerFlow() { Side = pair.Key, Flow = pair.Value }), kvp.Key);
+                }
+            }
         }
 
         private void UpdateHexResource()

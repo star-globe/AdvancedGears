@@ -29,7 +29,7 @@ namespace AdvancedGears
             });
         }
 
-        const float attackRate = 0.55f;
+        const float attackRate = 0.2f;
 
         void HexPowerFlowEvent(HexPowerFlow powerFlow)
         {
@@ -65,6 +65,12 @@ namespace AdvancedGears
                 powers[powerFlow.Side] = add;
             else
                 powers[powerFlow.Side] += add;
+
+            foreach (var k in keys)
+            {
+                if (powers[k] < 0)
+                    powers[k] = 0;
+            }
 
             power.SendUpdate(new HexPower.Update()
             {

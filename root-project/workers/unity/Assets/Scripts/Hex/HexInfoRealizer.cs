@@ -23,6 +23,7 @@ namespace AdvancedGears
 
         Vector3 origin;
         UnitSide currentSide;
+        IntervalCounter inter;
 
         private void OnEnable()
         {
@@ -30,13 +31,23 @@ namespace AdvancedGears
             powerReader.OnSidePowersUpdate += UpdatePower;
         }
 
+        private void Awake()
+        {
+            inter = new IntervalCounter(5);
+        }
+
         void Start()
         {
-            if (reader == null)
-                return;
-
             currentSide = reader.Data.Side;
             SetLandLine(this.Origin, reader.Data.Side, powerReader.Data.SidePowers);
+        }
+
+        private void Update()
+        {
+            if (inter.Check() == false)
+                return;
+
+            UpdatePower(powerReader.Data.SidePowers);
         }
 
         void UpdateSide(UnitSide side)
