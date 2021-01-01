@@ -74,8 +74,9 @@ type FrontHexInfo {
 component StrategyHexAccessPortal {
     id = 220011;
 
-    map<UnitSide,FrontHexInfo> front_hexes = 1;
-    map<uint32,HexIndex> hex_indexes = 2;
+    uint32 index = 1;
+    map<UnitSide,FrontHexInfo> front_hexes = 2;
+    map<uint32,HexIndex> hex_indexes = 3;
 }
 
 // hex power

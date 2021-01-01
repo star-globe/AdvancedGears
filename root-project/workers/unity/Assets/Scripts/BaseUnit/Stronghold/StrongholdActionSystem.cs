@@ -291,6 +291,9 @@ namespace AdvancedGears
                     continue;
 
                 var key = targetStrongholds.Keys.ElementAt(UnityEngine.Random.Range(0,count));
+
+                DebugUtils.RandomlyLog(string.Format("SelectStronghold Key:{0}, Count:{1}", kvp.Key, count));
+
                 SetCommand(kvp.Key, targetStrongholds[key], order);
             }
         }
@@ -301,7 +304,7 @@ namespace AdvancedGears
             if (count == 0)
                 return;
 
-            DebugUtils.RandomlyLog(string.Format("Side:{0} LinesCount:{1}", side, lines.Count));
+            //DebugUtils.RandomlyLog(string.Format("Side:{0} LinesCount:{1}", side, lines.Count));
 
             foreach(var kvp in datas) {
                 var frontLine = kvp.Value.TargetInfoSet.FrontLine.FrontLine;
@@ -314,6 +317,8 @@ namespace AdvancedGears
                 {
                     FrontLine = lines[index],
                 };
+
+                DebugUtils.RandomlyLog(string.Format("SelectLine Index:{0}, Key:{1}, Count:{2}", index, kvp.Key, count));
 
                 SetCommand(kvp.Key, line, order);
             }
@@ -333,7 +338,7 @@ namespace AdvancedGears
                 var index = UnityEngine.Random.Range(0, count);
                 var key = targets.Keys.ElementAt(index);
 
-                Debug.LogFormat("SelectHEx Index:{0}, Key:{1}, Count:{2}", index, key, count);
+                DebugUtils.RandomlyLog(string.Format("SelectHex Index:{0}, Key:{1}, Count:{2}", index, key, count));
 
                 SetCommand(kvp.Key, targets[key], order);
             }

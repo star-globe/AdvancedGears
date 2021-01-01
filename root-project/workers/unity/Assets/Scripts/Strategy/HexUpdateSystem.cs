@@ -30,6 +30,7 @@ namespace AdvancedGears
             portalGroup = GetEntityQuery(
                 ComponentType.ReadWrite<StrategyHexAccessPortal.Component>(),
                 ComponentType.ReadOnly<StrategyHexAccessPortal.HasAuthority>(),
+                ComponentType.ReadOnly<HexFacility.Component>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
 
@@ -88,15 +89,16 @@ namespace AdvancedGears
                 return;
 
             Entities.With(portalGroup).ForEach((Entity entity,
-                                      ref StrategyHexAccessPortal.Component strategy,
+                                      ref StrategyHexAccessPortal.Component portal,
                                       ref BaseUnitStatus.Component status,
+                                      ref HexFacility.Component facility,
                                       ref SpatialEntityId entityId) =>
             {
                 if (status.Side == UnitSide.None)
                     return;
 
-                var fronts = strategy.FrontHexes;
-                var hexes = strategy.HexIndexes;
+                var fronts = portal.FrontHexes;
+                var hexes = portal.HexIndexes;
 
                 borderHexListDic.Clear();
 
@@ -123,7 +125,9 @@ namespace AdvancedGears
                     hex.Index = info.Index;
                     hex.EntityId = info.EntityId.EntityId;
                     List<FrontLineInfo> frontLines = null;
-                    if (borderHexListDic.TryGetValue(info.Side, out var borderList) && borderList.TryGetValue(index, out var detail))
+                    if (borderHexListDic.TryGetValue(info.Side, out var borderList) &&
+                        borderList != null && 
+                        borderList.TryGetValue(index, out var detail))
                         frontLines = detail.frontLines;
                     else
                         frontLines = new List<FrontLineInfo>();
@@ -134,8 +138,9 @@ namespace AdvancedGears
                     hexes[index] = hex;
                 }
 
-                strategy.FrontHexes = fronts;
-                strategy.HexIndexes = hexes;
+                portal.Index = facility.HexIndex;
+                portal.FrontHexes = fronts;
+                portal.HexIndexes = hexes;
             });
         }
     }
