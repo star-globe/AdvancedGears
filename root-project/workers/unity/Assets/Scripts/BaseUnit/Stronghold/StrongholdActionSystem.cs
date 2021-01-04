@@ -304,8 +304,6 @@ namespace AdvancedGears
             if (count == 0)
                 return;
 
-            //DebugUtils.RandomlyLog(string.Format("Side:{0} LinesCount:{1}", side, lines.Count));
-
             foreach(var kvp in datas) {
                 var frontLine = kvp.Value.TargetInfoSet.FrontLine.FrontLine;
                 if (frontLine.IsValid() && lines.Contains(frontLine))
@@ -318,7 +316,7 @@ namespace AdvancedGears
                     FrontLine = lines[index],
                 };
 
-                DebugUtils.RandomlyLog(string.Format("SelectLine Index:{0}, Key:{1}, Count:{2}", index, kvp.Key, count));
+                Debug.LogFormat("SelectLine Index:{0}, Key:{1}, Count:{2}", index, kvp.Key, count);
 
                 SetCommand(kvp.Key, line, order);
             }

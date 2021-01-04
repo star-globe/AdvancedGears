@@ -134,6 +134,7 @@ namespace AdvancedGears
                     hex.FrontLines = frontLines;
                     hex.IsActive = info.isActive;
                     hex.SidePowers = info.Powers;
+                    hex.Side = info.Side;
 
                     hexes[index] = hex;
                 }

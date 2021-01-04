@@ -62,9 +62,11 @@ component StrategyHexManager {
 type HexIndex {
     EntityId entity_id = 1;
     uint32 index = 2;
-    list<FrontLineInfo> front_lines = 3;
-    map<UnitSide,float> side_powers = 4;
+    UnitSide side = 3;
     bool is_active = 5;
+
+    list<FrontLineInfo> front_lines = 10;
+    map<UnitSide,float> side_powers = 11;
 }
 
 type FrontHexInfo {

@@ -112,31 +112,55 @@ namespace AdvancedGears
 #endif
 
             hexes.Clear();
-            order = GetTargetFrontLine(pos, index, selfSide, hexList, corners);
+            order = GetTargetFrontLine(pos, index, selfSide, hexIndexes, corners);
             return order;
         }
 
-        private OrderType GetTargetFrontLine(in Vector3 pos, uint index, UnitSide selfSide, List<HexIndex> indexes, List<FrontLineInfo> corners)
+        private OrderType GetTargetFrontLine(in Vector3 pos, uint index, UnitSide selfSide, Dictionary<uint, HexIndex> hexIndexes, List<FrontLineInfo> corners)
         {
-            HexIndex? targetIndex = null;
-            float length = float.MaxValue;
-            foreach (var hex in indexes) {
-                if (HexUtils.ExistOtherSidePowers(hex, selfSide) == false)
+            //HexIndex? targetIndex = null;
+            //float length = float.MaxValue;
+            //foreach (var hex in indexes) {
+            //    if (HexUtils.ExistOtherSidePowers(hex, selfSide) == false)
+            //        continue;
+            //
+            //    var h_pos = GetHexCenter(hex.Index);
+            //    var l = (pos - h_pos).sqrMagnitude;
+            //    if (l >= length)
+            //        continue;
+            //
+            //    length = l;
+            //    targetIndex = hex;
+            //}
+            //
+            //if (targetIndex.HasValue) {
+            //    corners.Clear();
+            //    corners.AddRange(targetIndex.Value.FrontLines);
+            //    return OrderType.Keep;
+            //}
+            //
+            //return OrderType.Idle;
+            corners.Clear();
+
+            int counter = 0;
+            var ids = HexUtils.GetNeighborHexIndexes(index);
+            foreach (var id in ids)
+            {
+                if (hexIndexes.ContainsKey(id) == false)
+                    continue;
+            
+                var hex = hexIndexes[id];
+                if (hex.Side == UnitSide.None || hex.Side == selfSide)
                     continue;
 
-                var h_pos = GetHexCenter(hex.Index);
-                var l = (pos - h_pos).sqrMagnitude;
-                if (l >= length)
-                    continue;
-
-                length = l;
-                targetIndex = hex;
+                counter++;
             }
-
-            if (targetIndex.HasValue) {
-                corners.Clear();
-                corners.AddRange(targetIndex.Value.FrontLines);
-                return OrderType.Keep;
+            if (counter > 0 && hexIndexes.ContainsKey(index)) {
+                var hex = hexIndexes[index];
+                if (hex.FrontLines.Count > 0) {
+                    corners.AddRange(hex.FrontLines);
+                    return OrderType.Keep;
+                }
             }
 
             return OrderType.Idle;
