@@ -150,7 +150,7 @@ type TargetStrongholdInfo {
     improbable.Coordinates position = 3;
 }
 
-enum TargetInfoType {
+enum TargetType {
     None = 0;
     Stronghold = 1;
     FrontLine = 2;
@@ -176,16 +176,17 @@ component BaseUnitTarget {
     command improbable.gdk.core.Empty set_hex(TargetHexInfo);
     command improbable.gdk.core.Empty set_stronghold(TargetStrongholdInfo);
 }
-
+// 削除予定
 type PostureData {
     PosturePoint point = 1;
     list<improbable.gdk.transform_synchronization.CompressedQuaternion> rotations = 2;
 }
-
+// 削除予定
 type PostureInfo {
     map<PosturePoint, PostureData> datas = 1;
 }
 
+// 削除予定
 component BaseUnitPosture {
     id = 20014;
 
@@ -505,4 +506,20 @@ component TurretComponent {
     id = 20051;
 
     int32 master_id = 1;
+}
+
+// turret:20060~
+component AttackTarget
+{
+    id = 20060;
+}
+
+component StrategyTarget
+{
+    id = 20061;
+
+    TargetType target_type = 1;
+    TargetStrongholdInfo stronghold = 2;
+    TargetFrontLineInfo front_line = 3;
+    TargetHexInfo hex_info = 4;
 }
