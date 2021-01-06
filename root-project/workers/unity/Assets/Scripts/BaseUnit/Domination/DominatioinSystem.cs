@@ -54,8 +54,7 @@ namespace AdvancedGears
                                           ref BaseUnitStatus.Component status,
                                           ref SpatialEntityId entityId) =>
             {
-                if (status.State != UnitState.Dead &&
-                    status.Side != UnitSide.None)
+                if (status.Side != UnitSide.None)
                     return;
 
                 if (status.Type != UnitType.Stronghold)

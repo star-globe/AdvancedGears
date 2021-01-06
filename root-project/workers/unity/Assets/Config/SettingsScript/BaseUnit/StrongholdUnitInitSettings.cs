@@ -9,7 +9,7 @@ namespace AdvancedGears
     public class StrongholdUnitInitSettings : ScriptableObject
     {
         [SerializeField] float sightRange = 100.0f;
-        [SerializeField] float dominationRange = 40.0f;
+        [SerializeField] float dominationRange = 20.0f;
         [SerializeField] int maxStamina = 100;
         [SerializeField] float inter = 3.0f;
 

@@ -45,9 +45,15 @@ namespace AdvancedGears
             if (health > 0)
                 return;
 
+            var status = statusWriter.Data;
+            var side = status.Side;
+            if (UnitUtils.IsBuilding(status.Type))
+                side = UnitSide.None;
+
             statusWriter.SendUpdate(new BaseUnitStatus.Update()
             {
                 State = UnitState.Dead,
+                Side = side,
             });
 
             timerSystem?.AddDeadUnit(SpatialComp.EntityId);
