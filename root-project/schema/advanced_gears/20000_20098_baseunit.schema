@@ -152,7 +152,7 @@ type TargetStrongholdInfo {
 
 enum TargetType {
     None = 0;
-    Stronghold = 1;
+    Unit = 1;
     FrontLine = 2;
     Hex = 3;
 }
@@ -167,9 +167,11 @@ component BaseUnitTarget {
     id = 20013;
 
     TargetState state = 1;
-    TargetInfo target_info = 2;
-    TargetFrontLineInfo front_line = 3;
-    TargetHexInfo hex_info = 4;
+    TargetType type = 2;
+
+    TargetInfo target_info = 10;
+    TargetFrontLineInfo front_line = 11;
+    TargetHexInfo hex_info = 12;
 
     command improbable.gdk.core.Empty set_target(TargetInfo);
     command improbable.gdk.core.Empty set_front_line(TargetFrontLineInfo);
@@ -506,20 +508,4 @@ component TurretComponent {
     id = 20051;
 
     int32 master_id = 1;
-}
-
-// turret:20060~
-component AttackTarget
-{
-    id = 20060;
-}
-
-component StrategyTarget
-{
-    id = 20061;
-
-    TargetType target_type = 1;
-    TargetStrongholdInfo stronghold = 2;
-    TargetFrontLineInfo front_line = 3;
-    TargetHexInfo hex_info = 4;
 }

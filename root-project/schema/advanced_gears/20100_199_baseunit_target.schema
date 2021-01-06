@@ -1,0 +1,12 @@
+package advanced_gears;
+import "improbable/gdk/core/common.schema";
+
+component AttackTarget
+{
+    id = 20100;
+}
+
+component MovementTarget
+{
+    id = 20101;
+}

@@ -136,6 +136,39 @@ namespace AdvancedGears
         private bool SetStrategyTarget(Vector3 pos, float sightRange, ref BaseUnitSight.Component sight, ref BaseUnitTarget.Component target)
         {
             bool isTarget = false;
+            switch (target.Type)
+            {
+                case TargetType.Unit:
+                    if (target.TargetInfo.IsTarget) {
+                        sight.TargetPosition = target.TargetInfo.Position;
+                        target.State = CalcTargetState(sight.TargetPosition.ToWorkerPosition(this.Origin) - pos, sightRange);
+                        isTarget = true;
+                    }
+                    else
+                        Debug.LogError("TargetInfo is InValid");
+                    break;
+
+                case TargetType.FrontLine:
+                    if (target.FrontLine.FrontLine.IsValid()) {
+                        sight.TargetPosition = target.FrontLine.FrontLine.GetOnLinePosition(this.Origin, pos, -sightRange / 2).ToWorldPosition(this.Origin);
+                        target.State = TargetState.MovementTarget;
+                        isTarget = true;
+                    }
+                    else
+                        Debug.LogError("FrontLineInfo is InValid");
+                    break;
+
+                case TargetType.Hex:
+                    if (target.HexInfo.IsValid()) {
+                        sight.TargetPosition = HexUtils.GetHexCenter(this.Origin, target.HexInfo.HexIndex, HexDictionary.HexEdgeLength).ToWorldPosition(this.Origin);
+                        target.State = TargetState.MovementTarget;
+                        isTarget = true;
+                    }
+                    else
+                        Debug.LogError("HexInfo is InValid");
+                    break;
+            }
+#if false
             if (target.TargetInfo.IsTarget) {
                 sight.TargetPosition = target.TargetInfo.Position;
                 target.State = CalcTargetState(sight.TargetPosition.ToWorkerPosition(this.Origin) - pos, sightRange);
@@ -154,7 +187,7 @@ namespace AdvancedGears
                 isTarget = true;
                 DebugUtils.RandomlyLog(string.Format("FrontLine Position:{0}", sight.TargetPosition.ToWorkerPosition(this.Origin)));
             }
-
+#endif
             return isTarget;
         }
     }

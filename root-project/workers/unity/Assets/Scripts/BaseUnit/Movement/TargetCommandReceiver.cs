@@ -28,6 +28,7 @@ namespace AdvancedGears
             targetWriter.SendUpdate(new BaseUnitTarget.Update()
             {
                 TargetInfo = request.Payload,
+                Type = TargetType.Unit,
             });
 
             //Debug.Log("OnSetTarget");
@@ -41,6 +42,7 @@ namespace AdvancedGears
             targetWriter.SendUpdate(new BaseUnitTarget.Update()
             {
                 FrontLine = request.Payload,
+                Type = TargetType.FrontLine,
             });
 
             //Debug.LogFormat("OnSetFrontLine: Left:{0} Right{1}", line.FrontLine.LeftCorner, line.FrontLine.RightCorner);
@@ -53,6 +55,7 @@ namespace AdvancedGears
             targetWriter.SendUpdate(new BaseUnitTarget.Update()
             {
                 HexInfo = request.Payload,
+                Type = TargetType.Hex,
             });
 
             //Debug.Log("OnSetHex");

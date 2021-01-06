@@ -20,6 +20,7 @@ namespace AdvancedGears
         public static TargetInfoSet DefaultTargteInfoSet()
         {
             var target = new TargetInfoSet();
+            target.Type = TargetType.None;
             target.HexInfo = DefaultTargetHexInfo();
             target.FrontLine = DefaultTargetFrontLineInfo();
             target.Stronghold = DefaultTargetStrongholdInfo();
