@@ -16,6 +16,8 @@ namespace AdvancedGears
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     public class BaseUnitSearchTargetSystem : BaseSearchSystem
     {
-            
+        protected override void OnUpdate()
+        {
+        }
     }
 }

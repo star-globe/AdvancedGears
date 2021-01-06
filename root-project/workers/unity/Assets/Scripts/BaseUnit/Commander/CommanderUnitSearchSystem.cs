@@ -227,13 +227,13 @@ namespace AdvancedGears
 
             var targetBit = team.IsNeedUpdate;
 
-            if (UnitUtils.IsNeedUpdate(targetBit, TargetInfoType.FrontLine) && line.FrontLine.IsValid())
+            if (UnitUtils.IsNeedUpdate(targetBit, TargetType.FrontLine) && line.FrontLine.IsValid())
                 SetOrderFollowers(followers, entityId.EntityId, line, current.Value);
 
-            if (UnitUtils.IsNeedUpdate(targetBit, TargetInfoType.Hex) && hex.IsValid())
+            if (UnitUtils.IsNeedUpdate(targetBit, TargetType.Hex) && hex.IsValid())
                 SetOrderFollowers(followers, entityId.EntityId, hex, current.Value);
 
-            if (UnitUtils.IsNeedUpdate(targetBit, TargetInfoType.Stronghold) && stronghold.IsValid())
+            if (UnitUtils.IsNeedUpdate(targetBit, TargetType.Unit) && stronghold.IsValid())
                 SetOrderFollowers(followers, entityId.EntityId, stronghold, current.Value);
 
             team.IsNeedUpdate = 0;

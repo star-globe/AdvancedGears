@@ -127,7 +127,7 @@ namespace AdvancedGears
             {
                 TargetInfoSet = target,
                 StrongholdEntityId = new EntityId(request.RequestId),
-                IsNeedUpdate = UnitUtils.UpdateTargetBit(bitNumber, TargetInfoType.Stronghold),
+                IsNeedUpdate = UnitUtils.UpdateTargetBit(bitNumber, TargetType.Unit),
             });
         }
 
@@ -141,7 +141,7 @@ namespace AdvancedGears
             {
                 TargetInfoSet = target,
                 StrongholdEntityId = new EntityId(request.RequestId),
-                IsNeedUpdate = UnitUtils.UpdateTargetBit(bitNumber, TargetInfoType.FrontLine),
+                IsNeedUpdate = UnitUtils.UpdateTargetBit(bitNumber, TargetType.FrontLine),
             });
         }
 
@@ -155,7 +155,7 @@ namespace AdvancedGears
             {
                 TargetInfoSet = target,
                 StrongholdEntityId = new EntityId(request.RequestId),
-                IsNeedUpdate = UnitUtils.UpdateTargetBit(bitNumber, TargetInfoType.Hex),
+                IsNeedUpdate = UnitUtils.UpdateTargetBit(bitNumber, TargetType.Hex),
             });
         }
     }

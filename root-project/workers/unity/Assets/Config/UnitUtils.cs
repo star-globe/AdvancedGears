@@ -28,12 +28,12 @@ namespace AdvancedGears
             return set != null && set.isOfficer;
         }
 
-        public static bool IsNeedUpdate(int bitNumber, TargetInfoType type)
+        public static bool IsNeedUpdate(int bitNumber, TargetType type)
         {
             return (bitNumber & 1 << (int)type) != 0;
         }
 
-        public static int UpdateTargetBit(int bitNumber, TargetInfoType type)
+        public static int UpdateTargetBit(int bitNumber, TargetType type)
         {
             return bitNumber + (1 << (int)type);
         }
