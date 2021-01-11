@@ -20,15 +20,15 @@ MonoBehaviour:
     rangeRate: 0.4
     speedRate: 0.8
   - order: 3
-    rangeRate: 2
+    rangeRate: 3
     speedRate: 0.8
   - order: 2
     rangeRate: 0.9
     speedRate: 0.8
-  judgeRate: 3
+  judgeRate: 5
   boidReduceRate: 0.5
   boidPotentialMinimum: 0.01
   boidRadiusMinimum: 0.1
-  underSoldiers: 5
+  underSoldiers: 3
   underCommanders: 3
   underTurrets: 3

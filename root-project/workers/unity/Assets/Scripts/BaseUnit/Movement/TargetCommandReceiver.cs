@@ -18,6 +18,7 @@ namespace AdvancedGears
             targetCommandReceiver.OnSetTargetRequestReceived += OnSetTargetRequest;
             targetCommandReceiver.OnSetFrontLineRequestReceived += OnSetFrontLineRequest;
             targetCommandReceiver.OnSetHexRequestReceived += OnSetHexRequest;
+            targetCommandReceiver.OnSetStrongholdRequestReceived += OnSetStrongholdRequest;
             sightReader.OnBoidDiffedEvent += OnBoidDiffed;
         }
 
@@ -28,10 +29,21 @@ namespace AdvancedGears
             targetWriter.SendUpdate(new BaseUnitTarget.Update()
             {
                 TargetInfo = request.Payload,
-                Type = TargetType.Unit,
+                Type = TargetType.FromCommander,
             });
 
             //Debug.Log("OnSetTarget");
+        }
+
+        private void OnSetStrongholdRequest(BaseUnitTarget.SetStronghold.ReceivedRequest request)
+        {
+            targetCommandReceiver.SendSetStrongholdResponse(new BaseUnitTarget.SetStronghold.Response(request.RequestId, new Empty()));
+
+            targetWriter.SendUpdate(new BaseUnitTarget.Update()
+            {
+                StrongholdInfo = request.Payload,
+                Type = TargetType.Stronghold,
+            });
         }
 
         private void OnSetFrontLineRequest(BaseUnitTarget.SetFrontLine.ReceivedRequest request)

@@ -233,13 +233,16 @@ namespace AdvancedGears
             if (UnitUtils.IsNeedUpdate(targetBit, TargetType.Hex) && hex.IsValid())
                 SetOrderFollowers(followers, entityId.EntityId, hex, current.Value);
 
-            if (UnitUtils.IsNeedUpdate(targetBit, TargetType.Unit) && stronghold.IsValid())
+            if (UnitUtils.IsNeedUpdate(targetBit, TargetType.Stronghold) && stronghold.IsValid())
                 SetOrderFollowers(followers, entityId.EntityId, stronghold, current.Value);
 
             team.IsNeedUpdate = 0;
 
-            if (targetInfo.Equals(currentTarget) == false || changed)
-                SetOrderFollowers(followers, entityId.EntityId, targetInfo, current.Value);
+            // ターゲットを直接指定する方式はやめる
+            //if (targetInfo.Equals(currentTarget) == false || changed)
+            //    SetOrderFollowers(followers, entityId.EntityId, targetInfo, current.Value);
+            if (changed)
+                SetOrderFollowers(followers, entityId.EntityId, current.Value);
 
             return tgt != null;
         }
@@ -283,6 +286,15 @@ namespace AdvancedGears
         #endregion
 
         #region SetMethod
+        private void SetOrderFollowers(List<EntityId> followers, in EntityId entityId, OrderType order)
+        {
+            foreach (var id in followers)
+            {
+                base.SetCommand(id, order);
+            }
+            base.SetCommand(entityId, order);
+        }
+
         private void SetOrderFollowers(List<EntityId> followers, in EntityId entityId, in TargetInfo targetInfo, OrderType order)
         {
             foreach (var id in followers)

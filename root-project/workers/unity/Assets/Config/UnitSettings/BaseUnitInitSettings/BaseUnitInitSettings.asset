@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 1.5
   rotSpeed: 25
-  sightRange: 60
+  sightRange: 50
   atkRange: 30
   atkAngle: 0.5
   maxHp: 10

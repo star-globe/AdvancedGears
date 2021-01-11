@@ -71,7 +71,7 @@ namespace AdvancedGears
                 var sightRange = action.SightRange;
 
                 if (SetStrategyTarget(pos, sightRange, ref sight, ref target))
-                    sightRange = Mathf.Max(0, sightRange - (sight.TargetPosition.ToWorkerPosition(this.Origin) - pos).magnitude/2);
+                    sightRange = Mathf.Max(0, sightRange - (sight.TargetPosition.ToWorkerPosition(this.Origin) - pos).magnitude);
 
                 enemy = getNearestEnemy(status.Side, pos, sightRange);
 
@@ -138,19 +138,30 @@ namespace AdvancedGears
             bool isTarget = false;
             switch (target.Type)
             {
-                case TargetType.Unit:
+                case TargetType.FromCommander:
                     if (target.TargetInfo.IsTarget) {
                         sight.TargetPosition = target.TargetInfo.Position;
                         target.State = CalcTargetState(sight.TargetPosition.ToWorkerPosition(this.Origin) - pos, sightRange);
                         isTarget = true;
                     }
+                    //else
+                    //    Debug.LogError("TargetInfo is InValid");
+                    break;
+
+                case TargetType.Stronghold:
+                    if (target.StrongholdInfo.IsValid())
+                    {
+                        sight.TargetPosition = target.StrongholdInfo.Position.ToFixedPointVector3();// FrontLine.GetOnLinePosition(this.Origin, pos, -sightRange / 2).ToWorldPosition(this.Origin);
+                        target.State = TargetState.MovementTarget;
+                        isTarget = true;
+                    }
                     else
-                        Debug.LogError("TargetInfo is InValid");
+                        Debug.LogError("FrontLineInfo is InValid");
                     break;
 
                 case TargetType.FrontLine:
                     if (target.FrontLine.FrontLine.IsValid()) {
-                        sight.TargetPosition = target.FrontLine.FrontLine.GetOnLinePosition(this.Origin, pos, -sightRange / 2).ToWorldPosition(this.Origin);
+                        sight.TargetPosition = target.FrontLine.FrontLine.GetOnLinePosition(this.Origin, pos, -sightRange).ToWorldPosition(this.Origin);
                         target.State = TargetState.MovementTarget;
                         isTarget = true;
                     }

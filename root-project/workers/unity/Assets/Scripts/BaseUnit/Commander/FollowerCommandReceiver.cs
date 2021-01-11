@@ -127,7 +127,7 @@ namespace AdvancedGears
             {
                 TargetInfoSet = target,
                 StrongholdEntityId = new EntityId(request.RequestId),
-                IsNeedUpdate = UnitUtils.UpdateTargetBit(bitNumber, TargetType.Unit),
+                IsNeedUpdate = UnitUtils.UpdateTargetBit(bitNumber, TargetType.Stronghold),
             });
         }
 

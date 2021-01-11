@@ -152,9 +152,10 @@ type TargetStrongholdInfo {
 
 enum TargetType {
     None = 0;
-    Unit = 1;
-    FrontLine = 2;
-    Hex = 3;
+    FromCommander = 1;
+    Stronghold = 2;
+    FrontLine = 3;
+    Hex = 4;
 }
 
 type TargetInfoSet {
@@ -170,8 +171,9 @@ component BaseUnitTarget {
     TargetType type = 2;
 
     TargetInfo target_info = 10;
-    TargetFrontLineInfo front_line = 11;
-    TargetHexInfo hex_info = 12;
+    TargetStrongholdInfo stronghold_info = 11;
+    TargetFrontLineInfo front_line = 12;
+    TargetHexInfo hex_info = 13;
 
     command improbable.gdk.core.Empty set_target(TargetInfo);
     command improbable.gdk.core.Empty set_front_line(TargetFrontLineInfo);

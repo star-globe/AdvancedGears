@@ -71,6 +71,13 @@ namespace AdvancedGears
                 var corners = sight.FrontLineCorners;
                 var hexes = sight.TargetHexes;
 
+                //if (targets.ContainsKey(entityId.EntityId) == false)
+                //{
+                //    targets.Add(entityId.EntityId,
+                //                new TargetStrongholdInfo()
+                //                { StrongholdId = entityId.EntityId, Position = trans.position.ToWorldPosition(this.Origin).ToCoordinates(),  });
+                //}
+
                 var order = GetTarget(trans.position, portal.Index, portal.FrontHexes, portal.HexIndexes, status.Side, enemySide, hexes, corners);
 
                 sight.TargetStrongholds = targets;

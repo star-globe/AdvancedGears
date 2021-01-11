@@ -90,10 +90,11 @@ namespace AdvancedGears
 
         public static float RankScaled(float range, uint rank)
         {
-            if (rank < 1)
-                return range;
-            else
-                return range * Mathf.Pow(UnderCommanders, rank * 0.5f);
+            //if (rank < 1)
+            //    return range;
+            //else
+            //    return range * Mathf.Pow(UnderCommanders, rank * 0.5f);
+            return range * Mathf.Pow(UnderCommanders, (rank+1) * 0.5f);
         }
     }
 }
