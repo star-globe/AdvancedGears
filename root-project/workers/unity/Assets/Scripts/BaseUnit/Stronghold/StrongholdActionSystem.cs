@@ -326,7 +326,7 @@ namespace AdvancedGears
 
                 var key = targetStrongholds.Keys.ElementAt(UnityEngine.Random.Range(0,count));
 
-                Debug.LogFormat("SelectStronghold Index:{0}, Key:{0}, Count:{1}", hexIndex, kvp.Key, count);
+                Debug.LogFormat("SelectStronghold Index:{0}, Key:{1}, Count:{2}, Target:{3}", hexIndex, kvp.Key, count, targetStrongholds[key].Position);
 
                 SetCommand(kvp.Key, targetStrongholds[key], order);
 
@@ -348,6 +348,9 @@ namespace AdvancedGears
                 if (sendIds.Contains(uid))
                     continue;
 
+                //if (kvp.Value.Rank > 0)
+                //    continue;
+
                 var frontLine = kvp.Value.TargetInfoSet.FrontLine.FrontLine;
                 if (frontLine.IsValid() && lines.Contains(frontLine))
                     continue;
@@ -359,7 +362,7 @@ namespace AdvancedGears
                     FrontLine = lines[index],
                 };
 
-                Debug.LogFormat("SelectLine Index:{0}, Key:{1}, Count:{2}", hexIndex, kvp.Key, count);
+                Debug.LogFormat("SelectLine Index:{0}, Key:{1}, Count:{2} Target_Left:{3} Target_Left:{4}", hexIndex, kvp.Key, count, lines[index].LeftCorner, lines[index].RightCorner);
 
                 SetCommand(kvp.Key, line, order);
 
@@ -388,7 +391,7 @@ namespace AdvancedGears
                 var index = UnityEngine.Random.Range(0, count);
                 var key = targets.Keys.ElementAt(index);
 
-                Debug.LogFormat("SelectHex Index:{0}, Key:{1}, Count:{2}", hexIndex, key, count);
+                Debug.LogFormat("SelectHex Index:{0}, Key:{1}, Count:{2} Target:{3}", hexIndex, kvp.Key.Id, count, targets[key].HexIndex);
 
                 SetCommand(kvp.Key, targets[key], order);
 

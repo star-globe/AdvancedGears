@@ -95,8 +95,7 @@ namespace AdvancedGears
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
                 var pos = trans.position;
 
-                bool is_target;
-                is_target = attackOrder(status, entityId, pos, target.TargetInfo, action.SightRange, ref commander, ref team);
+                applyOrder(status, entityId, pos, target.TargetInfo, action.SightRange, ref commander, ref team);
             });
         }
         
@@ -196,7 +195,7 @@ namespace AdvancedGears
         //    return tgt != null;
         //}
 
-        bool attackOrder(in BaseUnitStatus.Component status, in SpatialEntityId entityId, in Vector3 pos, in TargetInfo currentTarget, float sightRange,
+        void applyOrder(in BaseUnitStatus.Component status, in SpatialEntityId entityId, in Vector3 pos, in TargetInfo currentTarget, float sightRange,
                          ref CommanderStatus.Component commander,
                          ref CommanderTeam.Component team)
         {
@@ -205,10 +204,10 @@ namespace AdvancedGears
 
             var scaledRange = AttackLogicDictionary.RankScaled(sightRange, status.Rank);
 
-            tgt = getNearestEnemy(status.Side, pos, scaledRange, allowDead: true, UnitType.Stronghold, UnitType.Commander);
+            //tgt = getNearestEnemy(status.Side, pos, scaledRange, allowDead: true, UnitType.Stronghold, UnitType.Commander);
 
-            TargetInfo targetInfo;
-            commonTargeting(tgt, entityId, commander, out targetInfo);
+            //TargetInfo targetInfo;
+            //commonTargeting(tgt, entityId, commander, out targetInfo);
 
             // check power
             var current = GetOrder(status.Side, pos, scaledRange);
@@ -241,10 +240,10 @@ namespace AdvancedGears
             // ターゲットを直接指定する方式はやめる
             //if (targetInfo.Equals(currentTarget) == false || changed)
             //    SetOrderFollowers(followers, entityId.EntityId, targetInfo, current.Value);
+
+            // オーダーが変わった場合のみ直接命令を下す
             if (changed)
                 SetOrderFollowers(followers, entityId.EntityId, current.Value);
-
-            return tgt != null;
         }
 
         private OrderType? GetOrder(UnitSide side, in Vector3 pos, float length)
