@@ -682,10 +682,10 @@ namespace AdvancedGears
     public abstract class CoordsContainer
     {
         protected readonly List<Coordinates> posList = new List<Coordinates>();
-        Coordinates center = Coordinates.Zero;
-        double inter = 0;
-        Vector3 origin;
-        float height_buffer;
+        protected Coordinates center = Coordinates.Zero;
+        protected double inter = 0;
+        protected Vector3 origin;
+        protected float height_buffer;
 
         public CoordsContainer(in Coordinates center, double inter, Vector3 origin, float height_buffer)
         {
@@ -833,14 +833,14 @@ namespace AdvancedGears
         {
         }
 
-        public TriangleCoordsContainer(in Coordinates center, List<Coordinates> posList, double inter, Vector3 origin, float height_buffer)
+        public TriangleCoordsContainer(in Coordinates center, List<Coordinates> posList, double inter, Vector3 origin, float height_buffer) : base(center, posList, inter, origin, height_buffer)
         {
             index = posList.Count;
         }
 
         protected override void Reset(in Coordinates center)
         {
-            base.Rest();
+            base.Reset(center);
             index = 0;
         }
 
@@ -851,8 +851,8 @@ namespace AdvancedGears
             Coordinates pos;
  
             int layerNum = 1;
-            x = inter;
-            z = 0;
+            double x = inter;
+            double z = 0;
             while (count >= layerNum) {
                 count -= layerNum;
                 layerNum += 2;
