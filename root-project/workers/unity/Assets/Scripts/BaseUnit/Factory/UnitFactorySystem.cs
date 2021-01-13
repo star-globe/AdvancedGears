@@ -254,6 +254,29 @@ namespace AdvancedGears
             return containers[index].Pos.ToCoordinates();
         }
 
+        private Coordinates GetEmptyCoordinates(EntityId id, in Coordinates center, float heightBuffer, uint hexForward, Dictionary<uint,List<UnitContainer>> hexContainers)
+        {
+            if (hexContainers.ContainsKey(hexForward) == false)
+                hexContainers[hexForward] = new List<UnitContainer>();
+
+            var containers = hexContainers[hexForward];
+            var index = containers.FindIndex(c => c.State == ContainerState.Empty);
+            if (index >= 0) {
+                containers.ChangeState(index, ContainerState.Reserved);
+                return containers[index].Pos.ToCoordinates();
+            }
+
+            VortexCoordsContainer vortex = null;
+            if (strDic.TryGetValue(id, out vortex) == false) {
+                vortex = new VortexCoordsContainer(center, containers.Select(c => c.Pos.ToCoordinates()).ToList(), RangeDictionary.TeamInter, this.Origin, heightBuffer);
+                strDic[id] = vortex;
+            }
+
+            index = containers.Count;
+            containers.Add(new UnitContainer() { Pos = vortex.AddPos().ToFixedPointVector3(), State = ContainerState.Reserved });
+            return containers[index].Pos.ToCoordinates();
+        }
+
         private bool CalcOrderCost(out int resourceCost, out float timeCost,
                                     FollowerOrder? f_order = null, SuperiorOrder? s_order = null, TeamOrder? team_order = null)
         {
@@ -656,6 +679,56 @@ namespace AdvancedGears
         }
     }
 
+    public abstract class CoordsContainer
+    {
+        protected readonly List<Coordinates> posList = new List<Coordinates>();
+        Coordinates center = Coordinates.Zero;
+        double inter = 0;
+        Vector3 origin;
+        float height_buffer;
+
+        public CoordsContainer(in Coordinates center, double inter, Vector3 origin, float height_buffer)
+        {
+            this.inter = inter;
+            Reset(center);
+            this.origin = origin;
+            this.height_buffer = height_buffer;
+        }
+
+        public CoordsContainer(in Coordinates center, List<Coordinates> posList, double inter, Vector3 origin, float height_buffer)
+        {
+            this.center = center.GetGrounded(origin, height_buffer);
+            this.posList = posList;
+            this.inter = inter;
+            this.origin = origin;
+            this.height_buffer = height_buffer;
+        }
+
+        protected virtual void Reset(in Coordinates center)
+        {
+            this.center = center.GetGrounded(origin, height_buffer);
+            posList.Clear();
+        }
+
+        public List<Coordinates> GetCoordinates(in Coordinates coords, int num)
+        {
+            if (center != coords) 
+                Reset(coords);
+
+            int count = posList.Count;
+            if (num <= count)
+                return posList.Take(num).ToList();
+
+            foreach(var i in Enumerable.Range(0,num - count)) {
+                AddPos();
+            }
+
+            return posList;
+        }
+
+        public abstract Coordinates AddPos();
+    }
+
     public class VortexCoordsContainer
     {
         readonly List<Coordinates> posList = new List<Coordinates>();
@@ -752,4 +825,49 @@ namespace AdvancedGears
         }
     }
 
+    public class TriangleCoordsContainer : CoordsContainer
+    {
+        int index = 0;
+
+        public TriangleCoordsContainer(in Coordinates center, double inter, Vector3 origin, float height_buffer) : base(center, inter, origin, height_buffer)
+        {
+        }
+
+        public TriangleCoordsContainer(in Coordinates center, List<Coordinates> posList, double inter, Vector3 origin, float height_buffer)
+        {
+            index = posList.Count;
+        }
+
+        protected override void Reset(in Coordinates center)
+        {
+            base.Rest();
+            index = 0;
+        }
+
+        public override Coordinates AddPos()
+        {
+            var count = posList.Count;
+
+            Coordinates pos;
+ 
+            int layerNum = 1;
+            x = inter;
+            z = 0;
+            while (count >= layerNum) {
+                count -= layerNum;
+                layerNum += 2;
+
+                x += inter;
+                z -= inter;
+            }
+
+            z += count * inter;
+            pos = this.center + new Coordinates(x, 0, z);
+            pos = pos.GetGrounded(this.origin, this.height_buffer);
+            posList.Add(pos);
+            index++;
+
+            return pos;
+        }
+    }
 }

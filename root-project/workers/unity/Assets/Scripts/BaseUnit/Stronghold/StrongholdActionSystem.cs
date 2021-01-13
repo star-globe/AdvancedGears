@@ -207,6 +207,8 @@ namespace AdvancedGears
             requestLists.Add(id);
         }
 
+        const int strategyUnitRank = 0;
+        const int hexAttackRate = 3;
         List<TeamOrder> makeOrders(uint rank, float rot, OrderType order, uint hexIndex, List<FrontLineInfo> frontLines, Dictionary<uint, TargetHexInfo> hexes, Dictionary<EntityId,TeamInfo> datas)
         {
             if (datas == null)
@@ -216,11 +218,11 @@ namespace AdvancedGears
 
             if (hexes.Count > 0)
             {
-                teamOrders = makeTeamOrders(hexes.Count, 1, rot, order, teamOrders, datas);
+                teamOrders = makeTeamOrders(hexes.Count * hexAttackRate, strategyUnitRank, rot, order, teamOrders, datas);
             }
             else if (frontLines.Count > 0)
             {
-                teamOrders = makeTeamOrders(frontLines.Count, 0, rot, order, teamOrders, datas);
+                teamOrders = makeTeamOrders(frontLines.Count, strategyUnitRank, rot, order, teamOrders, datas);
             }
 
             return teamOrders;
