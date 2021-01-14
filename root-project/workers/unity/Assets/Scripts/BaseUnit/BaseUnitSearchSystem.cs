@@ -85,17 +85,6 @@ namespace AdvancedGears
                     action.EnemyPositions.Add(epos);
                 }
 
-                var id = entityId.EntityId.Id;
-                if (id == 198)
-                {
-                    DebugUtils.RandomlyLog(string.Format("Target State:{0} Type:{1} Position:{2}", target.State, target.Type, sight.TargetPosition.ToUnityVector()), count:100);
-
-                    if (target.Type == TargetType.Hex)
-                        DebugUtils.RandomlyLog(string.Format("Target HexIndex:{0}", target.HexInfo.HexIndex), count: 100);
-                    else if (target.Type == TargetType.FrontLine)
-                        DebugUtils.RandomlyLog(string.Format("Target LeftCorner:{0} RightCorner:{1}", target.FrontLine.FrontLine.LeftCorner, target.FrontLine.FrontLine.RightCorner), count: 100);
-                }
-
                 float range;
                 switch (target.State)
                 {

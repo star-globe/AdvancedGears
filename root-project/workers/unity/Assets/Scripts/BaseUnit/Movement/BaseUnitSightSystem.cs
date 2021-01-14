@@ -169,12 +169,6 @@ namespace AdvancedGears
                 if (tgt == null)
                     tgt = sight.TargetPosition.ToWorkerPosition(this.Origin);
 
-                var uid = id.Id;
-                if (uid == 198)
-                {
-                    DebugUtils.RandomlyLog(string.Format("TargetPosition:{0}", tgt.Value));
-                }
-
                 if (RangeDictionary.IsSpreadValid(spread)) {
                     var length = (tgt.Value - pos).magnitude;
                     tgt += spread * Mathf.Max(1.0f, (length / RangeDictionary.SpreadSize));
