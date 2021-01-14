@@ -30,8 +30,6 @@ namespace AdvancedGears
                                              ComponentType.ReadOnly<Transform>(),
                                              ComponentType.ReadOnly<SpatialEntityId>()
                                              ), period);
-
-            inter = IntervalCheckerInitializer.InitializedChecker(period);
         }
 
         protected override void OnUpdate()

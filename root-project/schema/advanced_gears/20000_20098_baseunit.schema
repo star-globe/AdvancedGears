@@ -66,7 +66,7 @@ component BaseUnitReviveTimer {
     id = 20003;
 
     bool is_start = 1;
-    float rest_time = 2;
+    double rest_time = 2;
 }
 
 type BoidVector {
