@@ -15,8 +15,6 @@ namespace AdvancedGears
         private EntityQuerySet orderQuerySet;
         private EntityQuerySet factoryQuerySet;
 
-        IntervalChecker inter;
-
         readonly HashSet<EntityId> requestLists = new HashSet<EntityId>();
         readonly Dictionary<EntityId, TeamInfo> teamsDic = new Dictionary<EntityId, TeamInfo>();
         readonly List<UnitInfo> turretsList = new List<UnitInfo>();
@@ -70,7 +68,7 @@ namespace AdvancedGears
                     return;
 
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
-                CheckAlive(trans.position, status.Side, portal.Index, HexDictionary.HexEdgeLength * 0.8f, teamsDic);
+                CheckAlive(trans.position, status.Side, portal.Index, HexDictionary.HexEdgeLength, teamsDic);
 
                 sendIds.Clear();
 
@@ -162,7 +160,7 @@ namespace AdvancedGears
 
             foreach (var u in units) {
                 if (hexIndex != uint.MaxValue && HexUtils.IsInsideHex(this.Origin, hexIndex, u.pos, HexDictionary.HexEdgeLength) == false)
-                    return;
+                    continue;
 
                 if (TryGetComponent<CommanderTeam.Component>(u.id, out var team) == false)
                     continue;

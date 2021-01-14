@@ -36,7 +36,7 @@ namespace AdvancedGears
             template.AddComponent(new Metadata.Snapshot(metaDic[type]), WorkerUtils.UnityGameLogic);
             template.AddComponent(new Persistence.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new PostureRoot.Snapshot() { RootTrans = PostureUtils.ConvertTransform(coords, rotation, scale) }, WorkerUtils.UnityGameLogic);
-            template.AddComponent(new BaseUnitMovement.Snapshot(), WorkerUtils.UnityGameLogic);
+
             template.AddComponent(new BaseUnitSight.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new BaseUnitAction.Snapshot { EnemyPositions = new List<FixedPointVector3>() }, WorkerUtils.UnityGameLogic);
             template.AddComponent(new BaseUnitStatus.Snapshot(side, type, UnitState.Alive, order == null ? orderDic[type] : order.Value, GetRank(rank, type)), WorkerUtils.UnityGameLogic);
@@ -46,8 +46,10 @@ namespace AdvancedGears
             template.AddComponent(new GunComponent.Snapshot { GunsDic = new Dictionary<int, GunInfo>() }, WorkerUtils.UnityGameLogic);
             template.AddComponent(new FuelComponent.Snapshot(), WorkerUtils.UnityGameLogic);
 
-            if (type.BaseType() == UnitBaseType.Moving)
+            if (type.BaseType() == UnitBaseType.Moving) {
+                template.AddComponent(new BaseUnitMovement.Snapshot(), WorkerUtils.UnityGameLogic);
                 template.AddComponent(new BaseUnitReviveTimer.Snapshot { IsStart = false, RestTime = 0.0f }, WorkerUtils.UnityGameLogic);
+            }
 
             SwitchType(template, type, WorkerUtils.UnityGameLogic);
             TransformSynchronizationHelper.AddTransformSynchronizationComponents(template, WorkerUtils.UnityGameLogic);
@@ -136,6 +138,8 @@ namespace AdvancedGears
                     break;
 
                 case UnitType.Turret:
+                    template.AddComponent(new BulletComponent.Snapshot(), writeAccess);
+                    template.AddComponent(new PostureAnimation.Snapshot { BoneMap = new Dictionary<int, CompressedLocalTransform>() }, writeAccess);
                     template.AddComponent(new TurretComponent.Snapshot(), writeAccess);
                     break;
 
