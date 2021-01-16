@@ -870,4 +870,60 @@ namespace AdvancedGears
             return pos;
         }
     }
+
+    public class RandomContainer
+    {
+        Vector3 corner;
+        Vector3 size;
+        int cut_x;
+        int cut_z;
+
+        readonly bool[][] vertexts;
+
+        public RandomContainer(Vector3 center, Vector3 size, int cut_x, int cut_z)
+        {
+            this.corner = center - size/2;
+            this.size = size;
+            this.cut_x = cut_x;
+            this.cut_z = cut_z;
+
+            vertexes = new bool[cut_x][cut_z];
+        }
+
+        private bool TryGetPoint(Vector3 point, out int x, out int z)
+        {
+            var diff = point - this.corner;
+            if (diff.x < 0 || diff.x > this.size.x)
+                return false;
+
+            if (diff.z < 0 || diff.z > this.size.z)
+                return false;
+
+            x = (int)(diff.x * cut_x / size.x); 
+            z = (int)(diff.z * cut_z / size.z);
+
+            return true;
+        }
+
+        private bool AddkPoint(Vector3 point)
+        {
+            if (TryGetPoint(point, out var x, out var z) == false)
+                return false;
+
+            if (vertexes[x][z] == false) {
+                vertexes[x][z] = true;
+                return true;
+            }
+            else
+                return false;
+        }
+
+        public void Clear()
+        {
+            for (var i = 0; i < cut_x; i++) {
+                for (var j = 0; j < cut_z; j++)
+                    vertexes[i][j] = false;
+            }
+        }
+    }
 }
