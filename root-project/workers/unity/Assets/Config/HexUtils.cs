@@ -215,22 +215,21 @@ namespace AdvancedGears
             return ids;
         }
 
-        public static UnitType GetUnitType(HexAttribute attribute)
+        public static bool HexArrowsUnitType(HexAttribute attribute, UnitType type)
         {
-            var type = UnitType.None;
             switch (attribute)
             {
                 case HexAttribute.Field:
                 case HexAttribute.ForwardBase:
-                    type = UnitType.Stronghold;
-                    break;
+                    return type == UnitType.Stronghold ||
+                            type == UnitType.Turret;
 
                 case HexAttribute.CentralBase:
-                    type = UnitType.HeadQuarter;
-                    break;
+                    return type == UnitType.HeadQuarter ||
+                            type == UnitType.Turret;
             }
 
-            return type;
+            return false;
         }
 
         public static IEnumerable<UnitSide> AllSides

@@ -16,6 +16,7 @@ namespace AdvancedGears
             { UnitType.Soldier, "BaseUnit"},
             { UnitType.Commander, "CommanderUnit"},
             { UnitType.Stronghold, "StrongholdUnit"},
+            { UnitType.Turret, "TurretUnit"},
             { UnitType.HeadQuarter, "HeadQuarterUnit"},
             { UnitType.ArmyCloud, "ArmyCloudUnit"},
         };
@@ -25,6 +26,7 @@ namespace AdvancedGears
             { UnitType.Soldier, OrderType.Idle },
             { UnitType.Commander, OrderType.Attack },
             { UnitType.Stronghold, OrderType.Idle },
+            { UnitType.Turret, OrderType.Idle },
             { UnitType.HeadQuarter, OrderType.Attack },
             { UnitType.ArmyCloud, OrderType.Idle},
         };

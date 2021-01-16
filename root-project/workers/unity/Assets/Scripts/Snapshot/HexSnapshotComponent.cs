@@ -12,7 +12,7 @@ namespace AdvancedGears
         [Serializable]
         class UnitSnapshotPair
         {
-            public UnitSnapshotComponent unit;
+            public List<UnitSnapshotComponent> units = new List<UnitSnapshotComponent>();
             public HexSnapshotAttachment hex;
 
             public void SetHexInfo(UnitSide side, uint index, HexAttribute attribute)
@@ -22,10 +22,8 @@ namespace AdvancedGears
                     hex.attribute = attribute;
                 }
 
-                if (unit) {
-                    unit.side = side;
-                    unit.type = HexUtils.GetUnitType(attribute);
-                    unit.gameObject.SetActive(unit.type != UnitType.None);
+                foreach (var u in units) {
+                    u.side = side;
                 }
             }
         }
@@ -91,11 +89,15 @@ namespace AdvancedGears
             var list = new List<UnitSnapshotPair>();
             var units = GetComponentsInChildren<UnitSnapshotComponent>();
 
-            bool isSet = false;
+            this.pair.units.Clear();
+
             foreach (var u in units) {
-                if (!isSet && u != null && u.type == HexUtils.GetUnitType(attribute)) {
-                    this.pair = new UnitSnapshotPair() { unit = u, hex = u.GetComponent<HexSnapshotAttachment>() };
-                    isSet = true;
+                if (u != null && HexUtils.HexArrowsUnitType(attribute, u.type)) {
+                    var hex = u.GetComponent<HexSnapshotAttachment>();
+                    if (hex != null)
+                        this.pair.hex = hex;
+
+                    this.pair.units.Add(u);
                     u.gameObject.SetActive(true);
                 }
                 else {
