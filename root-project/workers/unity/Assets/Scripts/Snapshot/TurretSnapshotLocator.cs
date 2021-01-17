@@ -32,7 +32,7 @@ namespace AdvancedGears
 
             for (int i = number; i < units.Length; i++)
             {
-                Destroy(units[i].gameObject);
+                DestroyImmediate(units[i].gameObject);
             }
         }
     }
