@@ -878,7 +878,7 @@ namespace AdvancedGears
         int cut_x;
         int cut_z;
 
-        readonly bool[][] vertexts;
+        readonly bool[,] vertexes;
 
         public RandomContainer(Vector3 center, Vector3 size, int cut_x, int cut_z)
         {
@@ -887,11 +887,13 @@ namespace AdvancedGears
             this.cut_x = cut_x;
             this.cut_z = cut_z;
 
-            vertexes = new bool[cut_x][cut_z];
+            vertexes = new bool[cut_x,cut_z];
         }
 
         private bool TryGetPoint(Vector3 point, out int x, out int z)
         {
+            x = -1;
+            z = -1;
             var diff = point - this.corner;
             if (diff.x < 0 || diff.x > this.size.x)
                 return false;
@@ -910,8 +912,8 @@ namespace AdvancedGears
             if (TryGetPoint(point, out var x, out var z) == false)
                 return false;
 
-            if (vertexes[x][z] == false) {
-                vertexes[x][z] = true;
+            if (vertexes[x,z] == false) {
+                vertexes[x,z] = true;
                 return true;
             }
             else
@@ -922,7 +924,7 @@ namespace AdvancedGears
         {
             for (var i = 0; i < cut_x; i++) {
                 for (var j = 0; j < cut_z; j++)
-                    vertexes[i][j] = false;
+                    vertexes[i,j] = false;
             }
         }
     }
