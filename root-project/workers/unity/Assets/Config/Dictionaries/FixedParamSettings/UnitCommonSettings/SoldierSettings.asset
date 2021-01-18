@@ -16,3 +16,5 @@ MonoBehaviour:
   isBuilding: 0
   isAutomaticallyMoving: 1
   isOfficer: 1
+  isOffecsive: 1
+  isWatcher: 1

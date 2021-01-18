@@ -9,7 +9,6 @@ namespace AdvancedGears
 {
     public class BaseUnitInitializer : MonoBehaviour
     {
-        [Require] BaseUnitMovementWriter movement;
         [Require] BaseUnitActionWriter action;
         [Require] BaseUnitHealthWriter health;
         [Require] FuelComponentWriter fuel;
@@ -26,13 +25,6 @@ namespace AdvancedGears
         void Start()
         {
             Assert.IsNotNull(settings);
-
-            movement.SendUpdate(new BaseUnitMovement.Update
-            {
-                MoveSpeed = settings.Speed,
-                RotSpeed = settings.RotSpeed,
-                ConsumeRate = settings.ConsumeRate,
-            });
 
             action.SendUpdate(new BaseUnitAction.Update
             {

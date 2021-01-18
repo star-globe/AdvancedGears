@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 3115882850974167893}
   - component: {fileID: 5176628486272645430}
   - component: {fileID: 4545237033418829097}
-  - component: {fileID: 7153672412532441338}
   m_Layer: 0
   m_Name: TurretSnapshotPoint
   m_TagString: Untagged
@@ -48,8 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 102
   side: 0
-  attachments:
-  - {fileID: 7153672412532441338}
+  attachments: []
 --- !u!65 &4545237033418829097
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -63,20 +61,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &7153672412532441338
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2515680730061510791}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ff52dd47704d8ab4b8df7eef12c2a83f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hexIndex: 0
-  attribute: 0
 --- !u!1 &9004756484239174983
 GameObject:
   m_ObjectHideFlags: 0

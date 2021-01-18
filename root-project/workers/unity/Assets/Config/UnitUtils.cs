@@ -22,6 +22,18 @@ namespace AdvancedGears
             return set != null && set.isAutomaticallyMoving;
         }
 
+        public static bool IsOffensive(UnitType type)
+        {
+            var set = UnitCommonSettingsDictionary.GetSettings(type);
+            return set != null && set.isOffecsive;
+        }
+
+        public static bool IsWatcher(UnitType type)
+        {
+            var set = UnitCommonSettingsDictionary.GetSettings(type);
+            return set != null && set.isWatcher;
+        }
+
         public static bool IsOfficer(UnitType type)
         {
             var set = UnitCommonSettingsDictionary.GetSettings(type);

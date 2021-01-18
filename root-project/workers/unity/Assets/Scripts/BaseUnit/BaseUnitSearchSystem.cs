@@ -59,7 +59,7 @@ namespace AdvancedGears
                 if (status.Order == OrderType.Idle)
                     return;
 
-                if (UnitUtils.IsAutomaticallyMoving(status.Type) == false)
+                if (UnitUtils.IsWatcher(status.Type) == false)
                     return;
 
                 // initial

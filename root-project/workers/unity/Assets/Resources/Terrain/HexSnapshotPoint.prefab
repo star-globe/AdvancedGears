@@ -263,6 +263,7 @@ MonoBehaviour:
   hex: {fileID: 6879032629696693199}
   hexColorSettings: {fileID: 11400000, guid: 76e02b65efce0fc42b4bf11506cce376, type: 2}
   index: 0
+  turretLocator: {fileID: 7592511185498701046}
 --- !u!120 &1492545807780556731
 LineRenderer:
   m_ObjectHideFlags: 0

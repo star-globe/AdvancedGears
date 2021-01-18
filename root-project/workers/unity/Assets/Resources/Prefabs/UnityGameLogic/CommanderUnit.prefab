@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 7257654559995326483}
   - component: {fileID: 5474024982475935438}
   - component: {fileID: 1322930615609811082}
+  - component: {fileID: -3592234749730341628}
   - component: {fileID: 5426206343186630578}
   - component: {fileID: 3961213072212935976}
   - component: {fileID: 8023110468355159761}
@@ -159,6 +160,19 @@ MonoBehaviour:
   settings: {fileID: 11400000, guid: 6a0a53c2b739402478a473e8cf2593e3, type: 2}
   gunInitializer: {fileID: 7257654559995326483}
   container: {fileID: 8518593432806269593}
+--- !u!114 &-3592234749730341628
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5181175297171742801}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38df498ef072d324fb30c933e74374ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  settings: {fileID: 11400000, guid: 6a0a53c2b739402478a473e8cf2593e3, type: 2}
 --- !u!114 &5426206343186630578
 MonoBehaviour:
   m_ObjectHideFlags: 0

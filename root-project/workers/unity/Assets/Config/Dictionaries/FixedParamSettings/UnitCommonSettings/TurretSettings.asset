@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 020cef5471585e641877c451677b4859, type: 3}
-  m_Name: CommanderSettings
+  m_Name: TurretSettings
   m_EditorClassIdentifier: 
-  type: 2
-  isBuilding: 0
-  isAutomaticallyMoving: 1
-  isOfficer: 1
+  type: 102
+  isBuilding: 1
+  isAutomaticallyMoving: 0
+  isOfficer: 0
   isOffecsive: 1
   isWatcher: 1

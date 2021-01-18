@@ -985,7 +985,7 @@ namespace AdvancedGears
             if (index > 2 || index < -3)
                 return null;
 
-            if (containers.ContaisKey(index) == false) {
+            if (containers.ContainsKey(index) == false) {
                 var rad = degTri/2*(2*index+1);
                 var range = radius / root3;
                 var pos = center + range * new Vector3(Mathf.Sin(rad), 0, Mathf.Cos(rad));
@@ -993,7 +993,7 @@ namespace AdvancedGears
                 containers[index] = new RandomContainer(pos, range/2 * Vector3.one, cut, cut);
             }
 
-            return containters[index].GetEmptyPoint();
+            return containers[index].GetEmptyPoint();
         }
 
         public void SetCurrentPoints(Vector3[] points)

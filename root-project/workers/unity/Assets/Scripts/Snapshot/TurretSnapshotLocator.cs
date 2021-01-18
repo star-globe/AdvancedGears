@@ -31,9 +31,16 @@ namespace AdvancedGears
              }
 
             for (int i = number; i < units.Length; i++)
-            {
                 DestroyImmediate(units[i].gameObject);
-            }
+        }
+
+        public void RenewTurrets()
+        {
+            var units = this.GetComponentsInChildren<UnitSnapshotComponent>();
+            for(var i = 0; i < units.Length; i++)
+                DestroyImmediate(units[i].gameObject);
+
+            LocateTurrets();
         }
     }
 
@@ -55,6 +62,9 @@ namespace AdvancedGears
 
             if (GUILayout.Button("Locate Turrets"))
                 component.LocateTurrets();
+
+            if (GUILayout.Button("Renew Turrets"))
+                component.RenewTurrets();
         }
     }
 #endif

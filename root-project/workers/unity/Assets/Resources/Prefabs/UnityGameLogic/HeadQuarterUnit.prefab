@@ -24,7 +24,6 @@ GameObject:
   - component: {fileID: 6219044561266868164}
   - component: {fileID: 526124300522231972}
   - component: {fileID: 5284226851696852331}
-  - component: {fileID: 4465132455541570131}
   m_Layer: 11
   m_Name: HeadQuarterUnit
   m_TagString: Untagged
@@ -104,6 +103,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   settings: {fileID: 11400000, guid: c48d5fc1365c3bd49b19a4f0bcd27e82, type: 2}
   gunInitializer: {fileID: 0}
+  container: {fileID: 0}
 --- !u!114 &3377717005427727886
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -210,7 +210,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   postures: []
-  boxDetect: {fileID: 0}
+  boxDetect: {fileID: 1862592692997293074}
   sphereDetect: {fileID: 0}
 --- !u!114 &6219044561266868164
 MonoBehaviour:
@@ -251,18 +251,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   settings: {fileID: 11400000, guid: d7d6f89784f414849b6a177066a587e2, type: 2}
---- !u!114 &4465132455541570131
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7541166145706494584}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f3c74bd20ce80c443954725cef4a818a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &5766174824716151420
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -372,6 +360,12 @@ MeshRenderer:
 --- !u!23 &8304721226408007717 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 2541677839664788057, guid: 1ed45e3d254bf2e409ee0e6f0b613d79,
+    type: 3}
+  m_PrefabInstance: {fileID: 5766174824716151420}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &1862592692997293074 stripped
+BoxCollider:
+  m_CorrespondingSourceObject: {fileID: 5322361253066583662, guid: 1ed45e3d254bf2e409ee0e6f0b613d79,
     type: 3}
   m_PrefabInstance: {fileID: 5766174824716151420}
   m_PrefabAsset: {fileID: 0}

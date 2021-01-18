@@ -53,6 +53,10 @@ namespace AdvancedGears
         uint index = 0;
         public uint Index => index;
 
+        [SerializeField]
+        TurretSnapshotLocator turretLocator;
+        public TurretSnapshotLocator TurretLocator => turretLocator;
+
         public void SetPosition(Vector3 pos, uint index, float edge)
         {
             this.index = index;
@@ -87,7 +91,7 @@ namespace AdvancedGears
         private void SearchChildren()
         {
             var list = new List<UnitSnapshotPair>();
-            var units = GetComponentsInChildren<UnitSnapshotComponent>();
+            var units = GetComponentsInChildren<UnitSnapshotComponent>(includeInactive:true);
 
             this.pair.units.Clear();
 
@@ -134,8 +138,17 @@ namespace AdvancedGears
         {
             base.OnInspectorGUI();
 
-            if (GUILayout.Button("SyncUnitSetings"))
+            if (GUILayout.Button("Sync UnitSetings"))
                 component.SyncUnitSettings();
+
+            var locator = component.TurretLocator;
+            if (locator != null) {
+                if (GUILayout.Button("Locate Turrets"))
+                    locator.LocateTurrets();
+
+                if (GUILayout.Button("Renew Turrets"))
+                    locator.RenewTurrets();
+            }
         }
     }
 #endif

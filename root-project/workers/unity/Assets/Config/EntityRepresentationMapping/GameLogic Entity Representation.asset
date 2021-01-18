@@ -74,7 +74,7 @@ MonoBehaviour:
       type: {class: SimpleEntityResolver, ns: Improbable.Gdk.Core.Representation.Types,
         asm: Improbable.Gdk.Core}
       data:
-        entityType: Turret
+        entityType: TurretUnit
         prefab: {fileID: 9077667431196485703, guid: a087feedd6327a7439c17fe1d3886941,
           type: 3}
         requiredComponents: 

@@ -46,6 +46,9 @@ namespace AdvancedGears
                 if (status.State != UnitState.Alive)
                     return;
 
+                if (UnitUtils.IsOffensive(status.Type) == false)
+                    return;
+
                 if (target.State != TargetState.ActionTarget)
                     return;
 
