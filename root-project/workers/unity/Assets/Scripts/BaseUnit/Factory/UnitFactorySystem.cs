@@ -907,7 +907,7 @@ namespace AdvancedGears
             return true;
         }
 
-        private bool AddkPoint(Vector3 point)
+        public bool AddPoint(Vector3 point)
         {
             if (TryGetPoint(point, out var x, out var z) == false)
                 return false;
@@ -920,12 +920,86 @@ namespace AdvancedGears
                 return false;
         }
 
+        public Vector3? GetEmptyPoint()
+        {
+            for (var i = 0; i < cut_x; i++) {
+                for (var j = 0; j < cut_z; j++) {
+                    if (vertexes[i,j])
+                        continue;
+
+                    vertexes[i,j] = true;
+                    return new Vector3((2*i+1)*size.x/2/cut_x, (2*j+1)*size.z/2/cut_z);
+                }
+            }
+
+            return null;
+        }
+
+        public void SetCurrentPoints(Vector3[] points)
+        {
+            Clear();
+            foreach (var p in points)
+            {
+                AddPoint(p);
+            }
+        }
+
         public void Clear()
         {
             for (var i = 0; i < cut_x; i++) {
                 for (var j = 0; j < cut_z; j++)
                     vertexes[i,j] = false;
             }
+        }
+    }
+
+    public class HexRandomContaner
+    {
+        readonly Dictionary<int,RandomContainer> containers = new Dictionary<int,RandomContainer>();
+        Vector3 center;
+        float radius;
+        int cut;
+
+        public HexRandomContaner(Vector3 center, float radius, int cut)
+        {
+            this.center = center;
+            this.radius = radius;
+            this.cut = cut;
+        }
+
+        const float degTri = 60.0f;
+        const float root3 = 1.7320f;
+        public Vector3? GetRandomPoint(Vector3 point)
+        {
+            var diff = point - this.center;
+            var length = diff.x * diff.x + diff.z * diff.z;
+            if (length > radius * radius)
+                return null;
+
+            var nor = diff.normalized;
+            var deg = Mathf.Atan2(nor.x, nor.z) * Mathf.Rad2Deg;
+            int index = (int)(deg / degTri);
+            if (deg < 0)
+                index --;
+
+            if (index > 2 || index < -3)
+                return null;
+
+            if (containers.ContaisKey(index) == false) {
+                var rad = degTri/2*(2*index+1);
+                var range = radius / root3;
+                var pos = center + range * new Vector3(Mathf.Sin(rad), 0, Mathf.Cos(rad));
+
+                containers[index] = new RandomContainer(pos, range/2 * Vector3.one, cut, cut);
+            }
+
+            return containters[index].GetEmptyPoint();
+        }
+
+        public void SetCurrentPoints(Vector3[] points)
+        {
+            foreach (var kvp in containers)
+                kvp.Value.SetCurrentPoints(points);
         }
     }
 }
