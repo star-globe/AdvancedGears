@@ -65,7 +65,7 @@ namespace AdvancedGears
 
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
                 var pos = trans.position;
-                var list = getAllUnits(pos, range, UnitType.Commander, UnitType.Advanced);
+                var list = getAllUnits(pos, range, allowDead:false, UnitType.Commander, UnitType.Advanced);
 
                 var sumsDic = new Dictionary<UnitSide,float>();
                 foreach (var unit in list)

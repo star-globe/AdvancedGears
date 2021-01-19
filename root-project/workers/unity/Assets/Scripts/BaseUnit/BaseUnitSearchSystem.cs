@@ -346,14 +346,14 @@ namespace AdvancedGears
             return getUnits(self_side, pos, length, isEnemy: true, allowDead, null, types);
         }
 
-        protected List<UnitInfo> getAllUnits(in Vector3 pos, float length, EntityId? selfId, params UnitType[] types)
+        protected List<UnitInfo> getAllUnits(in Vector3 pos, float length, EntityId? selfId, bool allowDead = false, params UnitType[] types)
         {
-            return getUnits(UnitSide.None, pos, length, isEnemy: null, allowDead: false, selfId, types);
+            return getUnits(UnitSide.None, pos, length, isEnemy: null, allowDead, selfId, types);
         }
 
-        protected List<UnitInfo> getAllUnits(in Vector3 pos, float length, params UnitType[] types)
+        protected List<UnitInfo> getAllUnits(in Vector3 pos, float length, bool allowDead = false, params UnitType[] types)
         {
-            return getUnits(UnitSide.None, pos, length, isEnemy: null, allowDead: false, null, types);
+            return getUnits(UnitSide.None, pos, length, isEnemy: null, allowDead, null, types);
         }
 
         protected List<UnitInfo> getUnits(UnitSide self_side, in Vector3 pos, float length, bool? isEnemy, bool allowDead, EntityId? selfId, params UnitType[] types)

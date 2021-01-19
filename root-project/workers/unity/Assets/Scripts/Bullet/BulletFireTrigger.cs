@@ -112,6 +112,9 @@ namespace AdvancedGears
 
         private void VanishBullet(uint type, ulong id)
         {
+            if (this.BulletWriter == null)
+                return;
+
             var vanish = new BulletVanishInfo()
             {
                 ShooterEntityId = SpatialComp.EntityId.Id,

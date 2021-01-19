@@ -55,7 +55,7 @@ namespace AdvancedGears
                     return;
 
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
-                var units = getAllyUnits(status.Side, trans.position, HexDictionary.HexEdgeLength, allowDead:true, UnitType.Turret);
+                var units = getAllUnits(trans.position, HexDictionary.HexEdgeLength, allowDead:true, UnitType.Turret);
 
                 var datas = turret.TurretsDatas;
                 datas.Clear();
