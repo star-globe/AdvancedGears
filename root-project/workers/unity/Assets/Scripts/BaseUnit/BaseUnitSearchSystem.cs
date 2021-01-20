@@ -207,6 +207,8 @@ namespace AdvancedGears
 
     public abstract class BaseSearchSystem : BaseEntitySearchSystem
     {
+        readonly UnitInfo baseInfo = new UnitInfo();
+
         protected UnitInfo getUnitInfo(EntityId entityId)
         {
             BaseUnitStatus.Component? unit;
@@ -257,8 +259,7 @@ namespace AdvancedGears
         protected UnitInfo getNearestUnit(UnitSide? self_side, in Vector3 pos, float length, bool isEnemy, bool containsNone, EntityId? selfId, bool allowDead, bool isPlayer, params UnitType[] types)
         {
             float len = float.MaxValue;
-            UnitInfo info = null;
-
+            bool tof = false;
             var colls = Physics.OverlapSphere(pos, length, LayerMask.GetMask("Unit"));
             for (var i = 0; i < colls.Length; i++)
             {
@@ -294,18 +295,19 @@ namespace AdvancedGears
                     if (l < len)
                     {
                         len = l;
-                        info = info ?? new UnitInfo();
-                        info.id = comp.EntityId;
-                        info.pos = col.transform.position;
-                        info.rot = col.transform.rotation;
-                        info.type = unit.Value.Type;
-                        info.side = unit.Value.Side;
-                        info.state = unit.Value.State;
+                        baseInfo.id = comp.EntityId;
+                        baseInfo.pos = col.transform.position;
+                        baseInfo.rot = col.transform.rotation;
+                        baseInfo.type = unit.Value.Type;
+                        baseInfo.side = unit.Value.Side;
+                        baseInfo.state = unit.Value.State;
+
+                        tof = true;
                     }
                 }
             }
 
-            return info;
+            return tof ? baseInfo: null;
         }
 
         protected List<UnitInfo> getAllyUnits(UnitSide self_side, in Vector3 pos, float length, params UnitType[] types)
