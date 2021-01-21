@@ -254,6 +254,43 @@ namespace AdvancedGears
             return containers[index].Pos.ToCoordinates();
         }
 
+        readonly Dictionary<EntityId, HexRandomContaner> hexContainerDic = new Dictionary<EntityId, HexRandomContaner>();
+        private Coordinates? GetEmptyCoordinates(EntityId id, in Coordinates center, in Coordinates target, float height_buffer, List<UnitContainer> containers)
+        {
+            var index = containers.FindIndex(c => c.State == ContainerState.Empty);
+            if (index >= 0)
+            {
+                containers.ChangeState(index, ContainerState.Reserved);
+                return containers[index].Pos.ToCoordinates();
+            }
+
+            HexRandomContaner hex = null;
+            if (hexContainerDic.TryGetValue(id, out hex) == false)
+            {
+                hex = new HexRandomContaner(center.ToUnityVector() + this.Origin, HexDictionary.HexEdgeLength, (int)(HexDictionary.HexEdgeLength / RangeDictionary.TeamInter));
+                hexContainerDic[id] = hex;
+            }
+
+            hex.Clear();
+            foreach (var c in containers)
+            {
+                hex.SetCurrentPoint(c.Pos.ToWorkerPosition(this.Origin));
+            }
+
+
+
+            var point = HexDictionary.HexEdgeLength * 0.5f * (target - center).ToUnityVector().normalized;
+            var empty = hex.GetRandomPoint(point);
+            if (empty == null)
+                return null;
+
+            index = containers.Count;
+            containers.Add(new UnitContainer() { Pos = empty.Value.ToWorldPosition(this.Origin), State = ContainerState.Reserved });
+            return containers[index].Pos.ToCoordinates();
+        }
+
+
+
         private Coordinates GetEmptyCoordinates(EntityId id, in Coordinates center, float heightBuffer, uint hexForward, Dictionary<uint,List<UnitContainer>> hexContainers)
         {
             if (hexContainers.ContainsKey(hexForward) == false)
@@ -955,7 +992,7 @@ namespace AdvancedGears
 
     public class HexRandomContaner
     {
-        readonly Dictionary<int,RandomContainer> containers = new Dictionary<int,RandomContainer>();
+        readonly Dictionary<int, RandomContainer> containers = new Dictionary<int, RandomContainer>();
         Vector3 center;
         float radius;
         int cut;
@@ -978,19 +1015,19 @@ namespace AdvancedGears
 
             var nor = diff.normalized;
             var deg = Mathf.Atan2(nor.x, nor.z) * Mathf.Rad2Deg;
-            int index = (int)(deg / degTri);
+            int index = (int) (deg / degTri);
             if (deg < 0)
-                index --;
+                index--;
 
             if (index > 2 || index < -3)
                 return null;
 
             if (containers.ContainsKey(index) == false) {
-                var rad = degTri/2*(2*index+1);
+                var rad = degTri / 2 * (2 * index + 1);
                 var range = radius / root3;
                 var pos = center + range * new Vector3(Mathf.Sin(rad), 0, Mathf.Cos(rad));
 
-                containers[index] = new RandomContainer(pos, range/2 * Vector3.one, cut, cut);
+                containers[index] = new RandomContainer(pos, range / 2 * Vector3.one, cut, cut);
             }
 
             return containers[index].GetEmptyPoint();
@@ -1000,6 +1037,16 @@ namespace AdvancedGears
         {
             foreach (var kvp in containers)
                 kvp.Value.SetCurrentPoints(points);
+        }
+
+        public void SetCurrentPoint(Vector3 point)
+        {
+            foreach (var kvp in containers)
+                kvp.Value.AddPoint(point);
+        }
+
+        public void Clear()
+        {
         }
     }
 }
