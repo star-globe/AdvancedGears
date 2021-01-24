@@ -5,7 +5,8 @@ using System.Linq;
 using Improbable;
 using Improbable.Gdk.Core;
 using Improbable.Gdk.TransformSynchronization;
-using Unity.Collections;
+using Improbable.Worker.CInterop.Query;
+using ImprobableEntityQuery = Improbable.Worker.CInterop.Query.EntityQuery;
 using Unity.Entities;
 using UnityEngine;
 
@@ -13,9 +14,9 @@ namespace AdvancedGears
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
-    class StrategyOrderManagerSystem : BaseSearchSystem
+    class StrategyOrderManagerSystem : EntityQuerySystem
     {
-        private EntityQuery group;
+        private Unity.Entities.EntityQuery group;
 
         IntervalChecker inter;
 
@@ -31,6 +32,23 @@ namespace AdvancedGears
             );
 
             inter = IntervalCheckerInitializer.InitializedChecker(10.0f);
+        }
+
+        protected override ImprobableEntityQuery EntityQuery
+        {
+            get
+            {
+                var list = new IConstraint[]
+                {
+                    new ComponentConstraint(SpawnPoint.ComponentId),
+                };
+
+                return new ImprobableEntityQuery()
+                {
+                    Constraint = new AndConstraint(list),
+                    ResultType = new SnapshotResultType()
+                };
+            }
         }
 
         protected override void OnUpdate()
@@ -59,7 +77,7 @@ namespace AdvancedGears
                 var range = RangeDictionary.Get(FixedRangeType.HeadQuarterRange);
 
                 var entityId = new EntityId();
-                var enemy = getNearestEnemy(status.Side, trans.position, range, allowDead:true, UnitType.HeadQuarter);
+                var enemy = getNearestEnemy(status.Side, trans.position);//, range, allowDead:true, UnitType.HeadQuarter);
                 if (enemy == null)
                     return;
 
@@ -76,7 +94,7 @@ namespace AdvancedGears
                 }
 
                 var st_range = RangeDictionary.Get(FixedRangeType.StrongholdRange);
-                var allies = getAllyUnits(status.Side, trans.position, st_range, allowDead: false, UnitType.Stronghold);
+                var allies = getAllyUnits(status.Side, trans.position);//, st_range, allowDead: false, UnitType.Stronghold);
                 foreach(var unit in allies) {
                     var diff = (enemy.pos - unit.pos).normalized;
                     SendCommand(unit.id, enemy.side, diff * st_range);
@@ -90,6 +108,30 @@ namespace AdvancedGears
                 id,
                 new StrategyVector( side, FixedPointVector3.FromUnityVector(vec)))
             );
+        }
+
+        UnitInfo getNearestEnemy(UnitSide side, Vector3 pos)
+        {
+            return null;
+        }
+
+        UnitInfo[] getAllyUnits(UnitSide side, Vector3 pos)
+        {
+            return null;
+        }
+
+        protected override void ReceiveSnapshots(Dictionary<EntityId, List<EntitySnapshot>> shots)
+        {
+            if (shots.Count > 0)
+            {
+                //SetSpawnPoints(shots);
+            }
+            else
+            {
+                //SetSpawnPointsClear();
+            }
+
+            Debug.LogFormat("EntitySnapshotCount:{0}", shots.Count);
         }
     }
 }

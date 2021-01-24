@@ -54,6 +54,7 @@ namespace AdvancedGears
                 ComponentType.ReadOnly<ResourceComponent.HasAuthority>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<Position.Component>(),
+                ComponentType.ReadOnly<StrongholdSight.Component>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
 
@@ -62,8 +63,7 @@ namespace AdvancedGears
             checkerGroup = GetEntityQuery(
                 ComponentType.ReadWrite<UnitFactory.Component>(),
                 ComponentType.ReadOnly<UnitFactory.HasAuthority>(),
-                ComponentType.ReadOnly<BaseUnitStatus.Component>(),
-                ComponentType.ReadOnly<Position.Component>()
+                ComponentType.ReadOnly<BaseUnitStatus.Component>()
             );
 
             checkerInter = IntervalCheckerInitializer.InitializedChecker(1.5f);
@@ -82,8 +82,7 @@ namespace AdvancedGears
                 return;
 
             Entities.With(checkerGroup).ForEach((ref UnitFactory.Component factory,
-                                                 ref BaseUnitStatus.Component status,
-                                                 ref Position.Component position) =>
+                                                 ref BaseUnitStatus.Component status) =>
             {
                 if (status.State != UnitState.Alive)
                     return;
@@ -117,7 +116,7 @@ namespace AdvancedGears
 
         // TODO:getFromSettings;
         const float range = 12.0f;
-        const float height_buffer = 5.0f;
+        const float height_buffer = 1.0f;
         void HandleProductUnit()
         {
             if (CheckTime(ref factoryInter) == false)
@@ -128,6 +127,7 @@ namespace AdvancedGears
                                           ref ResourceComponent.Component resource,
                                           ref BaseUnitStatus.Component status,
                                           ref Position.Component position,
+                                          ref StrongholdSight.Component sight,
                                           ref SpatialEntityId entityId) =>
             {
                 if (status.State != UnitState.Alive)
@@ -190,11 +190,18 @@ namespace AdvancedGears
                 if (CheckTime(ref factoryInter) == false)
                     return;
 
+                var random = GetEmptyCoordinates(entityId.EntityId, position.Coords, sight.StrategyVector.Vector, height_buffer, factory.Containers);
+                if (random == null)
+                {
+                    Debug.LogFormat("There is no Empty");
+                    return;
+                }
+
                 Debug.LogFormat("CreateUnit!");
 
                 factory.ProductInterval = factoryInter;
 
-                var coords = GetEmptyCoordinates(entityId.EntityId, position.Coords, height_buffer, factory.Containers);
+                var coords = random.Value;//GetEmptyCoordinates(entityId.EntityId, position.Coords, height_buffer, factory.Containers);
                 EntityTemplate template = null;
 
                 bool finished = false;
@@ -255,7 +262,7 @@ namespace AdvancedGears
         }
 
         readonly Dictionary<EntityId, HexRandomContaner> hexContainerDic = new Dictionary<EntityId, HexRandomContaner>();
-        private Coordinates? GetEmptyCoordinates(EntityId id, in Coordinates center, in Coordinates target, float height_buffer, List<UnitContainer> containers)
+        private Coordinates? GetEmptyCoordinates(EntityId id, in Coordinates center, in FixedPointVector3 vector, float height_buffer, List<UnitContainer> containers)
         {
             var index = containers.FindIndex(c => c.State == ContainerState.Empty);
             if (index >= 0)
@@ -267,20 +274,19 @@ namespace AdvancedGears
             HexRandomContaner hex = null;
             if (hexContainerDic.TryGetValue(id, out hex) == false)
             {
-                hex = new HexRandomContaner(center.ToUnityVector() + this.Origin, HexDictionary.HexEdgeLength, (int)(HexDictionary.HexEdgeLength / RangeDictionary.TeamInter));
+                hex = new HexRandomContaner(center.ToUnityVector() + this.Origin, height_buffer, HexDictionary.HexEdgeLength, (int)(HexDictionary.HexEdgeLength / RangeDictionary.TeamInter));
                 hexContainerDic[id] = hex;
             }
 
             hex.Clear();
             foreach (var c in containers)
             {
-                hex.SetCurrentPoint(c.Pos.ToWorkerPosition(this.Origin));
+                if (c.State != ContainerState.Empty)
+                    hex.SetCurrentPoint(c.Pos.ToWorkerPosition(this.Origin));
             }
 
-
-
-            var point = HexDictionary.HexEdgeLength * 0.5f * (target - center).ToUnityVector().normalized;
-            var empty = hex.GetRandomPoint(point);
+            var vec = HexDictionary.HexEdgeLength * 0.5f * vector.ToUnityVector().normalized;
+            var empty = hex.GetRandomPointFromVector(vec);
             if (empty == null)
                 return null;
 
@@ -965,7 +971,7 @@ namespace AdvancedGears
                         continue;
 
                     vertexes[i,j] = true;
-                    return new Vector3((2*i+1)*size.x/2/cut_x, (2*j+1)*size.z/2/cut_z);
+                    return new Vector3((2*i+1)*size.x/2/cut_x, 0.0f, (2*j+1)*size.z/2/cut_z) + corner;
                 }
             }
 
@@ -994,18 +1000,26 @@ namespace AdvancedGears
     {
         readonly Dictionary<int, RandomContainer> containers = new Dictionary<int, RandomContainer>();
         Vector3 center;
+        float height_buffer;
         float radius;
         int cut;
 
-        public HexRandomContaner(Vector3 center, float radius, int cut)
+        public HexRandomContaner(Vector3 center, float height_buffer, float radius, int cut)
         {
             this.center = center;
             this.radius = radius;
+            this.height_buffer = height_buffer;
             this.cut = cut;
         }
 
         const float degTri = 60.0f;
         const float root3 = 1.7320f;
+
+        public Vector3? GetRandomPointFromVector(Vector3 vector)
+        {
+            return GetRandomPoint(vector+center);
+        }
+
         public Vector3? GetRandomPoint(Vector3 point)
         {
             var diff = point - this.center;
@@ -1026,8 +1040,9 @@ namespace AdvancedGears
                 var rad = degTri / 2 * (2 * index + 1);
                 var range = radius / root3;
                 var pos = center + range * new Vector3(Mathf.Sin(rad), 0, Mathf.Cos(rad));
+                pos += height_buffer * Vector3.up;
 
-                containers[index] = new RandomContainer(pos, range / 2 * Vector3.one, cut, cut);
+                containers[index] = new RandomContainer(pos, range / 2 * (Vector3.one + Vector3.down) / 2, cut, cut);
             }
 
             return containers[index].GetEmptyPoint();
@@ -1047,6 +1062,8 @@ namespace AdvancedGears
 
         public void Clear()
         {
+            foreach (var kvp in containers)
+                kvp.Value.Clear();
         }
     }
 }

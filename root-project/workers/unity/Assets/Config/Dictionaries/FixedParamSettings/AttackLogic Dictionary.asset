@@ -20,12 +20,12 @@ MonoBehaviour:
     rangeRate: 0.4
     speedRate: 0.8
   - order: 3
-    rangeRate: 2
+    rangeRate: 4
     speedRate: 0.8
   - order: 2
     rangeRate: 0.9
     speedRate: 0.8
-  judgeRate: 2
+  judgeRate: 4
   boidReduceRate: 0.5
   boidPotentialMinimum: 0.01
   boidRadiusMinimum: 0.1

@@ -265,11 +265,28 @@ namespace AdvancedGears
                     if (unit.Value.State == UnitState.Dead)
                         continue;
 
+                    var power = 0.0f;
+                    switch (unit.Value.Type)
+                    {
+                        case UnitType.Soldier:
+                        case UnitType.Commander:
+                            power = 1.0f;
+                            break;
+
+                        case UnitType.Advanced:
+                            power = 5.0f;
+                            break;
+
+                        case UnitType.Turret:
+                            power = 3.0f;
+                            break;
+                    }
+
                     // todo calc war power
                     if (unit.Value.Side == side)
-                        ally += 1.0f;
-                    else
-                        enemy += 1.0f;
+                        ally += power;
+                    else if (unit.Value.Side != UnitSide.None)
+                        enemy += power;
                 }
             }
 

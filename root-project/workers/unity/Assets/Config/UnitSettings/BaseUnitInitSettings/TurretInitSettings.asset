@@ -15,9 +15,9 @@ MonoBehaviour:
   speed: 1
   rotSpeed: 3
   sightRange: 30
-  atkRange: 15
+  atkRange: 20
   atkAngle: 1
-  maxHp: 10
+  maxHp: 50
   defense: 10
   maxFuel: 50
   consumeRate: 1
