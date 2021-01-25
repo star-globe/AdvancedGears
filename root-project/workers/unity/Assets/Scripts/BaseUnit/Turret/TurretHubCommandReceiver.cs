@@ -55,7 +55,7 @@ namespace AdvancedGears
 
             foreach (var kvp in datas)
             {
-                CommandSystem.SendCommand(new BaseUnitStatus.SetOrder.Request(kvp.Key, new OrderInfo() { Order = order }));
+                CommandSystem.SendCommand(new BaseUnitStatus.SetOrder.Request(kvp.Key, new OrderInfo() { Order = order, Rate = 1.0f }));
             }
         }
     }

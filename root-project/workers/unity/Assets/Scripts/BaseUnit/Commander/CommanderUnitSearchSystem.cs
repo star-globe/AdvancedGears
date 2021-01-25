@@ -210,7 +210,7 @@ namespace AdvancedGears
             //commonTargeting(tgt, entityId, commander, out targetInfo);
 
             // check power
-            var current = GetOrder(status.Side, pos, scaledRange);
+            var current = GetOrder(status.Side, pos, scaledRange, out float rate);
             if (current == null)
             {
                 current = commander.Order.Upper == OrderType.Guard ?
@@ -227,13 +227,13 @@ namespace AdvancedGears
             var targetBit = team.IsNeedUpdate;
 
             if (UnitUtils.IsNeedUpdate(targetBit, TargetType.FrontLine) && line.FrontLine.IsValid())
-                SetOrderFollowers(followers, entityId.EntityId, line, current.Value);
+                SetOrderFollowers(followers, entityId.EntityId, line, current.Value, rate);
 
             if (UnitUtils.IsNeedUpdate(targetBit, TargetType.Hex) && hex.IsValid())
-                SetOrderFollowers(followers, entityId.EntityId, hex, current.Value);
+                SetOrderFollowers(followers, entityId.EntityId, hex, current.Value, rate);
 
             if (UnitUtils.IsNeedUpdate(targetBit, TargetType.Stronghold) && stronghold.IsValid())
-                SetOrderFollowers(followers, entityId.EntityId, stronghold, current.Value);
+                SetOrderFollowers(followers, entityId.EntityId, stronghold, current.Value, rate);
 
             team.IsNeedUpdate = 0;
 
@@ -243,13 +243,14 @@ namespace AdvancedGears
 
             // オーダーが変わった場合のみ直接命令を下す
             if (changed)
-                SetOrderFollowers(followers, entityId.EntityId, current.Value);
+                SetOrderFollowers(followers, entityId.EntityId, current.Value, rate);
         }
 
-        private OrderType? GetOrder(UnitSide side, in Vector3 pos, float length)
+        private OrderType? GetOrder(UnitSide side, in Vector3 pos, float length, out float rate)
         {
             float ally = 0.0f;
             float enemy = 0.0f;
+            rate = 1.0f;
 
             var colls = Physics.OverlapSphere(pos, length, LayerMask.GetMask("Unit"));
             for (var i = 0; i < colls.Length; i++)
@@ -296,13 +297,15 @@ namespace AdvancedGears
 
             //if (ally * rate * rate < enemy)
             //    return OrderType.Escape;
+            if (ally > 0)
+                rate = Mathf.Min(enemy * rate / ally, 1.0f);
 
             return null;//OrderType.Keep;
         }
         #endregion
 
         #region SetMethod
-        private void SetOrderFollowers(List<EntityId> followers, in EntityId entityId, OrderType order)
+        private void SetOrderFollowers(List<EntityId> followers, in EntityId entityId, OrderType order, float rate)
         {
             foreach (var id in followers)
             {
@@ -311,7 +314,7 @@ namespace AdvancedGears
             base.SetCommand(entityId, order);
         }
 
-        private void SetOrderFollowers(List<EntityId> followers, in EntityId entityId, in TargetInfo targetInfo, OrderType order)
+        private void SetOrderFollowers(List<EntityId> followers, in EntityId entityId, in TargetInfo targetInfo, OrderType order, float rate)
         {
             foreach (var id in followers)
             {
@@ -320,7 +323,7 @@ namespace AdvancedGears
 
             SetCommand(entityId, targetInfo, order);
         }
-        private void SetOrderFollowers(List<EntityId> followers, in EntityId entityId, in TargetFrontLineInfo lineInfo, OrderType order)
+        private void SetOrderFollowers(List<EntityId> followers, in EntityId entityId, in TargetFrontLineInfo lineInfo, OrderType order, float rate)
         {
             foreach (var id in followers)
             {
@@ -329,7 +332,7 @@ namespace AdvancedGears
 
             SetCommand(entityId, lineInfo, order);
         }
-        private void SetOrderFollowers(List<EntityId> followers, in EntityId entityId, in TargetHexInfo hexInfo, OrderType order)
+        private void SetOrderFollowers(List<EntityId> followers, in EntityId entityId, in TargetHexInfo hexInfo, OrderType order, float rate)
         {
             foreach (var id in followers)
             {
@@ -338,7 +341,7 @@ namespace AdvancedGears
 
             SetCommand(entityId, hexInfo, order);
         }
-        private void SetOrderFollowers(List<EntityId> followers, in EntityId entityId, in TargetStrongholdInfo strongholdInfo, OrderType order)
+        private void SetOrderFollowers(List<EntityId> followers, in EntityId entityId, in TargetStrongholdInfo strongholdInfo, OrderType order, float rate)
         {
             foreach (var id in followers)
             {
@@ -347,24 +350,24 @@ namespace AdvancedGears
 
             SetCommand(entityId, strongholdInfo, order);
         }
-        private void SetCommand(EntityId id, in TargetInfo targetInfo, OrderType order)
+        private void SetCommand(EntityId id, in TargetInfo targetInfo, OrderType order, float rate)
         {
-            base.SetCommand(id, order);
+            base.SetCommand(id, order, rate);
             this.CommandSystem.SendCommand(new BaseUnitTarget.SetTarget.Request(id, targetInfo));
         }
-        private void SetCommand(EntityId id, in TargetFrontLineInfo lineInfo, OrderType order)
+        private void SetCommand(EntityId id, in TargetFrontLineInfo lineInfo, OrderType order, float rate)
         {
-            base.SetCommand(id, order);
+            base.SetCommand(id, order, rate);
             this.CommandSystem.SendCommand(new BaseUnitTarget.SetFrontLine.Request(id, lineInfo));
         }
-        private void SetCommand(EntityId id, in TargetHexInfo hexInfo, OrderType order)
+        private void SetCommand(EntityId id, in TargetHexInfo hexInfo, OrderType order, float rate)
         {
-            base.SetCommand(id, order);
+            base.SetCommand(id, order, rate);
             this.CommandSystem.SendCommand(new BaseUnitTarget.SetHex.Request(id, hexInfo));
         }
-        private void SetCommand(EntityId id, in TargetStrongholdInfo strongholdInfo, OrderType order)
+        private void SetCommand(EntityId id, in TargetStrongholdInfo strongholdInfo, OrderType order, float rate)
         {
-            base.SetCommand(id, order);
+            base.SetCommand(id, order, rate);
             this.CommandSystem.SendCommand(new BaseUnitTarget.SetStronghold.Request(id, strongholdInfo));
         }
         #endregion

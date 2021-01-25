@@ -15,6 +15,7 @@ enum OrderType {
 
 type OrderInfo {
     OrderType order = 1;
+    float rate = 2;
 }
 
 type OrderPair {

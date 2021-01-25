@@ -72,8 +72,8 @@ namespace AdvancedGears
                 UnitInfo enemy = null;
                 var sightRange = action.SightRange;
 
-                if (SetStrategyTarget(pos, sightRange, ref sight, ref target))
-                    sightRange = Mathf.Max(0, sightRange - (sight.TargetPosition.ToWorkerPosition(this.Origin) - pos).magnitude);
+                //if (SetStrategyTarget(pos, sightRange, ref sight, ref target))
+                //    sightRange = Mathf.Max(0, sightRange - (sight.TargetPosition.ToWorkerPosition(this.Origin) - pos).magnitude);
 
                 enemy = getNearestEnemy(status.Side, pos, sightRange);
 
@@ -107,7 +107,7 @@ namespace AdvancedGears
                     }
                 }
 
-                range = AttackLogicDictionary.GetOrderRange(status.Order, range);
+                range = AttackLogicDictionary.GetOrderRange(status.Order, range) * status.Rate;
                 sight.TargetRange = range;
                 sight.State = target.State;
             });
@@ -411,7 +411,7 @@ namespace AdvancedGears
             return status.Value.State == UnitState.Alive;
         }
 
-        protected bool SetCommand(EntityId id, OrderType order, Entity? sendingEntity = null)
+        protected bool SetCommand(EntityId id, OrderType order, float rate = 1.0f, Entity? sendingEntity = null)
         {
             BaseUnitStatus.Component? status;
             if (base.TryGetComponent(id, out status) == false)
@@ -421,7 +421,7 @@ namespace AdvancedGears
                 return false;
 
             var send = sendingEntity ?? Entity.Null;
-            this.CommandSystem.SendCommand(new BaseUnitStatus.SetOrder.Request(id, new OrderInfo() { Order = order }), send);
+            this.CommandSystem.SendCommand(new BaseUnitStatus.SetOrder.Request(id, new OrderInfo() { Order = order, Rate = rate }), send);
             return true;
         }
 

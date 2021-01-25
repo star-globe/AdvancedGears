@@ -25,6 +25,7 @@ namespace AdvancedGears
             statusWriter.SendUpdate(new BaseUnitStatus.Update()
             {
                 Order = request.Payload.Order,
+                Rate = request.Payload.Rate,
             });
         }
 
