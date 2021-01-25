@@ -124,19 +124,19 @@ namespace AdvancedGears
                 case UnitType.Stronghold:
                     AddStrongholdTypeComponents(template, writeAccess);
                     template.AddComponent(new RecoveryComponent.Snapshot { State = RecoveryState.Supplying }, writeAccess);
-                    var commandersQuery = InterestQuery.Query(Constraint.Component<CommanderStatus.Component>())
-                                            .FilterResults(Position.ComponentId, BaseUnitStatus.ComponentId);
-                    var commanderInterest = InterestTemplate.Create().AddQueries<StrongholdStatus.Component>(commandersQuery);
-                    template.AddComponent(commanderInterest.ToSnapshot(), writeAccess);
+                    //var commandersQuery = InterestQuery.Query(Constraint.Component<CommanderStatus.Component>())
+                    //                        .FilterResults(Position.ComponentId, BaseUnitStatus.ComponentId);
+                    //var commanderInterest = InterestTemplate.Create().AddQueries<StrongholdStatus.Component>(commandersQuery);
+                    //template.AddComponent(commanderInterest.ToSnapshot(), writeAccess);
                     break;
 
                 case UnitType.HeadQuarter:
                     AddStrongholdTypeComponents(template, writeAccess);
                     template.AddComponent(new StrategyOrderManager.Snapshot { }, writeAccess);
-                    var strongholdQuery = InterestQuery.Query(Constraint.Component<StrongholdStatus.Component>())
-                                          .FilterResults(Position.ComponentId, BaseUnitStatus.ComponentId);
-                    var strongholdInterest = InterestTemplate.Create().AddQueries<StrategyOrderManager.Component>(strongholdQuery);
-                    template.AddComponent(strongholdInterest.ToSnapshot(), writeAccess);
+                    //var strongholdQuery = InterestQuery.Query(Constraint.Component<StrongholdStatus.Component>())
+                    //                      .FilterResults(Position.ComponentId, BaseUnitStatus.ComponentId);
+                    //var strongholdInterest = InterestTemplate.Create().AddQueries<StrategyOrderManager.Component>(strongholdQuery);
+                    //template.AddComponent(strongholdInterest.ToSnapshot(), writeAccess);
                     break;
 
                 case UnitType.Turret:

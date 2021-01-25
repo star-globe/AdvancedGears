@@ -20,6 +20,25 @@ namespace AdvancedGears
 
         IntervalChecker inter;
 
+        protected override ImprobableEntityQuery EntityQuery
+        {
+            get
+            {
+                var list = new IConstraint[]
+                {
+                    new ComponentConstraint(StrongholdSight.ComponentId),
+                };
+
+                return new ImprobableEntityQuery()
+                {
+                    Constraint = new AndConstraint(list),
+                    ResultType = new SnapshotResultType()
+                };
+            }
+        }
+
+        protected override float IntervalTime { get { return 1.0f; } }
+
         protected override void OnCreate()
         {
             base.OnCreate();
@@ -31,28 +50,13 @@ namespace AdvancedGears
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
 
-            inter = IntervalCheckerInitializer.InitializedChecker(10.0f);
-        }
-
-        protected override ImprobableEntityQuery EntityQuery
-        {
-            get
-            {
-                var list = new IConstraint[]
-                {
-                    new ComponentConstraint(SpawnPoint.ComponentId),
-                };
-
-                return new ImprobableEntityQuery()
-                {
-                    Constraint = new AndConstraint(list),
-                    ResultType = new SnapshotResultType()
-                };
-            }
+            inter = IntervalCheckerInitializer.InitializedChecker(1.0f);
         }
 
         protected override void OnUpdate()
         {
+            base.OnUpdate();
+
             if (CheckTime(ref inter) == false)
                 return;
 
@@ -76,11 +80,11 @@ namespace AdvancedGears
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
                 var range = RangeDictionary.Get(FixedRangeType.HeadQuarterRange);
 
-                var entityId = new EntityId();
-                var enemy = getNearestEnemy(status.Side, trans.position);//, range, allowDead:true, UnitType.HeadQuarter);
+                var enemy = getNearestEnemy(status.Side, trans.position);
                 if (enemy == null)
                     return;
 
+                var entityId = new EntityId();
                 entityId = enemy.id;
 
                 var target = manager.TargetHq;
@@ -89,13 +93,16 @@ namespace AdvancedGears
                     {
                         HeadQuarterId = enemy.id,
                         Side = enemy.side,
-                        Position = enemy.pos.ToCoordinates(),
+                        Position = enemy.pos.ToWorldPosition(this.Origin),
                     };
                 }
 
                 var st_range = RangeDictionary.Get(FixedRangeType.StrongholdRange);
-                var allies = getAllyUnits(status.Side, trans.position);//, st_range, allowDead: false, UnitType.Stronghold);
+                var allies = getAllyUnits(status.Side, trans.position);
                 foreach(var unit in allies) {
+                    if (unit.Type == UnitType.Stronghold)
+                        continue;
+
                     var diff = (enemy.pos - unit.pos).normalized;
                     SendCommand(unit.id, enemy.side, diff * st_range);
                 }
@@ -112,26 +119,89 @@ namespace AdvancedGears
 
         UnitInfo getNearestEnemy(UnitSide side, Vector3 pos)
         {
-            return null;
+            UnitInfo info = null;
+            var length = float.MaxValue;
+            foreach (var kvp in sightDictionary)
+            {
+                if (kvp.Key == side || kvp.Key == UnitSide.None)
+                    continue;
+
+                foreach (var unit in kvp.Value)
+                {
+                    if (unit.Type != UnitType.HeadQuarter)
+                        continue;
+
+                    var mag = (unit.pos - pos).sqrMagnitude;
+                    if (mag < length) {
+                        length = mag;
+                        info = unit;
+                    }
+                }
+            }
+
+            return info;
         }
 
-        UnitInfo[] getAllyUnits(UnitSide side, Vector3 pos)
+        List<UnitInfo> getAllyUnits(UnitSide side, Vector3 pos)
         {
-            return null;
+            if (sightDictionary.ContainsKey(side) == false)
+                return null;
+
+            return sightDictionary[side];
         }
 
         protected override void ReceiveSnapshots(Dictionary<EntityId, List<EntitySnapshot>> shots)
         {
             if (shots.Count > 0)
             {
-                //SetSpawnPoints(shots);
+                SetStrongholdSights(shots);
             }
             else
             {
-                //SetSpawnPointsClear();
+                SetStrongholdSightsClear();
             }
 
             Debug.LogFormat("EntitySnapshotCount:{0}", shots.Count);
+        }
+
+        readonly Dictionary<UnitSide,List<UnitInfo>> sightDictionary = new Dictionary<UnitSide,List<UnitInfo>>();
+        void SetStrongholdSights(Dictionary<EntityId, List<EntitySnapshot>> shots)
+        {
+            SetStrongholdSightsClear();
+
+            foreach (var kvp in shots)
+            {
+                foreach (var snap in kvp.Value)
+                {
+                    Position.Snapshot position;
+                    if (snap.TryGetComponentSnapshot(out position) == false)
+                        continue;
+
+                    BaseUnitStatus.Snapshot status;
+                    if (snap.TryGetComponentSnapshot(out status) == false)
+                        continue;
+
+                    var info = new UnitInfo();
+                    info.id = kvp.Key;
+                    info.pos = position.ToWorkerPosition(this.Origin);
+                    info.type = status.Type;
+                    info.side = status.Side;
+                    info.order = status.Order;
+                    info.state = status.State;
+                    info.rank = status.Rank;
+
+                    if (sightDictionary.ContainsKey(status.Side) == false)
+                        sightDictionary[status.Side] = new List<UnitInfo>();
+
+                    sightDictionary[status.Side].Add(info);
+                }
+            }
+        }
+
+        void SetStrongholdSightsClear()
+        {
+            foreach (var kvp in sightDictionary)
+                kvp.Value.Clear();
         }
     }
 }

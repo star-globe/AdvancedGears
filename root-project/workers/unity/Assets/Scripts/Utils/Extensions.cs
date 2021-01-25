@@ -15,6 +15,11 @@ namespace AdvancedGears
             return (coords.X * coords.X) + (coords.Y * coords.Y) + (coords.Z * coords.Z);
         }
         
+        public static Vector3 ToWorkerPosition(this Coordinates coords, Vector3 origin)
+        {
+            return coords.ToUnityVector() + origin;
+        }
+
         public static Vector3 ToWorkerPosition(this FixedPointVector3 pos, Vector3 origin)
         {
             return pos.ToUnityVector() + origin;
