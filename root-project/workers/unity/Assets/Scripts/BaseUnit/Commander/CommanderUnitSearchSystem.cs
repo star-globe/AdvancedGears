@@ -309,46 +309,46 @@ namespace AdvancedGears
         {
             foreach (var id in followers)
             {
-                base.SetCommand(id, order);
+                base.SetCommand(id, order, rate);
             }
-            base.SetCommand(entityId, order);
+            base.SetCommand(entityId, order, rate);
         }
 
         private void SetOrderFollowers(List<EntityId> followers, in EntityId entityId, in TargetInfo targetInfo, OrderType order, float rate)
         {
             foreach (var id in followers)
             {
-                SetCommand(id, targetInfo, order);
+                SetCommand(id, targetInfo, order, rate);
             }
 
-            SetCommand(entityId, targetInfo, order);
+            SetCommand(entityId, targetInfo, order, rate);
         }
         private void SetOrderFollowers(List<EntityId> followers, in EntityId entityId, in TargetFrontLineInfo lineInfo, OrderType order, float rate)
         {
             foreach (var id in followers)
             {
-                SetCommand(id, lineInfo, order);
+                SetCommand(id, lineInfo, order, rate);
             }
 
-            SetCommand(entityId, lineInfo, order);
+            SetCommand(entityId, lineInfo, order, rate);
         }
         private void SetOrderFollowers(List<EntityId> followers, in EntityId entityId, in TargetHexInfo hexInfo, OrderType order, float rate)
         {
             foreach (var id in followers)
             {
-                SetCommand(id, hexInfo, order);
+                SetCommand(id, hexInfo, order, rate);
             }
 
-            SetCommand(entityId, hexInfo, order);
+            SetCommand(entityId, hexInfo, order, rate);
         }
         private void SetOrderFollowers(List<EntityId> followers, in EntityId entityId, in TargetStrongholdInfo strongholdInfo, OrderType order, float rate)
         {
             foreach (var id in followers)
             {
-                SetCommand(id, strongholdInfo, order);
+                SetCommand(id, strongholdInfo, order, rate);
             }
 
-            SetCommand(entityId, strongholdInfo, order);
+            SetCommand(entityId, strongholdInfo, order, rate);
         }
         private void SetCommand(EntityId id, in TargetInfo targetInfo, OrderType order, float rate)
         {

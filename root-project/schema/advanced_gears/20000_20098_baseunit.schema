@@ -15,7 +15,6 @@ enum OrderType {
 
 type OrderInfo {
     OrderType order = 1;
-    float rate = 2;
 }
 
 type OrderPair {
@@ -37,7 +36,7 @@ component BaseUnitStatus {
     OrderType order = 4;
     uint32 rank = 5;
 
-    command improbable.gdk.core.Empty set_order(OrderInfo);
+    event OrderInfo set_order;
     event ForceStateChange force_state;
 }
 
@@ -116,39 +115,27 @@ component BaseUnitAction {
     list<improbable.gdk.transform_synchronization.FixedPointVector3> enemy_positions = 7;
 }
 
-type TargetBaseInfo {
-    bool is_target = 1;
-    EntityId target_id = 2;
-    improbable.gdk.transform_synchronization.FixedPointVector3 position = 3;
-    UnitType type = 4;
-    UnitSide side = 5;
-    UnitState state = 6;
+type UnitBaseInfo {
+    EntityId unit_id = 1;
+    improbable.Coordinates position = 2;
+    UnitType type = 3;
+    UnitSide side = 4;
+    UnitState state = 5;
 }
 
 type TargetInfo {
-    bool is_target = 1;
-    EntityId target_id = 2;
-    improbable.gdk.transform_synchronization.FixedPointVector3 position = 3;
-    UnitType type = 4;
-    UnitSide side = 5;
-    UnitState state = 6;
-    EntityId commander_id = 7;
-    float ally_range = 8;
+    UnitBaseInfo tgt_info = 1;
+    float power_rate = 2;
 }
 
 type TargetFrontLineInfo {
     FrontLineInfo front_line = 1;
+    float power_rate = 2;
 }
 
 type TargetHexInfo {
-    uint32 hex_index = 2;
-    UnitSide side = 3;
-}
-
-type TargetStrongholdInfo {
-    EntityId stronghold_id = 1;
-    UnitSide side = 2;
-    improbable.Coordinates position = 3;
+    HexInfo hex_info = 1;
+    float power_rate = 2;
 }
 
 enum TargetType {
@@ -160,9 +147,10 @@ enum TargetType {
 }
 
 type TargetInfoSet {
-    TargetStrongholdInfo stronghold = 1;
-    TargetFrontLineInfo front_line = 2;
-    TargetHexInfo hex_info = 3;
+    UnitBaseInfo stronghold = 1;
+    FrontLineInfo front_line = 2;
+    HexInfo hex_info = 3;
+    float power_rate = 4;
 }
 
 component BaseUnitTarget {
@@ -170,17 +158,17 @@ component BaseUnitTarget {
 
     TargetState state = 1;
     TargetType type = 2;
+    float power_rate = 3;
 
-    TargetInfo target_info = 10;
-    TargetStrongholdInfo stronghold_info = 11;
-    TargetFrontLineInfo front_line = 12;
-    TargetHexInfo hex_info = 13;
+    UnitBaseInfo target_unit = 10;
+    FrontLineInfo front_line = 11;
+    HexInfo hex_info = 12;
 
-    command improbable.gdk.core.Empty set_target(TargetInfo);
-    command improbable.gdk.core.Empty set_front_line(TargetFrontLineInfo);
-    command improbable.gdk.core.Empty set_hex(TargetHexInfo);
-    command improbable.gdk.core.Empty set_stronghold(TargetStrongholdInfo);
+    event TargetInfo set_target;
+    event TargetFrontLineInfo set_front_line;
+    event TargetHexInfo set_hex;
 }
+
 // 削除予定
 type PostureData {
     PosturePoint point = 1;

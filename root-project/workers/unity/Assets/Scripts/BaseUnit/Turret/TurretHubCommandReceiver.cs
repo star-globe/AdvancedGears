@@ -53,9 +53,8 @@ namespace AdvancedGears
         {
             var datas = turretHub.Data.TurretsDatas;
 
-            foreach (var kvp in datas)
-            {
-                CommandSystem.SendCommand(new BaseUnitStatus.SetOrder.Request(kvp.Key, new OrderInfo() { Order = order, Rate = 1.0f }));
+            foreach (var kvp in datas) {
+                UpdateSystem.SendEvent(new BaseUnitStatus.SetOrder.Event(new OrderInfo() { Order = order }), kvp.Value.EntityId);
             }
         }
     }

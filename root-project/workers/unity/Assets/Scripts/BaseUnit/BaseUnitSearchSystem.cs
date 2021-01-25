@@ -107,7 +107,7 @@ namespace AdvancedGears
                     }
                 }
 
-                range = AttackLogicDictionary.GetOrderRange(status.Order, range) * status.Rate;
+                range = AttackLogicDictionary.GetOrderRange(status.Order, range) * target.PowerRate;
                 sight.TargetRange = range;
                 sight.State = target.State;
             });
@@ -421,7 +421,7 @@ namespace AdvancedGears
                 return false;
 
             var send = sendingEntity ?? Entity.Null;
-            this.CommandSystem.SendCommand(new BaseUnitStatus.SetOrder.Request(id, new OrderInfo() { Order = order, Rate = rate }), send);
+            this.CommandSystem.SendCommand(new BaseUnitStatus.SetOrder.Request(id, new OrderInfo() { Order = order }), send);
             return true;
         }
 
