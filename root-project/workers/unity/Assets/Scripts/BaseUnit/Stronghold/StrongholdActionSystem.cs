@@ -305,7 +305,7 @@ namespace AdvancedGears
             this.CommandSystem.SendCommand(new CommanderTeam.SetTargetHex.Request(id, targetInfo));
         }
 
-        private void CheckOrder(uint hexIndex, OrderType order, Dictionary<EntityId,TargetStrongholdInfo> targetStrongholds, Vector3 strategyVector, Dictionary<EntityId,TeamInfo> datas, HashSet<long> sendIds)
+        private void CheckOrder(uint hexIndex, OrderType order, Dictionary<EntityId,UnitBaseInfo> targetStrongholds, Vector3 strategyVector, Dictionary<EntityId,TeamInfo> datas, HashSet<long> sendIds)
         {
             if (sendIds == null)
                 return;

@@ -73,9 +73,3 @@ type FrontLineInfo
     improbable.Coordinates left_corner = 1;
     improbable.Coordinates right_corner = 2;
 }
-
-type HexInfo
-{
-    uint32 hex_index = 1;
-    UnitSide side = 2;
-}

@@ -123,6 +123,12 @@ type UnitBaseInfo {
     UnitState state = 5;
 }
 
+type HexBaseInfo
+{
+    uint32 hex_index = 1;
+    UnitSide side = 2;
+}
+
 type TargetInfo {
     UnitBaseInfo tgt_info = 1;
     float power_rate = 2;
@@ -134,7 +140,7 @@ type TargetFrontLineInfo {
 }
 
 type TargetHexInfo {
-    HexInfo hex_info = 1;
+    HexBaseInfo hex_info = 1;
     float power_rate = 2;
 }
 
@@ -149,7 +155,7 @@ enum TargetType {
 type TargetInfoSet {
     UnitBaseInfo stronghold = 1;
     FrontLineInfo front_line = 2;
-    HexInfo hex_info = 3;
+    HexBaseInfo hex_info = 3;
     float power_rate = 4;
 }
 
@@ -162,7 +168,7 @@ component BaseUnitTarget {
 
     UnitBaseInfo target_unit = 10;
     FrontLineInfo front_line = 11;
-    HexInfo hex_info = 12;
+    HexBaseInfo hex_info = 12;
 
     event TargetInfo set_target;
     event TargetFrontLineInfo set_front_line;
@@ -254,9 +260,9 @@ component CommanderTeam {
     command improbable.gdk.core.Empty add_follower(FollowerInfo);
     command improbable.gdk.core.Empty set_superior(SuperiorInfo);
     command TeamInfoResponse get_team_info(TeamInfoRequest);
-    command improbable.gdk.core.Empty set_target_stroghold(TargetStrongholdInfo);
-    command improbable.gdk.core.Empty set_target_frontline(TargetFrontLineInfo);
-    command improbable.gdk.core.Empty set_target_hex(TargetHexInfo);
+    event TargetInfo set_target;
+    event TargetFrontLineInfo set_frontline;
+    event TargetHexInfo set_hex;
 }
 
 type WarPower {
@@ -328,7 +334,7 @@ component StrongholdSight {
 
     IntervalChecker interval = 1;
     StrategyVector strategy_vector = 2;
-    map<EntityId,TargetStrongholdInfo> target_strongholds = 4;
+    map<EntityId,UnitBaseInfo> target_strongholds = 4;
     list<FrontLineInfo> front_line_corners = 5;
     map<uint32,TargetHexInfo> target_hexes = 6;
 

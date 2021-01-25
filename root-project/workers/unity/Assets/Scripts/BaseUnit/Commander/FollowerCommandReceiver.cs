@@ -57,9 +57,10 @@ namespace AdvancedGears
         {
             commandReceiver.OnAddFollowerRequestReceived += OnAddFollowerRequest;
             commandReceiver.OnGetTeamInfoRequestReceived += OnTeamInfoRequest;
-            commandReceiver.OnSetTargetStrogholdRequestReceived += OnSetStrongholdRequest;
-            commandReceiver.OnSetTargetFrontlineRequestReceived += OnSetFrontlineRequest;
-            commandReceiver.OnSetTargetHexRequestReceived += OnSetHexRequest;
+            //commandReceiver.OnSetTargetStrogholdRequestReceived += OnSetStrongholdRequest;
+            //commandReceiver.OnSetTargetFrontlineRequestReceived += OnSetFrontlineRequest;
+            //commandReceiver.// += OnSetHexRequest;
+            writer.OnSetHexEvent += OnSetHexEvent;
         }
 
         private void Update()
@@ -145,10 +146,11 @@ namespace AdvancedGears
             });
         }
 
-        private void OnSetHexRequest(CommanderTeam.SetTargetHex.ReceivedRequest request)
+        private void OnSetHexEvent(TargetHexInfo hexInfo)
         {
             var target = writer.Data.TargetInfoSet;
-            target.HexInfo = request.Payload;
+            target.HexInfo = hexInfo.HexInfo;
+            target.PowerRate = hexInfo.PowerRate;
             var bitNumber = writer.Data.IsNeedUpdate;
 
             writer.SendUpdate(new CommanderTeam.Update()
