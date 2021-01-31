@@ -141,7 +141,7 @@ namespace AdvancedGears
             switch (target.Type)
             {
                 case TargetType.FromCommander:
-                    if (target.TargetInfo.IsTarget) {
+                    if (target.TargetUnit.IsTarget) {
                         sight.TargetPosition = target.TargetInfo.Position;
                         target.State = CalcTargetState(sight.TargetPosition.ToWorkerPosition(this.Origin) - pos, sightRange);
                         isTarget = true;
@@ -411,7 +411,7 @@ namespace AdvancedGears
             return status.Value.State == UnitState.Alive;
         }
 
-        protected bool SetCommand(EntityId id, OrderType order, float rate = 1.0f, Entity? sendingEntity = null)
+        protected bool SetOrder(EntityId id, OrderType order, Entity? sendingEntity = null)
         {
             BaseUnitStatus.Component? status;
             if (base.TryGetComponent(id, out status) == false)
@@ -421,7 +421,7 @@ namespace AdvancedGears
                 return false;
 
             var send = sendingEntity ?? Entity.Null;
-            this.CommandSystem.SendCommand(new BaseUnitStatus.SetOrder.Request(id, new OrderInfo() { Order = order }), send);
+            this.UpdateSystem.SendEvent(new BaseUnitStatus.SetOrder.Event(new OrderInfo() { Order = order }), id);
             return true;
         }
 

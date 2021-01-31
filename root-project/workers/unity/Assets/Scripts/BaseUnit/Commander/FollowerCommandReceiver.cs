@@ -57,10 +57,8 @@ namespace AdvancedGears
         {
             commandReceiver.OnAddFollowerRequestReceived += OnAddFollowerRequest;
             commandReceiver.OnGetTeamInfoRequestReceived += OnTeamInfoRequest;
-            //commandReceiver.OnSetTargetStrogholdRequestReceived += OnSetStrongholdRequest;
-            //commandReceiver.OnSetTargetFrontlineRequestReceived += OnSetFrontlineRequest;
-            //commandReceiver.// += OnSetHexRequest;
-            writer.OnSetHexEvent += OnSetHexEvent;
+            commandReceiver.OnSetTargetRequestReceived += OnSetStrongholdRequest;
+            commandReceiver.OnSetFrontlineRequestReceived += OnSetFrontlineRequest;
         }
 
         private void Update()
@@ -118,10 +116,10 @@ namespace AdvancedGears
             //}));
         }
 
-        private void OnSetStrongholdRequest(CommanderTeam.SetTargetStroghold.ReceivedRequest request)
+        private void OnSetStrongholdRequest(CommanderTeam.SetTarget.ReceivedRequest request)
         {
             var target = writer.Data.TargetInfoSet;
-            target.Stronghold = request.Payload;
+            target.Stronghold = request.Payload.TgtInfo;
             var bitNumber = writer.Data.IsNeedUpdate;
 
             writer.SendUpdate(new CommanderTeam.Update()
@@ -132,10 +130,10 @@ namespace AdvancedGears
             });
         }
 
-        private void OnSetFrontlineRequest(CommanderTeam.SetTargetFrontline.ReceivedRequest request)
+        private void OnSetFrontlineRequest(CommanderTeam.SetFrontline.ReceivedRequest request)
         {
             var target = writer.Data.TargetInfoSet;
-            target.FrontLine = request.Payload;
+            target.FrontLine = request.Payload.FrontLine;
             var bitNumber = writer.Data.IsNeedUpdate;
 
             writer.SendUpdate(new CommanderTeam.Update()
@@ -146,11 +144,11 @@ namespace AdvancedGears
             });
         }
 
-        private void OnSetHexEvent(TargetHexInfo hexInfo)
+        private void OnSetHexRequest(CommanderTeam.SetHex.ReceivedRequest request)
         {
             var target = writer.Data.TargetInfoSet;
-            target.HexInfo = hexInfo.HexInfo;
-            target.PowerRate = hexInfo.PowerRate;
+            target.HexInfo = request.Payload.HexInfo;
+            target.PowerRate = request.Payload.PowerRate;
             var bitNumber = writer.Data.IsNeedUpdate;
 
             writer.SendUpdate(new CommanderTeam.Update()

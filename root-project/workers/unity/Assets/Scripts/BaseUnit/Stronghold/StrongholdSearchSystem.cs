@@ -193,7 +193,7 @@ namespace AdvancedGears
                 if (HexUtils.ExistOtherSidePowers(hex, selfSide) == false)
                     continue;
 
-                hexes[hex.Index] = new TargetHexInfo() { HexIndex = hex.Index, Side = UnitSide.None };
+                hexes[hex.Index] = new TargetHexInfo(new HexBaseInfo(hex.Index, UnitSide.None) , 1.0f);
                 targetCount++;
             }
 
@@ -222,13 +222,13 @@ namespace AdvancedGears
                 if (i < 0)
                     continue;
                 isTarget = true;
-                hexes[n] = new TargetHexInfo(targetFront.Indexes[i], UnitSide.None);
+                hexes[n] = new TargetHexInfo(new HexBaseInfo(targetFront.Indexes[i], UnitSide.None), 1.0f);
             }
 
             return isTarget ? OrderType.Attack: OrderType.Keep;
         }
 
-        private OrderType GetTargetStronghold(in Vector3 pos, UnitSide side, in Vector3 vector, EntityId selfId, Dictionary<EntityId,TargetStrongholdInfo> targets)
+        private OrderType GetTargetStronghold(in Vector3 pos, UnitSide side, UnitType type, UnitState state, in Vector3 vector, EntityId selfId, Dictionary<EntityId,UnitBaseInfo> targets)
         {
             OrderType order = OrderType.Idle;
 
@@ -251,11 +251,11 @@ namespace AdvancedGears
             targets.Clear();
             if (units != null && units.Count > 0) {
                 foreach (var u in units) {
-                    targets.Add(u.id, new TargetStrongholdInfo(u.id, u.side, u.pos.ToWorldPosition(this.Origin).ToCoordinates()));
+                    targets.Add(u.id, new UnitBaseInfo(u.id, u.pos.ToWorldCoordinates(this.Origin), u.type, u.side, u.state));
                 }
             }
             else {
-                targets.Add(selfId, new TargetStrongholdInfo(selfId, side, pos.ToWorldPosition(this.Origin).ToCoordinates()));
+                targets.Add(selfId, new UnitBaseInfo(selfId, pos.ToWorldCoordinates(this.Origin), type, side, state));
                 order = OrderType.Keep;
             }
 
@@ -263,7 +263,7 @@ namespace AdvancedGears
 
             return order;
         }
-        private OrderType GetTargetStronghold(in Vector3 pos, UnitSide side, in Vector3 vector, EntityId selfId, List<HexIndex> indexes, Dictionary<EntityId,TargetStrongholdInfo> targets)
+        private OrderType GetTargetStronghold(in Vector3 pos, UnitSide side, UnitType type, UnitState state, in Vector3 vector, EntityId selfId, List<HexIndex> indexes, Dictionary<EntityId, UnitBaseInfo> targets)
         {
             OrderType order = OrderType.Idle;
 
@@ -308,11 +308,11 @@ namespace AdvancedGears
             targets.Clear();
             if (units != null && units.Count > 0) {
                 foreach (var u in units) {
-                    targets.Add(u.id, new TargetStrongholdInfo(u.id, u.side, u.pos.ToWorldPosition(this.Origin).ToCoordinates()));
+                    targets.Add(u.id, new UnitBaseInfo(u.id, u.pos.ToWorldCoordinates(this.Origin), u.type, u.side, u.state));
                 }
             }
             else {
-                targets.Add(selfId, new TargetStrongholdInfo(selfId, side, pos.ToWorldPosition(this.Origin).ToCoordinates()));
+                targets.Add(selfId, new UnitBaseInfo(selfId, pos.ToWorldCoordinates(this.Origin), type, side, state));
                 order = OrderType.Keep;
             }
 

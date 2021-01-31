@@ -287,22 +287,22 @@ namespace AdvancedGears
         }
 
 
-        private void SetCommand(EntityId id, in TargetStrongholdInfo targetInfo, OrderType order)
+        private void SetCommand(EntityId id, in TargetInfo targetInfo, OrderType order)
         {
-            base.SetCommand(id, order);
-            this.CommandSystem.SendCommand(new CommanderTeam.SetTargetStroghold.Request(id, targetInfo));
+            base.SetOrder(id, order);
+            this.CommandSystem.SendCommand(new CommanderTeam.SetTarget.Request(id, targetInfo));
         }
 
         private void SetCommand(EntityId id, in TargetFrontLineInfo targetInfo, OrderType order)
         {
-            base.SetCommand(id, order);
-            this.CommandSystem.SendCommand(new CommanderTeam.SetTargetFrontline.Request(id, targetInfo));
+            base.SetOrder(id, order);
+            this.CommandSystem.SendCommand(new CommanderTeam.SetFrontline.Request(id, targetInfo));
         }
 
         private void SetCommand(EntityId id, in TargetHexInfo targetInfo, OrderType order)
         {
-            base.SetCommand(id, order);
-            this.CommandSystem.SendCommand(new CommanderTeam.SetTargetHex.Request(id, targetInfo));
+            base.SetOrder(id, order);
+            this.CommandSystem.SendCommand(new CommanderTeam.SetHex.Request(id, targetInfo));
         }
 
         private void CheckOrder(uint hexIndex, OrderType order, Dictionary<EntityId,UnitBaseInfo> targetStrongholds, Vector3 strategyVector, Dictionary<EntityId,TeamInfo> datas, HashSet<long> sendIds)
@@ -320,7 +320,7 @@ namespace AdvancedGears
                 if (sendIds.Contains(uid))
                     continue;
 
-                var stronghold = kvp.Value.TargetInfoSet.Stronghold.StrongholdId;
+                var stronghold = kvp.Value.TargetInfoSet.Stronghold.UnitId;
                 if (stronghold.IsValid() && targetStrongholds.ContainsKey(stronghold))
                     continue;
 
@@ -328,7 +328,12 @@ namespace AdvancedGears
 
                 Debug.LogFormat("SelectStronghold Index:{0}, Key:{1}, Count:{2}, Target:{3}", hexIndex, kvp.Key, count, targetStrongholds[key].Position);
 
-                SetCommand(kvp.Key, targetStrongholds[key], order);
+                var tgt = new TargetInfo()
+                {
+                    TgtInfo = targetStrongholds[key],
+                };
+
+                SetCommand(kvp.Key, tgt, order);
 
                 sendIds.Add(kvp.Key.Id);
             }
@@ -351,7 +356,7 @@ namespace AdvancedGears
                 //if (kvp.Value.Rank > 0)
                 //    continue;
 
-                var frontLine = kvp.Value.TargetInfoSet.FrontLine.FrontLine;
+                var frontLine = kvp.Value.TargetInfoSet.FrontLine;
                 if (frontLine.IsValid() && lines.Contains(frontLine))
                     continue;
 
@@ -391,7 +396,7 @@ namespace AdvancedGears
                 var index = UnityEngine.Random.Range(0, count);
                 var key = targets.Keys.ElementAt(index);
 
-                Debug.LogFormat("SelectHex Index:{0}, Key:{1}, Count:{2} Target:{3}", hexIndex, kvp.Key.Id, count, targets[key].HexIndex);
+                Debug.LogFormat("SelectHex Index:{0}, Key:{1}, Count:{2} Target:{3}", hexIndex, kvp.Key.Id, count, targets[key].HexInfo.HexIndex);
 
                 SetCommand(kvp.Key, targets[key], order);
 
@@ -406,12 +411,12 @@ namespace AdvancedGears
             if (action.ActionType == CommandActionType.Product)
                 return;
 
-            var diff = tgt.TargetInfo.Position.ToWorkerPosition(this.Origin) - pos;
+            var diff = tgt.TargetUnit.Position.ToWorkerPosition(this.Origin) - pos;
             float length = 10.0f;   // TODO from:master
             if (diff.sqrMagnitude > length * length)
                 return;
 
-            var id = tgt.TargetInfo.TargetId;
+            var id = tgt.TargetUnit.UnitId;
             List<UnitFactory.AddFollowerOrder.Request> reqList = new List<UnitFactory.AddFollowerOrder.Request>();
 
             var n_sol = 0;

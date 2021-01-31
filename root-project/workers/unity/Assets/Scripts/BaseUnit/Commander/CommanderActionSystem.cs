@@ -81,14 +81,14 @@ namespace AdvancedGears
         {
             var units = getAllyUnits(side, pos, RangeDictionary.Get(FixedRangeType.PlatoonRange), allowDead:false, UnitType.Soldier);
             foreach (var u in units) {
-                SetCommand(u.id, tgt.TargetInfo, order);
+                SetCommand(u.id, tgt.t, order);
             }
         }
 
         // add boids information
         private void SetCommand(EntityId id, in TargetInfo targetInfo, OrderType order)
         {
-            base.SetCommand(id, order);
+            base.SetOrder(id, order);
             this.CommandSystem.SendCommand(new BaseUnitTarget.SetTarget.Request(id, targetInfo));
         }
 

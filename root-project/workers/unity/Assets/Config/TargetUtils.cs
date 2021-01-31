@@ -16,7 +16,7 @@ namespace AdvancedGears
             var unit = new UnitBaseInfo();
             unit.Position = Coordinates.Zero;
             unit.Side = UnitSide.None;
-            unit.StrongholdId = new EntityId();
+            unit.UnitId = new EntityId();
             return unit;
         }
 
@@ -30,9 +30,9 @@ namespace AdvancedGears
             return target;
         }
 
-        public static HexInfo DefaultTargetHexInfo()
+        public static HexBaseInfo DefaultTargetHexInfo()
         {
-            var hex = new HexInfo();
+            var hex = new HexBaseInfo();
             hex.HexIndex = uint.MaxValue;
             return hex;
         }

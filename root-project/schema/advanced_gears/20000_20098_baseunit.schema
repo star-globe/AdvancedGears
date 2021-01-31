@@ -146,10 +146,9 @@ type TargetHexInfo {
 
 enum TargetType {
     None = 0;
-    FromCommander = 1;
-    Stronghold = 2;
-    FrontLine = 3;
-    Hex = 4;
+    Unit = 1;
+    FrontLine = 2;
+    Hex = 3;
 }
 
 type TargetInfoSet {
@@ -260,9 +259,9 @@ component CommanderTeam {
     command improbable.gdk.core.Empty add_follower(FollowerInfo);
     command improbable.gdk.core.Empty set_superior(SuperiorInfo);
     command TeamInfoResponse get_team_info(TeamInfoRequest);
-    event TargetInfo set_target;
-    event TargetFrontLineInfo set_frontline;
-    event TargetHexInfo set_hex;
+    command improbable.gdk.core.Empty set_target(TargetInfo);
+    command improbable.gdk.core.Empty set_frontline(TargetFrontLineInfo);
+    command improbable.gdk.core.Empty set_hex(TargetHexInfo);
 }
 
 type WarPower {

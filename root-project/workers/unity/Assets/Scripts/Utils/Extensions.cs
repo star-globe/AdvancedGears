@@ -30,6 +30,11 @@ namespace AdvancedGears
             return (pos - origin).ToFixedPointVector3();
         }
 
+        public static Coordinates ToWorldCoordinates(this Vector3 pos, Vector3 origin)
+        {
+            return (pos - origin).ToCoordinates();
+        }
+
         public static Coordinates ToCoordinates(this Vector3 pos)
         {
             return new Coordinates(pos.x, pos.y, pos.z);
@@ -322,19 +327,19 @@ namespace AdvancedGears
 
         public static bool IsDominationTarget(this TargetInfo targetInfo, UnitSide selfSide)
         {
-            if (targetInfo.Type != UnitType.Stronghold)
+            if (targetInfo.TgtInfo.Type != UnitType.Stronghold)
                 return false;
 
-            if (targetInfo.Side == selfSide)
+            if (targetInfo.TgtInfo.Side == selfSide)
                 return false;
 
-            return targetInfo.Side == UnitSide.None ||
-                   targetInfo.State == UnitState.Dead;
+            return targetInfo.TgtInfo.Side == UnitSide.None ||
+                   targetInfo.TgtInfo.State == UnitState.Dead;
         }
 
-        public static bool IsValid(this TargetHexInfo targetHexInfo)
+        public static bool IsValid(this HexBaseInfo hexInfo)
         {
-            return targetHexInfo.HexIndex < uint.MaxValue;
+            return hexInfo.HexIndex < uint.MaxValue;
         }
 
         public static bool IsValid(this FrontLineInfo info)
@@ -342,9 +347,9 @@ namespace AdvancedGears
             return info.LeftCorner.Equals(info.RightCorner) == false;
         }
 
-        public static bool IsValid(this TargetStrongholdInfo info)
+        public static bool IsValid(this UnitBaseInfo info)
         {
-            return info.StrongholdId.IsValid();
+            return info.UnitId.IsValid();
         }
 
         public static Vector3 GetOnLinePosition(this FrontLineInfo info, Vector3 origin, Vector3 current, float fowardBuffer = 0.0f)
