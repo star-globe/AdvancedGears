@@ -72,8 +72,9 @@ namespace AdvancedGears
                 UnitInfo enemy = null;
                 var sightRange = action.SightRange;
 
-                //if (SetStrategyTarget(pos, sightRange, ref sight, ref target))
-                //    sightRange = Mathf.Max(0, sightRange - (sight.TargetPosition.ToWorkerPosition(this.Origin) - pos).magnitude);
+                // keep logic
+                if (status.Order == OrderType.Keep && target.PowerRate < 1.0f)
+                    sightRange *= target.PowerRate;
 
                 enemy = getNearestEnemy(status.Side, pos, sightRange);
 
