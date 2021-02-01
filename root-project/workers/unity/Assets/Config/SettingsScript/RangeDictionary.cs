@@ -45,6 +45,9 @@ namespace AdvancedGears
         [SerializeField] private float bodySize = 5.0f;
         public static float BodySize => Instance.bodySize;
 
+        [SerializeField] private float allyRange = 20.0f;
+        public static float AllyRange => Instance.allyRange;
+
         [SerializeField] private float spreadRate = 5.0f;
         public static float SpreadSize => Instance.bodySize * Instance.spreadRate;
 

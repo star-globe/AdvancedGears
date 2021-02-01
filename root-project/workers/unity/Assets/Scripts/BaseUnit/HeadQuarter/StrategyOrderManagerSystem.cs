@@ -93,14 +93,14 @@ namespace AdvancedGears
                     {
                         HeadQuarterId = enemy.id,
                         Side = enemy.side,
-                        Position = enemy.pos.ToWorldPosition(this.Origin),
+                        Position = enemy.pos.ToWorldCoordinates(this.Origin),
                     };
                 }
 
                 var st_range = RangeDictionary.Get(FixedRangeType.StrongholdRange);
                 var allies = getAllyUnits(status.Side, trans.position);
                 foreach(var unit in allies) {
-                    if (unit.Type == UnitType.Stronghold)
+                    if (unit.type == UnitType.Stronghold)
                         continue;
 
                     var diff = (enemy.pos - unit.pos).normalized;
@@ -128,7 +128,7 @@ namespace AdvancedGears
 
                 foreach (var unit in kvp.Value)
                 {
-                    if (unit.Type != UnitType.HeadQuarter)
+                    if (unit.type != UnitType.HeadQuarter)
                         continue;
 
                     var mag = (unit.pos - pos).sqrMagnitude;
@@ -183,7 +183,7 @@ namespace AdvancedGears
 
                     var info = new UnitInfo();
                     info.id = kvp.Key;
-                    info.pos = position.ToWorkerPosition(this.Origin);
+                    info.pos = position.Coords.ToWorkerPosition(this.Origin);
                     info.type = status.Type;
                     info.side = status.Side;
                     info.order = status.Order;

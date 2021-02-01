@@ -99,11 +99,11 @@ namespace AdvancedGears
                 }
                 
                 if (status.Type == UnitType.Commander) {
-                    if (target.TargetInfo.IsDominationTarget(status.Side))
-                        range = GetDominationRange(target.TargetInfo.TargetId) / 2;
+                    if (target.TargetUnit.IsDominationTarget(status.Side))
+                        range = GetDominationRange(target.TargetUnit.UnitId) / 2;
                     else
                     {
-                        var addRange = target.TargetInfo.AllyRange / 2;
+                        var addRange = RangeDictionary.AllyRange / 2;
                         range += AttackLogicDictionary.RankScaled(addRange, status.Rank);
                     }
                 }
@@ -141,20 +141,10 @@ namespace AdvancedGears
             bool isTarget = false;
             switch (target.Type)
             {
-                case TargetType.FromCommander:
-                    if (target.TargetUnit.IsTarget) {
-                        sight.TargetPosition = target.TargetInfo.Position;
-                        target.State = CalcTargetState(sight.TargetPosition.ToWorkerPosition(this.Origin) - pos, sightRange);
-                        isTarget = true;
-                    }
-                    //else
-                    //    Debug.LogError("TargetInfo is InValid");
-                    break;
-
-                case TargetType.Stronghold:
-                    if (target.StrongholdInfo.IsValid())
+                case TargetType.Unit:
+                    if (target.TargetUnit.IsValid())
                     {
-                        sight.TargetPosition = target.StrongholdInfo.Position.ToFixedPointVector3();// FrontLine.GetOnLinePosition(this.Origin, pos, -sightRange / 2).ToWorldPosition(this.Origin);
+                        sight.TargetPosition = target.TargetUnit.Position.ToFixedPointVector3();// FrontLine.GetOnLinePosition(this.Origin, pos, -sightRange / 2).ToWorldPosition(this.Origin);
                         target.State = TargetState.MovementTarget;
                         isTarget = true;
                     }
@@ -163,8 +153,8 @@ namespace AdvancedGears
                     break;
 
                 case TargetType.FrontLine:
-                    if (target.FrontLine.FrontLine.IsValid()) {
-                        sight.TargetPosition = target.FrontLine.FrontLine.GetOnLinePosition(this.Origin, pos, -sightRange).ToWorldPosition(this.Origin);
+                    if (target.FrontLine.IsValid()) {
+                        sight.TargetPosition = target.FrontLine.GetOnLinePosition(this.Origin, pos, -sightRange).ToWorldPosition(this.Origin);
                         target.State = TargetState.MovementTarget;
                         isTarget = true;
                     }

@@ -143,11 +143,11 @@ namespace AdvancedGears
             if (TryGetEntity(entityId, out entity) == false)
                 return -1;
 
-            this.CommandSystem.SendCommand(new FuelSupplyer.SetOrder.Request(entityId, plan.Orders[0]), entity);
+            this.UpdateSystem.SendEvent(new FuelSupplyer.SetOrder.Event(plan.Orders[0]), entityId);
 
             TargetInfo tgt;
             MakeTarget(plan.Orders[0], out tgt);
-            this.CommandSystem.SendCommand(new BaseUnitTarget.SetTarget.Request(entityId, tgt), entity);
+            this.UpdateSystem.SendEvent(new BaseUnitTarget.SetTarget.Event(tgt), entityId);
 
             manager.SupplyOrders.Add(entityId, plan);
             return 1;
@@ -155,15 +155,16 @@ namespace AdvancedGears
 
         void MakeTarget(in SupplyOrder order, out TargetInfo targetInfo)
         {
-            targetInfo = new TargetInfo 
+            targetInfo = new TargetInfo
             {
-                IsTarget = true,
-                TargetId = order.Point.StrongholdId,
-                Position = order.Point.Pos,
-                Type = UnitType.Stronghold,
-                Side = order.Point.Side,
-                CommanderId = new EntityId(-1),
-                AllyRange = 0.0f,
+                TgtInfo = new UnitBaseInfo
+                {
+                    UnitId = order.Point.StrongholdId,
+                    Position = order.Point.Pos.ToCoordinates(),
+                    Side = order.Point.Side,
+                    Type = UnitType.Stronghold,
+                },
+                PowerRate = 1.0f
             };
         }
 

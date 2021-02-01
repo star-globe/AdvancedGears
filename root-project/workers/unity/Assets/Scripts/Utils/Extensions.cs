@@ -325,16 +325,16 @@ namespace AdvancedGears
             return pos.ToWorldPosition(origin).ToCoordinates();
         }
 
-        public static bool IsDominationTarget(this TargetInfo targetInfo, UnitSide selfSide)
+        public static bool IsDominationTarget(this UnitBaseInfo unitInfo, UnitSide selfSide)
         {
-            if (targetInfo.TgtInfo.Type != UnitType.Stronghold)
+            if (unitInfo.Type != UnitType.Stronghold)
                 return false;
 
-            if (targetInfo.TgtInfo.Side == selfSide)
+            if (unitInfo.Side == selfSide)
                 return false;
 
-            return targetInfo.TgtInfo.Side == UnitSide.None ||
-                   targetInfo.TgtInfo.State == UnitState.Dead;
+            return unitInfo.Side == UnitSide.None ||
+                   unitInfo.State == UnitState.Dead;
         }
 
         public static bool IsValid(this HexBaseInfo hexInfo)

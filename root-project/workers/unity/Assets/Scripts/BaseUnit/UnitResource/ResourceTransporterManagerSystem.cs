@@ -59,7 +59,7 @@ namespace AdvancedGears
 
                 var range = transporter.Range;
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
-                var diff = target.TargetInfo.Position.ToWorkerPosition(this.Origin) - trans.position;
+                var diff = target.TargetUnit.Position.ToWorkerPosition(this.Origin) - trans.position;
                 if (diff.sqrMagnitude <= range * range) {
                     // todo:TransportAction
                 }
