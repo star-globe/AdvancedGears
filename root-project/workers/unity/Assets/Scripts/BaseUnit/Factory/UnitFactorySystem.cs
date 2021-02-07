@@ -190,7 +190,12 @@ namespace AdvancedGears
                 if (CheckTime(ref factoryInter) == false)
                     return;
 
-                var random = GetEmptyCoordinates(entityId.EntityId, position.Coords, sight.StrategyVector.Vector, height_buffer, factory.Containers);
+                Coordinates? random = null;
+                if (sight.StrategyVector.Side != UnitSide.None)
+                {
+                    random = GetEmptyCoordinates(entityId.EntityId, position.Coords, sight.StrategyVector.Vector, height_buffer, factory.Containers);
+                }
+
                 if (random == null)
                 {
                     Debug.LogFormat("There is no Empty");
@@ -286,6 +291,7 @@ namespace AdvancedGears
             }
 
             var vec = HexDictionary.HexEdgeLength * 0.5f * vector.ToUnityVector().normalized;
+
             var empty = hex.GetRandomPointFromVector(vec);
             if (empty == null)
                 return null;
@@ -1037,7 +1043,7 @@ namespace AdvancedGears
                 return null;
 
             if (containers.ContainsKey(index) == false) {
-                var rad = degTri / 2 * (2 * index + 1);
+                var rad = (degTri / 2) * (2 * index + 1) * Mathf.Deg2Rad;
                 var range = radius / root3;
                 var pos = center + range * new Vector3(Mathf.Sin(rad), 0, Mathf.Cos(rad));
                 pos += height_buffer * Vector3.up;

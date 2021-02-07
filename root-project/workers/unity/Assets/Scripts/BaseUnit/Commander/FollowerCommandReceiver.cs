@@ -59,6 +59,7 @@ namespace AdvancedGears
             commandReceiver.OnGetTeamInfoRequestReceived += OnTeamInfoRequest;
             commandReceiver.OnSetTargetRequestReceived += OnSetStrongholdRequest;
             commandReceiver.OnSetFrontlineRequestReceived += OnSetFrontlineRequest;
+            commandReceiver.OnSetHexRequestReceived += OnSetHexRequest;
         }
 
         private void Update()

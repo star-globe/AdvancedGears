@@ -37,7 +37,9 @@ namespace AdvancedGears
             }
         }
 
-        protected override float IntervalTime { get { return 1.0f; } }
+        protected override bool IsCheckTime { get { return false; } }
+
+        protected override float IntervalTime { get { return 10.0f; } }
 
         protected override void OnCreate()
         {
@@ -99,11 +101,11 @@ namespace AdvancedGears
 
                 var st_range = RangeDictionary.Get(FixedRangeType.StrongholdRange);
                 var allies = getAllyUnits(status.Side, trans.position);
+                var diff = (enemy.pos - trans.position).normalized;
                 foreach(var unit in allies) {
-                    if (unit.type == UnitType.Stronghold)
+                    if (unit.type != UnitType.Stronghold)
                         continue;
 
-                    var diff = (enemy.pos - unit.pos).normalized;
                     SendCommand(unit.id, enemy.side, diff * st_range);
                 }
             });

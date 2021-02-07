@@ -177,10 +177,6 @@ namespace AdvancedGears
         private void Capture(EntityId id, UnitSide side)
         {
             this.UpdateSystem.SendEvent(new BaseUnitStatus.ForceState.Event(new ForceStateChange(side, UnitState.Alive)), id);
-            this.CommandSystem.SendCommand(new StrongholdSight.SetStrategyVector.Request(
-                id,
-                new StrategyVector(side, FixedPointVector3.FromUnityVector(Vector3.zero)))
-            );
         }
     }
 }

@@ -24,6 +24,9 @@ namespace AdvancedGears
             {
                 StrategyVector = request.Payload,
             });
+
+
+            //Debug.LogFormat("StrongholdCommandReceiver:SetVector:{0} EntityId:{1}", request.Payload.Vector.ToUnityVector(), request.EntityId);
         }
     }
 }

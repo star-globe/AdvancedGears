@@ -105,11 +105,11 @@ namespace AdvancedGears
                     return;
 
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
-                CheckAlive(trans.position, status.Side, uint.MaxValue, HexDictionary.HexEdgeLength * 3, teamsDic);
+                CheckAlive(trans.position, status.Side, uint.MaxValue, HexDictionary.HexEdgeLength * 2, teamsDic);
                 CheckAliveTurret(trans.position, status.Side, turretsList);
 
                 // number check
-                if (factory.TeamOrders.Count == 0) {
+                if (factory.TeamOrders.Count == 0 && sight.StrategyVector.Side != UnitSide.None) {
                     var teamOrders = makeOrders(status.Rank, PostureUtils.RotFoward(sight.StrategyVector.Vector.ToUnityVector()), status.Order, portal.Index,
                                                 sight.FrontLineCorners, sight.TargetHexes, teamsDic);
                     if (teamOrders != null)

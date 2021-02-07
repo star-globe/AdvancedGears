@@ -170,7 +170,7 @@ namespace AdvancedGears
                         continue;
 
                     resourceDictionary.TryGetValue(index, out var current);
-                    resourceDictionary[index] = current + resource.Level * 1.0f;    // todo HexDictionary
+                    resourceDictionary[index] = current + resource.Level * 3.0f;    // todo HexDictionary
                 }
             });
         }

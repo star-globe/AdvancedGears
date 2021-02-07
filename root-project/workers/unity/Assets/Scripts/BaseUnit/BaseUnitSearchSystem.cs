@@ -78,12 +78,17 @@ namespace AdvancedGears
 
                 enemy = getNearestEnemy(status.Side, pos, sightRange);
 
-                if (enemy != null) {
+                if (enemy != null)
+                {
                     target.State = TargetState.ActionTarget;
                     var epos = enemy.pos.ToWorldPosition(this.Origin);
 
                     sight.TargetPosition = epos;
                     action.EnemyPositions.Add(epos);
+                }
+                else
+                {
+                    SetStrategyTarget(pos, sightRange, ref sight, ref target);
                 }
 
                 float range;
