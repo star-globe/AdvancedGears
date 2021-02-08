@@ -337,6 +337,18 @@ namespace AdvancedGears
                    unitInfo.State == UnitState.Dead;
         }
 
+        public static bool IsDominationTarget(this UnitInfo unitInfo, UnitSide selfSide)
+        {
+            if (unitInfo.type != UnitType.Stronghold)
+                return false;
+
+            if (unitInfo.side == selfSide)
+                return false;
+
+            return unitInfo.side == UnitSide.None ||
+                   unitInfo.state == UnitState.Dead;
+        }
+
         public static bool IsValid(this HexBaseInfo hexInfo)
         {
             return hexInfo.HexIndex < uint.MaxValue;

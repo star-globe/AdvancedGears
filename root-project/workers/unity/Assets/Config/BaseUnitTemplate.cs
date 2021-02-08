@@ -99,6 +99,7 @@ namespace AdvancedGears
                 case UnitType.Soldier:
                     template.AddComponent(new BulletComponent.Snapshot(), writeAccess);
                     template.AddComponent(new PostureAnimation.Snapshot { BoneMap = new Dictionary<int, CompressedLocalTransform>() }, writeAccess);
+                    template.AddComponent(new DominationDevice.Snapshot { Type = DominationDeviceType.Capturing }, writeAccess);
                     break;
 
                 case UnitType.Commander:

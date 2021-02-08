@@ -96,24 +96,21 @@ namespace AdvancedGears
                 {
                     case TargetState.ActionTarget:
                         range = gun.GetAttackRange();
+                        range = AttackLogicDictionary.GetOrderRange(status.Order, range) * target.PowerRate;
                         break;
 
                     default:
                         range = RangeDictionary.BodySize;
                         break;
                 }
-                
+
+                // set behind
                 if (status.Type == UnitType.Commander) {
-                    if (target.TargetUnit.IsDominationTarget(status.Side))
-                        range = GetDominationRange(target.TargetUnit.UnitId) / 2;
-                    else
-                    {
-                        var addRange = RangeDictionary.AllyRange / 2;
-                        range += AttackLogicDictionary.RankScaled(addRange, status.Rank);
-                    }
+                    var addRange = RangeDictionary.AllyRange / 2;
+                    range += AttackLogicDictionary.RankScaled(addRange, status.Rank);
                 }
 
-                range = AttackLogicDictionary.GetOrderRange(status.Order, range) * target.PowerRate;
+                //range = AttackLogicDictionary.GetOrderRange(status.Order, range) * target.PowerRate;
                 sight.TargetRange = range;
                 sight.State = target.State;
             });

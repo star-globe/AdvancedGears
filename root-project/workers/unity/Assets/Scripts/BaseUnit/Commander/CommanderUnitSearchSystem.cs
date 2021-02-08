@@ -252,16 +252,13 @@ namespace AdvancedGears
                 }
             }
 
-            rate = AttackLogicDictionary.JudgeRate;
-            if (ally > enemy * rate)
+            if (ally > 0)
+                rate = Mathf.Max(enemy / ally, 1.0f);
+
+            if (ally > enemy * AttackLogicDictionary.JudgeRate)
                 return OrderType.Attack;
 
-            //if (ally * rate * rate < enemy)
-            //    return OrderType.Escape;
-            if (ally > 0)
-                rate = Mathf.Min(enemy * rate / ally, 1.0f);
-
-            return null;//OrderType.Keep;
+            return null;
         }
         #endregion
 
