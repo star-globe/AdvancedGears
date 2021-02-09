@@ -206,7 +206,9 @@ namespace AdvancedGears
                 var diff = rate - team.TargetInfoSet.PowerRate;
                 if (diff * diff > powerRateDiff * powerRateDiff) {
                     // set rate
-                    team.TargetInfoSet.PowerRate = rate;
+                    var set = team.TargetInfoSet;
+                    set.PowerRate = rate;
+                    team.TargetInfoSet = set;
                     SetOrderFollowers(followers, entityId.EntityId, rate);
                 }
             }

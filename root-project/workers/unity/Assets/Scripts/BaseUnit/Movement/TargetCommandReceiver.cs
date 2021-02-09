@@ -8,20 +8,16 @@ namespace AdvancedGears
 {
     public class TargetCommandReceiver : MonoBehaviour
     {
-        //[Require] BaseUnitTargetCommandReceiver targetCommandReceiver;
         [Require] BaseUnitTargetWriter targetWriter;
         [Require] BaseUnitSightReader sightReader;
         [Require] BaseUnitSightWriter sightWriter;
 
         public void OnEnable()
         {
-            //targetCommandReceiver.OnSetTargetRequestReceived += OnSetTargetRequest;
-            //targetCommandReceiver.OnSetFrontLineRequestReceived += OnSetFrontLineRequest;
-            //targetCommandReceiver.OnSetHexRequestReceived += OnSetHexRequest;
-            //targetCommandReceiver.OnSetStrongholdRequestReceived += OnSetStrongholdRequest;
             targetWriter.OnSetTargetEvent += OnSetTarget;
             targetWriter.OnSetFrontLineEvent += OnSetFrontLine;
             targetWriter.OnSetHexEvent += OnSetHex;
+            targetWriter.OnSetPowerRateEvent += OnSetPowerRate;
             sightReader.OnBoidDiffedEvent += OnBoidDiffed;
         }
 
@@ -59,6 +55,16 @@ namespace AdvancedGears
             });
 
             Debug.Log("OnSetHex");
+        }
+
+        private void OnSetPowerRate(TargetPowerRate powerInfo)
+        {
+            targetWriter.SendUpdate(new BaseUnitTarget.Update()
+            {
+                PowerRate = powerInfo.PowerRate,
+            });
+
+            Debug.Log("OnSetPowerRate");
         }
 
         private void OnBoidDiffed(BoidVector vector)
