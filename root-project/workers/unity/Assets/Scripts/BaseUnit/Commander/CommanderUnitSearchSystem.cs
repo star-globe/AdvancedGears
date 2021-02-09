@@ -159,7 +159,6 @@ namespace AdvancedGears
 
         #region OrderMethod
 
-
         void applyOrder(in BaseUnitStatus.Component status, in SpatialEntityId entityId, in Vector3 pos, float sightRange,
                          ref CommanderStatus.Component commander,
                          ref CommanderTeam.Component team)
@@ -169,11 +168,6 @@ namespace AdvancedGears
 
             var scaledRange = AttackLogicDictionary.RankScaled(sightRange, status.Rank);
 
-            //tgt = getNearestEnemy(status.Side, pos, scaledRange, allowDead: true, UnitType.Stronghold, UnitType.Commander);
-
-            //TargetInfo targetInfo;
-            //commonTargeting(tgt, entityId, commander, out targetInfo);
-
             // check power
             var current = GetOrder(status.Side, pos, scaledRange, out float rate);
             if (current == null)
@@ -182,7 +176,7 @@ namespace AdvancedGears
                             OrderType.Guard : OrderType.Keep;
             }
 
-            var changed = commander.Order.Self(current.Value);
+            var changed = status.Order != current.Value;
 
             var line = team.TargetInfoSet.FrontLine;
             var hex = team.TargetInfoSet.HexInfo;
@@ -191,14 +185,31 @@ namespace AdvancedGears
 
             var targetBit = team.IsNeedUpdate;
 
-            if (UnitUtils.IsNeedUpdate(targetBit, TargetType.FrontLine) && line.IsValid())
+            bool isSetRate = false;
+
+            if (UnitUtils.IsNeedUpdate(targetBit, TargetType.FrontLine) && line.IsValid()) {
                 SetOrderFollowers(followers, entityId.EntityId, line, current.Value, rate);
+                isSetRate = true;
+            }
 
-            if (UnitUtils.IsNeedUpdate(targetBit, TargetType.Hex) && hex.IsValid())
+            if (UnitUtils.IsNeedUpdate(targetBit, TargetType.Hex) && hex.IsValid()) {
                 SetOrderFollowers(followers, entityId.EntityId, hex, current.Value, rate);
+                isSetRate = true;
+            }
 
-            if (UnitUtils.IsNeedUpdate(targetBit, TargetType.Unit) && stronghold.IsValid())
+            if (UnitUtils.IsNeedUpdate(targetBit, TargetType.Unit) && stronghold.IsValid()) {
                 SetOrderFollowers(followers, entityId.EntityId, stronghold, current.Value, rate);
+                isSetRate = true;
+            }
+
+            if (!isSetRate) {
+                var diff = rate - team.TargetInfoSet.PowerRate;
+                if (diff * diff > powerRateDiff * powerRateDiff) {
+                    // set rate
+                    team.TargetInfoSet.PowerRate = rate;
+                    SetOrderFollowers(followers, entityId.EntityId, rate);
+                }
+            }
 
             team.IsNeedUpdate = 0;
 
@@ -206,6 +217,9 @@ namespace AdvancedGears
             if (changed)
                 SetOrderFollowers(followers, entityId.EntityId, current.Value);
         }
+
+        const float powerRateDiff = 0.05f;
+        const float powerRateMin = 0.3f;
 
         private OrderType? GetOrder(UnitSide side, in Vector3 pos, float length, out float rate)
         {
@@ -253,7 +267,7 @@ namespace AdvancedGears
             }
 
             if (ally > 0)
-                rate = Mathf.Max(enemy / ally, 1.0f);
+                rate = Mathf.Max(enemy / ally, powerRateMin);
 
             if (ally > enemy * AttackLogicDictionary.JudgeRate)
                 return OrderType.Attack;
@@ -299,6 +313,15 @@ namespace AdvancedGears
 
             SetCommand(entityId, hexInfo, order, rate);
         }
+        private void SetOrderFollowers(List<EntityId> followers, in EntityId entityId, float rate)
+        {
+            foreach (var id in followers)
+            {
+                SetCommand(id, rate);
+            }
+
+            SetCommand(entityId, rate);
+        }
         private void SetCommand(EntityId id, in UnitBaseInfo unitBaseInfo, OrderType order, float rate)
         {
             base.SetOrder(id, order);
@@ -313,6 +336,10 @@ namespace AdvancedGears
         {
             base.SetOrder(id, order);
             this.UpdateSystem.SendEvent(new BaseUnitTarget.SetHex.Event(new TargetHexInfo(hexInfo, rate)), id);
+        }
+        private void SetCommand(EntityId id, float rate)
+        {
+            this.UpdateSystem.SendEvent(new BaseUnitTarget.SetPowerRate.Event(new TargetPowerRate(rate)), id);
         }
         #endregion
     }
