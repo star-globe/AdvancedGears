@@ -65,7 +65,7 @@ namespace AdvancedGears
 
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
                 var pos = trans.position;
-                var list = getAllUnits(pos, range, allowDead:false, UnitType.Commander, UnitType.Advanced);
+                var list = getAllUnits(pos, range, allowDead:false, AttackLogicDictionary.DominationUnitTypes);
 
                 var sumsDic = new Dictionary<UnitSide,float>();
                 foreach (var unit in list)
@@ -73,15 +73,17 @@ namespace AdvancedGears
                     DominationDevice.Component? comp = null;
                     if (TryGetComponent(unit.id, out comp) == false)
                         continue;
-                    
+
+                    var speed = 1.5f;
+
                     switch(comp.Value.Type)
                     {
                         case DominationDeviceType.Capturing:
-                            AffectCapture(unit.side, comp.Value.Speed, sumsDic);
+                            AffectCapture(unit.side, speed, sumsDic);
                             break;
 
                         case DominationDeviceType.Jamming:
-                            AffectJamming(unit.side, comp.Value.Speed, sumsDic);
+                            AffectJamming(unit.side, speed, sumsDic);
                             break;
                     }
                 }

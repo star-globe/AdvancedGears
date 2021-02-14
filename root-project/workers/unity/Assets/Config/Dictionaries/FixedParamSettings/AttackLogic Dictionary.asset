@@ -32,3 +32,4 @@ MonoBehaviour:
   underSoldiers: 3
   underCommanders: 3
   underTurrets: 3
+  dominationUnitTypes: 010000000200000003000000

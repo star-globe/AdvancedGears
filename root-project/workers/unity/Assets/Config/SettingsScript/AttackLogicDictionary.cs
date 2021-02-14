@@ -46,6 +46,10 @@ namespace AdvancedGears
         int underTurrets = 3;
         public static int UnderTurrets => Instance.underCommanders;
 
+        [SerializeField]
+        UnitType[] dominationUnitTypes = null;
+        public static UnitType[] DominationUnitTypes => Instance.dominationUnitTypes;
+
         public static AttackLogicDictionary Instance { private get; set; }
 
         readonly Dictionary<OrderType, OrderRate> orderDic = new Dictionary<OrderType, OrderRate>();

@@ -220,7 +220,7 @@ namespace AdvancedGears
                 SetOrderFollowers(followers, entityId.EntityId, current.Value);
         }
 
-        const float powerRateDiff = 0.05f;
+        const float powerRateDiff = 0.1f;
         const float powerRateMin = 0.3f;
 
         private OrderType? GetOrder(UnitSide side, in Vector3 pos, float length, out float rate)

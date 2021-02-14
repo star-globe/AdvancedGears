@@ -100,7 +100,7 @@ namespace AdvancedGears
 
                 var range = RangeDictionary.SpreadSize;
                 var bodySize = RangeDictionary.BodySize;
-                var units = getAllyUnits(status.Side, pos, range, allowDead:true);
+                var units = getAllUnits(pos, range, allowDead:true);
                 foreach(var u in units) {
                     var diff = pos - u.pos;
                     var mag = Mathf.Max(bodySize, diff.magnitude);

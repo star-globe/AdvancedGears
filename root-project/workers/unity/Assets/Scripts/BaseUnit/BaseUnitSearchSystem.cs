@@ -73,7 +73,7 @@ namespace AdvancedGears
                 var sightRange = action.SightRange;
 
                 // keep logic
-                if (status.Order == OrderType.Keep && target.PowerRate < 1.0f)
+                if (status.Order == OrderType.Keep)
                     sightRange *= target.PowerRate;
 
                 enemy = getNearestEnemy(status.Side, pos, sightRange);
