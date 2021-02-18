@@ -215,7 +215,7 @@ namespace AdvancedGears
             return ids;
         }
 
-        public static bool HexArrowsUnitType(HexAttribute attribute, UnitType type)
+        public static bool HexAllowsUnitType(HexAttribute attribute, UnitType type)
         {
             switch (attribute)
             {

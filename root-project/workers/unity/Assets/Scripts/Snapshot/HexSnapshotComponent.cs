@@ -96,7 +96,7 @@ namespace AdvancedGears
             this.pair.units.Clear();
 
             foreach (var u in units) {
-                if (u != null && HexUtils.HexArrowsUnitType(attribute, u.type)) {
+                if (u != null && HexUtils.HexAllowsUnitType(attribute, u.type)) {
                     var hex = u.GetComponent<HexSnapshotAttachment>();
                     if (hex != null)
                         this.pair.hex = hex;
