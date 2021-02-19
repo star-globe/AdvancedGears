@@ -88,7 +88,7 @@ namespace AdvancedGears
                 }
                 else
                 {
-                    SetStrategyTarget(pos, sightRange, ref sight, ref target);
+                    SetStrategyTarget(pos, action.SightRange, ref sight, ref target);
                 }
 
                 float range;

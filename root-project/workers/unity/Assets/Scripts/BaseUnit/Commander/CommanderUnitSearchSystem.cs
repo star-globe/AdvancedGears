@@ -221,13 +221,12 @@ namespace AdvancedGears
         }
 
         const float powerRateDiff = 0.1f;
-        const float powerRateMin = 0.3f;
 
         private OrderType? GetOrder(UnitSide side, in Vector3 pos, float length, out float rate)
         {
             float ally = 0.0f;
             float enemy = 0.0f;
-            rate = 1.0f;
+            rate = AttackLogicDictionary.PowerRateMin;
 
             var colls = Physics.OverlapSphere(pos, length, LayerMask.GetMask("Unit"));
             for (var i = 0; i < colls.Length; i++)
@@ -269,7 +268,7 @@ namespace AdvancedGears
             }
 
             if (ally > 0)
-                rate = Mathf.Max(enemy / ally, powerRateMin);
+                rate = Mathf.Max(enemy * enemy / (ally * ally), AttackLogicDictionary.PowerRateMin);
 
             if (ally > enemy * AttackLogicDictionary.JudgeRate)
                 return OrderType.Attack;

@@ -24,6 +24,10 @@ namespace AdvancedGears
         public static float JudgeRate => Instance.judgeRate;
 
         [SerializeField]
+        float powerRateMin = 0.2f;
+        public static float PowerRateMin => Instance.powerRateMin;
+
+        [SerializeField]
         float boidReduceRate = 0.8f;
         public static float BoidReduceRate => Instance.boidReduceRate;
 
