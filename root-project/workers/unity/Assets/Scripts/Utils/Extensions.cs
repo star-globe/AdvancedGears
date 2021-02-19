@@ -382,11 +382,12 @@ namespace AdvancedGears
 
             var radius = line.magnitude / 2;
 
-            if (Vector3.Dot(Vector3.Cross(line.normalized, diff), Vector3.up) < -radius / 4 ||
-                (current - center).sqrMagnitude > radius * radius) {
-
-                return -foward * radius / 2 + center;
-            }
+            // 中心誘導は廃止
+            //if (Vector3.Dot(Vector3.Cross(line.normalized, diff), Vector3.up) < -radius / 4 ||
+            //    (current - center).sqrMagnitude > radius * radius) {
+            //
+            //    return -foward * radius / 2 + center;
+            //}
 
             var dot = Vector3.Dot(diff, line.normalized);
             if (dot <= 0)

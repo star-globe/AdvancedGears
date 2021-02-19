@@ -72,6 +72,13 @@ namespace AdvancedGears
                 UnitInfo enemy = null;
                 var sightRange = action.SightRange;
 
+                var backBuffer = sightRange / 2;
+                if (status.Type == UnitType.Commander)
+                    backBuffer += RangeDictionary.AllyRange / 2;
+
+                // strategy target
+                SetStrategyTarget(pos, backBuffer, ref sight, ref target);
+
                 // keep logic
                 if (status.Order == OrderType.Keep)
                     sightRange *= target.PowerRate * target.PowerRate;
@@ -80,15 +87,16 @@ namespace AdvancedGears
 
                 if (enemy != null)
                 {
-                    target.State = TargetState.ActionTarget;
+                    var tgtPos = sight.TargetPosition.ToWorkerPosition(this.Origin);
                     var epos = enemy.pos.ToWorldPosition(this.Origin);
 
-                    sight.TargetPosition = epos;
+                    if (Vector3.Dot(tgtPos - pos, enemy.pos - pos) > 0)
+                    {
+                        target.State = TargetState.ActionTarget;
+                        sight.TargetPosition = epos;
+                    }
+
                     action.EnemyPositions.Add(epos);
-                }
-                else
-                {
-                    SetStrategyTarget(pos, action.SightRange, ref sight, ref target);
                 }
 
                 float range;
@@ -110,7 +118,6 @@ namespace AdvancedGears
                     range += AttackLogicDictionary.RankScaled(addRange, status.Rank);
                 }
 
-                //range = AttackLogicDictionary.GetOrderRange(status.Order, range) * target.PowerRate;
                 sight.TargetRange = range;
                 sight.State = target.State;
             });
@@ -138,7 +145,7 @@ namespace AdvancedGears
                 return TargetState.OutOfRange;
         }
 
-        private bool SetStrategyTarget(Vector3 pos, float sightRange, ref BaseUnitSight.Component sight, ref BaseUnitTarget.Component target)
+        private bool SetStrategyTarget(Vector3 pos, float backBuffer, ref BaseUnitSight.Component sight, ref BaseUnitTarget.Component target)
         {
             bool isTarget = false;
             switch (target.Type)
@@ -146,7 +153,7 @@ namespace AdvancedGears
                 case TargetType.Unit:
                     if (target.TargetUnit.IsValid())
                     {
-                        sight.TargetPosition = target.TargetUnit.Position.ToFixedPointVector3();// FrontLine.GetOnLinePosition(this.Origin, pos, -sightRange / 2).ToWorldPosition(this.Origin);
+                        sight.TargetPosition = target.TargetUnit.Position.ToFixedPointVector3();
                         target.State = TargetState.MovementTarget;
                         isTarget = true;
                     }
@@ -156,7 +163,7 @@ namespace AdvancedGears
 
                 case TargetType.FrontLine:
                     if (target.FrontLine.IsValid()) {
-                        sight.TargetPosition = target.FrontLine.GetOnLinePosition(this.Origin, pos, -sightRange).ToWorldPosition(this.Origin);
+                        sight.TargetPosition = target.FrontLine.GetOnLinePosition(this.Origin, pos, -backBuffer).ToWorldPosition(this.Origin);
                         target.State = TargetState.MovementTarget;
                         isTarget = true;
                     }
@@ -174,26 +181,7 @@ namespace AdvancedGears
                         Debug.LogError("HexInfo is InValid");
                     break;
             }
-#if false
-            if (target.TargetInfo.IsTarget) {
-                sight.TargetPosition = target.TargetInfo.Position;
-                target.State = CalcTargetState(sight.TargetPosition.ToWorkerPosition(this.Origin) - pos, sightRange);
-                isTarget = true;
-                DebugUtils.RandomlyLog(string.Format("Target Position:{0}", sight.TargetPosition.ToWorkerPosition(this.Origin)));
-            }
-            else if (target.HexInfo.IsValid()) {
-                sight.TargetPosition = HexUtils.GetHexCenter(this.Origin, target.HexInfo.HexIndex, HexDictionary.HexEdgeLength).ToWorldPosition(this.Origin);
-                target.State = TargetState.MovementTarget;
-                isTarget = true;
-                DebugUtils.RandomlyLog(string.Format("Hex Position:{0}", sight.TargetPosition.ToWorkerPosition(this.Origin)));
-            }
-            else if (target.FrontLine.FrontLine.IsValid()) {
-                sight.TargetPosition = target.FrontLine.FrontLine.GetOnLinePosition(this.Origin, pos, -sightRange / 2).ToWorldPosition(this.Origin);
-                target.State = TargetState.MovementTarget;
-                isTarget = true;
-                DebugUtils.RandomlyLog(string.Format("FrontLine Position:{0}", sight.TargetPosition.ToWorkerPosition(this.Origin)));
-            }
-#endif
+
             return isTarget;
         }
     }

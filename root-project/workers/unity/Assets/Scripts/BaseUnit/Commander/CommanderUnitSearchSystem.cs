@@ -215,7 +215,7 @@ namespace AdvancedGears
 
             team.IsNeedUpdate = 0;
 
-            // オーダーが変わった場合のみ直接命令を下す
+            // if orde is changed, set orders
             if (changed)
                 SetOrderFollowers(followers, entityId.EntityId, current.Value);
         }
@@ -270,8 +270,7 @@ namespace AdvancedGears
             if (ally > 0)
                 rate = Mathf.Max(enemy * enemy / (ally * ally), AttackLogicDictionary.PowerRateMin);
 
-            if (ally > enemy * AttackLogicDictionary.JudgeRate)
-                return OrderType.Attack;
+            // Commander will not order Attack. Player or HQ orders Attack.
 
             return null;
         }
