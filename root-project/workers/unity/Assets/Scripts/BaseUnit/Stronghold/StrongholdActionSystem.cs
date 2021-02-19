@@ -217,8 +217,7 @@ namespace AdvancedGears
 
             if (hexes.Count > 0)
             {
-                var rate = side == UnitSide.A ? 1: 3;
-                teamOrders = makeTeamOrders(hexes.Count * rate, strategyUnitRank, rot, order, teamOrders, datas);//hexAttackRate, strategyUnitRank, rot, order, teamOrders, datas);
+                teamOrders = makeTeamOrders(hexes.Count * hexAttackRate, strategyUnitRank, rot, order, teamOrders, datas);//hexAttackRate, strategyUnitRank, rot, order, teamOrders, datas);
             }
             else if (frontLines.Count > 0)
             {
