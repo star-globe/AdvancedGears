@@ -31,9 +31,6 @@ namespace AdvancedGears
                                           ref PostureAnimation.Component anim,
                                           ref BaseUnitStatus.Component status) =>
             {
-                if (UnitUtils.IsBuilding(status.Type))
-                    return;
-
                 var tracer = EntityManager.GetComponentObject<CombinedAimTracer>(entity);
                 if (tracer == null)
                     return;
