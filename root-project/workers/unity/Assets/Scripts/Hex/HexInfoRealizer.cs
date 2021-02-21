@@ -24,6 +24,7 @@ namespace AdvancedGears
         Vector3 origin;
         UnitSide currentSide;
         IntervalCounter inter;
+        readonly Vector3[] corners = new Vector3[7];
 
         private void OnEnable()
         {
@@ -70,8 +71,7 @@ namespace AdvancedGears
                 return;
 
             var index = reader.Data.Index;
-            Vector3[] corners = new Vector3[7];
-            HexUtils.SetHexCorners(origin, index, corners, HexDictionary.HexEdgeLength);
+            HexUtils.SetHexCorners(origin, index, this.corners, HexDictionary.HexEdgeLength);
 
             line.SetLines(side, corners, PhysicsUtils.GroundMask, cutNumber, origin.y + height, origin.y, height/100);
 

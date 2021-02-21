@@ -27,6 +27,9 @@ namespace AdvancedGears
         }
         protected float hexEdge => HexDictionary.HexEdgeLength;
 
+        readonly Vector3[] baseCorners = new Vector3[7];
+        readonly Vector3[] checkCorners = new Vector3[7];
+
         protected override void OnCreate()
         {
             base.OnCreate();
@@ -34,12 +37,10 @@ namespace AdvancedGears
             hexBaseSystem = this.World.GetExistingSystem<HexBaseSystem>();
         }
 
-        protected Dictionary<uint, HexDetails> BorderHexList(UnitSide side)
+        protected Dictionary<uint, HexDetails> BorderHexList(UnitSide side, Dictionary<uint, HexDetails> indexes)
         {
             if (this.HexDic == null)
                 return null;
-
-            Dictionary<uint, HexDetails> indexes = null;
 
             foreach (var kvp in this.HexDic)
             {
@@ -47,9 +48,6 @@ namespace AdvancedGears
                     continue;
 
                 var index = kvp.Value.Index;
-
-                var baseCorners = new Vector3[7];
-                var checkCorners = new Vector3[7];
 
                 HexUtils.SetHexCorners(this.Origin, index, baseCorners, HexDictionary.HexEdgeLength);
                 var ids = HexUtils.GetNeighborHexIndexes(index);
@@ -137,7 +135,7 @@ namespace AdvancedGears
                 foreach (var kvp in dic)
                 {
                     var id = kvp.Key;
-                    indexes.Add(id);//Add(new HexIndex(this.hexDic[id].EntityId.EntityId, id, dic[id].frontLines, dic[id].staminas));
+                    indexes.Add(id);
                 }
             }
         }

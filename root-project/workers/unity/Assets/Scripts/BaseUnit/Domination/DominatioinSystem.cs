@@ -152,7 +152,8 @@ namespace AdvancedGears
             Entities.With(hexPowerGroup.group).ForEach((Unity.Entities.Entity entity,
                                           ref StrategyHexAccessPortal.Component portal) =>
             {
-                hexIndexes = portal.HexIndexes;
+                if (portal.Index != uint.MaxValue)
+                    hexIndexes = portal.HexIndexes;
             });
         }
 

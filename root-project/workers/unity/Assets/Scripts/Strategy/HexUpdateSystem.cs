@@ -100,18 +100,19 @@ namespace AdvancedGears
                 var fronts = portal.FrontHexes;
                 var hexes = portal.HexIndexes;
 
-                borderHexListDic.Clear();
-
                 foreach (var side in HexUtils.AllSides)
                 {
-                    var dic = BorderHexList(side);
-                    borderHexListDic[side] = dic;
+                    Dictionary<uint, HexDetails> indexes = null;
+                    if (borderHexListDic.TryGetValue(side, out indexes))
+                        indexes?.Clear();
+
+                    borderHexListDic[side] = BorderHexList(side, indexes);
 
                     if (fronts.ContainsKey(side) == false)
                         fronts[side] = new FrontHexInfo { Indexes = new List<uint>() };
 
                     var info = fronts[side];
-                    CompairList(info.Indexes, dic);
+                    CompairList(info.Indexes, indexes);
                     fronts[side] = info;
                 }
 
