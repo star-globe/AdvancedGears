@@ -48,8 +48,7 @@ namespace AdvancedGears
             if (targetVector == Vector3.zero)
                 return 0;
 
-            targetVector = new Vector3(targetVector.x, 0, targetVector.z);
-            return Vector3.Angle(Vector3.forward, targetVector.normalized);
+            return Mathf.Atan2(targetVector.x, targetVector.z) * Mathf.Rad2Deg;
         }
     }
 }

@@ -212,8 +212,6 @@ namespace AdvancedGears
             if (datas == null)
                 return null;
 
-            Debug.LogFormat("MakeTeam:Rot:{0}", rot);
-
             List<TeamOrder> teamOrders = null;
 
             if (hexes.Count > 0)
