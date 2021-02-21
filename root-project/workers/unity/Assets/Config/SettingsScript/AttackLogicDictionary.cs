@@ -39,6 +39,10 @@ namespace AdvancedGears
         float boidRadiusMinimum = 0.1f;
 
         [SerializeField]
+        int teamPerHex = 3;
+        public static int TeamPerHex => Instance.teamPerHex;
+
+        [SerializeField]
         int underSoldiers = 5;
         public static int UnderSoldiers => Instance.underSoldiers;
 
@@ -98,10 +102,6 @@ namespace AdvancedGears
 
         public static float RankScaled(float range, uint rank)
         {
-            //if (rank < 1)
-            //    return range;
-            //else
-            //    return range * Mathf.Pow(UnderCommanders, rank * 0.5f);
             return range * Mathf.Pow(UnderCommanders, (rank+1) * 0.5f);
         }
     }

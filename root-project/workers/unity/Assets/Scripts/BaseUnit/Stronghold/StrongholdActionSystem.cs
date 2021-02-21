@@ -207,17 +207,18 @@ namespace AdvancedGears
         }
 
         const int strategyUnitRank = 0;
-        const int hexAttackRate = 3;
         List<TeamOrder> makeOrders(UnitSide side, uint rank, float rot, OrderType order, uint hexIndex, List<FrontLineInfo> frontLines, Dictionary<uint, TargetHexInfo> hexes, Dictionary<EntityId,TeamInfo> datas)
         {
             if (datas == null)
                 return null;
 
+            Debug.LogFormat("MakeTeam:Rot:{0}", rot);
+
             List<TeamOrder> teamOrders = null;
 
             if (hexes.Count > 0)
             {
-                teamOrders = makeTeamOrders(hexes.Count * hexAttackRate, strategyUnitRank, rot, order, teamOrders, datas);//hexAttackRate, strategyUnitRank, rot, order, teamOrders, datas);
+                teamOrders = makeTeamOrders(hexes.Count * AttackLogicDictionary.TeamPerHex, strategyUnitRank, rot, order, teamOrders, datas);//hexAttackRate, strategyUnitRank, rot, order, teamOrders, datas);
             }
             else if (frontLines.Count > 0)
             {
