@@ -189,9 +189,22 @@ namespace AdvancedGears
     public abstract class BaseSearchSystem : BaseEntitySearchSystem
     {
         int layer = int.MinValue;
+        int Layer
+        {
+            get
+            {
+                if (layer == int.MinValue)
+                    layer = LayerMask.GetMask("Unit");
+
+                return layer;
+            }
+        }
 
         readonly UnitInfo baseInfo = new UnitInfo();
         readonly Colliders[] colls = new Colliders[256];
+        readonly List<UnitInfo> unitList = new List<UnitInfo>();
+
+        readonly CounterDictionary<LinkedEntityComponent> linkedEntityCache = new CounterDictionary<LinkedEntityComponent>();
 
         protected UnitInfo getUnitInfo(EntityId entityId)
         {
@@ -245,15 +258,13 @@ namespace AdvancedGears
             float len = float.MaxValue;
             bool tof = false;
 
-            if (layer == int.MinValue)
-                layer = LayerMask.GetMask("Unit");
-
-            var count = Physics.OverlapSphereNonAlloc(pos, length, colls, layer);
+            var count = Physics.OverlapSphereNonAlloc(pos, length, colls, this.Layer);
             for (var i = 0; i < count; i++)
             {
+                // todo check CounterCache
+
                 var col = colls[i];
-                var comp = col.GetComponent<LinkedEntityComponent>();
-                if (comp == null)
+                if (col.TryGetComponent<LinkedEntityComponent>(out var comp) == false)
                     continue;
 
                 if (selfId != null && selfId.Value.Equals(comp.EntityId))
@@ -348,43 +359,45 @@ namespace AdvancedGears
 
         protected List<UnitInfo> getUnits(UnitSide self_side, in Vector3 pos, float length, bool? isEnemy, bool allowDead, EntityId? selfId, params UnitType[] types)
         {
-            List<UnitInfo> unitList = new List<UnitInfo>();
-
-            var colls = Physics.OverlapSphere(pos, length, LayerMask.GetMask("Unit"));
-            for (var i = 0; i < colls.Length; i++)
+            index = 0;
+            var count = Physics.OverlapSphereNonAlloc(pos, length, colls, this.Layer);
+            for (var i = 0; i < count; i++)
             {
                 var col = colls[i];
-                var comp = col.GetComponent<LinkedEntityComponent>();
-                if (comp == null)
+                if (col.TryGetComponent<LinkedEntityComponent>(out var comp) == false)
                     continue;
 
                 if (selfId != null && selfId.Value == comp.EntityId)
                     continue;
 
                 BaseUnitStatus.Component? unit;
-                if (TryGetComponent(comp.EntityId, out unit))
-                {
-                    if (unit.Value.State == UnitState.Dead && allowDead == false)
-                        continue;
+                if (TryGetComponent(comp.EntityId, out unit) == false)
+                    continue;
 
-                    if (isEnemy != null && (unit.Value.Side == self_side) == isEnemy.Value)
-                        continue;
+                if (unit.Value.State == UnitState.Dead && allowDead == false)
+                    continue;
 
-                    if (types.Length != 0 && types.Contains(unit.Value.Type) == false)
-                        continue;
+                if (isEnemy != null && (unit.Value.Side == self_side) == isEnemy.Value)
+                    continue;
 
-                    var info = new UnitInfo();
-                    info.id = comp.EntityId;
-                    info.pos = col.transform.position;
-                    info.rot = col.transform.rotation;
-                    info.type = unit.Value.Type;
-                    info.side = unit.Value.Side;
-                    info.order = unit.Value.Order;
-                    info.state = unit.Value.State;
-                    info.rank = unit.Value.Rank;
+                if (types.Length != 0 && types.Contains(unit.Value.Type) == false)
+                    continue;
 
-                    unitList.Add(info);
-                }
+                UnitInfo info = null;
+                if (index >= unitList.Count)
+                    unitList.Add(new UnitInfo());
+
+                info = unitList[index];
+                info.id = comp.EntityId;
+                info.pos = col.transform.position;
+                info.rot = col.transform.rotation;
+                info.type = unit.Value.Type;
+                info.side = unit.Value.Side;
+                info.order = unit.Value.Order;
+                info.state = unit.Value.State;
+                info.rank = unit.Value.Rank;
+
+                index++;
             }
 
             return unitList;
@@ -437,6 +450,62 @@ namespace AdvancedGears
         public static float GetRandom(float inter)
         {
             return inter * 0.1f * UnityEngine.Random.Range(-1.0f, 1.0f);
+        }
+    }
+
+    public class ComponentCounter<T> where T : UnityEngine.Component
+    {
+        T value;
+        public T GetValue()
+        {
+            count++;
+            return value;
+        }
+
+        public int count { get; private set; }
+
+        public ComponentCounter(T comp)
+        {
+            this.value = comp;
+            count = 0;
+        }
+    }
+
+    public class CounterDictionary<T> where T : Component
+    {
+        Dictionary<int, ComponentCounter<T>> dic = new Dictionary<int, ComponentCounter<T>>();
+        HashSet<int> removeKeys = new HashSet<int>();
+
+        public bool TryGetValue(int id, out T val)
+        {
+            if (dic.TryGetValue(id, out var counter))
+            {
+                val = counter.GetValue();
+                return true;
+            }
+            else
+            {
+                val = null;
+                return false;
+            }
+        }
+
+        public void Add(int id, T val)
+        {
+            dic.Add(id, new ComponentCounter<T>(val));
+        }
+
+        public void RemoveUnderCount(int under)
+        {
+            removeKeys.Clear();
+            foreach (var kvp in dic)
+            {
+                if (kvp.Value.count < under)
+                    removeKeys.Add(kvp.Key);
+            }
+
+            foreach (var k in removeKeys)
+                dic.Remove(k);
         }
     }
 }
