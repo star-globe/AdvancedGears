@@ -188,7 +188,10 @@ namespace AdvancedGears
 
     public abstract class BaseSearchSystem : BaseEntitySearchSystem
     {
+        int layer = int.MinValue;
+
         readonly UnitInfo baseInfo = new UnitInfo();
+        readonly Colliders[] colls = new Colliders[256];
 
         protected UnitInfo getUnitInfo(EntityId entityId)
         {
@@ -241,8 +244,12 @@ namespace AdvancedGears
         {
             float len = float.MaxValue;
             bool tof = false;
-            var colls = Physics.OverlapSphere(pos, length, LayerMask.GetMask("Unit"));
-            for (var i = 0; i < colls.Length; i++)
+
+            if (layer == int.MinValue)
+                layer = LayerMask.GetMask("Unit");
+
+            var count = Physics.OverlapSphereNonAlloc(pos, length, colls, layer);
+            for (var i = 0; i < count; i++)
             {
                 var col = colls[i];
                 var comp = col.GetComponent<LinkedEntityComponent>();
