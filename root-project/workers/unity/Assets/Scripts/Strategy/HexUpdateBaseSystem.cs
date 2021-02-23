@@ -29,6 +29,10 @@ namespace AdvancedGears
 
         readonly Vector3[] baseCorners = new Vector3[7];
         readonly Vector3[] checkCorners = new Vector3[7];
+        readonly int[] cornerIndexes = new int[] { 0, 1, 2, 3, 4, 5 };
+
+        readonly Queue<HexDetails> hexDetailQueue = new Queue<HexDetails>();
+        readonly Queue<List<FrontLineInfo>> linesQueue = new Queue<List<FrontLineInfo>>();
 
         protected override void OnCreate()
         {
@@ -53,7 +57,6 @@ namespace AdvancedGears
                 var ids = HexUtils.GetNeighborHexIndexes(index);
 
                 List<FrontLineInfo> lines = null;
-                int[] cornerIndexes = new int[] { 0, 1, 2, 3, 4, 5 };
                 foreach (var cornerIndex in cornerIndexes)
                 {
                     var right = baseCorners[cornerIndex];
@@ -62,7 +65,13 @@ namespace AdvancedGears
                     var id = CheckTouch(side, left, right, checkCorners, ids);
                     if (id != null)
                     {
-                        lines = lines ?? new List<FrontLineInfo>();
+                        if (lines == null) {
+                            if (linesQueue.Count > 0)
+                                lines = linesQueue.Dequeue();
+                            else
+                                lines = new List<FrontLineInfo>();
+                        }
+
                         lines.Add(new FrontLineInfo()
                         {
                             LeftCorner = left.ToWorldPosition(this.Origin).ToCoordinates(),
@@ -74,7 +83,12 @@ namespace AdvancedGears
                 if (lines == null)
                     continue;
 
-                var hexDetails = new HexDetails();
+                HexDetails hexDetails = null;
+                if (hexDetailQueue.Count > 0)
+                    hexDetails = hexDetailQueue.Dequeue();
+                else
+                    hexDetails = new HexDetails();
+
                 hexDetails.frontLines = lines;
                 hexDetails.staminas = kvp.Value.Powers;
 
@@ -138,6 +152,24 @@ namespace AdvancedGears
                     indexes.Add(id);
                 }
             }
+        }
+
+        protected void StoreDetailsQueue(Dictionary<uint, HexDetails> indexes)
+        {
+            if (indexes == null)
+                return;
+
+            foreach (var kvp in indexes) {
+                var details = kvp.Value;
+                details.frontLines.Clear();
+                linesQueue.Enqueue(details.frontLines);
+
+                details.frontLines = null;
+                details.staminas = null;
+                hexDetailQueue.Enqueue(details);
+            }
+
+            indexes.Clear();
         }
     }
 

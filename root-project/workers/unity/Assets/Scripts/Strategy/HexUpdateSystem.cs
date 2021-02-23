@@ -104,7 +104,7 @@ namespace AdvancedGears
                 {
                     Dictionary<uint, HexDetails> indexes = null;
                     if (borderHexListDic.TryGetValue(side, out indexes))
-                        indexes?.Clear();
+                        StoreDetailsQueue(indexes);
 
                     borderHexListDic[side] = BorderHexList(side, indexes);
 
@@ -125,13 +125,15 @@ namespace AdvancedGears
                     var hex = hexes[index];
                     hex.Index = info.Index;
                     hex.EntityId = info.EntityId.EntityId;
-                    List<FrontLineInfo> frontLines = null;
+                    List<FrontLineInfo> frontLines = hex.FrontLines;
+
                     if (borderHexListDic.TryGetValue(info.Side, out var borderList) &&
                         borderList != null && 
                         borderList.TryGetValue(index, out var detail))
                         frontLines = detail.frontLines;
                     else
-                        frontLines = new List<FrontLineInfo>();
+                        frontLines = frontLines ?? new List<FrontLineInfo>();
+
                     hex.FrontLines = frontLines;
                     hex.IsActive = info.isActive;
                     hex.SidePowers = info.Powers;
@@ -145,5 +147,7 @@ namespace AdvancedGears
                 portal.HexIndexes = hexes;
             });
         }
+
+
     }
 }

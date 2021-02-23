@@ -201,7 +201,7 @@ namespace AdvancedGears
         }
 
         readonly UnitInfo baseInfo = new UnitInfo();
-        readonly Colliders[] colls = new Colliders[256];
+        readonly Collider[] colls = new Collider[256];
         readonly List<UnitInfo> unitList = new List<UnitInfo>();
 
         readonly CounterDictionary<LinkedEntityComponent> linkedEntityCache = new CounterDictionary<LinkedEntityComponent>();
@@ -359,7 +359,7 @@ namespace AdvancedGears
 
         protected List<UnitInfo> getUnits(UnitSide self_side, in Vector3 pos, float length, bool? isEnemy, bool allowDead, EntityId? selfId, params UnitType[] types)
         {
-            index = 0;
+            int index = 0;
             var count = Physics.OverlapSphereNonAlloc(pos, length, colls, this.Layer);
             for (var i = 0; i < count; i++)
             {
@@ -399,6 +399,9 @@ namespace AdvancedGears
 
                 index++;
             }
+
+            if (unitList.Count > index)
+                unitList.RemoveRange(index, unitList.Count - index);
 
             return unitList;
         }

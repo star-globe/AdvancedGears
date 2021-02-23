@@ -23,6 +23,7 @@ namespace AdvancedGears
 
         Vector3 origin;
         UnitSide currentSide;
+        readonly Dictionary<UnitSide, float> currentPowers = new Dictionary<UnitSide, float>();
         IntervalCounter inter;
         readonly Vector3[] corners = new Vector3[7];
 
@@ -57,12 +58,37 @@ namespace AdvancedGears
                 return;
 
             currentSide = side;
+            SetPowers(powerReader.Data.SidePowers);
             SetLandLine(this.Origin, side, powerReader.Data.SidePowers);
+        }
+
+        void SetPowers(Dictionary<UnitSide, float> powers)
+        {
+            currentPowers.Clear();
+            foreach (var kvp in powers)
+                currentPowers[kvp.Key] = kvp.Value;
         }
 
         void UpdatePower(Dictionary<UnitSide,float> powers)
         {
-            SetLandLine(this.Origin, currentSide, powers);
+            bool changed = true;
+            if (currentPowers != null) {
+                if (currentPowers.Count == powers.Count)
+                {
+                    var keys = powers.Keys;
+                    foreach (var k in keys) {
+                        if (currentPowers.TryGetValue(k, out var p))
+                            changed &= p == powers[k];
+                    }
+
+                    changed = !changed;
+                }
+            }
+
+            if (changed) {
+                SetPowers(powers);
+                SetLandLine(this.Origin, currentSide, powers);
+            }
         }
 
         void SetLandLine(Vector3 origin, UnitSide side, Dictionary<UnitSide,float> powers)

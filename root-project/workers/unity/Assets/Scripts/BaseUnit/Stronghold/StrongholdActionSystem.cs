@@ -17,6 +17,7 @@ namespace AdvancedGears
 
         readonly HashSet<EntityId> requestLists = new HashSet<EntityId>();
         readonly Dictionary<EntityId, TeamInfo> teamsDic = new Dictionary<EntityId, TeamInfo>();
+        readonly HashSet<EntityId> teamKeys = new HashSet<EntityId>();
         readonly List<UnitInfo> turretsList = new List<UnitInfo>();
         readonly HashSet<long> sendIds = new HashSet<long>();
 
@@ -110,14 +111,11 @@ namespace AdvancedGears
 
                 // number check
                 if (factory.TeamOrders.Count == 0 && sight.StrategyVector.Side != UnitSide.None) {
-                    var teamOrders = makeOrders(status.Side, status.Rank, PostureUtils.RotFoward(sight.StrategyVector.Vector.ToUnityVector()), status.Order, portal.Index,
-                                                sight.FrontLineCorners, sight.TargetHexes, teamsDic);
+                    var teamOrders = factory.TeamOrders;
+                    makeOrders(status.Side, status.Rank, PostureUtils.RotFoward(sight.StrategyVector.Vector.ToUnityVector()), status.Order, portal.Index,
+                               sight.FrontLineCorners, sight.TargetHexes, teamsDic, teamOrders);
 
-                    if (teamOrders != null)
-                    {
-                        factory.TeamOrders.AddRange(teamOrders);
-                        Debug.LogFormat("Add Orders Count:{0}", teamOrders.Count);
-                    }
+                    factory.TeamOrders = teamOrders;
                 }
 
                 if (factory.TurretOrders.Count == 0) {
@@ -207,26 +205,23 @@ namespace AdvancedGears
         }
 
         const int strategyUnitRank = 0;
-        List<TeamOrder> makeOrders(UnitSide side, uint rank, float rot, OrderType order, uint hexIndex, List<FrontLineInfo> frontLines, Dictionary<uint, TargetHexInfo> hexes, Dictionary<EntityId,TeamInfo> datas)
+        void makeOrders(UnitSide side, uint rank, float rot, OrderType order, uint hexIndex,
+                                    List<FrontLineInfo> frontLines, Dictionary<uint, TargetHexInfo> hexes, Dictionary<EntityId,TeamInfo> datas, List<TeamOrder> teamOrders)
         {
-            if (datas == null)
-                return null;
-
-            List<TeamOrder> teamOrders = null;
+            if (datas == null || teamOrders == null)
+                return;
 
             if (hexes.Count > 0)
             {
-                teamOrders = makeTeamOrders(hexes.Count * AttackLogicDictionary.TeamPerHex, strategyUnitRank, rot, order, teamOrders, datas);//hexAttackRate, strategyUnitRank, rot, order, teamOrders, datas);
+                makeTeamOrders(hexes.Count * AttackLogicDictionary.TeamPerHex, strategyUnitRank, rot, order, teamOrders, datas);
             }
             else if (frontLines.Count > 0)
             {
-                teamOrders = makeTeamOrders(frontLines.Count, strategyUnitRank, rot, order, teamOrders, datas);
+                makeTeamOrders(frontLines.Count, strategyUnitRank, rot, order, teamOrders, datas);
             }
-
-            return teamOrders;
         }
 
-        List<TeamOrder> makeTeamOrders(int coms, uint maxrank, float rot, OrderType order, List<TeamOrder> teamOrders, Dictionary<EntityId, TeamInfo> datas)
+        void makeTeamOrders(int coms, uint maxrank, float rot, OrderType order, List<TeamOrder> teamOrders, Dictionary<EntityId, TeamInfo> datas)
         {
             var solnum = AttackLogicDictionary.UnderSoldiers;
             var underCommands = AttackLogicDictionary.UnderCommanders;
@@ -236,7 +231,6 @@ namespace AdvancedGears
                 var count = datas.Count(kvp => kvp.Value.Rank == r);
                 if (count < coms)
                 {
-                    teamOrders = teamOrders ?? new List<TeamOrder>();
                     teamOrders.Add(new TeamOrder()
                     {
                         CommanderRank = r,
@@ -252,8 +246,6 @@ namespace AdvancedGears
                 if (r == 0)
                     break;
             }
-
-            return teamOrders;
         }
 
 
@@ -326,7 +318,7 @@ namespace AdvancedGears
 
                 var key = targetStrongholds.Keys.ElementAt(UnityEngine.Random.Range(0,count));
 
-                Debug.LogFormat("SelectStronghold Index:{0}, Key:{1}, Count:{2}, Target:{3}", hexIndex, kvp.Key, count, targetStrongholds[key].Position);
+                //Debug.LogFormat("SelectStronghold Index:{0}, Key:{1}, Count:{2}, Target:{3}", hexIndex, kvp.Key, count, targetStrongholds[key].Position);
 
                 var tgt = new TargetInfo()
                 {
@@ -367,7 +359,7 @@ namespace AdvancedGears
                     FrontLine = lines[index],
                 };
 
-                Debug.LogFormat("SelectLine Index:{0}, Key:{1}, Count:{2} Target_Left:{3} Target_Left:{4}", hexIndex, kvp.Key, count, lines[index].LeftCorner, lines[index].RightCorner);
+                //Debug.LogFormat("SelectLine Index:{0}, Key:{1}, Count:{2} Target_Left:{3} Target_Left:{4}", hexIndex, kvp.Key, count, lines[index].LeftCorner, lines[index].RightCorner);
 
                 SetCommand(kvp.Key, line, order);
 
@@ -396,7 +388,7 @@ namespace AdvancedGears
                 var index = UnityEngine.Random.Range(0, count);
                 var key = targets.Keys.ElementAt(index);
 
-                Debug.LogFormat("SelectHex Index:{0}, Key:{1}, Count:{2} Target:{3}", hexIndex, kvp.Key.Id, count, targets[key].HexInfo.HexIndex);
+                //Debug.LogFormat("SelectHex Index:{0}, Key:{1}, Count:{2} Target:{3}", hexIndex, kvp.Key.Id, count, targets[key].HexInfo.HexIndex);
 
                 SetCommand(kvp.Key, targets[key], order);
 

@@ -29,9 +29,10 @@ namespace AdvancedGears
             SetHexCorners(GetHexCenter(origin, index, edge), corners, edge);
         }
 
+        static readonly Vector3[] corners = new Vector3[7];
+
         public static bool IsInsideHex(in Vector3 origin, uint index, in Vector3 pos, float edge = edgeLength)
         {
-            var corners = new Vector3[7];
             SetHexCorners(origin, index, corners, edge);
 
             for(var i = 0; i < 6; i++) {
@@ -113,10 +114,10 @@ namespace AdvancedGears
             return pos;
         }
 
+        static readonly uint[] ids = new uint[6] { 1, 2, 3, 4, 5, 6 };
+
         public static uint[] GetNeighborHexIndexes(uint index)
         {
-            var ids = new uint[6] { 1, 2, 3, 4, 5, 6};
-
             if (index == 0)
                 return ids;
 
@@ -232,15 +233,22 @@ namespace AdvancedGears
             return false;
         }
 
-        public static IEnumerable<UnitSide> AllSides
+        static UnitSide[] allSides = null;
+
+        public static UnitSide[] AllSides
         {
             get
             {
-                var side = UnitSide.None;
-                while (side < UnitSide.Num) {
-                    yield return side;
-                    side++;
+                if (allSides == null) {
+                    allSides = new UnitSide[(int)UnitSide.Num];
+                    var side = UnitSide.None;
+                    for (var i = 0; i < allSides.Length; i++) {
+                        allSides[i] = side;
+                        side++;
+                    }
                 }
+
+                return allSides;
             }
         }
 
