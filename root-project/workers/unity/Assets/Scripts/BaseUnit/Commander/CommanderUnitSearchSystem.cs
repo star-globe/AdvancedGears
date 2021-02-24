@@ -18,12 +18,6 @@ namespace AdvancedGears
         private EntityQuerySet targettingQuerySet;
         private EntityQuerySet teamingQuerySet;
 
-        //private EntityQuery targettingGroup;
-        //private EntityQuery teamingGroup;
-        //
-        //IntervalChecker teamingInter;
-        //IntervalChecker targettingInter;
-
         const float teaminTime = 1.0f;
         const int period = 15;
         #region ComponentSystem
@@ -50,18 +44,6 @@ namespace AdvancedGears
                                                  ComponentType.ReadOnly<Transform>(),
                                                  ComponentType.ReadOnly<SpatialEntityId>()
                                                 ), teaminTime);
-
-            //teamingGroup = GetEntityQuery(
-            //    ComponentType.ReadWrite<CommanderTeam.Component>(),
-            //    ComponentType.ReadOnly<CommanderTeam.HasAuthority>(),
-            //    ComponentType.ReadOnly<CommanderSight.Component>(),
-            //    ComponentType.ReadOnly<BaseUnitStatus.Component>(),
-            //    ComponentType.ReadOnly<Transform>(),
-            //    ComponentType.ReadOnly<SpatialEntityId>()
-            //);
-            //
-            //teamingInter = IntervalCheckerInitializer.InitializedChecker(teaminTime);
-            //targettingInter = IntervalCheckerInitializer.InitializedChecker(period);
         }
 
         protected override void OnUpdate()
@@ -163,9 +145,6 @@ namespace AdvancedGears
                          ref CommanderStatus.Component commander,
                          ref CommanderTeam.Component team)
         {
-            // check rank
-            UnitInfo tgt;
-
             var scaledRange = AttackLogicDictionary.RankScaled(sightRange, status.Rank);
 
             // check power
@@ -203,8 +182,9 @@ namespace AdvancedGears
             }
 
             if (!isSetRate) {
+                var min = AttackLogicDictionary.PowerRateDiff;
                 var diff = rate - team.TargetInfoSet.PowerRate;
-                if (diff * diff > powerRateDiff * powerRateDiff) {
+                if (diff * diff > min * min) {
                     // set rate
                     var set = team.TargetInfoSet;
                     set.PowerRate = rate;
@@ -220,7 +200,7 @@ namespace AdvancedGears
                 SetOrderFollowers(followers, entityId.EntityId, current.Value);
         }
 
-        const float powerRateDiff = 0.1f;
+        readonly Collider[] colls = new Collider[256];
 
         private OrderType? GetOrder(UnitSide side, in Vector3 pos, float length, out float rate)
         {
@@ -228,12 +208,11 @@ namespace AdvancedGears
             float enemy = 0.0f;
             rate = AttackLogicDictionary.PowerRateMin;
 
-            var colls = Physics.OverlapSphere(pos, length, LayerMask.GetMask("Unit"));
-            for (var i = 0; i < colls.Length; i++)
+            var count = Physics.OverlapSphereNonAlloc(pos, length, colls, this.UnitLayer);
+            for (var i = 0; i < count; i++)
             {
                 var col = colls[i];
-                var comp = col.GetComponent<LinkedEntityComponent>();
-                if (comp == null)
+                if (col.TryGetComponent<LinkedEntityComponent>(out var comp) ==false)
                     continue;
 
                 BaseUnitStatus.Component? unit;
@@ -377,16 +356,7 @@ namespace AdvancedGears
             else
                 followers = info.Followers;
 
-            //var list = followers.Where(f => HasEntity(f)).ToList();
-
-            //if (isUnderCommander)
-            //    info.UnderCommanders = list;
-            //else
-            //    info.Followers = list;
-            //
-            //commander.FollowerInfo = info;
-
-            return followers.Count(f => CheckAlive(f.Id));//list.Count(f => CheckAlive(f.Id));
+            return followers.Count(f => CheckAlive(f.Id));
         }
         #endregion
     }

@@ -71,13 +71,6 @@ namespace AdvancedGears
                 var corners = sight.FrontLineCorners;
                 var hexes = sight.TargetHexes;
 
-                //if (targets.ContainsKey(entityId.EntityId) == false)
-                //{
-                //    targets.Add(entityId.EntityId,
-                //                new TargetStrongholdInfo()
-                //                { StrongholdId = entityId.EntityId, Position = trans.position.ToWorldPosition(this.Origin).ToCoordinates(),  });
-                //}
-
                 var order = GetTarget(trans.position, portal.Index, portal.FrontHexes, portal.HexIndexes, status.Side, enemySide, hexes, corners);
 
                 sight.TargetStrongholds = targets;
@@ -110,14 +103,6 @@ namespace AdvancedGears
                 return order;
             }
 
-#if false
-            if (enemySide != UnitSide.None && frontHexes.TryGetValue(enemySide, out targetHexInfo))
-                order = GetTargetHex(pos, selfSide, frontHexInfo.Indexes, targetHexInfo, hexes);
-
-            if (order != OrderType.Idle)
-                return order;
-#endif
-
             hexes.Clear();
             order = GetTargetFrontLine(pos, index, selfSide, hexIndexes, corners);
             return order;
@@ -125,28 +110,6 @@ namespace AdvancedGears
 
         private OrderType GetTargetFrontLine(in Vector3 pos, uint index, UnitSide selfSide, Dictionary<uint, HexIndex> hexIndexes, List<FrontLineInfo> corners)
         {
-            //HexIndex? targetIndex = null;
-            //float length = float.MaxValue;
-            //foreach (var hex in indexes) {
-            //    if (HexUtils.ExistOtherSidePowers(hex, selfSide) == false)
-            //        continue;
-            //
-            //    var h_pos = GetHexCenter(hex.Index);
-            //    var l = (pos - h_pos).sqrMagnitude;
-            //    if (l >= length)
-            //        continue;
-            //
-            //    length = l;
-            //    targetIndex = hex;
-            //}
-            //
-            //if (targetIndex.HasValue) {
-            //    corners.Clear();
-            //    corners.AddRange(targetIndex.Value.FrontLines);
-            //    return OrderType.Keep;
-            //}
-            //
-            //return OrderType.Idle;
             corners.Clear();
 
             int counter = 0;
@@ -197,9 +160,6 @@ namespace AdvancedGears
                 targetCount++;
             }
 
-            if (targetCount > 0)
-                Debug.LogFormat("Index:{0} TargetCount:{1}", index, targetCount);
-
             switch (targetCount)
             {
                 case 0:
@@ -232,7 +192,7 @@ namespace AdvancedGears
         {
             OrderType order = OrderType.Idle;
 
-            var strategyVector = vector;// * RangeDictionary.StrategyRangeRate;
+            var strategyVector = vector;
             var range = strategyVector.magnitude;
             var units = getEnemyUnits(side, pos, range, allowDead:true, UnitType.Stronghold);
             if (units != null) {
@@ -259,15 +219,13 @@ namespace AdvancedGears
                 order = OrderType.Keep;
             }
 
-            //Debug.LogFormat("Side:{0} Order:{1} StrategyVector:{2}", side, order, strategyVector);
-
             return order;
         }
         private OrderType GetTargetStronghold(in Vector3 pos, UnitSide side, UnitType type, UnitState state, in Vector3 vector, EntityId selfId, List<HexIndex> indexes, Dictionary<EntityId, UnitBaseInfo> targets)
         {
             OrderType order = OrderType.Idle;
 
-            var strategyVector = vector;// * RangeDictionary.StrategyRangeRate;
+            var strategyVector = vector;
             var range = strategyVector.magnitude;
             EntityId? target = null;
             Vector3 h_pos = this.Origin;
@@ -281,15 +239,6 @@ namespace AdvancedGears
                 length = l;
                 target = hex.EntityId;
             }
-
-            //targets.Clear();
-            //if (target != null) {
-            //    targets.Add(target.Value, new TargetStrongholdInfo(target.Value, side, h_pos.ToWorldPosition(this.Origin).ToCoordinates()));
-            //    order = OrderType.Guard;
-            //}
-            //else {
-            //    order = OrderType.Idle;
-            //}
 
             var units = getEnemyUnits(side, h_pos, range, allowDead:true, UnitType.Stronghold);
             if (units != null) {
@@ -315,8 +264,6 @@ namespace AdvancedGears
                 targets.Add(selfId, new UnitBaseInfo(selfId, pos.ToWorldCoordinates(this.Origin), type, side, state));
                 order = OrderType.Keep;
             }
-
-            //Debug.LogFormat("Side:{0} Order:{1} StrategyVector:{2}", side, order, strategyVector);
 
             return order;
         }

@@ -189,7 +189,7 @@ namespace AdvancedGears
     public abstract class BaseSearchSystem : BaseEntitySearchSystem
     {
         int layer = int.MinValue;
-        int Layer
+        protected int UnitLayer
         {
             get
             {
@@ -258,7 +258,7 @@ namespace AdvancedGears
             float len = float.MaxValue;
             bool tof = false;
 
-            var count = Physics.OverlapSphereNonAlloc(pos, length, colls, this.Layer);
+            var count = Physics.OverlapSphereNonAlloc(pos, length, colls, this.UnitLayer);
             for (var i = 0; i < count; i++)
             {
                 // todo check CounterCache
@@ -360,7 +360,7 @@ namespace AdvancedGears
         protected List<UnitInfo> getUnits(UnitSide self_side, in Vector3 pos, float length, bool? isEnemy, bool allowDead, EntityId? selfId, params UnitType[] types)
         {
             int index = 0;
-            var count = Physics.OverlapSphereNonAlloc(pos, length, colls, this.Layer);
+            var count = Physics.OverlapSphereNonAlloc(pos, length, colls, this.UnitLayer);
             for (var i = 0; i < count; i++)
             {
                 var col = colls[i];
