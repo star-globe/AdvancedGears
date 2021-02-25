@@ -42,6 +42,7 @@ namespace AdvancedGears
 
         readonly Dictionary<uint, float> resourceDictionary = new Dictionary<uint, float>();
         readonly Dictionary<EntityId, Dictionary<UnitSide,float>> flowDictionary = new Dictionary<EntityId, Dictionary<UnitSide,float>>();
+        readonly List<uint> targetIds = new List<uint>();
 
         protected override void OnUpdate()
         {
@@ -84,10 +85,12 @@ namespace AdvancedGears
                 if (resourceDictionary.TryGetValue(hex.Index, out var resourceValue))
                     power.SidePowers[hexSide] = current + (float)(resourceValue * deltaTime);
 
-                var ids = HexUtils.GetNeighborHexIndexes(hex.Index).Where(id =>
+                var ids = HexUtils.GetNeighborHexIndexes(hex.Index);
+                targetIds.Clear();
+                foreach (var i in ids)
                 {
                     if (base.HexDic.ContainsKey(id) == false)
-                        return false;
+                        continue;
 
                     var h = base.HexDic[id];
                     bool isFlow = false;
@@ -103,14 +106,15 @@ namespace AdvancedGears
                         isFlow = true;
                     }
 
-                    return isFlow;
+                    if (isFlow)
+                        targetIds.Add(i);
                 });
 
                 var totalFlow = (float) (flowValueRate * deltaTime * current);
-                var count = ids.Count();
+                var count = targetIds.Count();
                 var flow = totalFlow / count;
 
-                foreach (var id in ids)
+                foreach (var id in targetIds)
                 {
                     float val = flow;
                     if(power.SidePowers[hexSide] > flow)

@@ -119,9 +119,9 @@ namespace AdvancedGears
                 }
 
                 if (factory.TurretOrders.Count == 0) {
-                    var turretOrders = makeOrders(status.Rank, turretsList);
-                    if (turretOrders != null)
-                        factory.TurretOrders.AddRange(turretOrders);
+                    var turretOrders = factory.TurretOrders;
+                    makeOrders(status.Rank, turretsList, turretOrders);
+                    factory.TurretOrders = turretOrders;
                 }
             });
         }
@@ -249,18 +249,17 @@ namespace AdvancedGears
         }
 
 
-        List<TurretOrder> makeOrders(uint rank, List<UnitInfo> currentTurrets)
+        void makeOrders(uint rank, List<UnitInfo> currentTurrets, List<TurretOrder> turretOrders)
         {
+            if (currentTurrets == null || turretOrders == null)
+                return;
+
             var underTurrets = AttackLogicDictionary.UnderTurrets;
 
-            List<TurretOrder> turretOrders = null;
             int coms = 1;
             for(var r = rank; r >= 0; r--) {
                 var count = currentTurrets.Count(u => u.rank == r);
-                Debug.LogFormat("Turrets Count:{0} Rank:{1}", count, r);
-
                 if (count < coms) {
-                    turretOrders = turretOrders ?? new List<TurretOrder>();
                     turretOrders.Add(new TurretOrder()
                     {
                         TurretId = 1,
@@ -274,8 +273,6 @@ namespace AdvancedGears
                 if (r == 0)
                     break;
             }
-
-            return turretOrders;
         }
 
 
@@ -345,9 +342,6 @@ namespace AdvancedGears
                 if (sendIds.Contains(uid))
                     continue;
 
-                //if (kvp.Value.Rank > 0)
-                //    continue;
-
                 var frontLine = kvp.Value.TargetInfoSet.FrontLine;
                 if (frontLine.IsValid() && lines.Contains(frontLine))
                     continue;
@@ -358,8 +352,6 @@ namespace AdvancedGears
                 {
                     FrontLine = lines[index],
                 };
-
-                //Debug.LogFormat("SelectLine Index:{0}, Key:{1}, Count:{2} Target_Left:{3} Target_Left:{4}", hexIndex, kvp.Key, count, lines[index].LeftCorner, lines[index].RightCorner);
 
                 SetCommand(kvp.Key, line, order);
 
@@ -387,8 +379,6 @@ namespace AdvancedGears
 
                 var index = UnityEngine.Random.Range(0, count);
                 var key = targets.Keys.ElementAt(index);
-
-                //Debug.LogFormat("SelectHex Index:{0}, Key:{1}, Count:{2} Target:{3}", hexIndex, kvp.Key.Id, count, targets[key].HexInfo.HexIndex);
 
                 SetCommand(kvp.Key, targets[key], order);
 

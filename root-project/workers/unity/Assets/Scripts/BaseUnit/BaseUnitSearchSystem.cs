@@ -203,6 +203,7 @@ namespace AdvancedGears
         readonly UnitInfo baseInfo = new UnitInfo();
         readonly Collider[] colls = new Collider[256];
         readonly List<UnitInfo> unitList = new List<UnitInfo>();
+        readonly Queue<UnitInfo> unitQueue = new Queue<UnitInfo>();
 
         readonly CounterDictionary<LinkedEntityComponent> linkedEntityCache = new CounterDictionary<LinkedEntityComponent>();
 
@@ -385,7 +386,7 @@ namespace AdvancedGears
 
                 UnitInfo info = null;
                 if (index >= unitList.Count)
-                    unitList.Add(new UnitInfo());
+                    unitList.Add(unitQueue.Count > 0 ? unitQueue.Dequeue(): new UnitInfo());
 
                 info = unitList[index];
                 info.id = comp.EntityId;
@@ -400,8 +401,11 @@ namespace AdvancedGears
                 index++;
             }
 
-            if (unitList.Count > index)
+            if (unitList.Count > index) {
+                for (var i = index; i < unitList.Count; i++)
+                    unitQueue.Enqueue(unitList[i]);
                 unitList.RemoveRange(index, unitList.Count - index);
+            }
 
             return unitList;
         }

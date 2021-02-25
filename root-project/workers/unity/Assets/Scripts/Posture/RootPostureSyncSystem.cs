@@ -47,13 +47,7 @@ namespace AdvancedGears
                 changed |= trans.localScale != rootTrans.Scale.ToUnityVector();
 
                 if (changed)
-                {
-                    var local = PostureUtils.ConvertTransform(trans);
-
-                    DebugUtils.RandomlyLog($"angle:{local.Rotation.ToUnityQuaternion().eulerAngles}");
-
                     posture.RootTrans = PostureUtils.ConvertTransform(trans);
-                }
             });
         }
     }
