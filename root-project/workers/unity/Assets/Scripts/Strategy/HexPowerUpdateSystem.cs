@@ -87,7 +87,7 @@ namespace AdvancedGears
 
                 var ids = HexUtils.GetNeighborHexIndexes(hex.Index);
                 targetIds.Clear();
-                foreach (var i in ids)
+                foreach (var id in ids)
                 {
                     if (base.HexDic.ContainsKey(id) == false)
                         continue;
@@ -107,8 +107,8 @@ namespace AdvancedGears
                     }
 
                     if (isFlow)
-                        targetIds.Add(i);
-                });
+                        targetIds.Add(id);
+                }
 
                 var totalFlow = (float) (flowValueRate * deltaTime * current);
                 var count = targetIds.Count();
