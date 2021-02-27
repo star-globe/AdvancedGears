@@ -44,5 +44,19 @@ namespace AdvancedGears
             line.LeftCorner = Coordinates.Zero;
             return line;
         }
+
+        public static int FindIndex(List<uint> list, uint id)
+        {
+            if (list == null)
+                return -1;
+
+            int idx = -1;
+            for (int i = 0; i < list.Count; i++) {
+                if (id == list[i])
+                    idx = i;
+            }
+
+            return idx;
+        }
     }
 }

@@ -15,30 +15,41 @@ namespace AdvancedGears
         [SerializeField]
         SideColor[] sideColors;
 
+        Type stateType = null;
+        Type sideType = null;
+
         public UnityEngine.Color GetStateColor(UnitState state)
         {
-            return GetColor(stateColors,state);
+            stateType = stateType ?? typeof(StateColor);
+            var list = GetColorList(stateType);
+            list = list ?? ConvertToColorList(stateType, stateColors);
+
+            return GetColor(list, (uint)state);
         }
 
         public UnityEngine.Color GetSideColor(UnitSide side)
         {
-            return GetColor(sideColors,side);
+            sideType = sideType ?? typeof(UnitSide);
+            var list = GetColorList(sideType);
+            list = list ?? ConvertToColorList(sideType, sideColors);
+
+            return GetColor(list, (uint)side);
         }
     }
 
     [Serializable]
-    internal class StateColor : BaseColor, IColor<UnitState>
+    internal class StateColor : BaseColor, IColor
     {
-        public UnitState Tgt => state;
+        public uint Key => (uint)state;
 
         [SerializeField]
         UnitState state;
     }
 
     [Serializable]
-    internal class SideColor : BaseColor, IColor<UnitSide>
+    internal class SideColor : BaseColor, IColor
     {
-        public UnitSide Tgt => side;
+        public uint Key => (uint)side;
 
         [SerializeField]
         UnitSide side;

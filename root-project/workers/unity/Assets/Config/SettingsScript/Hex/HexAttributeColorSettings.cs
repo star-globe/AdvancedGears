@@ -12,16 +12,21 @@ namespace AdvancedGears
         [SerializeField]
         HexAttributeColor[] hexAttributeColors;
 
+        Type hexType = null;
+
         public UnityEngine.Color GetHexAttributeColor(HexAttribute attribute)
         {
-            return GetColor(hexAttributeColors,attribute);
+            hexType = hexType ?? typeof(HexAttribute);
+            var list = GetColorList(hexType);
+            list = list ?? ConvertToColorList(hexType, hexAttributeColors);
+            return GetColor(list, (uint)attribute);
         }
     }
 
     [Serializable]
-    internal class HexAttributeColor : BaseColor, IColor<HexAttribute>
+    internal class HexAttributeColor : BaseColor, IColor
     {
-        public HexAttribute Tgt => attribute;
+        public uint Key => (uint)attribute;
 
         [SerializeField]
         HexAttribute attribute;

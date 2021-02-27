@@ -381,8 +381,15 @@ namespace AdvancedGears
                 if (isEnemy != null && (unit.Value.Side == self_side) == isEnemy.Value)
                     continue;
 
-                if (types.Length != 0 && types.Contains(unit.Value.Type) == false)
-                    continue;
+                if (types.Length != 0) {
+                    bool contains = false;
+                    foreach (var t in types) {
+                        contains |= t == unit.Value.Type;
+                    }
+
+                    if (!contains)
+                        continue;
+                }
 
                 UnitInfo info = null;
                 if (index >= unitList.Count)

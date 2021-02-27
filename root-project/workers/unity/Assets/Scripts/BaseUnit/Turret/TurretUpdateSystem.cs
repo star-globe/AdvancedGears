@@ -51,7 +51,7 @@ namespace AdvancedGears
                 if (status.State != UnitState.Alive)
                     return;
 
-                if (status.Type != UnitType.Stronghold)
+                if (UnitUtils.IsBuilding(status.Type) == false)
                     return;
 
                 var trans = EntityManager.GetComponentObject<Transform>(entity);

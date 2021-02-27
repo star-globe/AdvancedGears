@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Improbable;
 using Improbable.Gdk.Core;
 using Improbable.Gdk.Subscriptions;
@@ -111,7 +110,7 @@ namespace AdvancedGears
                 }
 
                 var totalFlow = (float) (flowValueRate * deltaTime * current);
-                var count = targetIds.Count();
+                var count = targetIds.Count;
                 var flow = totalFlow / count;
 
                 foreach (var id in targetIds)
@@ -142,12 +141,11 @@ namespace AdvancedGears
                 }
             });
 
-            foreach (var kvp in flowDictionary)
-            {
+            foreach (var kvp in flowDictionary) {
                 var power = kvp.Value;
-                foreach (var pair in power.Where(p => p.Value > 0))
-                {
-                    this.UpdateSystem.SendEvent(new HexPower.HexPowerFlow.Event(new HexPowerFlow() { Side = pair.Key, Flow = pair.Value }), kvp.Key);
+                foreach (var pair in power) {
+                    if (pair.Value > 0)
+                        this.UpdateSystem.SendEvent(new HexPower.HexPowerFlow.Event(new HexPowerFlow() { Side = pair.Key, Flow = pair.Value }), kvp.Key);
                 }
             }
         }

@@ -30,7 +30,11 @@ namespace AdvancedGears.UI
 
         public void SetName(string name)
         {
-            playerNameText.gameObject.SetActive(string.IsNullOrEmpty(name) == false);
+            var isActive = !string.IsNullOrEmpty(name);
+            var go = playerNameText.gameObject;
+            if (go.activeSelf != isActive)
+                go.SetActive(isActive);
+
             playerNameText.SetText(name);
         }
 

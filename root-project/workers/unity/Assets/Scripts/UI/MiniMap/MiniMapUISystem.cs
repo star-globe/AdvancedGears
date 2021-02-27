@@ -27,16 +27,6 @@ namespace AdvancedGears.UI
             get { return this.MiniMapUIDisplay?.MiniMapParent; }
         }
 
-        private Camera camera = null;
-        private Camera Camera
-        {
-            get
-            {
-                camera = camera ?? Camera.main;
-                return camera;
-            }
-        }
-
         protected override void OnCreate()
         {
             base.OnCreate();
@@ -75,8 +65,7 @@ namespace AdvancedGears.UI
 
             var diff = position.Coords.ToUnityVector() - playerPosition.Value;
             var inversed = this.Camera.transform.InverseTransformVector(diff);
-            var vec2 = this.MiniMapUIDisplay.GetMiniMapPos(new Vector2(inversed.x, inversed.z));
-
+              var vec2 = this.MiniMapUIDisplay.GetMiniMapPos(new Vector2(inversed.x, inversed.z));
             uiObject.SetInfo(vec2, status.Side, status.Type);
             uiObject.SetName(string.Empty);
         }
@@ -109,10 +98,15 @@ namespace AdvancedGears.UI
 
             UpdatePlayerPositions();
 
+            UpdateUIObject();
+        }
+
+        void UpdateUIObject()
+        {
             Entities.With(unitGroup).ForEach((Entity entity,
-                                          ref BaseUnitStatus.Component status,
-                                          ref Position.Component position,
-                                          ref SpatialEntityId entityId) =>
+                              ref BaseUnitStatus.Component status,
+                              ref Position.Component position,
+                              ref SpatialEntityId entityId) =>
             {
                 SetUIObject(status, entityId.EntityId, position);
             });

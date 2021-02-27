@@ -88,6 +88,9 @@ namespace AdvancedGears
             if (hexChanged == false && CheckTime(ref interAccess) == false)
                 return;
 
+            // Check
+            CheckBorderHexList();
+
             Entities.With(portalGroup).ForEach((Entity entity,
                                       ref StrategyHexAccessPortal.Component portal,
                                       ref BaseUnitStatus.Component status,
@@ -103,10 +106,11 @@ namespace AdvancedGears
                 foreach (var side in HexUtils.AllSides)
                 {
                     Dictionary<uint, HexDetails> indexes = null;
-                    if (borderHexListDic.TryGetValue(side, out indexes))
-                        StoreDetailsQueue(indexes);
-
-                    borderHexListDic[side] = BorderHexList(side, indexes);
+                    if (borderHexListDic.TryGetValue(side, out indexes) == false) {
+                        if (fronts.ContainsKey(side))
+                            fronts.Remove(side);
+                        continue;
+                    }
 
                     if (fronts.ContainsKey(side) == false)
                         fronts[side] = new FrontHexInfo { Indexes = new List<uint>() };
@@ -148,6 +152,16 @@ namespace AdvancedGears
             });
         }
 
+        private void CheckBorderHexList()
+        {
+            foreach (var side in HexUtils.AllSides)
+            {
+                Dictionary<uint, HexDetails> indexes = null;
+                if (borderHexListDic.TryGetValue(side, out indexes))
+                    StoreDetailsQueue(indexes);
 
+                borderHexListDic[side] = BorderHexList(side, indexes);
+            }
+        }
     }
 }

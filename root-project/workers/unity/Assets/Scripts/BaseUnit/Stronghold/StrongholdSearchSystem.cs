@@ -145,14 +145,14 @@ namespace AdvancedGears
             var ids = HexUtils.GetNeighborHexIndexes(index);
             foreach (var id in ids)
             {
-                var i = indexes.FindIndex(d => d == id);
-                if (i < 0)
+                var idx = TargetUtils.FindIndex(indexes, id);
+                if (idx < 0)
                     continue;
 
-                if (hexIndexes.ContainsKey(indexes[i]) == false)
+                if (hexIndexes.ContainsKey(indexes[idx]) == false)
                     continue;
 
-                var hex = hexIndexes[indexes[i]];
+                var hex = hexIndexes[indexes[idx]];
                 if (HexUtils.ExistOtherSidePowers(hex, selfSide) == false)
                     continue;
 
@@ -178,9 +178,10 @@ namespace AdvancedGears
             hexes.Clear();
             foreach (var n in neighbors)
             {
-                var i = targetFront.Indexes.FindIndex(id => id == n);
+                var i = TargetUtils.FindIndex(targetFront.Indexes, n);
                 if (i < 0)
                     continue;
+
                 isTarget = true;
                 hexes[n] = new TargetHexInfo(new HexBaseInfo(targetFront.Indexes[i], UnitSide.None), 1.0f);
             }

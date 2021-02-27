@@ -52,12 +52,11 @@ namespace AdvancedGears.UI
                     return;
 
                 var range = RangeDictionary.UIRange;
-                var diff = trans.position - Camera.main.transform.position;
+                var diff = trans.position - this.Camera.transform.position;
                 if (diff.sqrMagnitude > range * range)
                     return;
 
-                var camera = Camera.main;
-                var view = camera.WorldToViewportPoint(trans.position);
+                var view = this.Camera.WorldToViewportPoint(trans.position);
                 if (viewBounds.Contains(view) == false)
                     return;
 
@@ -65,7 +64,7 @@ namespace AdvancedGears.UI
                 if (ui == null)
                     return;
 
-                var pos = RectTransformUtility.WorldToScreenPoint(camera, trans.position + ui.Offset);
+                var pos = RectTransformUtility.WorldToScreenPoint(this.Camera, trans.position + ui.Offset);
                 ui.SetInfo(pos, health.Health, health.MaxHealth);
             });
         }
@@ -91,6 +90,16 @@ namespace AdvancedGears.UI
                 }
 
                 return unitUICreator;
+            }
+        }
+
+        private Camera camera = null;
+        protected Camera Camera
+        {
+            get
+            {
+                camera = camera ?? Camera.main;
+                return camera;
             }
         }
 

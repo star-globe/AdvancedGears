@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Improbable;
 using Improbable.Gdk.Core;
 using Improbable.Worker.CInterop;
@@ -18,7 +17,6 @@ namespace AdvancedGears
         readonly HashSet<EntityId> requestLists = new HashSet<EntityId>();
         readonly Dictionary<EntityId, TeamInfo> teamsDic = new Dictionary<EntityId, TeamInfo>();
         readonly HashSet<EntityId> teamKeys = new HashSet<EntityId>();
-        readonly List<UnitInfo> turretsList = new List<UnitInfo>();
         readonly HashSet<long> sendIds = new HashSet<long>();
 
         protected override void OnCreate()
@@ -107,7 +105,6 @@ namespace AdvancedGears
 
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
                 CheckAlive(trans.position, status.Side, uint.MaxValue, HexDictionary.HexEdgeLength * 2, teamsDic);
-                CheckAliveTurret(trans.position, status.Side, turretsList);
 
                 // number check
                 if (factory.TeamOrders.Count == 0 && sight.StrategyVector.Side != UnitSide.None) {
@@ -118,11 +115,13 @@ namespace AdvancedGears
                     factory.TeamOrders = teamOrders;
                 }
 
+#if false
                 if (factory.TurretOrders.Count == 0) {
                     var turretOrders = factory.TurretOrders;
-                    makeOrders(status.Rank, turretsList, turretOrders);
+                    makeOrders(trans.position, status.Side, status.Rank, turretOrders);
                     factory.TurretOrders = turretOrders;
                 }
+#endif
             });
         }
 
@@ -228,7 +227,12 @@ namespace AdvancedGears
 
             for (var r = maxrank; r >= 0; r--)
             {
-                var count = datas.Count(kvp => kvp.Value.Rank == r);
+                int count = 0;
+                foreach (var kvp in datas) {
+                    if (kvp.Value.Rank == r)
+                        count++;
+                }
+
                 if (count < coms)
                 {
                     teamOrders.Add(new TeamOrder()
@@ -249,16 +253,22 @@ namespace AdvancedGears
         }
 
 
-        void makeOrders(uint rank, List<UnitInfo> currentTurrets, List<TurretOrder> turretOrders)
+        void makeOrders(in Vector3 pos, UnitSide side, uint rank, List<TurretOrder> turretOrders)
         {
-            if (currentTurrets == null || turretOrders == null)
+            if (turretOrders == null)
                 return;
 
+            var units = getAllyUnits(side, pos, RangeDictionary.Get(FixedRangeType.StrongholdRange), allowDead: false, UnitType.Turret);
             var underTurrets = AttackLogicDictionary.UnderTurrets;
 
             int coms = 1;
             for(var r = rank; r >= 0; r--) {
-                var count = currentTurrets.Count(u => u.rank == r);
+                int count = 0;
+                foreach (var u in units) {
+                    if (u.rank == r)
+                        count++;
+                }
+
                 if (count < coms) {
                     turretOrders.Add(new TurretOrder()
                     {
@@ -313,14 +323,22 @@ namespace AdvancedGears
                 if (stronghold.IsValid() && targetStrongholds.ContainsKey(stronghold))
                     continue;
 
-                var key = targetStrongholds.Keys.ElementAt(UnityEngine.Random.Range(0,count));
+                var index = UnityEngine.Random.Range(0, count);
+                int i = 0;
+                UnitBaseInfo? baseInfo = null;
+                foreach (var str in targetStrongholds) {
+                    if (i == index)
+                        baseInfo = str.Value;
+
+                    i++;
+                }
+
+                if (baseInfo == null)
+                    continue;
 
                 //Debug.LogFormat("SelectStronghold Index:{0}, Key:{1}, Count:{2}, Target:{3}", hexIndex, kvp.Key, count, targetStrongholds[key].Position);
 
-                var tgt = new TargetInfo()
-                {
-                    TgtInfo = targetStrongholds[key],
-                };
+                var tgt = new TargetInfo() { TgtInfo = baseInfo.Value, };
 
                 SetCommand(kvp.Key, tgt, order);
 
@@ -378,9 +396,19 @@ namespace AdvancedGears
                     continue;
 
                 var index = UnityEngine.Random.Range(0, count);
-                var key = targets.Keys.ElementAt(index);
+                TargetHexInfo? info = null;
+                int i = 0;
+                foreach (var tgt in targets) {
+                    if (i == index)
+                        info = tgt.Value;
 
-                SetCommand(kvp.Key, targets[key], order);
+                    i++;
+                }
+
+                if (info == null)
+                    continue;
+
+                SetCommand(kvp.Key, info.Value, order);
 
                 sendIds.Add(uid);
             }

@@ -119,7 +119,12 @@ namespace AdvancedGears
         public static uint[] GetNeighborHexIndexes(uint index)
         {
             if (index == 0)
+            {
+                for (uint i = 0; i < ids.Length; i++)
+                    ids[i] = i + 1;
+
                 return ids;
+            }
 
             CalcIndex(index, out var n, out var direct, out var rest);
 

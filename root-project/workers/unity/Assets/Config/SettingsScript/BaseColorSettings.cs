@@ -8,14 +8,45 @@ namespace AdvancedGears
 {
     public abstract class BaseColorSettings : ScriptableObject
     {
-        protected UnityEngine.Color GetColor<T>(IEnumerable<IColor<T>> list, T tgt) where T : struct
-        {
-            var col = UnityEngine.Color.white;
-            var bCol = list.FirstOrDefault(c => c.Tgt.Equals(tgt));
-            if (bCol != null)
-                col = bCol.Color;
+        readonly Dictionary<int, Dictionary<uint, UnityEngine.Color>> colorSettingDic = new Dictionary<int, Dictionary<uint, UnityEngine.Color>>();
+        readonly Dictionary<Type, List<IColor>> typeColorListDic = new Dictionary<Type, List<IColor>>();
 
-            return col;
+        protected UnityEngine.Color GetColor(List<IColor> list, uint key)
+        {
+            if (list == null)
+                return UnityEngine.Color.white;
+
+            var hash = list.GetHashCode();
+            if (colorSettingDic.TryGetValue(hash, out var dic) == false) {
+                dic = new Dictionary<uint, UnityEngine.Color>();
+                foreach (var c in list)
+                    dic.Add(c.Key, c.Color);
+
+                colorSettingDic.Add(hash,dic);
+            }
+
+            if (dic.TryGetValue(key, out var col))
+                return col;
+            else
+                return UnityEngine.Color.white;
+        }
+
+        protected List<IColor> ConvertToColorList(Type type, IEnumerable<IColor> baseColors)
+        {
+            List<IColor> list = new List<IColor>();
+            foreach (var c in baseColors)
+                list.Add(c);
+
+            typeColorListDic[type] = list;
+            
+            return list;
+        }
+
+        protected List<IColor> GetColorList(Type type)
+        {
+            List<IColor> list = null;
+            typeColorListDic.TryGetValue(type, out list);
+            return list;
         }
     }
 
@@ -28,9 +59,9 @@ namespace AdvancedGears
         public UnityEngine.Color Color { get { return col; } }
     }
 
-    public interface IColor<T> where T : struct
+    public interface IColor
     {
-        T Tgt { get; }
+        uint Key { get; }
         UnityEngine.Color Color { get; }
     }
 }
