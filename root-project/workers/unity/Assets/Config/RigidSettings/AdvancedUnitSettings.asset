@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mass: 20
   drag: 1.1
-  angularDrag: 0.05
+  angularDrag: 0.5
   centerOfMass: {x: 0, y: 0, z: 0}
   useGravity: 1
   constraints: 4000000010000000

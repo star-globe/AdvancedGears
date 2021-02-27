@@ -12,7 +12,7 @@ namespace AdvancedGears
         [Serializable]
         class UnitSnapshotPair
         {
-            public UnitSnapshotComponent unit;
+            public List<UnitSnapshotComponent> units = new List<UnitSnapshotComponent>();
             public HexSnapshotAttachment hex;
 
             public void SetHexInfo(UnitSide side, uint index, HexAttribute attribute)
@@ -22,10 +22,8 @@ namespace AdvancedGears
                     hex.attribute = attribute;
                 }
 
-                if (unit) {
-                    unit.side = side;
-                    unit.type = HexUtils.GetUnitType(attribute);
-                    unit.gameObject.SetActive(unit.type != UnitType.None);
+                foreach (var u in units) {
+                    u.side = side;
                 }
             }
         }
@@ -46,8 +44,18 @@ namespace AdvancedGears
         LineRenderer line;
 
         [SerializeField]
+        SpriteRenderer hex;
+
+        [SerializeField]
+        HexAttributeColorSettings hexColorSettings;
+
+        [SerializeField]
         uint index = 0;
         public uint Index => index;
+
+        [SerializeField]
+        TurretSnapshotLocator turretLocator;
+        public TurretSnapshotLocator TurretLocator => turretLocator;
 
         public void SetPosition(Vector3 pos, uint index, float edge)
         {
@@ -58,6 +66,7 @@ namespace AdvancedGears
             HexUtils.SetHexCorners(pos, corners, edge);
             line.positionCount = 7;
             line.SetPositions(corners);
+            hex.transform.localScale = edge * Vector3.one;
         }
 
         public HexSnapshot GetHexSnapshot(float horizontalRate, float virticalRate)
@@ -68,7 +77,7 @@ namespace AdvancedGears
                 index = index,
                 attribute = attribute,
                 hexId = masterId,
-                pos = pos,
+                pos = new Vector3(pos.x * horizontalRate, pos.y * virticalRate, pos.z * horizontalRate),
                 side = side,
             };
         }
@@ -82,19 +91,25 @@ namespace AdvancedGears
         private void SearchChildren()
         {
             var list = new List<UnitSnapshotPair>();
-            var units = GetComponentsInChildren<UnitSnapshotComponent>();
+            var units = GetComponentsInChildren<UnitSnapshotComponent>(includeInactive:true);
 
-            bool isSet = false;
+            this.pair.units.Clear();
+
             foreach (var u in units) {
-                if (!isSet && u != null && u.type == HexUtils.GetUnitType(attribute)) {
-                    this.pair = new UnitSnapshotPair() { unit = u, hex = u.GetComponent<HexSnapshotAttachment>() };
-                    isSet = true;
+                if (u != null && HexUtils.HexAllowsUnitType(attribute, u.type)) {
+                    var hex = u.GetComponent<HexSnapshotAttachment>();
+                    if (hex != null)
+                        this.pair.hex = hex;
+
+                    this.pair.units.Add(u);
                     u.gameObject.SetActive(true);
                 }
                 else {
                     u.gameObject.SetActive(false);
                 }
             }
+
+            hex.color = hexColorSettings.GetHexAttributeColor(attribute);
         }
     }
 
@@ -123,8 +138,17 @@ namespace AdvancedGears
         {
             base.OnInspectorGUI();
 
-            if (GUILayout.Button("SyncUnitSetings"))
+            if (GUILayout.Button("Sync UnitSetings"))
                 component.SyncUnitSettings();
+
+            var locator = component.TurretLocator;
+            if (locator != null) {
+                if (GUILayout.Button("Locate Turrets"))
+                    locator.LocateTurrets();
+
+                if (GUILayout.Button("Renew Turrets"))
+                    locator.RenewTurrets();
+            }
         }
     }
 #endif

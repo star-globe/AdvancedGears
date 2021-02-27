@@ -14,26 +14,32 @@ namespace AdvancedGears
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     public class BaseUnitReviveTimerSystem : BaseEntitySearchSystem
     {
-        EntityQuery group;
-
         private class DeleteUnitContext
         {
             public EntityId entityId;
         }
 
+        private EntityQuerySet querySet;
+
         private readonly HashSet<EntityId> deadUnitIds = new HashSet<EntityId>();
         private readonly HashSet<EntityId> deletedIds = new HashSet<EntityId>();
+
+        double deltaTime = -1;
+
+        const int period = 5;
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            group = GetEntityQuery(
-                ComponentType.ReadWrite<BaseUnitReviveTimer.Component>(),
-                ComponentType.ReadOnly<BaseUnitReviveTimer.HasAuthority>(),
-                ComponentType.ReadOnly<BaseUnitStatus.Component>(),
-                ComponentType.ReadOnly<SpatialEntityId>()
-            );
+            querySet = new EntityQuerySet(GetEntityQuery(
+                                          ComponentType.ReadWrite<BaseUnitReviveTimer.Component>(),
+                                          ComponentType.ReadOnly<BaseUnitReviveTimer.HasAuthority>(),
+                                          ComponentType.ReadOnly<BaseUnitStatus.Component>(),
+                                          ComponentType.ReadOnly<SpatialEntityId>()
+                                          ), period);
+
+            deltaTime = Time.ElapsedTime;
         }
 
         protected override void OnUpdate()
@@ -43,7 +49,7 @@ namespace AdvancedGears
             HandleDeleteResponses();
         }
 
-        const float time = 3.0f;
+        const float reviveTime = 3.0f;
 
         void HandleDeadUnits()
         {
@@ -51,7 +57,7 @@ namespace AdvancedGears
                 var comp = new BaseUnitReviveTimer.Component()
                 {
                     IsStart = true,
-                    RestTime = time,
+                    RestTime = reviveTime,
                 };
                 base.SetComponent(id, comp);
             }
@@ -59,13 +65,17 @@ namespace AdvancedGears
             deadUnitIds.Clear();
         }
 
-
         void HandleCleanUnits()
         {
-            Entities.With(group).ForEach((Entity entity,
-                                          ref BaseUnitReviveTimer.Component revive,
-                                          ref BaseUnitStatus.Component status,
-                                          ref SpatialEntityId entityId) =>
+            if (CheckTime(ref querySet.inter) == false)
+                return;
+
+            deltaTime = Time.ElapsedTime - deltaTime;
+
+            Entities.With(querySet.group).ForEach((Entity entity,
+                                                   ref BaseUnitReviveTimer.Component revive,
+                                                   ref BaseUnitStatus.Component status,
+                                                   ref SpatialEntityId entityId) =>
             {
                 if (revive.IsStart == false)
                     return;
@@ -85,7 +95,7 @@ namespace AdvancedGears
                 }
 
                 if (revive.RestTime > 0)
-                    revive.RestTime -= Time.DeltaTime;
+                    revive.RestTime -= deltaTime;
                 
                 var id = entityId.EntityId;
                 if (revive.RestTime < 0 && deletedIds.Contains(id) == false) {

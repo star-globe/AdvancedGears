@@ -19,6 +19,7 @@ MonoBehaviour:
   - id: 3
   - id: 4
   - id: 5
+  - id: 6
   references:
     version: 1
     00000000:
@@ -69,5 +70,13 @@ MonoBehaviour:
       data:
         entityType: HexBase
         prefab: {fileID: 2460800935532791291, guid: 6bd6adc8a95e0e2479d173d9015d8817,
+          type: 3}
+        requiredComponents: 
+    00000006:
+      type: {class: SimpleEntityResolver, ns: Improbable.Gdk.Core.Representation.Types,
+        asm: Improbable.Gdk.Core}
+      data:
+        entityType: TurretUnit
+        prefab: {fileID: 2510352248528691622, guid: 5006c97a086f4254eadfbac85e5826c7,
           type: 3}
         requiredComponents: 

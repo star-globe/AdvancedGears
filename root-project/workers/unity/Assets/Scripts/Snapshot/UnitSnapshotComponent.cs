@@ -24,6 +24,7 @@ namespace AdvancedGears
                 type = type,
                 side = side,
                 pos = new Vector3(pos.x * horizontalRate, pos.y * virticalRate, pos.z * horizontalRate),
+                rotate = this.transform.rotation,
                 attachments = attachments.ToArray(),
             };
         }
@@ -46,6 +47,7 @@ namespace AdvancedGears
         public UnitType type;
         public UnitSide side;
         public Vector3 pos;
+        public Quaternion rotate;
         public UnitSnapshotAttachment[] attachments;
     }
 }

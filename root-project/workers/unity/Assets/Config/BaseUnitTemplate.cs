@@ -16,6 +16,7 @@ namespace AdvancedGears
             { UnitType.Soldier, "BaseUnit"},
             { UnitType.Commander, "CommanderUnit"},
             { UnitType.Stronghold, "StrongholdUnit"},
+            { UnitType.Turret, "TurretUnit"},
             { UnitType.HeadQuarter, "HeadQuarterUnit"},
             { UnitType.ArmyCloud, "ArmyCloudUnit"},
         };
@@ -25,28 +26,32 @@ namespace AdvancedGears
             { UnitType.Soldier, OrderType.Idle },
             { UnitType.Commander, OrderType.Attack },
             { UnitType.Stronghold, OrderType.Idle },
+            { UnitType.Turret, OrderType.Idle },
             { UnitType.HeadQuarter, OrderType.Attack },
             { UnitType.ArmyCloud, OrderType.Idle},
         };
 
-        public static EntityTemplate CreateBaseUnitEntityTemplate(UnitSide side, Coordinates coords, UnitType type, OrderType? order = null, uint? rank = null)
+        public static EntityTemplate CreateBaseUnitEntityTemplate(UnitSide side, UnitType type, Coordinates coords, CompressedQuaternion? rotation = null, FixedPointVector3? scale = null, OrderType? order = null, uint? rank = null)
         {
             var template = new EntityTemplate();
             template.AddComponent(new Position.Snapshot(coords), WorkerUtils.UnityGameLogic);
             template.AddComponent(new Metadata.Snapshot(metaDic[type]), WorkerUtils.UnityGameLogic);
             template.AddComponent(new Persistence.Snapshot(), WorkerUtils.UnityGameLogic);
-            template.AddComponent(new BaseUnitMovement.Snapshot(), WorkerUtils.UnityGameLogic);
+            template.AddComponent(new PostureRoot.Snapshot() { RootTrans = PostureUtils.ConvertTransform(coords, rotation, scale) }, WorkerUtils.UnityGameLogic);
+
             template.AddComponent(new BaseUnitSight.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new BaseUnitAction.Snapshot { EnemyPositions = new List<FixedPointVector3>() }, WorkerUtils.UnityGameLogic);
             template.AddComponent(new BaseUnitStatus.Snapshot(side, type, UnitState.Alive, order == null ? orderDic[type] : order.Value, GetRank(rank, type)), WorkerUtils.UnityGameLogic);
             template.AddComponent(new BaseUnitTarget.Snapshot().DefaultSnapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new Launchable.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new BaseUnitHealth.Snapshot(), WorkerUtils.UnityGameLogic);
-            template.AddComponent(new GunComponent.Snapshot { GunsDic = new Dictionary<PosturePoint, GunInfo>() }, WorkerUtils.UnityGameLogic);
+            template.AddComponent(new GunComponent.Snapshot { GunsDic = new Dictionary<int, GunInfo>() }, WorkerUtils.UnityGameLogic);
             template.AddComponent(new FuelComponent.Snapshot(), WorkerUtils.UnityGameLogic);
 
-            if (type.BaseType() == UnitBaseType.Moving)
+            if (type.BaseType() == UnitBaseType.Moving) {
+                template.AddComponent(new BaseUnitMovement.Snapshot(), WorkerUtils.UnityGameLogic);
                 template.AddComponent(new BaseUnitReviveTimer.Snapshot { IsStart = false, RestTime = 0.0f }, WorkerUtils.UnityGameLogic);
+            }
 
             SwitchType(template, type, WorkerUtils.UnityGameLogic);
             TransformSynchronizationHelper.AddTransformSynchronizationComponents(template, WorkerUtils.UnityGameLogic);
@@ -93,7 +98,8 @@ namespace AdvancedGears
             switch (type) {
                 case UnitType.Soldier:
                     template.AddComponent(new BulletComponent.Snapshot(), writeAccess);
-                    template.AddComponent(new BaseUnitPosture.Snapshot { Posture = new PostureInfo { Datas = new Dictionary<PosturePoint, PostureData>() } }, writeAccess);
+                    template.AddComponent(new PostureAnimation.Snapshot { BoneMap = new Dictionary<int, CompressedLocalTransform>() }, writeAccess);
+                    template.AddComponent(new DominationDevice.Snapshot { Type = DominationDeviceType.Capturing }, writeAccess);
                     break;
 
                 case UnitType.Commander:
@@ -104,14 +110,14 @@ namespace AdvancedGears
                                                                        TargetInfoSet = TargetUtils.DefaultTargteInfoSet() }, writeAccess);
                     template.AddComponent(new CommanderSight.Snapshot { WarPowers = new List<WarPower>() }, writeAccess);
                     template.AddComponent(new CommanderAction.Snapshot { ActionType = CommandActionType.None }, writeAccess);
-                    template.AddComponent(new BaseUnitPosture.Snapshot { Posture = new PostureInfo { Datas = new Dictionary<PosturePoint, PostureData>() } }, writeAccess);
+                    template.AddComponent(new PostureAnimation.Snapshot { BoneMap = new Dictionary<int, CompressedLocalTransform>() }, writeAccess);
                     template.AddComponent(new DominationDevice.Snapshot { Type = DominationDeviceType.Capturing }, writeAccess);
                     template.AddComponent(new BoidComponent.Snapshot(), writeAccess);
                     break;
 
                 case UnitType.Supply:
                     template.AddComponent(new BulletComponent.Snapshot(), writeAccess);
-                    template.AddComponent(new BaseUnitPosture.Snapshot { Posture = new PostureInfo { Datas = new Dictionary<PosturePoint, PostureData>() } }, writeAccess);
+                    template.AddComponent(new PostureAnimation.Snapshot { BoneMap = new Dictionary<int, CompressedLocalTransform>() }, writeAccess);
                     template.AddComponent(new ResourceComponent.Snapshot(), writeAccess);
                     template.AddComponent(new ResourceTransporter.Snapshot(), writeAccess);
                     break;
@@ -119,22 +125,24 @@ namespace AdvancedGears
                 case UnitType.Stronghold:
                     AddStrongholdTypeComponents(template, writeAccess);
                     template.AddComponent(new RecoveryComponent.Snapshot { State = RecoveryState.Supplying }, writeAccess);
-                    var commandersQuery = InterestQuery.Query(Constraint.Component<CommanderStatus.Component>())
-                                            .FilterResults(Position.ComponentId, BaseUnitStatus.ComponentId);
-                    var commanderInterest = InterestTemplate.Create().AddQueries<StrongholdStatus.Component>(commandersQuery);
-                    template.AddComponent(commanderInterest.ToSnapshot(), writeAccess);
+                    //var commandersQuery = InterestQuery.Query(Constraint.Component<CommanderStatus.Component>())
+                    //                        .FilterResults(Position.ComponentId, BaseUnitStatus.ComponentId);
+                    //var commanderInterest = InterestTemplate.Create().AddQueries<StrongholdStatus.Component>(commandersQuery);
+                    //template.AddComponent(commanderInterest.ToSnapshot(), writeAccess);
                     break;
 
                 case UnitType.HeadQuarter:
                     AddStrongholdTypeComponents(template, writeAccess);
                     template.AddComponent(new StrategyOrderManager.Snapshot { }, writeAccess);
-                    var strongholdQuery = InterestQuery.Query(Constraint.Component<StrongholdStatus.Component>())
-                                          .FilterResults(Position.ComponentId, BaseUnitStatus.ComponentId);
-                    var strongholdInterest = InterestTemplate.Create().AddQueries<StrategyOrderManager.Component>(strongholdQuery);
-                    template.AddComponent(strongholdInterest.ToSnapshot(), writeAccess);
+                    //var strongholdQuery = InterestQuery.Query(Constraint.Component<StrongholdStatus.Component>())
+                    //                      .FilterResults(Position.ComponentId, BaseUnitStatus.ComponentId);
+                    //var strongholdInterest = InterestTemplate.Create().AddQueries<StrategyOrderManager.Component>(strongholdQuery);
+                    //template.AddComponent(strongholdInterest.ToSnapshot(), writeAccess);
                     break;
 
                 case UnitType.Turret:
+                    template.AddComponent(new BulletComponent.Snapshot(), writeAccess);
+                    template.AddComponent(new PostureAnimation.Snapshot { BoneMap = new Dictionary<int, CompressedLocalTransform>() }, writeAccess);
                     template.AddComponent(new TurretComponent.Snapshot(), writeAccess);
                     break;
 
@@ -146,18 +154,18 @@ namespace AdvancedGears
 
         private static void AddStrongholdTypeComponents(EntityTemplate template, string writeAccess)
         {
-            template.AddComponent(new StrongholdSight.Snapshot { TargetStrongholds = new Dictionary<EntityId, TargetStrongholdInfo>(),
+            template.AddComponent(new StrongholdSight.Snapshot { TargetStrongholds = new Dictionary<EntityId, UnitBaseInfo>(),
                                                                  FrontLineCorners = new List<FrontLineInfo>(),
                                                                  TargetHexes = new Dictionary<uint, TargetHexInfo>() }, writeAccess);
-            template.AddComponent(new StrategyHexAccessPortal.Snapshot { FrontHexes = new Dictionary<UnitSide,FrontHexInfo>() }, writeAccess);
+            template.AddComponent(new StrategyHexAccessPortal.Snapshot { Index = uint.MaxValue, FrontHexes = new Dictionary<UnitSide,FrontHexInfo>() , HexIndexes = new Dictionary<uint, HexIndex>()}, writeAccess);
             template.AddComponent(new ResourceComponent.Snapshot(), writeAccess);
             template.AddComponent(new ResourceSupplyer.Snapshot(), writeAccess);
             template.AddComponent(new TurretHub.Snapshot { TurretsDatas = new Dictionary<EntityId,TurretInfo>() }, writeAccess);
         }
 
-        public static EntityTemplate CreateCommanderUnitEntityTemplate(UnitSide side, Coordinates coords, uint rank, EntityId? superiorId)
+        public static EntityTemplate CreateCommanderUnitEntityTemplate(UnitSide side, uint rank, EntityId? superiorId, Coordinates coords, CompressedQuaternion? rotation = null, FixedPointVector3? scale = null)
         {
-            var template = CreateBaseUnitEntityTemplate(side, coords, UnitType.Commander, rank:rank);
+            var template = CreateBaseUnitEntityTemplate(side, UnitType.Commander, coords, rotation, scale, rank:rank);
             var team = template.GetComponent<CommanderTeam.Snapshot>();
             if (team != null) {
                 var t = team.Value;
@@ -186,7 +194,7 @@ namespace AdvancedGears
             template.AddComponent(new BulletComponent.Snapshot(), controllAttribute);
             template.AddComponent(new AdvancedUnitController.Snapshot(), controllAttribute);
             template.AddComponent(new BaseUnitHealth.Snapshot(), WorkerUtils.UnityGameLogic);
-            template.AddComponent(new GunComponent.Snapshot { GunsDic = new Dictionary<PosturePoint, GunInfo>() }, WorkerUtils.UnityGameLogic);
+            template.AddComponent(new GunComponent.Snapshot { GunsDic = new Dictionary<int, GunInfo>() }, WorkerUtils.UnityGameLogic);
             template.AddComponent(new FuelComponent.Snapshot(), WorkerUtils.UnityGameLogic);
 
             InterestTemplate interest = InterestTemplate.Create();
@@ -218,9 +226,9 @@ namespace AdvancedGears
             return template;
         }
 
-        public static EntityTemplate CreateTurretUnitTemplate(UnitSide side, Coordinates coords, int masterId)
+        public static EntityTemplate CreateTurretUnitTemplate(UnitSide side, int masterId, Coordinates coords, CompressedQuaternion rotation, FixedPointVector3? scale = null)
         {
-            var template = CreateBaseUnitEntityTemplate(side, coords, UnitType.Turret);
+            var template = CreateBaseUnitEntityTemplate(side, UnitType.Turret, coords, rotation, scale);
             var turret = template.GetComponent<TurretComponent.Snapshot>();
             if (turret != null) {
                 var t = turret.Value;
@@ -263,7 +271,8 @@ namespace AdvancedGears
             snapshot.HexInfo = TargetUtils.DefaultTargetHexInfo();
             snapshot.FrontLine = TargetUtils.DefaultTargetFrontLineInfo();
             snapshot.State = TargetState.None;
-            snapshot.TargetInfo = TargetUtils.DefaultTargetInfo();
+            snapshot.TargetUnit = TargetUtils.DefaultTargetInfo();
+            snapshot.PowerRate = 1.0f;
             return snapshot;
         }
 

@@ -90,8 +90,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b952d4827968992438912b06671de842, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  worldSize: 500
-  localSize: 500
+  worldSize: 850
+  localSize: 400
   terrain: {fileID: 3136015966841369431}
   realizer: {fileID: 2011829079}
   units: []

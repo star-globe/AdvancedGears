@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: StrongholdUnitInitSettings
   m_EditorClassIdentifier: 
   sightRange: 100
+  dominationRange: 10
+  maxStamina: 100
   inter: 3

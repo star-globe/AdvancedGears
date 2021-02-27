@@ -77,13 +77,14 @@ namespace AdvancedGears
             trans.Rotate(upAxis, ang, Space.Self);
         }
 
-        public static bool CheckRotate(Vector3 front, Vector3 up, Vector3 tgtFoward, float angle)
-        {
-            tgtFoward = Verticalize(up,tgtFoward);
-
-            var d = Vector3.Dot(tgtFoward, front);
-            return d > Mathf.Cos(angle);
-        }
+        //public static bool CheckInSight(Vector3 front, Vector3 tgtFoward, float angle)
+        //{
+        //    Vector3.Angle(front,);
+        //    //tgtFoward = Verticalize(up,tgtFoward);
+        //    //
+        //    //var d = Vector3.Dot(tgtFoward, front);
+        //    //return d > Mathf.Cos(angle);
+        //}
     }
 }
 

@@ -107,7 +107,7 @@ namespace AdvancedGears
                             var supply = new SupplyBulletInfo {
                                 GunId = info.GunId,
                                 GunTypeId = info.GunTypeId,
-                                Attached = kvp.Key,
+                                AttachedBone = kvp.Key,
                                 Amount = num,
                             };
                             this.UpdateSystem.SendEvent(new GunComponent.BulletSupplied.Event(supply), unit.id);

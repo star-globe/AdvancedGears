@@ -11,10 +11,13 @@ namespace AdvancedGears
 {
     public static class TargetUtils
     {
-        public static TargetInfo DefaultTargetInfo()
+        public static UnitBaseInfo DefaultTargetInfo()
         {
-            var target = new TargetInfo();
-            return target;
+            var unit = new UnitBaseInfo();
+            unit.Position = Coordinates.Zero;
+            unit.Side = UnitSide.None;
+            unit.UnitId = new EntityId();
+            return unit;
         }
 
         public static TargetInfoSet DefaultTargteInfoSet()
@@ -22,32 +25,38 @@ namespace AdvancedGears
             var target = new TargetInfoSet();
             target.HexInfo = DefaultTargetHexInfo();
             target.FrontLine = DefaultTargetFrontLineInfo();
-            target.Stronghold = DefaultTargetStrongholdInfo();
+            target.Stronghold = DefaultTargetInfo();
+            target.PowerRate = 1.0f;
             return target;
         }
 
-        public static TargetHexInfo DefaultTargetHexInfo()
+        public static HexBaseInfo DefaultTargetHexInfo()
         {
-            var hex = new TargetHexInfo();
+            var hex = new HexBaseInfo();
             hex.HexIndex = uint.MaxValue;
             return hex;
         }
 
-        public static TargetFrontLineInfo DefaultTargetFrontLineInfo()
+        public static FrontLineInfo DefaultTargetFrontLineInfo()
         {
-            var line = new TargetFrontLineInfo();
-            line.FrontLine.RightCorner = Coordinates.Zero;
-            line.FrontLine.LeftCorner = Coordinates.Zero;
+            var line = new FrontLineInfo();
+            line.RightCorner = Coordinates.Zero;
+            line.LeftCorner = Coordinates.Zero;
             return line;
         }
 
-        public static TargetStrongholdInfo DefaultTargetStrongholdInfo()
+        public static int FindIndex(List<uint> list, uint id)
         {
-            var stronghold = new TargetStrongholdInfo();
-            stronghold.Position = Coordinates.Zero;
-            stronghold.Side = UnitSide.None;
-            stronghold.StrongholdId = new EntityId();
-            return stronghold;
+            if (list == null)
+                return -1;
+
+            int idx = -1;
+            for (int i = 0; i < list.Count; i++) {
+                if (id == list[i])
+                    idx = i;
+            }
+
+            return idx;
         }
     }
 }

@@ -85,7 +85,7 @@ component FuelSupplyer {
 
     IntervalChecker interval = 5;
 
-    command improbable.gdk.core.Empty set_order(SupplyOrder); 
+    event SupplyOrder set_order; 
 }
 
 component FuelSupplyManager {

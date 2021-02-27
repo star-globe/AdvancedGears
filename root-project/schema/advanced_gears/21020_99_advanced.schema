@@ -58,6 +58,8 @@ type ControllerInfo {
     float horizontal = 1;
     float vertical = 2;
     bool running = 3;
+    float yaw = 4;
+    float pitch = 5;
 }
 
 component AdvancedUnitController {

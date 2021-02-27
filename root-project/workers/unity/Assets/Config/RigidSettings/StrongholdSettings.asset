@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: StrongholdSettings
   m_EditorClassIdentifier: 
   mass: 1000
-  drag: 1
-  angularDrag: 1
+  drag: 10
+  angularDrag: 10
   centerOfMass: {x: 0, y: 0, z: 0}
   useGravity: 1
+  constraints: 

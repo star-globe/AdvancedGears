@@ -14,3 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   baseUnitStateColorSettings: {fileID: 11400000, guid: e9653011b1bcf4847b2c0b2d702b450d,
     type: 2}
+  hexAttributeColorSettings: {fileID: 11400000, guid: 76e02b65efce0fc42b4bf11506cce376,
+    type: 2}

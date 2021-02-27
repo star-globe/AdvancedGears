@@ -24,9 +24,20 @@ namespace AdvancedGears
             }
         }
 
+        CommandSystem commandSystem = null;
+        CommandSystem CommandSystem
+        {
+            get
+            {
+                commandSystem = commandSystem ?? world.GetExistingSystem<CommandSystem>();
+                return commandSystem;
+            }
+        }
+
         public void OnEnable()
         {
             status.OnForceStateEvent += OnForceState;
+            status.OnOrderUpdate += OnOrderUpdate;
         }
 
         private void OnForceState(ForceStateChange forceState)
@@ -35,6 +46,15 @@ namespace AdvancedGears
 
             foreach (var kvp in datas) {
                 UpdateSystem.SendEvent(new BaseUnitStatus.ForceState.Event(forceState), kvp.Value.EntityId);
+            }
+        }
+
+        private void OnOrderUpdate(OrderType order)
+        {
+            var datas = turretHub.Data.TurretsDatas;
+
+            foreach (var kvp in datas) {
+                UpdateSystem.SendEvent(new BaseUnitStatus.SetOrder.Event(new OrderInfo() { Order = order }), kvp.Value.EntityId);
             }
         }
     }

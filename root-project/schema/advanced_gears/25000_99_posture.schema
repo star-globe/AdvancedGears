@@ -1,0 +1,65 @@
+package advanced_gears;
+import "improbable/standard_library.schema";
+import "improbable/gdk/core/common.schema";
+import "improbable/gdk/transform_synchronization/transform_internal.schema";
+import "advanced_gears/common.schema";
+
+type CompressedLocalTransform
+{
+    improbable.gdk.transform_synchronization.FixedPointVector3 position = 1;
+    improbable.gdk.transform_synchronization.FixedPointVector3 scale = 2;
+    improbable.gdk.transform_synchronization.CompressedQuaternion rotation = 3;
+}
+
+type PostureTarget
+{
+    improbable.gdk.transform_synchronization.FixedPointVector3 position = 1;
+}
+
+component PostureRoot {
+    id = 25000;
+
+    CompressedLocalTransform root_trans = 1;
+}
+
+type PostureTransData
+{
+    int32 bone_hash = 1;
+    CompressedLocalTransform trans = 2;
+}
+
+type PostureTransDataList
+{
+    list<PostureTransData> datas = 1;
+}
+
+type AnimState
+{
+    int32 state_hash = 1;
+}
+
+enum AnimTargetType
+{
+    None = 0;
+    Entity = 1;
+    Position = 2;
+}
+
+type AnimTarget
+{
+    AnimTargetType type = 1;
+    EntityId target_id = 2;
+    improbable.gdk.transform_synchronization.FixedPointVector3 position = 3;
+}
+
+component PostureAnimation {
+    id = 25001;
+
+    map<int32, CompressedLocalTransform> bone_map = 1;
+    AnimState anim_state = 2;
+    AnimTarget anim_target = 3;
+
+    event PostureTransDataList reset_posture;
+    event AnimState state_changed;
+    event AnimTarget target_changed;
+}

@@ -15,6 +15,11 @@ namespace AdvancedGears
             return (coords.X * coords.X) + (coords.Y * coords.Y) + (coords.Z * coords.Z);
         }
         
+        public static Vector3 ToWorkerPosition(this Coordinates coords, Vector3 origin)
+        {
+            return coords.ToUnityVector() + origin;
+        }
+
         public static Vector3 ToWorkerPosition(this FixedPointVector3 pos, Vector3 origin)
         {
             return pos.ToUnityVector() + origin;
@@ -23,6 +28,11 @@ namespace AdvancedGears
         public static FixedPointVector3 ToWorldPosition(this Vector3 pos, Vector3 origin)
         {
             return (pos - origin).ToFixedPointVector3();
+        }
+
+        public static Coordinates ToWorldCoordinates(this Vector3 pos, Vector3 origin)
+        {
+            return (pos - origin).ToCoordinates();
         }
 
         public static Coordinates ToCoordinates(this Vector3 pos)
@@ -66,16 +76,18 @@ namespace AdvancedGears
             inter.LastChecked = Time.time;
         }
 
-        public static OrderPair Self(this OrderPair pair, OrderType self)
+        public static bool Self(this OrderPair pair, OrderType self)
         {
+            bool changed = pair.Self != self;
             pair.Self = self;
-            return pair;
+            return changed;
         }
 
-        public static OrderPair Upper(this OrderPair pair, OrderType upper)
+        public static bool Upper(this OrderPair pair, OrderType upper)
         {
+            bool changed = pair.Upper != upper;
             pair.Upper = upper;
-            return pair;
+            return changed;
         }
 
         public static void SetData(this ref PostureInfo info, PostureData data)
@@ -313,21 +325,33 @@ namespace AdvancedGears
             return pos.ToWorldPosition(origin).ToCoordinates();
         }
 
-        public static bool IsDominationTarget(this TargetInfo targetInfo, UnitSide selfSide)
+        public static bool IsDominationTarget(this UnitBaseInfo unitInfo, UnitSide selfSide)
         {
-            if (targetInfo.Type != UnitType.Stronghold)
+            if (unitInfo.Type != UnitType.Stronghold)
                 return false;
 
-            if (targetInfo.Side == selfSide)
+            if (unitInfo.Side == selfSide)
                 return false;
 
-            return targetInfo.Side == UnitSide.None ||
-                   targetInfo.State == UnitState.Dead;
+            return unitInfo.Side == UnitSide.None ||
+                   unitInfo.State == UnitState.Dead;
         }
 
-        public static bool IsValid(this TargetHexInfo targetHexInfo)
+        public static bool IsDominationTarget(this UnitInfo unitInfo, UnitSide selfSide)
         {
-            return targetHexInfo.HexIndex < uint.MaxValue;
+            if (unitInfo.type != UnitType.Stronghold)
+                return false;
+
+            if (unitInfo.side == selfSide)
+                return false;
+
+            return unitInfo.side == UnitSide.None ||
+                   unitInfo.state == UnitState.Dead;
+        }
+
+        public static bool IsValid(this HexBaseInfo hexInfo)
+        {
+            return hexInfo.HexIndex < uint.MaxValue;
         }
 
         public static bool IsValid(this FrontLineInfo info)
@@ -335,9 +359,9 @@ namespace AdvancedGears
             return info.LeftCorner.Equals(info.RightCorner) == false;
         }
 
-        public static bool IsValid(this TargetStrongholdInfo info)
+        public static bool IsValid(this UnitBaseInfo info)
         {
-            return info.StrongholdId.IsValid();
+            return info.UnitId.IsValid();
         }
 
         public static Vector3 GetOnLinePosition(this FrontLineInfo info, Vector3 origin, Vector3 current, float fowardBuffer = 0.0f)
@@ -358,11 +382,12 @@ namespace AdvancedGears
 
             var radius = line.magnitude / 2;
 
-            if (Vector3.Dot(Vector3.Cross(line.normalized, diff), Vector3.up) < -radius / 4 ||
-                (current - center).sqrMagnitude > radius * radius) {
-
-                return -foward * radius / 2 + center;
-            }
+            // 中心誘導は廃止
+            //if (Vector3.Dot(Vector3.Cross(line.normalized, diff), Vector3.up) < -radius / 4 ||
+            //    (current - center).sqrMagnitude > radius * radius) {
+            //
+            //    return -foward * radius / 2 + center;
+            //}
 
             var dot = Vector3.Dot(diff, line.normalized);
             if (dot <= 0)

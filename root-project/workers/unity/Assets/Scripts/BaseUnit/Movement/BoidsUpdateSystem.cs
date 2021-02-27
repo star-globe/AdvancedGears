@@ -17,7 +17,7 @@ namespace AdvancedGears
         IntervalChecker inter;
         const int period = 10;
 
-        readonly Dictionary<EntityId, Tuple<float, float>> floatInfoDic = new Dictionary<EntityId, Tuple<float, float>>();
+        readonly Dictionary<EntityId, ValueTuple<float, float>> floatInfoDic = new Dictionary<EntityId, ValueTuple<float, float>>();
 
         protected override void OnCreate()
         {
@@ -37,6 +37,7 @@ namespace AdvancedGears
             inter = IntervalCheckerInitializer.InitializedChecker(period);
         }
 
+        readonly List<UnitInfo> commanders = new List<UnitInfo>();
         const float diffMinVec = 0.1f * 0.1f;
         const float diffMinPos = 1.0f * 1.0f;
         protected override void OnUpdate()
@@ -74,8 +75,12 @@ namespace AdvancedGears
                     return;
 
                 var commanderRange = RangeDictionary.GetBoidsRange(commanderRank);
-                var commanders = getAllyUnits(side, pos, commanderRange, allowDead: false, selfId: entityId.EntityId, UnitType.Commander);
-                commanders.RemoveAll(unit => unit.rank != commanderRank - 1);
+                var coms = getAllyUnits(side, pos, commanderRange, allowDead: false, selfId: entityId.EntityId, UnitType.Commander);
+                commanders.Clear();
+                foreach (var c in coms) {
+                    if (c.rank == commanderRank - 1)
+                        commanders.Add(c);
+                }
 
                 f_length = AttackLogicDictionary.RankScaled(f_length, commanderRank);
                 f_length += commander.AllyRange;
@@ -103,7 +108,7 @@ namespace AdvancedGears
                     continue;
 
                 var length = Mathf.Max((pos - unit.pos).magnitude, 1.0f);
-                floatInfoDic[unit.id] = new Tuple<float, float>(move.Value.MoveSpeed,length);
+                floatInfoDic[unit.id] = new ValueTuple<float, float>(move.Value.MoveSpeed,length);
 
                 // scaled balance
                 alignmentVector += t.forward * 1.0f / length;

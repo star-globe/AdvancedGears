@@ -11,5 +11,7 @@ namespace AdvancedGears
         public bool isBuilding;
         public bool isAutomaticallyMoving;
         public bool isOfficer;
+        public bool isOffecsive;
+        public bool isWatcher;
     }
 }

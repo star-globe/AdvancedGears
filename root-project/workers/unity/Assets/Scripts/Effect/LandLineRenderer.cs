@@ -10,6 +10,8 @@ namespace AdvancedGears
     public class LandLineRenderer : MonoBehaviour
     {
         private LineRenderer lineRenderer;
+        private readonly Vector3[] linePoints = new Vector3[256];
+        private readonly List<Vector3> pointList = new List<Vector3>();
 
         public LineRenderer Renderer
         {
@@ -25,44 +27,79 @@ namespace AdvancedGears
             if (basePoints == null)
                 return;
 
-            Vector3[] newPoints = null;
-            if (cutNumber < 1)
-                newPoints = basePoints;
+            int count = 0;
+            if (cutNumber < 1) {
+                SetPoints(linePoints, basePoints, out count);
+            }
             else {
-                var list = new List<Vector3>();
+                pointList.Clear();
                 Vector3 point = Vector3.zero;
                 for (var i = 0; i < basePoints.Length; i++) {
                     if (i == 0) {
                         point = basePoints[i];
-                        list.Add(point);
+                        pointList.Add(point);
                     }
                     else {
                         var end = basePoints[i];
                         foreach (var c in Enumerable.Range(1,cutNumber)) {
-                            list.Add((end * c + point * (cutNumber - c)) / cutNumber);
+                            pointList.Add((end * c + point * (cutNumber - c)) / cutNumber);
                         }
 
                         point = end;
                     }
                 }
 
-                newPoints = list.ToArray();
+                SetPoints(linePoints, pointList, out count);
             }
 
-            for(var i = 0; i < newPoints.Length; i++) {
-                var p = newPoints[i];
+            for(var i = 0; i < count; i++) {
+                var p = linePoints[i];
                 if (Physics.Raycast(new Vector3(p.x, fromHeight, p.z), Vector3.down, out var hit, fromHeight - underHeight, layerMask:layerMask) == false)
                     continue;
                 
-                newPoints[i] = new Vector3(p.x, hit.point.y + buffer, p.z);
+                linePoints[i] = new Vector3(p.x, hit.point.y + buffer, p.z);
             }
 
             var col = ColorDictionary.GetSideColor(side);
             this.Renderer.startColor = col;
             this.Renderer.endColor = col;
 
-            this.Renderer.positionCount = newPoints.Length;
-            this.Renderer.SetPositions(newPoints);
+            this.Renderer.positionCount = count;
+            this.Renderer.SetPositions(linePoints);
+        }
+
+        private void SetPoints(Vector3[] points, Vector3[] basePoints, out int count)
+        {
+            count = -1;
+            for (var i = 0; i < basePoints.Length; i++)
+            {
+                if (i >= points.Length) {
+                    count = points.Length;
+                    break;
+                }
+
+                points[i] = basePoints[i];
+            }
+
+            if (count < 0)
+                count = basePoints.Length;
+        }
+
+        private void SetPoints(Vector3[] points, List<Vector3> pointList, out int count)
+        {
+            count = -1;
+            for (var i = 0; i < pointList.Count; i++)
+            {
+                if (i >= points.Length) {
+                    count = points.Length;
+                    break;
+                }
+
+                points[i] = pointList[i];
+            }
+
+            if (count < 0)
+                count = pointList.Count;
         }
     }
 }

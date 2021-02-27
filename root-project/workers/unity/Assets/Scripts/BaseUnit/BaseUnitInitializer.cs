@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -9,7 +9,6 @@ namespace AdvancedGears
 {
     public class BaseUnitInitializer : MonoBehaviour
     {
-        [Require] BaseUnitMovementWriter movement;
         [Require] BaseUnitActionWriter action;
         [Require] BaseUnitHealthWriter health;
         [Require] FuelComponentWriter fuel;
@@ -20,22 +19,16 @@ namespace AdvancedGears
         [SerializeField]
         GunComponentInitializer gunInitializer;
 
+        [SerializeField]
+        PostureBoneContainer container;
+
         void Start()
         {
             Assert.IsNotNull(settings);
 
-            movement.SendUpdate(new BaseUnitMovement.Update
-            {
-                MoveSpeed = settings.Speed,
-                RotSpeed = settings.RotSpeed,
-                ConsumeRate = settings.ConsumeRate,
-            });
-
             action.SendUpdate(new BaseUnitAction.Update
             {
-                Interval = IntervalCheckerInitializer.InitializedChecker(settings.Inter),
                 SightRange = settings.SightRange,
-                AngleSpeed = settings.AngleSpeed,
             });
 
             health.SendUpdate(new BaseUnitHealth.Update
@@ -51,8 +44,16 @@ namespace AdvancedGears
                 Fuel = settings.MaxFuel,
             });
 
-            if (gunInitializer != null)
-                gunInitializer.SetGunIds(settings.GunIds);
+            if (gunInitializer != null && container != null)
+            {
+                GunIdPair[] gunIds = null;
+                if (container.CannonDic.Count > 0)
+                {
+                    gunIds = container.CannonDic.Select(kvp => new GunIdPair() { Id = kvp.Value.GunId, bone = kvp.Key}).ToArray();
+                }
+
+                gunInitializer.SetGunIds(gunIds);
+            }
         }
     }
 }

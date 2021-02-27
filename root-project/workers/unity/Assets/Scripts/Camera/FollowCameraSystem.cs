@@ -46,7 +46,7 @@ namespace AdvancedGears
                 ref CameraTransform cameraTransform) =>
             {
                 cameraInput = UpdateCameraInput(cameraInput);
-                cameraTransform = UpdateCameraTransform(cameraInput, rigidbody.position);
+                cameraTransform = UpdateCameraTransform(cameraInput, rigidbody.position, rigidbody.transform.rotation);
 
                 UpdateCamera(cameraTransform);
             });
@@ -54,7 +54,7 @@ namespace AdvancedGears
 
         private static CameraInput UpdateCameraInput(CameraInput input)
         {
-            var x = input.X + InputUtils.CameraX;
+            var x = input.X; //+ InputUtils.CameraX;
             var y = input.Y - InputUtils.CameraY;
             var distance = input.Distance;// + Input.GetAxis("Mouse ScrollWheel") * ZoomScale;
 
@@ -70,10 +70,10 @@ namespace AdvancedGears
             };
         }
 
-        private static CameraTransform UpdateCameraTransform(CameraInput input, Vector3 targetPosition)
+        private static CameraTransform UpdateCameraTransform(CameraInput input, Vector3 targetPosition, Quaternion baseRotation)
         {
             var dir = new Vector3(0, 0, -input.Distance);
-            var orbitRotation = Quaternion.Euler(input.Y, input.X, 0);
+            var orbitRotation = baseRotation * Quaternion.Euler(input.Y, input.X, 0);
             var position = targetPosition + TargetOffset + orbitRotation * dir;
             var rotation = Quaternion.LookRotation(targetPosition + TargetOffset - position);
 

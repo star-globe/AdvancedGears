@@ -36,7 +36,7 @@ component BaseUnitStatus {
     OrderType order = 4;
     uint32 rank = 5;
 
-    command improbable.gdk.core.Empty set_order(OrderInfo);
+    event OrderInfo set_order;
     event ForceStateChange force_state;
 }
 
@@ -66,7 +66,7 @@ component BaseUnitReviveTimer {
     id = 20003;
 
     bool is_start = 1;
-    float rest_time = 2;
+    double rest_time = 2;
 }
 
 type BoidVector {
@@ -110,84 +110,86 @@ component BaseUnitSight {
 component BaseUnitAction {
     id = 20012;
 
-    IntervalChecker interval = 1;
     float sight_range = 2;
-    float angle_speed = 5;
 
     list<improbable.gdk.transform_synchronization.FixedPointVector3> enemy_positions = 7;
 }
 
-type TargetBaseInfo {
-    bool is_target = 1;
-    EntityId target_id = 2;
-    improbable.gdk.transform_synchronization.FixedPointVector3 position = 3;
-    UnitType type = 4;
-    UnitSide side = 5;
-    UnitState state = 6;
+type UnitBaseInfo {
+    EntityId unit_id = 1;
+    improbable.Coordinates position = 2;
+    UnitType type = 3;
+    UnitSide side = 4;
+    UnitState state = 5;
+}
+
+type HexBaseInfo
+{
+    uint32 hex_index = 1;
+    UnitSide side = 2;
 }
 
 type TargetInfo {
-    bool is_target = 1;
-    EntityId target_id = 2;
-    improbable.gdk.transform_synchronization.FixedPointVector3 position = 3;
-    UnitType type = 4;
-    UnitSide side = 5;
-    UnitState state = 6;
-    EntityId commander_id = 7;
-    float ally_range = 8;
+    UnitBaseInfo tgt_info = 1;
+    float power_rate = 2;
 }
 
 type TargetFrontLineInfo {
     FrontLineInfo front_line = 1;
+    float power_rate = 2;
 }
 
 type TargetHexInfo {
-    uint32 hex_index = 2;
-    UnitSide side = 3;
+    HexBaseInfo hex_info = 1;
+    float power_rate = 2;
 }
 
-type TargetStrongholdInfo {
-    EntityId stronghold_id = 1;
-    UnitSide side = 2;
-    improbable.Coordinates position = 3;
+type TargetPowerRate {
+    float power_rate = 1;
 }
 
-enum TargetInfoType {
+enum TargetType {
     None = 0;
-    Stronghold = 1;
+    Unit = 1;
     FrontLine = 2;
     Hex = 3;
 }
 
 type TargetInfoSet {
-    TargetStrongholdInfo stronghold = 1;
-    TargetFrontLineInfo front_line = 2;
-    TargetHexInfo hex_info = 3;
+    UnitBaseInfo stronghold = 1;
+    FrontLineInfo front_line = 2;
+    HexBaseInfo hex_info = 3;
+    float power_rate = 4;
 }
 
 component BaseUnitTarget {
     id = 20013;
 
     TargetState state = 1;
-    TargetInfo target_info = 2;
-    TargetFrontLineInfo front_line = 3;
-    TargetHexInfo hex_info = 4;
+    TargetType type = 2;
+    float power_rate = 3;
 
-    command improbable.gdk.core.Empty set_target(TargetInfo);
-    command improbable.gdk.core.Empty set_front_line(TargetFrontLineInfo);
-    command improbable.gdk.core.Empty set_hex(TargetHexInfo);
-    command improbable.gdk.core.Empty set_stronghold(TargetStrongholdInfo);
+    UnitBaseInfo target_unit = 10;
+    FrontLineInfo front_line = 11;
+    HexBaseInfo hex_info = 12;
+
+    event TargetInfo set_target;
+    event TargetFrontLineInfo set_front_line;
+    event TargetHexInfo set_hex;
+    event TargetPowerRate set_power_rate;
 }
 
+// 削除予定
 type PostureData {
     PosturePoint point = 1;
     list<improbable.gdk.transform_synchronization.CompressedQuaternion> rotations = 2;
 }
-
+// 削除予定
 type PostureInfo {
     map<PosturePoint, PostureData> datas = 1;
 }
 
+// 削除予定
 component BaseUnitPosture {
     id = 20014;
 
@@ -262,9 +264,9 @@ component CommanderTeam {
     command improbable.gdk.core.Empty add_follower(FollowerInfo);
     command improbable.gdk.core.Empty set_superior(SuperiorInfo);
     command TeamInfoResponse get_team_info(TeamInfoRequest);
-    command improbable.gdk.core.Empty set_target_stroghold(TargetStrongholdInfo);
-    command improbable.gdk.core.Empty set_target_frontline(TargetFrontLineInfo);
-    command improbable.gdk.core.Empty set_target_hex(TargetHexInfo);
+    command improbable.gdk.core.Empty set_target(TargetInfo);
+    command improbable.gdk.core.Empty set_frontline(TargetFrontLineInfo);
+    command improbable.gdk.core.Empty set_hex(TargetHexInfo);
 }
 
 type WarPower {
@@ -284,12 +286,14 @@ type FollowerOrder {
     UnitType type = 4;
     int32 number = 5;
     uint32 rank = 6;
+    float rot = 7;
 }
 
 type SuperiorOrder {
     list<EntityId> followers = 1;
     UnitSide side = 3;
     uint32 rank = 4;
+    float rot = 5;
 }
 
 enum CommandActionType
@@ -334,7 +338,7 @@ component StrongholdSight {
 
     IntervalChecker interval = 1;
     StrategyVector strategy_vector = 2;
-    map<EntityId,TargetStrongholdInfo> target_strongholds = 4;
+    map<EntityId,UnitBaseInfo> target_strongholds = 4;
     list<FrontLineInfo> front_line_corners = 5;
     map<uint32,TargetHexInfo> target_hexes = 6;
 
@@ -345,7 +349,8 @@ type TeamOrder {
     uint32 commander_rank = 1;
     int32 soldiers_number = 2;
     OrderType order = 3;
-    int32 stack = 10;
+    int32 stack = 4;
+    float rot = 5;
 }
 
 type TeamOrderList {
@@ -356,6 +361,7 @@ type TurretOrder {
     int32 turret_id = 1;
     int32 turrets_number = 2;
     int32 stack = 3;
+    float rot = 4;
 }
 
 type TurretOrderList {

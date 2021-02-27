@@ -36,12 +36,12 @@ namespace AdvancedGears
             }
         }
 
-        public static void AddClientSystems(World world, EntityRepresentationMapping entityRepresentationMapping, bool autoRequestPlayerCreation = true)
+        public static void AddClientSystems(World world, bool autoRequestPlayerCreation = true)
         {
             TransformSynchronizationHelper.AddClientSystems(world);
             PlayerLifecycleHelper.AddClientSystems(world, autoRequestPlayerCreation);
-            GameObjectCreationHelper.EnableStandardGameObjectCreation(world, entityRepresentationMapping);
             world.GetOrCreateSystem<ProcessColorChangeSystem>();
+            world.GetOrCreateSystem<AimAnimationLocalSystem>();
             world.GetOrCreateSystem<AdvancedPlayerInputSync>();
             world.GetOrCreateSystem<MoveAdvancedUnitSystem>();
             world.GetOrCreateSystem<InitCameraSystem>();
@@ -57,17 +57,18 @@ namespace AdvancedGears
             world.GetOrCreateSystem<MiniMapUISystem>();
         }
 
-        public static void AddGameLogicSystems(World world, EntityRepresentationMapping entityRepresentationMapping)
+        public static void AddGameLogicSystems(World world)
         {
             TransformSynchronizationHelper.AddServerSystems(world);
             PlayerLifecycleHelper.AddServerSystems(world);
-            GameObjectCreationHelper.EnableStandardGameObjectCreation(world, entityRepresentationMapping);
-
             world.GetOrCreateSystem<ProcessLaunchCommandSystem>();
             world.GetOrCreateSystem<ProcessRechargeSystem>();
             world.GetOrCreateSystem<MetricSendSystem>();
             world.GetOrCreateSystem<ProcessScoresSystem>();
             world.GetOrCreateSystem<CollisionProcessSystem>();
+            world.GetOrCreateSystem<RootPostureSyncSystem>();
+            world.GetOrCreateSystem<PostureAnimationSyncSystem>();
+            world.GetOrCreateSystem<AimAnimationLocalSystem>();
             world.GetOrCreateSystem<BaseUnitMovementSystem>();
             world.GetOrCreateSystem<BaseUnitSightSystem>();
             world.GetOrCreateSystem<BaseUnitPhysicsSystem>();
@@ -79,7 +80,6 @@ namespace AdvancedGears
             world.GetOrCreateSystem<UnitFactorySystem>();
             world.GetOrCreateSystem<StrategyOrderManagerSystem>();
             world.GetOrCreateSystem<ResourceSupplyManagerSystem>();
-            //world.GetOrCreateSystem<HQOrganizeSystem>();
             //world.GetOrCreateSystem<UnitArmyObserveSystem>();
             //world.GetOrCreateSystem<CommandersManagerSystem>();
             world.GetOrCreateSystem<DominationSystem>();
@@ -88,7 +88,10 @@ namespace AdvancedGears
             world.GetOrCreateSystem<BulletMovementSystem>();
             world.GetOrCreateSystem<BaseUnitReviveTimerSystem>();
             world.GetOrCreateSystem<FieldQueryServerSystem>();
+            world.GetOrCreateSystem<HexBaseSystem>();
             world.GetOrCreateSystem<HexUpdateSystem>();
+            world.GetOrCreateSystem<HexPowerUpdateSystem>();
+            world.GetOrCreateSystem<TurretUpdateSystem>();
         }
 
         public static void AddStrategyLogicSystems(World world, EntityRepresentationMapping entityRepresentationMapping)

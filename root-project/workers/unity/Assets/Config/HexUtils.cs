@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace AdvancedGears
@@ -7,6 +8,7 @@ namespace AdvancedGears
     {
         const float edgeLength = 500.0f;
         readonly static float route3 = Mathf.Sqrt(3.0f);
+        const float powerMinLimit = 1.0f / 1000;
 
         public static void SetHexCorners(in Vector3 center, Vector3[] corners, float edge = edgeLength)
         {
@@ -27,9 +29,10 @@ namespace AdvancedGears
             SetHexCorners(GetHexCenter(origin, index, edge), corners, edge);
         }
 
+        static readonly Vector3[] corners = new Vector3[7];
+
         public static bool IsInsideHex(in Vector3 origin, uint index, in Vector3 pos, float edge = edgeLength)
         {
-            var corners = new Vector3[7];
             SetHexCorners(origin, index, corners, edge);
 
             for(var i = 0; i < 6; i++) {
@@ -111,12 +114,17 @@ namespace AdvancedGears
             return pos;
         }
 
+        static readonly uint[] ids = new uint[6] { 1, 2, 3, 4, 5, 6 };
+
         public static uint[] GetNeighborHexIndexes(uint index)
         {
-            var ids = new uint[6] { 1, 2, 3, 4, 5, 6};
-
             if (index == 0)
+            {
+                for (uint i = 0; i < ids.Length; i++)
+                    ids[i] = i + 1;
+
                 return ids;
+            }
 
             CalcIndex(index, out var n, out var direct, out var rest);
 
@@ -126,7 +134,7 @@ namespace AdvancedGears
                         ids[1] = index + 6*n+1;
                         ids[2] = index + 1;
                         ids[3] = index == 1 ? 0: index - 6*(n-1);
-                        ids[4] = rest == 0 ? index + 6*n-1: index - (6*n+1);
+                        ids[4] = rest == 0 ? index + 6*n-1: index - (6*(n-1)+1);
                         ids[5] = rest == 0 ? index + 6*(2*n+1)-1: index - 1;
                         break;
 
@@ -134,20 +142,20 @@ namespace AdvancedGears
                         ids[1] = index + 6*n+1;
                         ids[2] = index + 6*n+2;
                         ids[3] = index + 1;
-                        ids[4] = index == 2 ? 0: index - (6*n+1);
-                        ids[5] = rest == 0 ? index - 1: index - (6*n+2);
+                        ids[4] = index == 2 ? 0: index - (6*(n-1)+1);
+                        ids[5] = rest == 0 ? index - 1: index - (6*(n-1)+2);
                         break;
 
-                case 2: ids[0] = rest == 0 ? index - 1: index - (6*n+3);
+                case 2: ids[0] = rest == 0 ? index - 1: index - (6*(n-1)+3);
                         ids[1] = rest == 0 ? index + 6*n+1: index - 1;
                         ids[2] = index + 6*n+2;
                         ids[3] = index + 6*n+3;
                         ids[4] = index + 1;
-                        ids[5] = index == 3 ? 0: index - (6*n+2);
+                        ids[5] = index == 3 ? 0: index - (6*(n-1)+2);
                         break;
 
-                case 3: ids[0] = index == 4 ? 0: index - (6*n+3);
-                        ids[1] = rest == 0 ? index - 1: index - (6*n-2);
+                case 3: ids[0] = index == 4 ? 0: index - (6*(n-1)+3);
+                        ids[1] = rest == 0 ? index - 1: index - (6*(n-1)+4);
                         ids[2] = rest == 0 ? index + 6*n+2: index - 1;
                         ids[3] = index + 6*n+3;
                         ids[4] = index + 6*n+4;
@@ -155,16 +163,16 @@ namespace AdvancedGears
                         break;
 
                 case 4: ids[0] = index + 1;
-                        ids[1] = index == 5 ? 0: index - (6*n-2);
-                        ids[2] = rest == 0 ? index - 1: index - (6*n-1);
+                        ids[1] = index == 5 ? 0: index - (6*(n-1)+4);
+                        ids[2] = rest == 0 ? index - 1: index - (6*(n-1)+5);
                         ids[3] = rest == 0 ? index + (6*n+3): index - 1;
                         ids[4] = index + 6*n+4;
                         ids[5] = index + 6*n+5; 
                         break;
 
-                case 5: ids[0] = index + 6*n+6;
-                        ids[1] = index + 1;
-                        ids[2] = index == 6 ? 0: index - (6*n+5);
+                case 5: ids[0] = index + 6*(n+1);
+                        ids[1] = index % 6 == 0 ? index - (6*n-1): index + 1;
+                        ids[2] = index == 6 ? 0: (index % 6 == 0 ? index - (6*(2*n-1)-1): index - (6*(n-1)+5));
                         ids[3] = rest == 0 ? index - 1: index - 6*n;
                         ids[4] = rest == 0 ? index + 6*n+4: index - 1;
                         ids[5] = index + 6*n+5;
@@ -213,34 +221,72 @@ namespace AdvancedGears
             return ids;
         }
 
-        public static UnitType GetUnitType(HexAttribute attribute)
+        public static bool HexAllowsUnitType(HexAttribute attribute, UnitType type)
         {
-            var type = UnitType.None;
             switch (attribute)
             {
                 case HexAttribute.Field:
                 case HexAttribute.ForwardBase:
-                    type = UnitType.Stronghold;
-                    break;
+                    return type == UnitType.Stronghold ||
+                            type == UnitType.Turret;
 
                 case HexAttribute.CentralBase:
-                    type = UnitType.HeadQuarter;
-                    break;
+                    return type == UnitType.HeadQuarter ||
+                            type == UnitType.Turret;
             }
 
-            return type;
+            return false;
         }
 
-        public static IEnumerable<UnitSide> AllSides
+        static UnitSide[] allSides = null;
+
+        public static UnitSide[] AllSides
         {
             get
             {
-                var side = UnitSide.None;
-                while (side < UnitSide.Num) {
-                    yield return side;
-                    side++;
+                if (allSides == null) {
+                    allSides = new UnitSide[(int)UnitSide.Num];
+                    var side = UnitSide.None;
+                    for (var i = 0; i < allSides.Length; i++) {
+                        allSides[i] = side;
+                        side++;
+                    }
                 }
+
+                return allSides;
             }
+        }
+
+        public static bool ExistOtherSidePowers(HexIndex hex, UnitSide self)
+        {
+            if (hex.SidePowers == null)
+                return false;
+
+            foreach (var kvp in hex.SidePowers)
+            {
+                if (kvp.Key != self && kvp.Value > powerMinLimit)
+                    return true;
+            }
+
+            return false;
+        }
+
+        public static bool TryGetOneSidePower(HexIndex hex, out UnitSide side, out float val)
+        {
+            side = UnitSide.None;
+            val = 0;
+
+            if (hex.SidePowers == null)
+                return false;
+
+            var keys = hex.SidePowers.Where(kvp => kvp.Value > powerMinLimit).Select(kvp => kvp.Key).ToArray();
+            if (keys.Length == 1) {
+                side = keys[0];
+                val = hex.SidePowers[side];
+                return true;
+            }
+
+            return false;
         }
     }
 }

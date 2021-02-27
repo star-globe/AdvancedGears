@@ -14,12 +14,19 @@ namespace AdvancedGears.UI
         TextMeshProUGUI hpText;
 
         const string fmt = "{0}/{1}";
+        int hp = -1;
+        int maxHp = -1;
+
         public void SetInfo(Vector2 pos, int hp, int maxHp)
         {
             if (this.Rect != null)
                 this.Rect.position = pos;
 
-            hpText?.SetText(string.Format(fmt, hp, maxHp));
+            if (this.hp != hp || this.maxHp != maxHp) {
+                this.hp = hp;
+                this.maxHp = maxHp;
+                hpText?.SetText(string.Format(fmt, hp, maxHp));
+            }
         }
     }
 

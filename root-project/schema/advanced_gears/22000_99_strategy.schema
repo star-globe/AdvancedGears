@@ -21,6 +21,10 @@ enum HexDirection {
 }
 
 // strategy:22000~22099
+type SideChangedEvent {
+    UnitSide side = 1;
+}
+
 component HexBase {
     id = 22000;
 
@@ -28,11 +32,7 @@ component HexBase {
     HexAttribute attribute = 2;
     int32 hex_id = 3;
     UnitSide side = 4;
-}
-
-type HexChangedEvent {
-    uint32 hex_index = 1;
-    UnitSide side = 2;
+    event SideChangedEvent side_changed;
 }
 
 // attach to stronghold
@@ -40,7 +40,6 @@ component HexFacility {
     id = 22001;
 
     uint32 hex_index = 1;
-    event HexChangedEvent hex_changed;
 }
 
 type HexInfo {
@@ -63,15 +62,49 @@ component StrategyHexManager {
 type HexIndex {
     EntityId entity_id = 1;
     uint32 index = 2;
-    list<FrontLineInfo> front_lines = 3;
+    UnitSide side = 3;
+    bool is_active = 5;
+
+    list<FrontLineInfo> front_lines = 10;
+    map<UnitSide,float> side_powers = 11;
 }
 
 type FrontHexInfo {
-    list<HexIndex> indexes = 1;
+    list<uint32> indexes = 1;
 }
 
 component StrategyHexAccessPortal {
     id = 220011;
 
-    map<UnitSide,FrontHexInfo> front_hexes = 1;
+    uint32 index = 1;
+    map<UnitSide,FrontHexInfo> front_hexes = 2;
+    map<uint32,HexIndex> hex_indexes = 3;
+}
+
+// hex power
+type HexPowerFlow {
+    UnitSide side = 1;
+    float flow = 2;
+}
+
+type HexActiveChange {
+    bool is_active = 1;
+}
+
+component HexPower {
+    id = 220020;
+
+    bool is_active = 1;
+    map<UnitSide,float> side_powers = 2;
+    int32 front_bits = 4;
+
+    event HexPowerFlow hex_power_flow;
+    event HexActiveChange hex_active_change;
+}
+
+// attach to resource point
+component HexPowerResource {
+    id = 220021;
+
+    int32 level = 1;
 }

@@ -22,18 +22,30 @@ namespace AdvancedGears
             return set != null && set.isAutomaticallyMoving;
         }
 
+        public static bool IsOffensive(UnitType type)
+        {
+            var set = UnitCommonSettingsDictionary.GetSettings(type);
+            return set != null && set.isOffecsive;
+        }
+
+        public static bool IsWatcher(UnitType type)
+        {
+            var set = UnitCommonSettingsDictionary.GetSettings(type);
+            return set != null && set.isWatcher;
+        }
+
         public static bool IsOfficer(UnitType type)
         {
             var set = UnitCommonSettingsDictionary.GetSettings(type);
             return set != null && set.isOfficer;
         }
 
-        public static bool IsNeedUpdate(int bitNumber, TargetInfoType type)
+        public static bool IsNeedUpdate(int bitNumber, TargetType type)
         {
             return (bitNumber & 1 << (int)type) != 0;
         }
 
-        public static int UpdateTargetBit(int bitNumber, TargetInfoType type)
+        public static int UpdateTargetBit(int bitNumber, TargetType type)
         {
             return bitNumber + (1 << (int)type);
         }

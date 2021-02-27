@@ -29,12 +29,11 @@ namespace AdvancedGears
                                                      ref AdvancedPlayerInput.Component playerInput,
                                                      ref SpatialEntityId entityId) =>
             {
-                var forward = Vector3.forward;
-                var right = Vector3.right;
-                var input = InputUtils.GetMove(right, forward);
+                var input = InputUtils.GetMove();
+                var inputCam = InputUtils.GetCamera();
                 var isShiftDown = Input.GetKey(KeyCode.LeftShift);
                 var controller = playerInput.LocalController;
-                CommonUpdate(input, isShiftDown, entityId, ref controller);
+                CommonUpdate(input, inputCam, isShiftDown, entityId, ref controller);
                 playerInput.LocalController = controller;
             });
         }
@@ -72,10 +71,10 @@ namespace AdvancedGears
 
                 unMannedInput.Interval = inter;
                 var x = UnityEngine.Random.Range(-1.0f, 1.0f);
-                var z = UnityEngine.Random.Range(-1.0f, 1.0f);
+                var y = UnityEngine.Random.Range(-1.0f, 1.0f);
                 var isShiftDown = Input.GetKey(KeyCode.LeftShift);
                 var controller = unMannedInput.LocalController;
-                CommonUpdate(new Vector3(x, 0, z), isShiftDown, entityId, ref controller);
+                CommonUpdate(new Vector2(x, y), new Vector2(x, y), isShiftDown, entityId, ref controller);
                 unMannedInput.LocalController = controller;
             });
         }
@@ -84,22 +83,41 @@ namespace AdvancedGears
     internal abstract class AdvancedInputSync : SpatialComponentSystem
     {
         private const float MinInputChange = 0.01f;
+        private const float MinInputCamera = 0.01f;
 
-        protected void CommonUpdate(in Vector3 input, bool isShiftDown, in SpatialEntityId entityId, ref ControllerInfo oldController)
+        protected void CommonUpdate(in Vector2 inputPos, in Vector3 inputCam, bool isShiftDown, in SpatialEntityId entityId, ref ControllerInfo oldController)
         {
-            if (Math.Abs(oldController.Horizontal - input.x) > MinInputChange
-                || Math.Abs(oldController.Vertical - input.z) > MinInputChange
-                || oldController.Running != isShiftDown)
+            if (CheckChange(oldController.Horizontal, inputPos.x) ||
+                CheckChange(oldController.Vertical, inputPos.y) ||
+                CheckChange(oldController.Yaw, inputCam.x) ||
+                CheckChange(oldController.Pitch, inputCam.y) ||
+                oldController.Running != isShiftDown)
             {
                 var newController = new ControllerInfo
                 {
-                    Horizontal = input.x,
-                    Vertical = input.z,
+                    Horizontal = inputPos.x,
+                    Vertical = inputPos.y,
+                    Yaw = inputCam.x,
+                    Pitch = inputCam.y,
                     Running = isShiftDown
                 };
                 oldController = newController;
                 UpdateSystem.SendEvent(new AdvancedUnitController.ControllerChanged.Event(newController), entityId.EntityId);
             }
+        }
+
+        private bool CheckChange(float oldValue, float newValue)
+        {
+            return Math.Abs(oldValue - newValue) > MinInputChange;
+        }
+
+        private float ClampCamera(float inputCam)
+        {
+            if (inputCam > -MinInputCamera &&
+                inputCam < MinInputCamera)
+                return 0;
+        
+            return Mathf.Clamp(inputCam, -1.0f, 1.0f);
         }
     }
 }

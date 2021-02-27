@@ -100,7 +100,7 @@ namespace AdvancedGears
 
                 var range = RangeDictionary.SpreadSize;
                 var bodySize = RangeDictionary.BodySize;
-                var units = getAllyUnits(status.Side, pos, range, allowDead:true);
+                var units = getAllUnits(pos, range, allowDead:true);
                 foreach(var u in units) {
                     var diff = pos - u.pos;
                     var mag = Mathf.Max(bodySize, diff.magnitude);
@@ -110,9 +110,6 @@ namespace AdvancedGears
 
                 if (units.Count > 0)
                     spread /= units.Count;
-
-                if (spread != Vector3.zero)
-                    DebugUtils.RandomlyLog(string.Format("Spread Vector:{0}",spread));
 
                 var id = entityId.EntityId;
                 if (vectorDic.ContainsKey(id)) {

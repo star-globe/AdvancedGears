@@ -12,7 +12,8 @@
         "Unity.Entities",
         "Unity.Entities.Hybrid",
         "Unity.Mathematics",
-        "Unity.TextMeshPro"
+        "Unity.TextMeshPro",
+        "Unity.Animation.Rigging"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

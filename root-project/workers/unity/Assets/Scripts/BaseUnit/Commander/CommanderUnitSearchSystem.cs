@@ -18,12 +18,6 @@ namespace AdvancedGears
         private EntityQuerySet targettingQuerySet;
         private EntityQuerySet teamingQuerySet;
 
-        //private EntityQuery targettingGroup;
-        //private EntityQuery teamingGroup;
-        //
-        //IntervalChecker teamingInter;
-        //IntervalChecker targettingInter;
-
         const float teaminTime = 1.0f;
         const int period = 15;
         #region ComponentSystem
@@ -38,7 +32,6 @@ namespace AdvancedGears
                                                     ComponentType.ReadOnly<CommanderTeam.HasAuthority>(),
                                                     ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                                                     ComponentType.ReadOnly<BaseUnitAction.Component>(),
-                                                    ComponentType.ReadOnly<BaseUnitTarget.Component>(),
                                                     ComponentType.ReadOnly<Transform>(),
                                                     ComponentType.ReadOnly<SpatialEntityId>()
                                                     ), period);
@@ -51,18 +44,6 @@ namespace AdvancedGears
                                                  ComponentType.ReadOnly<Transform>(),
                                                  ComponentType.ReadOnly<SpatialEntityId>()
                                                 ), teaminTime);
-
-            //teamingGroup = GetEntityQuery(
-            //    ComponentType.ReadWrite<CommanderTeam.Component>(),
-            //    ComponentType.ReadOnly<CommanderTeam.HasAuthority>(),
-            //    ComponentType.ReadOnly<CommanderSight.Component>(),
-            //    ComponentType.ReadOnly<BaseUnitStatus.Component>(),
-            //    ComponentType.ReadOnly<Transform>(),
-            //    ComponentType.ReadOnly<SpatialEntityId>()
-            //);
-            //
-            //teamingInter = IntervalCheckerInitializer.InitializedChecker(teaminTime);
-            //targettingInter = IntervalCheckerInitializer.InitializedChecker(period);
         }
 
         protected override void OnUpdate()
@@ -80,7 +61,6 @@ namespace AdvancedGears
                               ref CommanderTeam.Component team,
                               ref BaseUnitStatus.Component status,
                               ref BaseUnitAction.Component action,
-                              ref BaseUnitTarget.Component target,
                               ref SpatialEntityId entityId) =>
             {
                 if (status.State != UnitState.Alive)
@@ -95,8 +75,7 @@ namespace AdvancedGears
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
                 var pos = trans.position;
 
-                bool is_target;
-                is_target = attackOrder(status, entityId, pos, target.TargetInfo, action.SightRange, ref commander, ref team);
+                applyOrder(status, entityId, pos, action.SightRange, ref commander, ref team);
             });
         }
         
@@ -150,75 +129,33 @@ namespace AdvancedGears
 
         void commonTargeting(UnitInfo tgt, in SpatialEntityId entityId, in CommanderStatus.Component commander, out TargetInfo targetInfo)
         {
-            TargetBaseInfo baseInfo; 
-            baseInfo.IsTarget = tgt != null;
-            var tpos = FixedPointVector3.Zero;
-            var type = UnitType.None;
-            var side = UnitSide.None;
-            var state = UnitState.None;
-            var id = new EntityId();
-            if (baseInfo.IsTarget)
-            {
-                id = tgt.id;
-                tpos = tgt.pos.ToWorldPosition(this.Origin);
-                type = tgt.type;
-                side = tgt.side;
-                state = tgt.state;
-            }
+            UnitBaseInfo baseInfo; 
+            baseInfo.UnitId = tgt.id;
+            baseInfo.Position = tgt.pos.ToWorldCoordinates(this.Origin);
+            baseInfo.Type = tgt.type;
+            baseInfo.Side = tgt.side;
+            baseInfo.State = tgt.state;
 
-            baseInfo.TargetId = id;
-            baseInfo.Position = tpos;
-            baseInfo.Type = type;
-            baseInfo.Side = side;
-            baseInfo.State = state;
-
-            targetInfo = new TargetInfo(baseInfo.IsTarget,
-                                        baseInfo.TargetId,
-                                        baseInfo.Position,
-                                        baseInfo.Type,
-                                        baseInfo.Side,
-                                        baseInfo.State,
-                                        entityId.EntityId,
-                                        commander.AllyRange);
+            targetInfo = new TargetInfo(baseInfo,1.0f);
         }
 
         #region OrderMethod
-        //bool escapeOrder(in BaseUnitStatus.Component status, in SpatialEntityId entityId, in Vector3 pos, ref CommanderSight.Component sight, ref CommanderStatus.Component commander)
-        //{
-        //    var tgt = getNearestAlly(status.Side, pos, sight.Range, UnitType.Stronghold);
-        //    TargetInfo targetInfo;
-        //    commonTargeting(tgt, entityId, commander, ref sight, out targetInfo);
-        //
-        //    commander.Order = commander.Order.Self(OrderType.Escape);
-        //
-        //    SetCommand(targetInfo.CommanderId, targetInfo, commander.Order.Self);
-        //
-        //    return tgt != null;
-        //}
 
-        bool attackOrder(in BaseUnitStatus.Component status, in SpatialEntityId entityId, in Vector3 pos, in TargetInfo currentTarget, float attackRange,
+        void applyOrder(in BaseUnitStatus.Component status, in SpatialEntityId entityId, in Vector3 pos, float sightRange,
                          ref CommanderStatus.Component commander,
                          ref CommanderTeam.Component team)
         {
-            // check rank
-            UnitInfo tgt;
-
-            var scaledRange = AttackLogicDictionary.RankScaled(attackRange, status.Rank);
-
-            tgt = getNearestEnemy(status.Side, pos, scaledRange, allowDead: true, UnitType.Stronghold, UnitType.Commander);
-
-            TargetInfo targetInfo;
-            commonTargeting(tgt, entityId, commander, out targetInfo);
+            var scaledRange = AttackLogicDictionary.RankScaled(sightRange, status.Rank);
 
             // check power
-            var current = GetOrder(status.Side, pos, scaledRange);
+            var current = GetOrder(status.Side, pos, scaledRange, out float rate);
             if (current == null)
             {
                 current = commander.Order.Upper == OrderType.Guard ?
                             OrderType.Guard : OrderType.Keep;
             }
 
-            commander.Order.Self(current.Value);
+            var changed = status.Order != current.Value;
 
             var line = team.TargetInfoSet.FrontLine;
             var hex = team.TargetInfoSet.HexInfo;
@@ -227,34 +164,55 @@ namespace AdvancedGears
 
             var targetBit = team.IsNeedUpdate;
 
-            if (UnitUtils.IsNeedUpdate(targetBit, TargetInfoType.FrontLine) && line.FrontLine.IsValid())
-                SetOrderFollowers(followers, entityId.EntityId, line, current.Value);
+            bool isSetRate = false;
 
-            if (UnitUtils.IsNeedUpdate(targetBit, TargetInfoType.Hex) && hex.IsValid())
-                SetOrderFollowers(followers, entityId.EntityId, hex, current.Value);
+            if (UnitUtils.IsNeedUpdate(targetBit, TargetType.FrontLine) && line.IsValid()) {
+                SetOrderFollowers(followers, entityId.EntityId, line, current.Value, rate);
+                isSetRate = true;
+            }
 
-            if (UnitUtils.IsNeedUpdate(targetBit, TargetInfoType.Stronghold) && stronghold.IsValid())
-                SetOrderFollowers(followers, entityId.EntityId, stronghold, current.Value);
+            if (UnitUtils.IsNeedUpdate(targetBit, TargetType.Hex) && hex.IsValid()) {
+                SetOrderFollowers(followers, entityId.EntityId, hex, current.Value, rate);
+                isSetRate = true;
+            }
+
+            if (UnitUtils.IsNeedUpdate(targetBit, TargetType.Unit) && stronghold.IsValid()) {
+                SetOrderFollowers(followers, entityId.EntityId, stronghold, current.Value, rate);
+                isSetRate = true;
+            }
+
+            if (!isSetRate) {
+                var min = AttackLogicDictionary.PowerRateDiff;
+                var diff = rate - team.TargetInfoSet.PowerRate;
+                if (diff * diff > min * min) {
+                    // set rate
+                    var set = team.TargetInfoSet;
+                    set.PowerRate = rate;
+                    team.TargetInfoSet = set;
+                    SetOrderFollowers(followers, entityId.EntityId, rate);
+                }
+            }
 
             team.IsNeedUpdate = 0;
 
-            if (targetInfo.Equals(currentTarget) == false)
-                SetOrderFollowers(followers, entityId.EntityId, targetInfo, current.Value);
-
-            return tgt != null;
+            // if orde is changed, set orders
+            if (changed)
+                SetOrderFollowers(followers, entityId.EntityId, current.Value);
         }
 
-        private OrderType? GetOrder(UnitSide side, in Vector3 pos, float length)
+        readonly Collider[] colls = new Collider[256];
+
+        private OrderType? GetOrder(UnitSide side, in Vector3 pos, float length, out float rate)
         {
             float ally = 0.0f;
             float enemy = 0.0f;
+            rate = AttackLogicDictionary.PowerRateMin;
 
-            var colls = Physics.OverlapSphere(pos, length, LayerMask.GetMask("Unit"));
-            for (var i = 0; i < colls.Length; i++)
+            var count = Physics.OverlapSphereNonAlloc(pos, length, colls, this.UnitLayer);
+            for (var i = 0; i < count; i++)
             {
                 var col = colls[i];
-                var comp = col.GetComponent<LinkedEntityComponent>();
-                if (comp == null)
+                if (col.TryGetComponent<LinkedEntityComponent>(out var comp) ==false)
                     continue;
 
                 BaseUnitStatus.Component? unit;
@@ -263,81 +221,104 @@ namespace AdvancedGears
                     if (unit.Value.State == UnitState.Dead)
                         continue;
 
+                    var power = 0.0f;
+                    switch (unit.Value.Type)
+                    {
+                        case UnitType.Soldier:
+                        case UnitType.Commander:
+                            power = 1.0f;
+                            break;
+
+                        case UnitType.Advanced:
+                            power = 5.0f;
+                            break;
+
+                        case UnitType.Turret:
+                            power = 3.0f;
+                            break;
+                    }
+
                     // todo calc war power
                     if (unit.Value.Side == side)
-                        ally += 1.0f;
-                    else
-                        enemy += 1.0f;
+                        ally += power;
+                    else if (unit.Value.Side != UnitSide.None)
+                        enemy += power;
                 }
             }
 
-            float rate = AttackLogicDictionary.JudgeRate;
-            if (ally > enemy * rate)
-                return OrderType.Attack;
+            if (ally > 0)
+                rate = Mathf.Max(enemy * enemy / (ally * ally), AttackLogicDictionary.PowerRateMin);
 
-            //if (ally * rate * rate < enemy)
-            //    return OrderType.Escape;
+            // Commander will not order Attack. Player or HQ orders Attack.
 
-            return null;//OrderType.Keep;
+            return null;
         }
         #endregion
 
         #region SetMethod
-        private void SetOrderFollowers(List<EntityId> followers, in EntityId entityId, in TargetInfo targetInfo, OrderType order)
+        private void SetOrderFollowers(List<EntityId> followers, in EntityId entityId, OrderType order)
         {
             foreach (var id in followers)
             {
-                SetCommand(id, targetInfo, order);
+                base.SetOrder(id, order);
             }
-
-            SetCommand(entityId, targetInfo, order);
+            base.SetOrder(entityId, order);
         }
-        private void SetOrderFollowers(List<EntityId> followers, in EntityId entityId, in TargetFrontLineInfo lineInfo, OrderType order)
+
+        private void SetOrderFollowers(List<EntityId> followers, in EntityId entityId, in UnitBaseInfo targetInfo, OrderType order, float rate)
         {
             foreach (var id in followers)
             {
-                SetCommand(id, lineInfo, order);
+                SetCommand(id, targetInfo, order, rate);
             }
 
-            SetCommand(entityId, lineInfo, order);
+            SetCommand(entityId, targetInfo, order, rate);
         }
-        private void SetOrderFollowers(List<EntityId> followers, in EntityId entityId, in TargetHexInfo hexInfo, OrderType order)
+        private void SetOrderFollowers(List<EntityId> followers, in EntityId entityId, in FrontLineInfo lineInfo, OrderType order, float rate)
         {
             foreach (var id in followers)
             {
-                SetCommand(id, hexInfo, order);
+                SetCommand(id, lineInfo, order, rate);
             }
 
-            SetCommand(entityId, hexInfo, order);
+            SetCommand(entityId, lineInfo, order, rate);
         }
-        private void SetOrderFollowers(List<EntityId> followers, in EntityId entityId, in TargetStrongholdInfo strongholdInfo, OrderType order)
+        private void SetOrderFollowers(List<EntityId> followers, in EntityId entityId, in HexBaseInfo hexInfo, OrderType order, float rate)
         {
             foreach (var id in followers)
             {
-                SetCommand(id, strongholdInfo, order);
+                SetCommand(id, hexInfo, order, rate);
             }
 
-            SetCommand(entityId, strongholdInfo, order);
+            SetCommand(entityId, hexInfo, order, rate);
         }
-        private void SetCommand(EntityId id, in TargetInfo targetInfo, OrderType order)
+        private void SetOrderFollowers(List<EntityId> followers, in EntityId entityId, float rate)
         {
-            base.SetCommand(id, order);
-            this.CommandSystem.SendCommand(new BaseUnitTarget.SetTarget.Request(id, targetInfo));
+            foreach (var id in followers)
+            {
+                SetCommand(id, rate);
+            }
+
+            SetCommand(entityId, rate);
         }
-        private void SetCommand(EntityId id, in TargetFrontLineInfo lineInfo, OrderType order)
+        private void SetCommand(EntityId id, in UnitBaseInfo unitBaseInfo, OrderType order, float rate)
         {
-            base.SetCommand(id, order);
-            this.CommandSystem.SendCommand(new BaseUnitTarget.SetFrontLine.Request(id, lineInfo));
+            base.SetOrder(id, order);
+            this.UpdateSystem.SendEvent(new BaseUnitTarget.SetTarget.Event(new TargetInfo(unitBaseInfo, rate)), id);
         }
-        private void SetCommand(EntityId id, in TargetHexInfo hexInfo, OrderType order)
+        private void SetCommand(EntityId id, in FrontLineInfo lineInfo, OrderType order, float rate)
         {
-            base.SetCommand(id, order);
-            this.CommandSystem.SendCommand(new BaseUnitTarget.SetHex.Request(id, hexInfo));
+            base.SetOrder(id, order);
+            this.UpdateSystem.SendEvent(new BaseUnitTarget.SetFrontLine.Event(new TargetFrontLineInfo(lineInfo,rate)), id);
         }
-        private void SetCommand(EntityId id, in TargetStrongholdInfo strongholdInfo, OrderType order)
+        private void SetCommand(EntityId id, in HexBaseInfo hexInfo, OrderType order, float rate)
         {
-            base.SetCommand(id, order);
-            this.CommandSystem.SendCommand(new BaseUnitTarget.SetStronghold.Request(id, strongholdInfo));
+            base.SetOrder(id, order);
+            this.UpdateSystem.SendEvent(new BaseUnitTarget.SetHex.Event(new TargetHexInfo(hexInfo, rate)), id);
+        }
+        private void SetCommand(EntityId id, float rate)
+        {
+            this.UpdateSystem.SendEvent(new BaseUnitTarget.SetPowerRate.Event(new TargetPowerRate(rate)), id);
         }
         #endregion
     }
@@ -375,16 +356,7 @@ namespace AdvancedGears
             else
                 followers = info.Followers;
 
-            //var list = followers.Where(f => HasEntity(f)).ToList();
-
-            //if (isUnderCommander)
-            //    info.UnderCommanders = list;
-            //else
-            //    info.Followers = list;
-            //
-            //commander.FollowerInfo = info;
-
-            return followers.Count(f => CheckAlive(f.Id));//list.Count(f => CheckAlive(f.Id));
+            return followers.Count(f => CheckAlive(f.Id));
         }
         #endregion
     }

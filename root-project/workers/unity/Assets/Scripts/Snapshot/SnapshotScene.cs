@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using Improbable.Gdk.TransformSynchronization;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
@@ -95,7 +95,7 @@ namespace AdvancedGears.Editor
                 snapshot.AddEntity(FieldTemplate.CreateFieldEntityTemplate(f.pos.ToCoordinates(), f.range, f.highest, f.materialType, f.seeds));
 
             foreach(var u in Units) {
-                var template = BaseUnitTemplate.CreateBaseUnitEntityTemplate(u.side, SnapshotUtils.GroundCoordinates(u.pos.x, u.pos.y, u.pos.z), u.type);
+                var template = BaseUnitTemplate.CreateBaseUnitEntityTemplate(u.side, u.type, SnapshotUtils.GroundCoordinates(u.pos.x, u.pos.y, u.pos.z), u.rotate.ToCompressedQuaternion());
                 if (u.attachments != null) {
                     foreach (var attach in u.attachments) {
                         attach.AddComponent(template);

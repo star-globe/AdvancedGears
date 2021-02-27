@@ -21,14 +21,14 @@ namespace AdvancedGears
             base.OnCreate();
 
             group = GetEntityQuery(
-                ComponentType.ReadWrite<BaseUnitAction.Component>(),
-                ComponentType.ReadOnly<BaseUnitAction.HasAuthority>(),
-                ComponentType.ReadWrite<BaseUnitPosture.Component>(),
-                ComponentType.ReadOnly<BaseUnitPosture.HasAuthority>(),
+                ComponentType.ReadOnly<BaseUnitAction.Component>(),
                 ComponentType.ReadWrite<GunComponent.Component>(),
+                ComponentType.ReadOnly<GunComponent.HasAuthority>(),
+                ComponentType.ReadWrite<PostureAnimation.Component>(),
+                ComponentType.ReadOnly<PostureAnimation.HasAuthority>(),
                 ComponentType.ReadOnly<BaseUnitTarget.Component>(),
-                ComponentType.ReadOnly<UnitTransform>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
+                ComponentType.ReadOnly<PostureBoneContainer>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
         }
@@ -37,8 +37,8 @@ namespace AdvancedGears
         {
             Entities.With(group).ForEach((Entity entity,
                                           ref BaseUnitAction.Component action,
-                                          ref BaseUnitPosture.Component posture,
                                           ref GunComponent.Component gun,
+                                          ref PostureAnimation.Component anim,
                                           ref BaseUnitTarget.Component target,
                                           ref BaseUnitStatus.Component status,
                                           ref SpatialEntityId entityId) =>
@@ -46,73 +46,81 @@ namespace AdvancedGears
                 if (status.State != UnitState.Alive)
                     return;
 
+                if (UnitUtils.IsOffensive(status.Type) == false)
+                    return;
+
                 if (target.State != TargetState.ActionTarget)
                     return;
 
-                var time = Time.ElapsedTime;
-                var inter = action.Interval;
-                if (inter.CheckTime(time) == false)
-                    return;
+                var current = Time.ElapsedTime;
 
-                action.Interval = inter;
+                Vector3? epos = null;
+                if (action.EnemyPositions.Count > 0) {
+                    epos = action.EnemyPositions[0].ToWorkerPosition(this.Origin);
 
-                if (action.EnemyPositions.Count > 0)
+                    var container = EntityManager.GetComponentObject<PostureBoneContainer>(entity);
+                    Attack(container, current, epos.Value, entityId, ref gun);
+                }
+
+                var type = AnimTargetType.None;
+                bool isDiff = false;
+                if (epos != null)
                 {
-                    var epos = action.EnemyPositions[0].ToWorkerPosition(this.Origin);
-                    bool updPosture, updGuns;
-                    var unit = EntityManager.GetComponentObject<UnitTransform>(entity);
-                    Attack(unit, time, action.AngleSpeed, epos, entityId, ref posture, ref gun, out updPosture, out updGuns);
+                    isDiff = anim.AnimTarget.Position.ToWorkerPosition(this.Origin) != epos.Value;
+                    type = AnimTargetType.Position;
+                }
 
-                    //if (updPosture)
-                    //    postureData[i] = posture;
+                if (anim.AnimTarget.Type != type || isDiff)
+                {
+                    var animTarget = anim.AnimTarget;
+                    animTarget.Type = type;
 
-                    //if (updGuns)
-                    //    gunData[i] = gun;
+                    if (epos != null)
+                        animTarget.Position = epos.Value.ToWorldPosition(this.Origin);
+
+                    anim.AnimTarget = animTarget;
                 }
             });
         }
 
-        void Attack(UnitTransform unit, double time, float angleSpeed, in Vector3 epos, in SpatialEntityId entityId, ref BaseUnitPosture.Component posture, ref GunComponent.Component gun, out bool updPosture, out bool updGuns)
+        void Attack(PostureBoneContainer container, double current, in Vector3 epos, in SpatialEntityId entityId, ref GunComponent.Component gun)
         {
-            var pos = posture.Posture;
             var gunsDic = gun.GunsDic;
-            updPosture = false;
-            updGuns = false;
-            foreach (var point in unit.GetKeys())
+            var updGuns = false;
+
+            if (container == null || container.Bones == null)
+                return;
+
+            foreach (var bone in container.Bones)
             {
                 GunInfo gunInfo;
-                if (gunsDic.TryGetValue(point, out gunInfo) == false)
+                if (gunsDic.TryGetValue(bone.hash, out gunInfo) == false)
                     continue;
-                PostureData pdata;
-                var result = GetSetPosture(unit, point, epos, gunInfo, angleSpeed, out pdata);
+
+                var result = CheckRange(container.GetCannon(bone.hash), epos, gunInfo.AttackRange, gunInfo.AttackAngle);
                 switch (result)
                 {
                     case Result.InRange:
                         if (gunInfo.StockBullets == 0)
                             break;
                         var inter = gunInfo.Interval;
-                        if (inter.CheckTime(time) == false)
+                        if (inter.CheckTime(current) == false)
                             break;
                         gunInfo.Interval = inter;
                         var atk = new AttackTargetInfo
                         {
                             GunTypeId = gunInfo.GunTypeId,
                             TargetPosition = epos.ToFixedPointVector3(),
-                            Attached = point,
+                            AttachedBone = bone.hash,
                         };
                         updGuns |= true;
                         this.UpdateSystem.SendEvent(new GunComponent.FireTriggered.Event(atk), entityId.EntityId);
                         break;
                     case Result.Rotate:
-                        pos.SetData(pdata);
-                        updPosture |= true;
-                        this.UpdateSystem.SendEvent(new BaseUnitPosture.PostureChanged.Event(pdata), entityId.EntityId);
                         break;
                 }
             }
 
-            if (updPosture)
-                posture.Posture = pos;
 
             if (updGuns)
                 gun.GunsDic = gunsDic;
@@ -125,24 +133,7 @@ namespace AdvancedGears
             Rotate,
         }
 
-        Result GetSetPosture(UnitTransform unit, PosturePoint point, in Vector3 epos, in GunInfo gun, float angleSpeed,
-                     out PostureData pdata)
-        {
-            pdata = new PostureData();
-            var postrans = unit.GetPosture(point);
-            var cannon = unit.GetCannonTransform(point);
-            var result = CheckRange(postrans, cannon, epos, gun.AttackRange, gun.AttackAngle, angleSpeed);
-            if (result == Result.Rotate)
-            {
-                var rot = unit.transform.rotation;
-                var list = new List<CompressedQuaternion>(postrans.GetQuaternions().Select(q => q.ToCompressedQuaternion()));
-                pdata = new PostureData(point, list);
-            }
-
-            return result;
-        }
-
-        Result CheckRange(PostureTransform posture, CannonTransform cannon, in Vector3 epos, float range, float angle, float angleSpeed)
+        Result CheckRange(CannonTransform cannon, in Vector3 epos, float range, float angle)
         {
             var trans = cannon.Muzzle;
             var diff = epos - trans.position;
@@ -150,10 +141,9 @@ namespace AdvancedGears
                 return Result.OutOfRange;
 
             var foward = diff.normalized;
-            if (RotateLogic.CheckRotate(cannon.Forward, cannon.HingeAxis, foward, angle))
+            if (Vector3.Angle(cannon.Forward, foward) < angle)
                 return Result.InRange;
-            
-            posture.Resolve(epos, cannon.Muzzle, angleSpeed * Time.DeltaTime);
+
             return Result.Rotate;
         }
     }

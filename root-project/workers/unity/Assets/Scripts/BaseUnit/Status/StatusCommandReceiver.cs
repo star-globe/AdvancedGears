@@ -8,23 +8,20 @@ namespace AdvancedGears
 {
     public class StatusCommandReceiver : MonoBehaviour
     {
-        [Require] BaseUnitStatusCommandReceiver statusCommandReceiver;
         [Require] BaseUnitStatusWriter statusWriter;
         [Require] BaseUnitHealthWriter healthWriter;
 
         public void OnEnable()
         {
-            statusCommandReceiver.OnSetOrderRequestReceived += OnSetOrderRequest;
             statusWriter.OnForceStateEvent += OnForceState;
+            statusWriter.OnSetOrderEvent += OnSetOrder;
         }
 
-        private void OnSetOrderRequest(BaseUnitStatus.SetOrder.ReceivedRequest request)
+        private void OnSetOrder(OrderInfo info)
         {
-            statusCommandReceiver.SendSetOrderResponse(new BaseUnitStatus.SetOrder.Response(request.RequestId, new Empty()));
-
             statusWriter.SendUpdate(new BaseUnitStatus.Update()
             {
-                Order = request.Payload.Order,
+                Order = info.Order,
             });
         }
 

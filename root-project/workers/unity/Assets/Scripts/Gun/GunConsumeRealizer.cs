@@ -21,12 +21,12 @@ namespace AdvancedGears
 
         private void OnTarget(AttackTargetInfo info)
         {
-            CommonUpdate(info.Attached, -1);
+            CommonUpdate(info.AttachedBone, -1);
         }
         
         private void OnSupply(SupplyBulletInfo info)
         {
-            CommonUpdate(info.Attached, info.Amount);
+            CommonUpdate(info.AttachedBone, info.Amount);
         }
 
         private void OnDiffed(BulletDiffList list)
@@ -50,15 +50,15 @@ namespace AdvancedGears
             });
         }
 
-        void CommonUpdate(PosturePoint attached, int num)
+        void CommonUpdate(int bone, int num)
         {
             var dic = gunWriter.Data.GunsDic;
             GunInfo gun;
-            if (dic.TryGetValue(attached, out gun) == false)
+            if (dic.TryGetValue(bone, out gun) == false)
                 return;
 
             gun.AddBullets(num);
-            dic[attached] = gun;
+            dic[bone] = gun;
 
             gunWriter.SendUpdate(new GunComponent.Update
             {

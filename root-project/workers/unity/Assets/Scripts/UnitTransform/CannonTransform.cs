@@ -7,8 +7,12 @@ using Improbable.Gdk.Subscriptions;
 
 namespace AdvancedGears
 {
-    public class CannonTransform : AttachedTransform
+    public class CannonTransform : MonoBehaviour//AttachedTransform
     {
+        [SerializeField]
+        uint gunId;
+        public uint GunId { get { return gunId; } }
+
         [SerializeField] Transform barell;
         public Transform Barrell { get { return barell; } }
 

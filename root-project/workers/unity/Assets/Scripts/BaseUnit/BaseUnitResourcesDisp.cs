@@ -19,7 +19,7 @@ namespace AdvancedGears
 
         ValueTuple<char,int,int> healthTuple;
         ValueTuple<char,int,int> fuelTuple;
-        Dictionary<PosturePoint,ValueTuple<int,int>> gunTupleDic;
+        Dictionary<int,ValueTuple<int,int>> gunTupleDic;
         char header = 'G';
 
         private void OnEnable()
@@ -52,7 +52,7 @@ namespace AdvancedGears
             UpdateInfo();
         }
 
-        void UpdateGuns(Dictionary<PosturePoint,GunInfo> gunsDic)
+        void UpdateGuns(Dictionary<int,GunInfo> gunsDic)
         {
             foreach(var kvp in gunsDic) {
                 gunTupleDic[kvp.Key] = (kvp.Value.StockBullets, kvp.Value.StockMax);

@@ -57,9 +57,9 @@ namespace AdvancedGears
         {
             commandReceiver.OnAddFollowerRequestReceived += OnAddFollowerRequest;
             commandReceiver.OnGetTeamInfoRequestReceived += OnTeamInfoRequest;
-            commandReceiver.OnSetTargetStrogholdRequestReceived += OnSetStrongholdRequest;
-            commandReceiver.OnSetTargetFrontlineRequestReceived += OnSetFrontlineRequest;
-            commandReceiver.OnSetTargetHexRequestReceived += OnSetHexRequest;
+            commandReceiver.OnSetTargetRequestReceived += OnSetStrongholdRequest;
+            commandReceiver.OnSetFrontlineRequestReceived += OnSetFrontlineRequest;
+            commandReceiver.OnSetHexRequestReceived += OnSetHexRequest;
         }
 
         private void Update()
@@ -117,45 +117,46 @@ namespace AdvancedGears
             //}));
         }
 
-        private void OnSetStrongholdRequest(CommanderTeam.SetTargetStroghold.ReceivedRequest request)
+        private void OnSetStrongholdRequest(CommanderTeam.SetTarget.ReceivedRequest request)
         {
             var target = writer.Data.TargetInfoSet;
-            target.Stronghold = request.Payload;
+            target.Stronghold = request.Payload.TgtInfo;
             var bitNumber = writer.Data.IsNeedUpdate;
 
             writer.SendUpdate(new CommanderTeam.Update()
             {
                 TargetInfoSet = target,
                 StrongholdEntityId = new EntityId(request.RequestId),
-                IsNeedUpdate = UnitUtils.UpdateTargetBit(bitNumber, TargetInfoType.Stronghold),
+                IsNeedUpdate = UnitUtils.UpdateTargetBit(bitNumber, TargetType.Unit),
             });
         }
 
-        private void OnSetFrontlineRequest(CommanderTeam.SetTargetFrontline.ReceivedRequest request)
+        private void OnSetFrontlineRequest(CommanderTeam.SetFrontline.ReceivedRequest request)
         {
             var target = writer.Data.TargetInfoSet;
-            target.FrontLine = request.Payload;
+            target.FrontLine = request.Payload.FrontLine;
             var bitNumber = writer.Data.IsNeedUpdate;
 
             writer.SendUpdate(new CommanderTeam.Update()
             {
                 TargetInfoSet = target,
                 StrongholdEntityId = new EntityId(request.RequestId),
-                IsNeedUpdate = UnitUtils.UpdateTargetBit(bitNumber, TargetInfoType.FrontLine),
+                IsNeedUpdate = UnitUtils.UpdateTargetBit(bitNumber, TargetType.FrontLine),
             });
         }
 
-        private void OnSetHexRequest(CommanderTeam.SetTargetHex.ReceivedRequest request)
+        private void OnSetHexRequest(CommanderTeam.SetHex.ReceivedRequest request)
         {
             var target = writer.Data.TargetInfoSet;
-            target.HexInfo = request.Payload;
+            target.HexInfo = request.Payload.HexInfo;
+            target.PowerRate = request.Payload.PowerRate;
             var bitNumber = writer.Data.IsNeedUpdate;
 
             writer.SendUpdate(new CommanderTeam.Update()
             {
                 TargetInfoSet = target,
                 StrongholdEntityId = new EntityId(request.RequestId),
-                IsNeedUpdate = UnitUtils.UpdateTargetBit(bitNumber, TargetInfoType.Hex),
+                IsNeedUpdate = UnitUtils.UpdateTargetBit(bitNumber, TargetType.Hex),
             });
         }
     }

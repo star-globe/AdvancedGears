@@ -14,13 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 1.5
   rotSpeed: 25
-  inter: 0.5
-  sightRange: 30
+  sightRange: 50
   atkRange: 30
   atkAngle: 0.5
-  angleSpeed: 30
   maxHp: 10
   defense: 10
   maxFuel: 50
   consumeRate: 1
-  gunIds: 00000000

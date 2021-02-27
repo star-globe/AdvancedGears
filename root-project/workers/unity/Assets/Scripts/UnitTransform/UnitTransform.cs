@@ -55,34 +55,34 @@ namespace AdvancedGears
             return this.PostureDic.Keys.ToArray();
         }
 
-        public PostureTransform GetPosture(PosturePoint point)
-        {
-            PostureTransform posture = null;
-            this.PostureDic.TryGetValue(point, out posture);
-            return posture;
-        }
+        //public PostureTransform GetPosture(PosturePoint point)
+        //{
+        //    PostureTransform posture = null;
+        //    this.PostureDic.TryGetValue(point, out posture);
+        //    return posture;
+        //}
 
-        Dictionary<PosturePoint,CannonTransform> cannonDic = null;
-        public CannonTransform GetCannonTransform(PosturePoint point)
-        {
-            cannonDic = cannonDic ?? new Dictionary<PosturePoint,CannonTransform>();
-            if (cannonDic.ContainsKey(point) == false)
-            {
-                var cannon = this.GetTerminal<CannonTransform>(point);
-                if (cannon == null)
-                    return null;
+        //Dictionary<PosturePoint,CannonTransform> cannonDic = null;
+        //public CannonTransform GetCannonTransform(PosturePoint point)
+        //{
+        //    cannonDic = cannonDic ?? new Dictionary<PosturePoint,CannonTransform>();
+        //    if (cannonDic.ContainsKey(point) == false)
+        //    {
+        //        var cannon = this.GetTerminal<CannonTransform>(point);
+        //        if (cannon == null)
+        //            return null;
+        //
+        //        cannonDic.Add(point, cannon);
+        //    }
+        //
+        //    return cannonDic[point];
+        //}
 
-                cannonDic.Add(point, cannon);
-            }
-
-            return cannonDic[point];
-        }
-
-        public void Clear()
-        {
-            postureDic?.Clear();
-            cannonDic?.Clear();
-        }
+        //public void Clear()
+        //{
+        //    postureDic?.Clear();
+        //    cannonDic?.Clear();
+        //}
 
         public T GetTerminal<T>(PosturePoint point) where T : AttachedTransform
         {

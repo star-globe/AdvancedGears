@@ -103,6 +103,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   settings: {fileID: 11400000, guid: c48d5fc1365c3bd49b19a4f0bcd27e82, type: 2}
   gunInitializer: {fileID: 0}
+  container: {fileID: 0}
 --- !u!114 &3377717005427727886
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -117,7 +118,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stateRenderer: {fileID: 8304721226408007717}
   sideRenderer: {fileID: 1061258848052544629}
-  colorSettings: {fileID: 11400000, guid: e9653011b1bcf4847b2c0b2d702b450d, type: 2}
 --- !u!114 &1019395314181219347
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -210,7 +210,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   postures: []
-  boxDetect: {fileID: 0}
+  boxDetect: {fileID: 1862592692997293074}
   sphereDetect: {fileID: 0}
 --- !u!114 &6219044561266868164
 MonoBehaviour:
@@ -360,6 +360,12 @@ MeshRenderer:
 --- !u!23 &8304721226408007717 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 2541677839664788057, guid: 1ed45e3d254bf2e409ee0e6f0b613d79,
+    type: 3}
+  m_PrefabInstance: {fileID: 5766174824716151420}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &1862592692997293074 stripped
+BoxCollider:
+  m_CorrespondingSourceObject: {fileID: 5322361253066583662, guid: 1ed45e3d254bf2e409ee0e6f0b613d79,
     type: 3}
   m_PrefabInstance: {fileID: 5766174824716151420}
   m_PrefabAsset: {fileID: 0}

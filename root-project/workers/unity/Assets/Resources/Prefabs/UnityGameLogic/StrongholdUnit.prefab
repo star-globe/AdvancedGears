@@ -25,6 +25,7 @@ GameObject:
   - component: {fileID: 8525274799260527892}
   - component: {fileID: 5626431488711200078}
   - component: {fileID: 2852426682652613271}
+  - component: {fileID: 5767747211734542613}
   m_Layer: 11
   m_Name: StrongholdUnit
   m_TagString: Untagged
@@ -104,6 +105,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   settings: {fileID: 11400000, guid: 971b658c8c07e374e8ca0d961b335be0, type: 2}
   gunInitializer: {fileID: 0}
+  container: {fileID: 0}
 --- !u!114 &2634503670959294738
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -118,7 +120,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stateRenderer: {fileID: 1477009644268083907}
   sideRenderer: {fileID: 7603614155944707731}
-  colorSettings: {fileID: 11400000, guid: e9653011b1bcf4847b2c0b2d702b450d, type: 2}
 --- !u!114 &309114750155174671
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -224,7 +225,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   postures: []
-  boxDetect: {fileID: 0}
+  boxDetect: {fileID: 9144116667004569332}
   sphereDetect: {fileID: 0}
 --- !u!114 &8525274799260527892
 MonoBehaviour:
@@ -262,6 +263,18 @@ MonoBehaviour:
   m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4d77272cbbc30424e8bf0c746b86bb78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &5767747211734542613
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7117998853217099108}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c19dcae8c6f54f438e5f446e15e992c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &4419458866152112006
@@ -372,6 +385,12 @@ MeshRenderer:
 --- !u!23 &1477009644268083907 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 2966313176873739589, guid: c0f2863b65d61cc4ba5df322a50a9ec9,
+    type: 3}
+  m_PrefabInstance: {fileID: 4419458866152112006}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &9144116667004569332 stripped
+BoxCollider:
+  m_CorrespondingSourceObject: {fileID: 4878383306833082738, guid: c0f2863b65d61cc4ba5df322a50a9ec9,
     type: 3}
   m_PrefabInstance: {fileID: 4419458866152112006}
   m_PrefabAsset: {fileID: 0}

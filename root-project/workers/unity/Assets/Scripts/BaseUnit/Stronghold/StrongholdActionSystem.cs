@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Improbable;
 using Improbable.Gdk.Core;
 using Improbable.Worker.CInterop;
@@ -15,9 +14,10 @@ namespace AdvancedGears
         private EntityQuerySet orderQuerySet;
         private EntityQuerySet factoryQuerySet;
 
-        IntervalChecker inter;
-
         readonly HashSet<EntityId> requestLists = new HashSet<EntityId>();
+        readonly Dictionary<EntityId, TeamInfo> teamsDic = new Dictionary<EntityId, TeamInfo>();
+        readonly HashSet<EntityId> teamKeys = new HashSet<EntityId>();
+        readonly HashSet<long> sendIds = new HashSet<long>();
 
         protected override void OnCreate()
         {
@@ -26,6 +26,7 @@ namespace AdvancedGears
             orderQuerySet = new EntityQuerySet(GetEntityQuery(
                                                ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                                                ComponentType.ReadOnly<StrongholdSight.Component>(),
+                                               ComponentType.ReadOnly<StrategyHexAccessPortal.Component>(),
                                                ComponentType.ReadOnly<Transform>()
                                                ), 0.5f);
 
@@ -33,6 +34,8 @@ namespace AdvancedGears
                                                 ComponentType.ReadWrite<UnitFactory.Component>(),
                                                 ComponentType.ReadOnly<UnitFactory.HasAuthority>(),
                                                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
+                                                ComponentType.ReadOnly<StrongholdSight.Component>(),
+                                                ComponentType.ReadOnly<StrategyHexAccessPortal.Component>(),
                                                 ComponentType.ReadOnly<Transform>()
                                                 ), 2);
         }
@@ -51,7 +54,8 @@ namespace AdvancedGears
 
             Entities.With(orderQuerySet.group).ForEach((Unity.Entities.Entity entity,
                                                         ref BaseUnitStatus.Component status,
-                                                        ref StrongholdSight.Component sight) =>
+                                                        ref StrongholdSight.Component sight,
+                                                        ref StrategyHexAccessPortal.Component portal) =>
             {
                 if (status.State != UnitState.Alive)
                     return;
@@ -63,17 +67,19 @@ namespace AdvancedGears
                     return;
 
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
-                CheckAlive(trans.position, status.Side, out var teams);
+                CheckAlive(trans.position, status.Side, portal.Index, HexDictionary.HexEdgeLength, teamsDic);
+
+                sendIds.Clear();
 
                 // order check
                 // Not Set Strongholds
-                CheckOrder(status.Order, sight.TargetStrongholds, sight.StrategyVector.Vector.ToUnityVector(), teams);
+                CheckOrder(portal.Index, status.Order, sight.TargetStrongholds, sight.StrategyVector.Vector.ToUnityVector(), teamsDic, sendIds);
 
                 // FrontLineCorners
-                CheckOrder(status.Order, status.Side, sight.FrontLineCorners, sight.StrategyVector.Vector.ToUnityVector(), teams);
+                CheckOrder(portal.Index, status.Order, status.Side, sight.FrontLineCorners, sight.StrategyVector.Vector.ToUnityVector(), teamsDic, sendIds);
 
                 // Hex
-                CheckOrder(status.Order, sight.TargetHexes, sight.StrategyVector.Vector.ToUnityVector(), teams);
+                CheckOrder(portal.Index, status.Order, sight.TargetHexes, sight.StrategyVector.Vector.ToUnityVector(), teamsDic, sendIds);
             });
         }
 
@@ -84,7 +90,9 @@ namespace AdvancedGears
 
             Entities.With(factoryQuerySet.group).ForEach((Unity.Entities.Entity entity,
                                                           ref UnitFactory.Component factory,
-                                                          ref BaseUnitStatus.Component status) =>
+                                                          ref BaseUnitStatus.Component status,
+                                                          ref StrongholdSight.Component sight,
+                                                          ref StrategyHexAccessPortal.Component portal) =>
             {
                 if (status.State != UnitState.Alive)
                     return;
@@ -96,21 +104,24 @@ namespace AdvancedGears
                     return;
 
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
-                CheckAlive(trans.position, status.Side, out var teams);
-                CheckAliveTurret(trans.position, status.Side, out var turrets);
+                CheckAlive(trans.position, status.Side, uint.MaxValue, HexDictionary.HexEdgeLength * 2, teamsDic);
 
                 // number check
-                if (factory.TeamOrders.Count == 0) {
-                    var teamOrders = makeOrders(status.Rank, status.Order, teams);
-                    if (teamOrders != null)
-                        factory.TeamOrders.AddRange(teamOrders);
+                if (factory.TeamOrders.Count == 0 && sight.StrategyVector.Side != UnitSide.None) {
+                    var teamOrders = factory.TeamOrders;
+                    makeOrders(status.Side, status.Rank, PostureUtils.RotFoward(sight.StrategyVector.Vector.ToUnityVector()), status.Order, portal.Index,
+                               sight.FrontLineCorners, sight.TargetHexes, teamsDic, teamOrders);
+
+                    factory.TeamOrders = teamOrders;
                 }
 
+#if false
                 if (factory.TurretOrders.Count == 0) {
-                    var turretOrders = makeOrders(status.Rank, turrets);
-                    if (turretOrders != null)
-                        factory.TurretOrders.AddRange(turretOrders);
+                    var turretOrders = factory.TurretOrders;
+                    makeOrders(trans.position, status.Side, status.Rank, turretOrders);
+                    factory.TurretOrders = turretOrders;
                 }
+#endif
             });
         }
 
@@ -136,13 +147,19 @@ namespace AdvancedGears
             }
         }
 
-        void CheckAlive(in Vector3 pos, UnitSide side, out Dictionary<EntityId,TeamInfo> datas)
+        void CheckAlive(in Vector3 pos, UnitSide side, uint hexIndex, float range, Dictionary<EntityId,TeamInfo> datas)
         {
-            datas = new Dictionary<EntityId, TeamInfo>();
+            if (datas == null)
+                return;
 
-            var units = getAllyUnits(side, pos, RangeDictionary.Get(FixedRangeType.StrongholdRange), allowDead: false, UnitType.Commander);
+            datas.Clear();
+
+            var units = getAllyUnits(side, pos, range, allowDead: false, UnitType.Commander);
 
             foreach (var u in units) {
+                if (hexIndex != uint.MaxValue && HexUtils.IsInsideHex(this.Origin, hexIndex, u.pos, HexDictionary.HexEdgeLength) == false)
+                    continue;
+
                 if (TryGetComponent<CommanderTeam.Component>(u.id, out var team) == false)
                     continue;
 
@@ -158,9 +175,12 @@ namespace AdvancedGears
             }
         }
 
-        void CheckAliveTurret(in Vector3 pos, UnitSide side, out List<UnitInfo> turrets)
+        void CheckAliveTurret(in Vector3 pos, UnitSide side, List<UnitInfo> turrets)
         {
-            turrets = new List<UnitInfo>();
+            if (turrets == null)
+                return;
+
+            turrets.Clear();
             var units = getAllyUnits(side, pos, RangeDictionary.Get(FixedRangeType.StrongholdRange), allowDead: false, UnitType.Turret);
 
             foreach (var u in units) {
@@ -183,31 +203,45 @@ namespace AdvancedGears
             requestLists.Add(id);
         }
 
-        List<TeamOrder> makeOrders(uint rank, OrderType order, Dictionary<EntityId,TeamInfo> datas)
+        const int strategyUnitRank = 0;
+        void makeOrders(UnitSide side, uint rank, float rot, OrderType order, uint hexIndex,
+                                    List<FrontLineInfo> frontLines, Dictionary<uint, TargetHexInfo> hexes, Dictionary<EntityId,TeamInfo> datas, List<TeamOrder> teamOrders)
         {
-            var maxrank = OrderDictionary.GetMaxRank(order, rank);
+            if (datas == null || teamOrders == null)
+                return;
 
-            if (maxrank <= 0 || datas == null)
-                return null;
+            if (hexes.Count > 0)
+            {
+                makeTeamOrders(hexes.Count * AttackLogicDictionary.TeamPerHex, strategyUnitRank, rot, order, teamOrders, datas);
+            }
+            else if (frontLines.Count > 0)
+            {
+                makeTeamOrders(frontLines.Count, strategyUnitRank, rot, order, teamOrders, datas);
+            }
+        }
 
+        void makeTeamOrders(int coms, uint maxrank, float rot, OrderType order, List<TeamOrder> teamOrders, Dictionary<EntityId, TeamInfo> datas)
+        {
             var solnum = AttackLogicDictionary.UnderSoldiers;
             var underCommands = AttackLogicDictionary.UnderCommanders;
 
-            List<TeamOrder> teamOrders = null;
-            int coms = 1;
-            for(var r = maxrank; r >= 0; r--) {
-                var count = datas.Count(kvp => kvp.Value.Rank == r);
+            for (var r = maxrank; r >= 0; r--)
+            {
+                int count = 0;
+                foreach (var kvp in datas) {
+                    if (kvp.Value.Rank == r)
+                        count++;
+                }
 
-                Debug.LogFormat("Commanders Count:{0} Rank:{1}", count, r);
-
-                if (count < coms) {
-                    teamOrders = teamOrders ?? new List<TeamOrder>();
+                if (count < coms)
+                {
                     teamOrders.Add(new TeamOrder()
                     {
                         CommanderRank = r,
                         SoldiersNumber = solnum,
                         Order = order,
                         Stack = coms - count,
+                        Rot = rot,
                     });
                 }
 
@@ -216,22 +250,26 @@ namespace AdvancedGears
                 if (r == 0)
                     break;
             }
-
-            return teamOrders;
         }
 
-        List<TurretOrder> makeOrders(uint rank, List<UnitInfo> currentTurrets)
+
+        void makeOrders(in Vector3 pos, UnitSide side, uint rank, List<TurretOrder> turretOrders)
         {
+            if (turretOrders == null)
+                return;
+
+            var units = getAllyUnits(side, pos, RangeDictionary.Get(FixedRangeType.StrongholdRange), allowDead: false, UnitType.Turret);
             var underTurrets = AttackLogicDictionary.UnderTurrets;
 
-            List<TurretOrder> turretOrders = null;
             int coms = 1;
             for(var r = rank; r >= 0; r--) {
-                var count = currentTurrets.Count(u => u.rank == r);
-                Debug.LogFormat("Turrets Count:{0} Rank:{1}", count, r);
+                int count = 0;
+                foreach (var u in units) {
+                    if (u.rank == r)
+                        count++;
+                }
 
                 if (count < coms) {
-                    turretOrders = turretOrders ?? new List<TurretOrder>();
                     turretOrders.Add(new TurretOrder()
                     {
                         TurretId = 1,
@@ -245,55 +283,84 @@ namespace AdvancedGears
                 if (r == 0)
                     break;
             }
-
-            return turretOrders;
         }
 
 
-        private void SetCommand(EntityId id, in TargetStrongholdInfo targetInfo, OrderType order)
+        private void SetCommand(EntityId id, in TargetInfo targetInfo, OrderType order)
         {
-            base.SetCommand(id, order);
-            this.CommandSystem.SendCommand(new CommanderTeam.SetTargetStroghold.Request(id, targetInfo));
+            base.SetOrder(id, order);
+            this.CommandSystem.SendCommand(new CommanderTeam.SetTarget.Request(id, targetInfo));
         }
 
         private void SetCommand(EntityId id, in TargetFrontLineInfo targetInfo, OrderType order)
         {
-            base.SetCommand(id, order);
-            this.CommandSystem.SendCommand(new CommanderTeam.SetTargetFrontline.Request(id, targetInfo));
+            base.SetOrder(id, order);
+            this.CommandSystem.SendCommand(new CommanderTeam.SetFrontline.Request(id, targetInfo));
         }
 
         private void SetCommand(EntityId id, in TargetHexInfo targetInfo, OrderType order)
         {
-            base.SetCommand(id, order);
-            this.CommandSystem.SendCommand(new CommanderTeam.SetTargetHex.Request(id, targetInfo));
+            base.SetOrder(id, order);
+            this.CommandSystem.SendCommand(new CommanderTeam.SetHex.Request(id, targetInfo));
         }
 
-        private void CheckOrder(OrderType order, Dictionary<EntityId,TargetStrongholdInfo> targetStrongholds, Vector3 strategyVector, Dictionary<EntityId,TeamInfo> datas)
+        private void CheckOrder(uint hexIndex, OrderType order, Dictionary<EntityId,UnitBaseInfo> targetStrongholds, Vector3 strategyVector, Dictionary<EntityId,TeamInfo> datas, HashSet<long> sendIds)
         {
+            if (sendIds == null)
+                return;
+
             var count = targetStrongholds.Count;
             if (count == 0)
                 return;
 
             foreach(var kvp in datas) {
-                var stronghold = kvp.Value.TargetInfoSet.Stronghold.StrongholdId;
+                var uid = kvp.Key.Id;
+
+                if (sendIds.Contains(uid))
+                    continue;
+
+                var stronghold = kvp.Value.TargetInfoSet.Stronghold.UnitId;
                 if (stronghold.IsValid() && targetStrongholds.ContainsKey(stronghold))
                     continue;
 
-                var key = targetStrongholds.Keys.ElementAt(UnityEngine.Random.Range(0,count));
-                SetCommand(kvp.Key, targetStrongholds[key], order);
+                var index = UnityEngine.Random.Range(0, count);
+                int i = 0;
+                UnitBaseInfo? baseInfo = null;
+                foreach (var str in targetStrongholds) {
+                    if (i == index)
+                        baseInfo = str.Value;
+
+                    i++;
+                }
+
+                if (baseInfo == null)
+                    continue;
+
+                //Debug.LogFormat("SelectStronghold Index:{0}, Key:{1}, Count:{2}, Target:{3}", hexIndex, kvp.Key, count, targetStrongholds[key].Position);
+
+                var tgt = new TargetInfo() { TgtInfo = baseInfo.Value, };
+
+                SetCommand(kvp.Key, tgt, order);
+
+                sendIds.Add(kvp.Key.Id);
             }
         }
 
-        private void CheckOrder(OrderType order, UnitSide side, List<FrontLineInfo> lines, Vector3 strategyVector, Dictionary<EntityId,TeamInfo> datas)
+        private void CheckOrder(uint hexIndex, OrderType order, UnitSide side, List<FrontLineInfo> lines, Vector3 strategyVector, Dictionary<EntityId,TeamInfo> datas, HashSet<long> sendIds)
         {
+            if (sendIds == null)
+                return;
+
             var count = lines.Count;
             if (count == 0)
                 return;
 
-            DebugUtils.RandomlyLog(string.Format("Side:{0} LinesCount:{1}", side, lines.Count));
-
             foreach(var kvp in datas) {
-                var frontLine = kvp.Value.TargetInfoSet.FrontLine.FrontLine;
+                var uid = kvp.Key.Id;
+                if (sendIds.Contains(uid))
+                    continue;
+
+                var frontLine = kvp.Value.TargetInfoSet.FrontLine;
                 if (frontLine.IsValid() && lines.Contains(frontLine))
                     continue;
 
@@ -305,26 +372,45 @@ namespace AdvancedGears
                 };
 
                 SetCommand(kvp.Key, line, order);
+
+                sendIds.Add(uid);
             }
         }
 
-        private void CheckOrder(OrderType order, Dictionary<uint,TargetHexInfo> targets, Vector3 strategyVector, Dictionary<EntityId,TeamInfo> datas)
+        private void CheckOrder(uint hexIndex, OrderType order, Dictionary<uint,TargetHexInfo> targets, Vector3 strategyVector, Dictionary<EntityId,TeamInfo> datas, HashSet<long> sendIds)
         {
+            if (sendIds == null)
+                return;
+
             var count = targets.Count;
             if (count == 0)
                 return;
 
             foreach(var kvp in datas) {
+                var uid = kvp.Key.Id;
+                if (sendIds.Contains(uid))
+                    continue;
+
                 var hexInfo = kvp.Value.TargetInfoSet.HexInfo;
                 if (hexInfo.IsValid() && targets.ContainsKey(hexInfo.HexIndex))
                     continue;
 
                 var index = UnityEngine.Random.Range(0, count);
-                var key = targets.Keys.ElementAt(index);
+                TargetHexInfo? info = null;
+                int i = 0;
+                foreach (var tgt in targets) {
+                    if (i == index)
+                        info = tgt.Value;
 
-                Debug.LogFormat("SelectHEx Index:{0}, Key:{1}, Count:{2}", index, key, count);
+                    i++;
+                }
 
-                SetCommand(kvp.Key, targets[key], order);
+                if (info == null)
+                    continue;
+
+                SetCommand(kvp.Key, info.Value, order);
+
+                sendIds.Add(uid);
             }
         }
 
@@ -335,12 +421,12 @@ namespace AdvancedGears
             if (action.ActionType == CommandActionType.Product)
                 return;
 
-            var diff = tgt.TargetInfo.Position.ToWorkerPosition(this.Origin) - pos;
+            var diff = tgt.TargetUnit.Position.ToWorkerPosition(this.Origin) - pos;
             float length = 10.0f;   // TODO from:master
             if (diff.sqrMagnitude > length * length)
                 return;
 
-            var id = tgt.TargetInfo.TargetId;
+            var id = tgt.TargetUnit.UnitId;
             List<UnitFactory.AddFollowerOrder.Request> reqList = new List<UnitFactory.AddFollowerOrder.Request>();
 
             var n_sol = 0;

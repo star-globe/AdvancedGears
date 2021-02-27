@@ -15,48 +15,56 @@ namespace AdvancedGears
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     internal class TurretUpdateSystem : BaseSearchSystem
     {
-        private EntityQuery group;
-        IntervalChecker inter;
+        private EntityQuerySet hubQuerySet;
 
         const int period = 2;
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            group = GetEntityQuery(
-                ComponentType.ReadWrite<TurretHub.Component>(),
-                ComponentType.ReadOnly<TurretHub.HasAuthority>(),
-                ComponentType.ReadOnly<BaseUnitStatus.Component>(),
-                ComponentType.ReadOnly<Transform>(),
-                ComponentType.ReadOnly<SpatialEntityId>()
-            );
-
-            inter = IntervalCheckerInitializer.InitializedChecker(period);
+            hubQuerySet = new EntityQuerySet(GetEntityQuery(
+                                             ComponentType.ReadWrite<TurretHub.Component>(),
+                                             ComponentType.ReadOnly<TurretHub.HasAuthority>(),
+                                             ComponentType.ReadOnly<BaseUnitStatus.Component>(),
+                                             ComponentType.ReadOnly<StrategyHexAccessPortal.Component>(),
+                                             ComponentType.ReadOnly<Transform>(),
+                                             ComponentType.ReadOnly<SpatialEntityId>()
+                                             ), period);
         }
 
         protected override void OnUpdate()
         {
-            if (CheckTime(ref inter) == false)
+            UpdateTurretHubData();
+        }
+
+        private void UpdateTurretHubData()
+        {
+            if (CheckTime(ref hubQuerySet.inter) == false)
                 return;
 
-            Entities.With(group).ForEach((Entity entity,
-                                          ref TurretHub.Component turret,
-                                          ref BaseUnitStatus.Component status,
-                                          ref SpatialEntityId entityId) =>
+            Entities.With(hubQuerySet.group).ForEach((Entity entity,
+                                                      ref TurretHub.Component turret,
+                                                      ref BaseUnitStatus.Component status,
+                                                      ref StrategyHexAccessPortal.Component portal,
+                                                      ref SpatialEntityId entityId) =>
             {
                 if (status.State != UnitState.Alive)
                     return;
 
-                if (status.Type != UnitType.Stronghold)
+                if (UnitUtils.IsBuilding(status.Type) == false)
                     return;
 
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
-                var units = getAllyUnits(status.Side, trans.position, RangeDictionary.Get(FixedRangeType.StrongholdRange), UnitType.Turret);
+                var units = getAllUnits(trans.position, HexDictionary.HexEdgeLength, allowDead:true, UnitType.Turret);
 
                 var datas = turret.TurretsDatas;
                 datas.Clear();
 
+                var hexIndex = portal.Index;
                 foreach(var u in units) {
+                    if (hexIndex != uint.MaxValue && HexUtils.IsInsideHex(this.Origin, hexIndex, u.pos, HexDictionary.HexEdgeLength) == false)
+                        continue;
+
                     if (TryGetComponent<TurretComponent.Component>(u.id, out var comp) == false)
                         continue;
 

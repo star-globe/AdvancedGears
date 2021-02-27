@@ -13,7 +13,7 @@ using UnityEngine;
 namespace AdvancedGears
 {
     [DisableAutoCreation]
-    [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
+    [UpdateInGroup(typeof(SpatialOSUpdateGroup))]
     public class HealthRecoveryInHexSystem : HexUpdateBaseSystem
     {
         EntityQuery unitGroup;
@@ -36,13 +36,14 @@ namespace AdvancedGears
 
         protected override void OnUpdate()
         {
-            base.OnUpdate();
-
             UpdateRecovery();
         }
 
         private void UpdateRecovery()
         {
+            if (this.HexDic == null)
+                return;
+
             if (CheckTime(ref inter) == false)
                 return;
 
@@ -60,7 +61,7 @@ namespace AdvancedGears
                 var pos = trans.position;
 
                 int? hexMasterId = null;
-                foreach(var  kvp in base.hexDic) {
+                foreach(var  kvp in base.HexDic) {
                     if (kvp.Value.Side != status.Side)
                         continue;
 

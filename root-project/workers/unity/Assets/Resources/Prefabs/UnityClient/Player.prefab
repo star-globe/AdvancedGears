@@ -54,7 +54,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 16
+  m_Constraints: 80
   m_CollisionDetection: 0
 --- !u!114 &114602415406350378
 MonoBehaviour:
@@ -87,7 +87,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7412ba60fbe96c41acbcddd89f68378, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  unitTransform: {fileID: 8408975194405095079}
+  container: {fileID: 606604514533567823}
 --- !u!114 &826868040743729356
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -113,6 +113,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   trigger: {fileID: 7801269306611005324}
+  container: {fileID: 606604514533567823}
 --- !u!114 &-6066956962702012113
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -141,7 +142,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stateRenderer: {fileID: 3853410382525697408}
   sideRenderer: {fileID: 3459261135123493895}
-  colorSettings: {fileID: 11400000, guid: e9653011b1bcf4847b2c0b2d702b450d, type: 2}
 --- !u!114 &4188325467391467859
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -169,6 +169,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   components:
   - {fileID: 8408975194405095079}
+  - {fileID: 606604514533567823}
 --- !u!1001 &799755572087572379
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -266,6 +267,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0ffd8629ba015d048aec624c82eb6e1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &606604514533567823 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 248360860773296852, guid: 1ca7c6aef45df8047b0239f705e7bbe2,
+    type: 3}
+  m_PrefabInstance: {fileID: 799755572087572379}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: deefb691b821d2f4abdcad7beff86cb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!23 &3459261135123493895 stripped

@@ -18,42 +18,43 @@ namespace AdvancedGears
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     public class DominationSystem : BaseSearchSystem
     {
-        EntityQuery group;
-
-        IntervalChecker inter;
+        EntityQuerySet deviceGroup;
+        EntityQuerySet hexPowerGroup;
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            group = GetEntityQuery(
-                ComponentType.ReadWrite<DominationStamina.Component>(),
-                ComponentType.ReadOnly<DominationStamina.HasAuthority>(),
-                ComponentType.ReadOnly<BaseUnitStatus.Component>(),
-                ComponentType.ReadOnly<Transform>(),
-                ComponentType.ReadOnly<SpatialEntityId>()
-            );
+            deviceGroup = new EntityQuerySet(GetEntityQuery(
+                                             ComponentType.ReadWrite<DominationStamina.Component>(),
+                                             ComponentType.ReadOnly<DominationStamina.HasAuthority>(),
+                                             ComponentType.ReadOnly<BaseUnitStatus.Component>(),
+                                             ComponentType.ReadOnly<Transform>(),
+                                             ComponentType.ReadOnly<SpatialEntityId>()
+                                             ), 1.0f);
 
-            inter = IntervalCheckerInitializer.InitializedChecker(1.0f);
+            hexPowerGroup = new EntityQuerySet(GetEntityQuery(
+                                             ComponentType.ReadOnly<StrategyHexAccessPortal.Component>()
+                                             ), 1.0f);
         }
 
         protected override void OnUpdate()
         {
-            HandleCaputuring();
+            GatherPortalData();
+            HandleCaputure();
         }
 
-        void HandleCaputuring()
+        void HandleCaputure()
         {
-            if (CheckTime(ref inter) == false)
+            if (CheckTime(ref deviceGroup.inter) == false)
                 return;
 
-            Entities.With(group).ForEach((Unity.Entities.Entity entity,
+            Entities.With(deviceGroup.group).ForEach((Unity.Entities.Entity entity,
                                           ref DominationStamina.Component domination,
                                           ref BaseUnitStatus.Component status,
                                           ref SpatialEntityId entityId) =>
             {
-                if (status.State != UnitState.Dead &&
-                    status.Side != UnitSide.None)
+                if (status.Side != UnitSide.None)
                     return;
 
                 if (status.Type != UnitType.Stronghold)
@@ -64,7 +65,7 @@ namespace AdvancedGears
 
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
                 var pos = trans.position;
-                var list = getAllUnits(pos, range, UnitType.Commander, UnitType.Advanced);
+                var list = getAllUnits(pos, range, allowDead:false, AttackLogicDictionary.DominationUnitTypes);
 
                 var sumsDic = new Dictionary<UnitSide,float>();
                 foreach (var unit in list)
@@ -72,16 +73,37 @@ namespace AdvancedGears
                     DominationDevice.Component? comp = null;
                     if (TryGetComponent(unit.id, out comp) == false)
                         continue;
-                    
+
+                    var speed = 1.5f;
+
                     switch(comp.Value.Type)
                     {
                         case DominationDeviceType.Capturing:
-                            AffectCapture(unit.side, comp.Value.Speed, sumsDic);
+                            AffectCapture(unit.side, speed, sumsDic);
                             break;
 
                         case DominationDeviceType.Jamming:
-                            AffectJamming(unit.side, comp.Value.Speed, sumsDic);
+                            AffectJamming(unit.side, speed, sumsDic);
                             break;
+                    }
+                }
+
+                if (hexIndexes != null)
+                {
+                    foreach (var kvp in hexIndexes)
+                    {
+                        if (HexUtils.IsInsideHex(this.Origin, kvp.Key, pos, HexDictionary.HexEdgeLength) == false)
+                            continue;
+
+                        var hex = kvp.Value;
+                        if (HexUtils.TryGetOneSidePower(hex, out var side, out var val))
+                        {
+                            if (sumsDic.ContainsKey(side))
+                                sumsDic[side] += val;
+                            else
+                                sumsDic[side] = val;
+                        }
+                        break;
                     }
                 }
 
@@ -120,6 +142,21 @@ namespace AdvancedGears
             });
         }
 
+        private Dictionary<uint, HexIndex> hexIndexes;
+
+        void GatherPortalData()
+        {
+            if (CheckTime(ref hexPowerGroup.inter) == false)
+                return;
+
+            Entities.With(hexPowerGroup.group).ForEach((Unity.Entities.Entity entity,
+                                          ref StrategyHexAccessPortal.Component portal) =>
+            {
+                if (portal.Index != uint.MaxValue)
+                    hexIndexes = portal.HexIndexes;
+            });
+        }
+
         private void AffectCapture(UnitSide side, float speed, Dictionary<UnitSide,float> sumsDic)
         {
             if (sumsDic.ContainsKey(side) == false)
@@ -143,10 +180,6 @@ namespace AdvancedGears
         private void Capture(EntityId id, UnitSide side)
         {
             this.UpdateSystem.SendEvent(new BaseUnitStatus.ForceState.Event(new ForceStateChange(side, UnitState.Alive)), id);
-            this.CommandSystem.SendCommand(new StrongholdSight.SetStrategyVector.Request(
-                id,
-                new StrategyVector(side, FixedPointVector3.FromUnityVector(Vector3.zero)))
-            );
         }
     }
 }

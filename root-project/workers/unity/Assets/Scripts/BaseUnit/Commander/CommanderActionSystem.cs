@@ -81,15 +81,15 @@ namespace AdvancedGears
         {
             var units = getAllyUnits(side, pos, RangeDictionary.Get(FixedRangeType.PlatoonRange), allowDead:false, UnitType.Soldier);
             foreach (var u in units) {
-                SetCommand(u.id, tgt.TargetInfo, order);
+                SetCommand(u.id, new TargetInfo(tgt.TargetUnit, tgt.PowerRate), order);
             }
         }
 
         // add boids information
         private void SetCommand(EntityId id, in TargetInfo targetInfo, OrderType order)
         {
-            base.SetCommand(id, order);
-            this.CommandSystem.SendCommand(new BaseUnitTarget.SetTarget.Request(id, targetInfo));
+            base.SetOrder(id, order);
+            this.UpdateSystem.SendEvent(new BaseUnitTarget.SetTarget.Event(targetInfo), id);
         }
 
         void ProductAlly(in Vector3 pos, UnitSide side,
@@ -99,12 +99,12 @@ namespace AdvancedGears
             if (action.ActionType == CommandActionType.Product)
                 return;
 
-            var diff = tgt.TargetInfo.Position.ToWorkerPosition(this.Origin) - pos;
+            var diff = tgt.TargetUnit.Position.ToWorkerPosition(this.Origin) - pos;
             float length = 10.0f;   // TODO from:master
             if (diff.sqrMagnitude > length * length)
                 return;
 
-            var id = tgt.TargetInfo.TargetId;
+            var id = tgt.TargetUnit.UnitId;
             List<UnitFactory.AddFollowerOrder.Request> reqList = new List<UnitFactory.AddFollowerOrder.Request>();
 
             var n_sol = 0;

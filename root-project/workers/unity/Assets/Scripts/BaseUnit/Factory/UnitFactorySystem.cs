@@ -54,6 +54,7 @@ namespace AdvancedGears
                 ComponentType.ReadOnly<ResourceComponent.HasAuthority>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<Position.Component>(),
+                ComponentType.ReadOnly<StrongholdSight.Component>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
 
@@ -62,8 +63,7 @@ namespace AdvancedGears
             checkerGroup = GetEntityQuery(
                 ComponentType.ReadWrite<UnitFactory.Component>(),
                 ComponentType.ReadOnly<UnitFactory.HasAuthority>(),
-                ComponentType.ReadOnly<BaseUnitStatus.Component>(),
-                ComponentType.ReadOnly<Position.Component>()
+                ComponentType.ReadOnly<BaseUnitStatus.Component>()
             );
 
             checkerInter = IntervalCheckerInitializer.InitializedChecker(1.5f);
@@ -82,8 +82,7 @@ namespace AdvancedGears
                 return;
 
             Entities.With(checkerGroup).ForEach((ref UnitFactory.Component factory,
-                                                 ref BaseUnitStatus.Component status,
-                                                 ref Position.Component position) =>
+                                                 ref BaseUnitStatus.Component status) =>
             {
                 if (status.State != UnitState.Alive)
                     return;
@@ -117,7 +116,7 @@ namespace AdvancedGears
 
         // TODO:getFromSettings;
         const float range = 12.0f;
-        const float height_buffer = 5.0f;
+        const float height_buffer = 1.0f;
         void HandleProductUnit()
         {
             if (CheckTime(ref factoryInter) == false)
@@ -128,6 +127,7 @@ namespace AdvancedGears
                                           ref ResourceComponent.Component resource,
                                           ref BaseUnitStatus.Component status,
                                           ref Position.Component position,
+                                          ref StrongholdSight.Component sight,
                                           ref SpatialEntityId entityId) =>
             {
                 if (status.State != UnitState.Alive)
@@ -190,11 +190,23 @@ namespace AdvancedGears
                 if (CheckTime(ref factoryInter) == false)
                     return;
 
+                Coordinates? random = null;
+                if (sight.StrategyVector.Side != UnitSide.None)
+                {
+                    random = GetEmptyCoordinates(entityId.EntityId, position.Coords, sight.StrategyVector.Vector, height_buffer, factory.Containers);
+                }
+
+                if (random == null)
+                {
+                    Debug.LogFormat("There is no Empty");
+                    return;
+                }
+
                 Debug.LogFormat("CreateUnit!");
 
                 factory.ProductInterval = factoryInter;
 
-                var coords = GetEmptyCoordinates(entityId.EntityId, position.Coords, height_buffer, factory.Containers);
+                var coords = random.Value;//GetEmptyCoordinates(entityId.EntityId, position.Coords, height_buffer, factory.Containers);
                 EntityTemplate template = null;
 
                 bool finished = false;
@@ -254,6 +266,66 @@ namespace AdvancedGears
             return containers[index].Pos.ToCoordinates();
         }
 
+        readonly Dictionary<EntityId, HexRandomContaner> hexContainerDic = new Dictionary<EntityId, HexRandomContaner>();
+        private Coordinates? GetEmptyCoordinates(EntityId id, in Coordinates center, in FixedPointVector3 vector, float height_buffer, List<UnitContainer> containers)
+        {
+            var index = containers.FindIndex(c => c.State == ContainerState.Empty);
+            if (index >= 0)
+            {
+                containers.ChangeState(index, ContainerState.Reserved);
+                return containers[index].Pos.ToCoordinates();
+            }
+
+            HexRandomContaner hex = null;
+            if (hexContainerDic.TryGetValue(id, out hex) == false)
+            {
+                hex = new HexRandomContaner(center.ToUnityVector() + this.Origin, height_buffer, HexDictionary.HexEdgeLength, (int)(HexDictionary.HexEdgeLength / RangeDictionary.TeamInter));
+                hexContainerDic[id] = hex;
+            }
+
+            hex.Clear();
+            foreach (var c in containers)
+            {
+                if (c.State != ContainerState.Empty)
+                    hex.SetCurrentPoint(c.Pos.ToWorkerPosition(this.Origin));
+            }
+
+            var vec = HexDictionary.HexEdgeLength * 0.5f * vector.ToUnityVector().normalized;
+
+            var empty = hex.GetRandomPointFromVector(vec);
+            if (empty == null)
+                return null;
+
+            index = containers.Count;
+            containers.Add(new UnitContainer() { Pos = empty.Value.ToWorldPosition(this.Origin), State = ContainerState.Reserved });
+            return containers[index].Pos.ToCoordinates();
+        }
+
+
+
+        private Coordinates GetEmptyCoordinates(EntityId id, in Coordinates center, float heightBuffer, uint hexForward, Dictionary<uint,List<UnitContainer>> hexContainers)
+        {
+            if (hexContainers.ContainsKey(hexForward) == false)
+                hexContainers[hexForward] = new List<UnitContainer>();
+
+            var containers = hexContainers[hexForward];
+            var index = containers.FindIndex(c => c.State == ContainerState.Empty);
+            if (index >= 0) {
+                containers.ChangeState(index, ContainerState.Reserved);
+                return containers[index].Pos.ToCoordinates();
+            }
+
+            VortexCoordsContainer vortex = null;
+            if (strDic.TryGetValue(id, out vortex) == false) {
+                vortex = new VortexCoordsContainer(center, containers.Select(c => c.Pos.ToCoordinates()).ToList(), RangeDictionary.TeamInter, this.Origin, heightBuffer);
+                strDic[id] = vortex;
+            }
+
+            index = containers.Count;
+            containers.Add(new UnitContainer() { Pos = vortex.AddPos().ToFixedPointVector3(), State = ContainerState.Reserved });
+            return containers[index].Pos.ToCoordinates();
+        }
+
         private bool CalcOrderCost(out int resourceCost, out float timeCost,
                                     FollowerOrder? f_order = null, SuperiorOrder? s_order = null, TeamOrder? team_order = null)
         {
@@ -293,10 +365,10 @@ namespace AdvancedGears
             switch (current.Type)
             {
                 case UnitType.Commander:
-                    template = BaseUnitTemplate.CreateCommanderUnitEntityTemplate(current.Side, coords, current.Rank, superiorId);
+                    template = BaseUnitTemplate.CreateCommanderUnitEntityTemplate(current.Side, current.Rank, superiorId, coords, TransformUtils.ToAngleAxis(current.Rot, Vector3.up));
                     break;
                 default:
-                    template = BaseUnitTemplate.CreateBaseUnitEntityTemplate(current.Side, coords, current.Type);
+                    template = BaseUnitTemplate.CreateBaseUnitEntityTemplate(current.Side, current.Type, coords, TransformUtils.ToAngleAxis(current.Rot, Vector3.up));
                     break;
             }
 
@@ -321,7 +393,7 @@ namespace AdvancedGears
 
             var current = orders[0];
             // create unit
-            EntityTemplate template = BaseUnitTemplate.CreateCommanderUnitEntityTemplate(current.Side, coords, current.Rank, null);
+            EntityTemplate template = BaseUnitTemplate.CreateCommanderUnitEntityTemplate(current.Side, current.Rank, null, coords, TransformUtils.ToAngleAxis(current.Rot, Vector3.up));
             var snap = template.GetComponent<CommanderTeam.Snapshot>();
             if (snap != null) {
                 var s = snap.Value;
@@ -373,12 +445,12 @@ namespace AdvancedGears
             var current = orders[0];
             // create unit
             List<ValueTuple<EntityTemplate,UnitType>> templates = new List<ValueTuple<EntityTemplate,UnitType>>();
-            var temp = BaseUnitTemplate.CreateCommanderUnitEntityTemplate(side, coords, current.CommanderRank, null);
+            var temp = BaseUnitTemplate.CreateCommanderUnitEntityTemplate(side, current.CommanderRank, null, coords, TransformUtils.ToAngleAxis(current.Rot, Vector3.up));
             templates.Add((temp, UnitType.Commander));
 
             var posList = GetCoordinates(coords, current.SoldiersNumber);
             foreach(var pos in posList) {
-                temp = BaseUnitTemplate.CreateBaseUnitEntityTemplate(side, pos, UnitType.Soldier);
+                temp = BaseUnitTemplate.CreateBaseUnitEntityTemplate(side, UnitType.Soldier, pos, TransformUtils.ToAngleAxis(current.Rot, Vector3.up));
                 templates.Add((temp, UnitType.Soldier));
             }
 
@@ -437,7 +509,7 @@ namespace AdvancedGears
 
             var posList = GetCoordinates(coords, current.TurretsNumber);
             foreach(var pos in posList) {
-                var temp = BaseUnitTemplate.CreateTurretUnitTemplate(side, pos, current.TurretId);
+                var temp = BaseUnitTemplate.CreateTurretUnitTemplate(side, current.TurretId, pos, TransformUtils.ToAngleAxis(current.Rot, Vector3.up));
                 templates.Add((temp, UnitType.Turret));
             }
 
@@ -656,6 +728,56 @@ namespace AdvancedGears
         }
     }
 
+    public abstract class CoordsContainer
+    {
+        protected readonly List<Coordinates> posList = new List<Coordinates>();
+        protected Coordinates center = Coordinates.Zero;
+        protected double inter = 0;
+        protected Vector3 origin;
+        protected float height_buffer;
+
+        public CoordsContainer(in Coordinates center, double inter, Vector3 origin, float height_buffer)
+        {
+            this.inter = inter;
+            Reset(center);
+            this.origin = origin;
+            this.height_buffer = height_buffer;
+        }
+
+        public CoordsContainer(in Coordinates center, List<Coordinates> posList, double inter, Vector3 origin, float height_buffer)
+        {
+            this.center = center.GetGrounded(origin, height_buffer);
+            this.posList = posList;
+            this.inter = inter;
+            this.origin = origin;
+            this.height_buffer = height_buffer;
+        }
+
+        protected virtual void Reset(in Coordinates center)
+        {
+            this.center = center.GetGrounded(origin, height_buffer);
+            posList.Clear();
+        }
+
+        public List<Coordinates> GetCoordinates(in Coordinates coords, int num)
+        {
+            if (center != coords) 
+                Reset(coords);
+
+            int count = posList.Count;
+            if (num <= count)
+                return posList.Take(num).ToList();
+
+            foreach(var i in Enumerable.Range(0,num - count)) {
+                AddPos();
+            }
+
+            return posList;
+        }
+
+        public abstract Coordinates AddPos();
+    }
+
     public class VortexCoordsContainer
     {
         readonly List<Coordinates> posList = new List<Coordinates>();
@@ -752,4 +874,202 @@ namespace AdvancedGears
         }
     }
 
+    public class TriangleCoordsContainer : CoordsContainer
+    {
+        int index = 0;
+
+        public TriangleCoordsContainer(in Coordinates center, double inter, Vector3 origin, float height_buffer) : base(center, inter, origin, height_buffer)
+        {
+        }
+
+        public TriangleCoordsContainer(in Coordinates center, List<Coordinates> posList, double inter, Vector3 origin, float height_buffer) : base(center, posList, inter, origin, height_buffer)
+        {
+            index = posList.Count;
+        }
+
+        protected override void Reset(in Coordinates center)
+        {
+            base.Reset(center);
+            index = 0;
+        }
+
+        public override Coordinates AddPos()
+        {
+            var count = posList.Count;
+
+            Coordinates pos;
+ 
+            int layerNum = 1;
+            double x = inter;
+            double z = 0;
+            while (count >= layerNum) {
+                count -= layerNum;
+                layerNum += 2;
+
+                x += inter;
+                z -= inter;
+            }
+
+            z += count * inter;
+            pos = this.center + new Coordinates(x, 0, z);
+            pos = pos.GetGrounded(this.origin, this.height_buffer);
+            posList.Add(pos);
+            index++;
+
+            return pos;
+        }
+    }
+
+    public class RandomContainer
+    {
+        Vector3 corner;
+        Vector3 size;
+        int cut_x;
+        int cut_z;
+
+        readonly bool[,] vertexes;
+
+        public RandomContainer(Vector3 center, Vector3 size, int cut_x, int cut_z)
+        {
+            this.corner = center - size/2;
+            this.size = size;
+            this.cut_x = cut_x;
+            this.cut_z = cut_z;
+
+            vertexes = new bool[cut_x,cut_z];
+        }
+
+        private bool TryGetPoint(Vector3 point, out int x, out int z)
+        {
+            x = -1;
+            z = -1;
+            var diff = point - this.corner;
+            if (diff.x < 0 || diff.x > this.size.x)
+                return false;
+
+            if (diff.z < 0 || diff.z > this.size.z)
+                return false;
+
+            x = (int)(diff.x * cut_x / size.x); 
+            z = (int)(diff.z * cut_z / size.z);
+
+            return true;
+        }
+
+        public bool AddPoint(Vector3 point)
+        {
+            if (TryGetPoint(point, out var x, out var z) == false)
+                return false;
+
+            if (vertexes[x,z] == false) {
+                vertexes[x,z] = true;
+                return true;
+            }
+            else
+                return false;
+        }
+
+        public Vector3? GetEmptyPoint()
+        {
+            for (var i = 0; i < cut_x; i++) {
+                for (var j = 0; j < cut_z; j++) {
+                    if (vertexes[i,j])
+                        continue;
+
+                    vertexes[i,j] = true;
+                    return new Vector3((2*i+1)*size.x/2/cut_x, 0.0f, (2*j+1)*size.z/2/cut_z) + corner;
+                }
+            }
+
+            return null;
+        }
+
+        public void SetCurrentPoints(Vector3[] points)
+        {
+            Clear();
+            foreach (var p in points)
+            {
+                AddPoint(p);
+            }
+        }
+
+        public void Clear()
+        {
+            for (var i = 0; i < cut_x; i++) {
+                for (var j = 0; j < cut_z; j++)
+                    vertexes[i,j] = false;
+            }
+        }
+    }
+
+    public class HexRandomContaner
+    {
+        readonly Dictionary<int, RandomContainer> containers = new Dictionary<int, RandomContainer>();
+        Vector3 center;
+        float height_buffer;
+        float radius;
+        int cut;
+
+        public HexRandomContaner(Vector3 center, float height_buffer, float radius, int cut)
+        {
+            this.center = center;
+            this.radius = radius;
+            this.height_buffer = height_buffer;
+            this.cut = cut;
+        }
+
+        const float degTri = 60.0f;
+        const float root3 = 1.7320f;
+
+        public Vector3? GetRandomPointFromVector(Vector3 vector)
+        {
+            return GetRandomPoint(vector+center);
+        }
+
+        public Vector3? GetRandomPoint(Vector3 point)
+        {
+            var diff = point - this.center;
+            var length = diff.x * diff.x + diff.z * diff.z;
+            if (length > radius * radius)
+                return null;
+
+            var nor = diff.normalized;
+            var deg = Mathf.Atan2(nor.x, nor.z) * Mathf.Rad2Deg;
+            int index = (int) (deg / degTri);
+            if (deg < 0)
+                index--;
+
+            if (index > 2 || index < -3)
+                return null;
+
+            if (containers.ContainsKey(index) == false) {
+                var rad = (degTri / 2) * (2 * index + 1) * Mathf.Deg2Rad;
+                var range = radius / root3;
+                var pos = center + range * new Vector3(Mathf.Sin(rad), 0, Mathf.Cos(rad));
+                pos += height_buffer * Vector3.up;
+
+                containers[index] = new RandomContainer(pos, range / 2 * (Vector3.one + Vector3.down) / 2, cut, cut);
+            }
+
+            return containers[index].GetEmptyPoint();
+        }
+
+        public void SetCurrentPoints(Vector3[] points)
+        {
+            foreach (var kvp in containers)
+                kvp.Value.SetCurrentPoints(points);
+        }
+
+        public void SetCurrentPoint(Vector3 point)
+        {
+            foreach (var kvp in containers)
+                kvp.Value.AddPoint(point);
+        }
+
+        public void Clear()
+        {
+            foreach (var kvp in containers)
+                kvp.Value.Clear();
+        }
+    }
 }

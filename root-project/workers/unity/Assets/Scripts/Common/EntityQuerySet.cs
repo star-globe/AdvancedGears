@@ -11,18 +11,30 @@ namespace AdvancedGears
     {
         public EntityQuery group;
         public IntervalChecker inter;
+        public double deltaTime;
 
-        public EntityQuerySet(EntityQuery query, int period)
+        public EntityQuerySet(EntityQuery query, int period, double current = double.MinValue)
         {
             this.group = query;
             this.inter = IntervalCheckerInitializer.InitializedChecker(period);
+            this.deltaTime = current;
         }
 
-        public EntityQuerySet(EntityQuery query, float inter)
+        public EntityQuerySet(EntityQuery query, float inter, double current = double.MinValue)
         {
             this.group = query;
             this.inter = IntervalCheckerInitializer.InitializedChecker(inter);
+            this.deltaTime = current;
         }
 
+        public double GetDelta(double current)
+        {
+            double delta = 0;
+            if (this.deltaTime != double.MinValue)
+                delta = current - this.deltaTime;
+
+            this.deltaTime = current;
+            return delta;
+        }
     }
 }

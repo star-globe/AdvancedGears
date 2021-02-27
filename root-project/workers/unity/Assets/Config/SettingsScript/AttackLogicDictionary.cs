@@ -24,6 +24,14 @@ namespace AdvancedGears
         public static float JudgeRate => Instance.judgeRate;
 
         [SerializeField]
+        float powerRateMin = 0.2f;
+        public static float PowerRateMin => Instance.powerRateMin;
+
+        [SerializeField]
+        float powerRateDiff = 0.15f;
+        public static float PowerRateDiff => Instance.powerRateDiff;
+
+        [SerializeField]
         float boidReduceRate = 0.8f;
         public static float BoidReduceRate => Instance.boidReduceRate;
 
@@ -33,6 +41,10 @@ namespace AdvancedGears
 
         [SerializeField]
         float boidRadiusMinimum = 0.1f;
+
+        [SerializeField]
+        int teamPerHex = 3;
+        public static int TeamPerHex => Instance.teamPerHex;
 
         [SerializeField]
         int underSoldiers = 5;
@@ -45,6 +57,10 @@ namespace AdvancedGears
         [SerializeField]
         int underTurrets = 3;
         public static int UnderTurrets => Instance.underCommanders;
+
+        [SerializeField]
+        UnitType[] dominationUnitTypes = null;
+        public static UnitType[] DominationUnitTypes => Instance.dominationUnitTypes;
 
         public static AttackLogicDictionary Instance { private get; set; }
 
@@ -90,10 +106,7 @@ namespace AdvancedGears
 
         public static float RankScaled(float range, uint rank)
         {
-            if (rank < 1)
-                return range;
-            else
-                return range * Mathf.Pow(UnderCommanders, rank * 0.5f);
+            return range * Mathf.Pow(UnderCommanders, (rank+1) * 0.5f);
         }
     }
 }

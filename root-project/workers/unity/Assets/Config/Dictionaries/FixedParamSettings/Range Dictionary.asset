@@ -18,7 +18,7 @@ MonoBehaviour:
   - type: 2
     range: 1000
   - type: 3
-    range: 500
+    range: 300
   - type: 4
     range: 1000
   - type: 5
@@ -36,5 +36,5 @@ MonoBehaviour:
   minimapRange: 1000
   armyCloudRange: 1200
   bodySize: 5
-  spreadRate: 5
+  spreadRate: 10
   spreadMin: 0.1

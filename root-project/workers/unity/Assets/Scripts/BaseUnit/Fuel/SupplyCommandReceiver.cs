@@ -8,21 +8,18 @@ namespace AdvancedGears
 {
     public class SupplyCommandReceiver : MonoBehaviour
     {
-        [Require] FuelSupplyerCommandReceiver commandReceiver;
         [Require] FuelSupplyerWriter writer;
 
         public void OnEnable()
         {
-            commandReceiver.OnSetOrderRequestReceived += OnSetOrderRequest;
+            writer.OnSetOrderEvent += OnSetOrder;
         }
 
-        private void OnSetOrderRequest(FuelSupplyer.SetOrder.ReceivedRequest request)
+        private void OnSetOrder(SupplyOrder order)
         {
-            commandReceiver.SendSetOrderResponse(new FuelSupplyer.SetOrder.Response(request.RequestId, new Empty()));
-
             writer.SendUpdate(new FuelSupplyer.Update()
             {
-                Order = request.Payload,
+                Order = order,
                 OrderFinished = false,
             });
         }

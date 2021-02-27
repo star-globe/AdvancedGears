@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 262954102701566713}
   - component: {fileID: 3480848164176601357}
+  - component: {fileID: 1132110825948635066}
   m_Layer: 0
   m_Name: HexBase
   m_TagString: Untagged
@@ -48,6 +49,18 @@ MonoBehaviour:
   cutNumber: 5
   height: 0.5
   text: {fileID: 4070023348800800250}
+--- !u!114 &1132110825948635066
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2460800935532791291}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0536e54752eee324e97f2a3d326d07f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &4099445003200239166
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -120,7 +133,28 @@ PrefabInstance:
       propertyPath: m_Name
       value: HexBaseObject
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 4015471364889315829, guid: 257745a0cd3afb848acec358510fefeb,
+        type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 4015471364889315829, guid: 257745a0cd3afb848acec358510fefeb,
+        type: 3}
+      propertyPath: m_HorizontalAlignment
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4015471364889315829, guid: 257745a0cd3afb848acec358510fefeb,
+        type: 3}
+      propertyPath: m_VerticalAlignment
+      value: 512
+      objectReference: {fileID: 0}
+    - target: {fileID: 4015471364889315829, guid: 257745a0cd3afb848acec358510fefeb,
+        type: 3}
+      propertyPath: m_textAlignment
+      value: 65535
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 368734360984870432, guid: 257745a0cd3afb848acec358510fefeb, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 257745a0cd3afb848acec358510fefeb, type: 3}
 --- !u!4 &4398945259352160602 stripped
 Transform:
