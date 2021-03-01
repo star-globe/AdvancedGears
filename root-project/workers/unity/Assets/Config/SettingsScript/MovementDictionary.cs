@@ -16,6 +16,9 @@ namespace AdvancedGears
         float rotateLimitRate = 15.0f;
         public static float RotateLimitRate => Instance.rotateLimitRate;
 
+        [SerializeField]
+        float sleepInter = 30.0f;
+        public static float SleepInter => Instance.sleepInter;
 
         Dictionary<UnitType, MovementSettings> movementDic = null;
         Dictionary<UnitType, MovementSettings> MovementDic

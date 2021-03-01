@@ -52,8 +52,6 @@ namespace AdvancedGears
 
         private void SetSleep()
         {
-            var pos = this.transform.position;
-            this.transform.position = new Vector3(pos.x, FixedParams.AbyssHeight, pos.z);
         }
     }
 }

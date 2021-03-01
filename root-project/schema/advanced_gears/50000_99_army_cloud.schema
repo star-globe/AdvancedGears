@@ -43,3 +43,9 @@ component ArmyCloud {
 
     event TotalHealthDiff total_health_diff;
 }
+
+component VirtualArmy {
+    id = 50100;
+
+    map<EntityId,SimpleUnit> simple_units = 1;
+}

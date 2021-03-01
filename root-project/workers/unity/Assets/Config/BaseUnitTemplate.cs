@@ -100,6 +100,7 @@ namespace AdvancedGears
                     template.AddComponent(new BulletComponent.Snapshot(), writeAccess);
                     template.AddComponent(new PostureAnimation.Snapshot { BoneMap = new Dictionary<int, CompressedLocalTransform>() }, writeAccess);
                     template.AddComponent(new DominationDevice.Snapshot { Type = DominationDeviceType.Capturing }, writeAccess);
+                    template.AddComponent(new SleepComponent.Snapshot(), writeAccess);
                     break;
 
                 case UnitType.Commander:
@@ -144,6 +145,7 @@ namespace AdvancedGears
                     template.AddComponent(new BulletComponent.Snapshot(), writeAccess);
                     template.AddComponent(new PostureAnimation.Snapshot { BoneMap = new Dictionary<int, CompressedLocalTransform>() }, writeAccess);
                     template.AddComponent(new TurretComponent.Snapshot(), writeAccess);
+                    template.AddComponent(new SleepComponent.Snapshot(), writeAccess);
                     break;
 
                 case UnitType.ArmyCloud:

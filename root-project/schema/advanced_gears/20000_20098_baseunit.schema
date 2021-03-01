@@ -211,6 +211,25 @@ component BoidComponent {
     float cohesion_weight = 6;
 }
 
+enum SleepOrderType {
+    None = 0;
+    Sleep = 1;
+    WakeUp = 2;
+}
+
+type SleepOrderInfo
+{
+    SleepOrderType order = 1;
+}
+
+component SleepComponent {
+    id = 20016;
+
+    IntervalChecker interval = 1;
+
+    event SleepOrderInfo sleep_ordered;
+}
+
 // commander:20020~
 type FollowerInfo {
     list<EntityId> followers = 1;
