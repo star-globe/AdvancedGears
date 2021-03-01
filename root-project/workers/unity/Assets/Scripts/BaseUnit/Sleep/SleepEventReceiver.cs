@@ -23,11 +23,11 @@ namespace AdvancedGears
             if (change.State != UnitState.Sleep)
                 return;
 
-            var inter = sleepWriter.Data.Inter;
+            var inter = sleepWriter.Data.Interval;
             inter = IntervalCheckerInitializer.InitializedChecker(MovementDictionary.SleepInter);
             sleepWriter.SendUpdate(new SleepComponent.Update()
             {
-                inter = inter,
+                Interval = inter,
             });
         }
 

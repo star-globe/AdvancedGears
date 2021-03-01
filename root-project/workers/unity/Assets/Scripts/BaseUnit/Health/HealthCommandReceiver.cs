@@ -44,7 +44,7 @@ namespace AdvancedGears
 
             var status = statusWriter.Data;
 
-            UnitSate state = UnitState.None;
+            UnitState state = UnitState.None;
             if (health > 0) {
                 if (status.State == UnitState.Sleep)
                     state = UnitState.Alive;

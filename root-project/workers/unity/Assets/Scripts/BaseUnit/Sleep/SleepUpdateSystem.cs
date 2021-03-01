@@ -26,7 +26,10 @@ namespace AdvancedGears
 
         protected override void OnUpdate()
         {
-            Entities.With(group).ForEach((Entity entity,
+            if (CheckTime(ref querySet.inter) == false)
+                return;
+
+            Entities.With(querySet.group).ForEach((Entity entity,
                                           ref SleepComponent.Component sleep,
                                           ref BaseUnitStatus.Component status) =>
             {
