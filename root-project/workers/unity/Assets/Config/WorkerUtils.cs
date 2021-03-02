@@ -92,6 +92,8 @@ namespace AdvancedGears
             world.GetOrCreateSystem<HexUpdateSystem>();
             world.GetOrCreateSystem<HexPowerUpdateSystem>();
             world.GetOrCreateSystem<TurretUpdateSystem>();
+            world.GetOrCreateSystem<SleepUpdateSystem>();
+            world.GetOrCreateSystem<VirtualArmyUpdateSystem>();
         }
 
         public static void AddStrategyLogicSystems(World world, EntityRepresentationMapping entityRepresentationMapping)

@@ -1,4 +1,4 @@
-using System;
+using System.Collections.Generic;
 using Improbable;
 using Improbable.Gdk.Core;
 using Improbable.Gdk.TransformSynchronization;
@@ -10,7 +10,7 @@ namespace AdvancedGears
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
-    internal class WakerUpdateSystem : BaseSearchSystem
+    internal class VirtualArmyUpdateSystem : BaseSearchSystem
     {
         private EntityQuerySet commanderQuerySet;
         private EntityQuerySet strongholdQuerySet;
@@ -22,13 +22,13 @@ namespace AdvancedGears
             commanderQuerySet = new EntityQuerySet(GetEntityQuery(
                                                     ComponentType.ReadWrite<VirtualArmy.Component>(),
                                                     ComponentType.ReadOnly<VirtualArmy.HasAuthority>(),
-                                                    ComponentType.ReadOnly<CommanderTeam.Component>();
+                                                    ComponentType.ReadOnly<CommanderTeam.Component>(),
                                                     ComponentType.ReadOnly<BaseUnitStatus.Component>()), 2);
 
             strongholdQuerySet = new EntityQuerySet(GetEntityQuery(
                                                     ComponentType.ReadWrite<VirtualArmy.Component>(),
                                                     ComponentType.ReadOnly<VirtualArmy.HasAuthority>(),
-                                                    ComponentType.ReadOnly<TurretHub.Component>();
+                                                    ComponentType.ReadOnly<TurretHub.Component>(),
                                                     ComponentType.ReadOnly<BaseUnitStatus.Component>()), 2);
         }
 
@@ -37,13 +37,13 @@ namespace AdvancedGears
             UpdateCommanderTeam();
         }
 
-        private void UpdateCommanderTeam();
+        private void UpdateCommanderTeam()
         {
             if (CheckTime(ref commanderQuerySet.inter) == false)
                 return;
 
             Entities.With(commanderQuerySet.group).ForEach((Entity entity,
-                                                    ref VirtualArmy.Component virtual,
+                                                    ref VirtualArmy.Component army,
                                                     ref CommanderTeam.Component team,
                                                     ref BaseUnitStatus.Component status) =>
             {
@@ -53,15 +53,15 @@ namespace AdvancedGears
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
                 var pos = trans.position;
 
-                var unit = getNearestPlayer(pos, HexDictionary.EdgeLength, selfId:null, UnitType.Advanced);
+                var unit = getNearestPlayer(pos, HexDictionary.HexEdgeLength, selfId:null, UnitType.Advanced);
                 if (unit == null) {
-                    if (virtual.IsActive)
-                        SyncTroop(virtual.SimpleUnits, trans);
+                    if (army.IsActive)
+                        SyncTroop(army.SimpleUnits, trans);
                     else
-                        Virtualize(ref virtual, trans, team.FollowerInfo.Followers);
+                        Virtualize(ref army, trans, team.FollowerInfo.Followers);
                 }
-                else if (virtual.IsActive)
-                    Realize(ref virtual, trans);
+                else if (army.IsActive)
+                    Realize(ref army, trans);
             });
         }
 
@@ -75,26 +75,29 @@ namespace AdvancedGears
 
             foreach (var kvp in simpleUnits)
             {
-                Transform t = null;
-                if (TryGetComponentObject(kvp.Key, out t) == false)
+                UnitTransform unit = null;
+                if (TryGetComponentObject(kvp.Key, out unit) == false)
                     continue;
 
-                var p = GetGrounded(pos + rot * kvp.Value.RelativePos.ToUnityVector());
+                var t = unit.transform;
+                var buffer = unit.Bounds.center.y;
+
+                var p = GetGrounded(pos + rot * kvp.Value.RelativePos.ToUnityVector(), buffer);
                 var p_diff = p - t.position;
                 if (p_diff.sqrMagnitude >= posDiff * posDiff)
                     t.position = p;
 
                 var r = kvp.Value.RelativeRot.ToUnityQuaternion() * rot;
-                var r_diff = r * Quaternion.Inverse(t.rotation);
-                if (r_diff.eulerAngles.magnitude > rotDiff * rotDiff)
+                var r_diff = Vector3.Angle(t.forward, r * Vector3.forward);
+                if (r_diff > rotDiff)
                     t.rotation = r;
             }
         }
 
-        private void Virtualize(ref VirtualArmy.Component virtual, Transform trans, List<EntityId> followers)
+        private void Virtualize(ref VirtualArmy.Component army, Transform trans, List<EntityId> followers)
         {
-            virtual.IsActive = true;
-            var units = virtual.SimpleUnits;
+            army.IsActive = true;
+            var units = army.SimpleUnits;
             units.Clear();
 
             var inverse = Quaternion.Inverse(trans.rotation);
@@ -114,32 +117,32 @@ namespace AdvancedGears
                 SendSleepOrder(id, SleepOrderType.Sleep);
             }
 
-            virtual.SimpleUnits = units;
+            army.SimpleUnits = units;
         }
 
-        private void Realize(ref VirtualArmy.Component virtual, Transform trans)
+        private void Realize(ref VirtualArmy.Component army, Transform trans)
         {
-            virtual.IsActive = false;
-            SyncTroop(virtual.SimpleUnits, trans);
+            army.IsActive = false;
+            SyncTroop(army.SimpleUnits, trans);
 
-            foreach (var kvp in virtual.SimpleUnits)
+            foreach (var kvp in army.SimpleUnits)
                 SendSleepOrder(kvp.Key, SleepOrderType.WakeUp);
 
-            virtual.SimpleUnits.Clear();
+            army.SimpleUnits.Clear();
         }
 
-        Vector3 GetGrounded(Vector3 pos)
+        Vector3 GetGrounded(Vector3 pos, float buffer)
         {
-            return PhysicsUtils.GetGroundPosition(new Vector3(pos.x, 1000.0f, pos.z)) + Vector3.up * buffer;
+            return PhysicsUtils.GetGroundPosition(new Vector3(pos.x, pos.y + 10.0f, pos.z)) + Vector3.up * buffer;
         }
 
-        private void UpdateTurrets();
+        private void UpdateTurrets()
         {
             if (CheckTime(ref strongholdQuerySet.inter) == false)
                 return;
 
             Entities.With(strongholdQuerySet.group).ForEach((Entity entity,
-                                                    ref VirtualArmy.Component virtual,
+                                                    ref VirtualArmy.Component army,
                                                     ref TurretHub.Component turret,
                                                     ref BaseUnitStatus.Component status) =>
             {
@@ -149,12 +152,12 @@ namespace AdvancedGears
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
                 var pos = trans.position;
 
-                var unit = getNearestPlayer(pos, HexDictionary.EdgeLength, selfId:null, UnitType.Advanced);
+                var unit = getNearestPlayer(pos, HexDictionary.HexEdgeLength, selfId:null, UnitType.Advanced);
                 if (unit == null) {
-                    if (virtual.IsActive == false)
+                    if (army.IsActive == false)
                         SendSleepOrdersToTurret(turret.TurretsDatas, SleepOrderType.Sleep);
                 }
-                else if (virtual.IsActive)
+                else if (army.IsActive)
                     SendSleepOrdersToTurret(turret.TurretsDatas, SleepOrderType.WakeUp);
             });
         }
@@ -167,7 +170,7 @@ namespace AdvancedGears
 
         private void SendSleepOrder(EntityId id, SleepOrderType order)
         {
-            this.UpdateSystem.SendEvent(new SleepComponent.sleep_ordered.Event(new SleepOrderInfo(order)), id);
+            this.UpdateSystem.SendEvent(new SleepComponent.SleepOrdered.Event(new SleepOrderInfo(order)), id);
         }
     }
 }

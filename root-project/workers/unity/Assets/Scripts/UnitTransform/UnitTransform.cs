@@ -29,6 +29,14 @@ namespace AdvancedGears
             }
         }
 
+        public Bounds Bounds
+        {
+            get
+            {
+                return Detect.bounds;
+            }
+        }
+
         Dictionary<PosturePoint,PostureTransform> postureDic = null;
         public Dictionary<PosturePoint,PostureTransform> PostureDic
         {

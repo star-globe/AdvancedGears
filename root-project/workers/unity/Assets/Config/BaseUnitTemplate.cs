@@ -114,6 +114,7 @@ namespace AdvancedGears
                     template.AddComponent(new PostureAnimation.Snapshot { BoneMap = new Dictionary<int, CompressedLocalTransform>() }, writeAccess);
                     template.AddComponent(new DominationDevice.Snapshot { Type = DominationDeviceType.Capturing }, writeAccess);
                     template.AddComponent(new BoidComponent.Snapshot(), writeAccess);
+                    template.AddComponent(new VirtualArmy.Snapshot { SimpleUnits = new Dictionary<EntityId, SimpleUnit>() }, writeAccess);
                     break;
 
                 case UnitType.Supply:
@@ -126,6 +127,7 @@ namespace AdvancedGears
                 case UnitType.Stronghold:
                     AddStrongholdTypeComponents(template, writeAccess);
                     template.AddComponent(new RecoveryComponent.Snapshot { State = RecoveryState.Supplying }, writeAccess);
+                    template.AddComponent(new VirtualArmy.Snapshot { SimpleUnits = new Dictionary<EntityId, SimpleUnit>() }, writeAccess);
                     //var commandersQuery = InterestQuery.Query(Constraint.Component<CommanderStatus.Component>())
                     //                        .FilterResults(Position.ComponentId, BaseUnitStatus.ComponentId);
                     //var commanderInterest = InterestTemplate.Create().AddQueries<StrongholdStatus.Component>(commandersQuery);
