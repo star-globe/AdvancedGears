@@ -47,5 +47,6 @@ component ArmyCloud {
 component VirtualArmy {
     id = 50100;
 
-    map<EntityId,SimpleUnit> simple_units = 1;
+    bool is_active = 1;
+    map<EntityId,SimpleUnit> simple_units = 2;
 }
