@@ -69,6 +69,10 @@ namespace AdvancedGears
         {
             var pos = trans.position;
             var rot = trans.rotation;
+
+            var posDiff = MovementDictionary.SleepPosDiff;
+            var rotDiff = MovementDictionary.SleepRotDiff;
+
             foreach (var kvp in simpleUnits)
             {
                 Transform t = null;
@@ -76,10 +80,14 @@ namespace AdvancedGears
                     continue;
 
                 var p = GetGrounded(pos + rot * kvp.Value.RelativePos.ToUnityVector());
-                var diff = p - t.position;
-                if ()
-                t.position = GetGrounded(pos + rot * kvp.Value.RelativePos.ToUnityVector());
-                t.rotation = kvp.Value.RelativeRot.ToUnityQuaternion() * rot;
+                var p_diff = p - t.position;
+                if (p_diff.sqrMagnitude >= posDiff * posDiff)
+                    t.position = p;
+
+                var r = kvp.Value.RelativeRot.ToUnityQuaternion() * rot;
+                var r_diff = r * Quaternion.Inverse(t.rotation);
+                if (r_diff.eulerAngles.magnitude > rotDiff * rotDiff)
+                    t.rotation = r;
             }
         }
 

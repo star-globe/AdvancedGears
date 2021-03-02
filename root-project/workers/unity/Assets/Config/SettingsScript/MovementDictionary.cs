@@ -20,6 +20,14 @@ namespace AdvancedGears
         float sleepInter = 30.0f;
         public static float SleepInter => Instance.sleepInter;
 
+        [SerializeField]
+        float sleepPosDiff = 0.2f;
+        public static float SleepPosDiff => Instance.sleepPosDiff;
+
+        [SerializeField]
+        float sleepRotDiff = 0.2f;
+        public static float SleepRotDiff => Instance.sleepRotDiff;
+
         Dictionary<UnitType, MovementSettings> movementDic = null;
         Dictionary<UnitType, MovementSettings> MovementDic
         {
