@@ -55,7 +55,8 @@ namespace AdvancedGears
 
                 var unit = getNearestPlayer(pos, HexDictionary.HexEdgeLength, selfId:null, UnitType.Advanced);
                 if (unit == null) {
-                    if (army.IsActive)
+                    var followers = team.FollowerInfo.Followers;
+                    if (army.IsActive && army.SimpleUnits.Count == followers.Count)
                         SyncTroop(army.SimpleUnits, trans);
                     else
                         Virtualize(ref army, trans, team.FollowerInfo.Followers);
@@ -79,8 +80,8 @@ namespace AdvancedGears
                 if (TryGetComponentObject(kvp.Key, out unit) == false)
                     continue;
 
-                var t = unit.transform;
-                var buffer = unit.Bounds.center.y;
+                var t = unit.transform.parent;
+                var buffer = unit.Bounds.extents.y / 2 + 0.1f;
 
                 var p = GetGrounded(pos + rot * kvp.Value.RelativePos.ToUnityVector(), buffer);
                 var p_diff = p - t.position;
