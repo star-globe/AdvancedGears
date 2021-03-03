@@ -81,7 +81,7 @@ namespace AdvancedGears
                     continue;
 
                 var t = unit.transform.parent;
-                var buffer = unit.Bounds.extents.y / 2 + 0.1f;
+                var buffer = unit.Bounds.extents.y + 0.1f;
 
                 var p = GetGrounded(pos + rot * kvp.Value.RelativePos.ToUnityVector(), buffer);
                 var p_diff = p - t.position;
