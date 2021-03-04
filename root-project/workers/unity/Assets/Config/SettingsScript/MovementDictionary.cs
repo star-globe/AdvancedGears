@@ -20,6 +20,8 @@ namespace AdvancedGears
         float sleepInter = 30.0f;
         public static float SleepInter => Instance.sleepInter;
 
+        public static float AlarmInter => SleepInter / 2;
+
         [SerializeField]
         float sleepPosDiff = 0.2f;
         public static float SleepPosDiff => Instance.sleepPosDiff;

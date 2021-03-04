@@ -23,13 +23,13 @@ namespace AdvancedGears
                                                     ComponentType.ReadWrite<VirtualArmy.Component>(),
                                                     ComponentType.ReadOnly<VirtualArmy.HasAuthority>(),
                                                     ComponentType.ReadOnly<CommanderTeam.Component>(),
-                                                    ComponentType.ReadOnly<BaseUnitStatus.Component>()), 2);
+                                                    ComponentType.ReadOnly<BaseUnitStatus.Component>()), 1);
 
             strongholdQuerySet = new EntityQuerySet(GetEntityQuery(
                                                     ComponentType.ReadWrite<VirtualArmy.Component>(),
                                                     ComponentType.ReadOnly<VirtualArmy.HasAuthority>(),
                                                     ComponentType.ReadOnly<TurretHub.Component>(),
-                                                    ComponentType.ReadOnly<BaseUnitStatus.Component>()), 2);
+                                                    ComponentType.ReadOnly<BaseUnitStatus.Component>()), 1);
         }
 
         protected override void OnUpdate()
@@ -119,6 +119,7 @@ namespace AdvancedGears
             }
 
             army.SimpleUnits = units;
+            army.AlarmInter = IntervalCheckerInitializer.InitializedChecker(MovementDictionary.AlarmInter);
         }
 
         private void Realize(ref VirtualArmy.Component army, Transform trans)
@@ -130,6 +131,17 @@ namespace AdvancedGears
                 SendSleepOrder(kvp.Key, SleepOrderType.WakeUp);
 
             army.SimpleUnits.Clear();
+        }
+
+        private void AlarmUnits(ref VirtualArmy.Component army)
+        {
+            var inter = army.AlarmInter;
+            if (CheckTime(ref inter) == false)
+                return;
+
+            army.AlarmInter = inter;
+            foreach (var kvp in army.SimpleUnits)
+                SendSleepOrders(kvp.Key, SleepOrderType.WakeUp);
         }
 
         Vector3 GetGrounded(Vector3 pos, float buffer)
@@ -156,17 +168,45 @@ namespace AdvancedGears
                 var unit = getNearestPlayer(pos, HexDictionary.HexEdgeLength, selfId:null, UnitType.Advanced);
                 if (unit == null) {
                     if (army.IsActive == false)
-                        SendSleepOrdersToTurret(turret.TurretsDatas, SleepOrderType.Sleep);
+                        VirtualizeTurrests(ref army, turret.TurretsDatas);
                 }
-                else if (army.IsActive)
-                    SendSleepOrdersToTurret(turret.TurretsDatas, SleepOrderType.WakeUp);
+                else {
+                    if (army.IsActive) 
+                        RealizeTurrets(ref army, turret.TurretsDatas);
+                    else
+                        AlarmTurrets(ref army, turret.TurretsDatas);
+                }
             });
+        }
+
+        private void VirtualizeTurrests(ref VirtualArmy.Component army, Dictionary<EntityId,TurretInfo> turretsDatas)
+        {
+            army.IsActive = true;
+            SendSleepOrdersToTurret(turretsDatas, SleepOrderType.Sleep);
+        }
+
+        private void RealizeTurrets(ref VirtualArmy.Component army, Dictionary<EntityId,TurretInfo> turretsDatas)
+        {
+            army.IsActive = false;
+            army.AlarmInter = IntervalCheckerInitializer.InitializedChecker(MovementDictionary.AlarmInter);
+            SendSleepOrdersToTurret(turretsDatas, SleepOrderType.WakeUp);
         }
 
         private void SendSleepOrdersToTurret(Dictionary<EntityId,TurretInfo> turrets, SleepOrderType order)
         {
             foreach (var t in turrets)
                 SendSleepOrder(t.Key, order);
+        }
+
+        private void AlarmTurrets(ref VirtualArmy.Component army, Dictionary<EntityId,TurretInfo> turrets)
+        {
+            var inter = army.AlarmInter;
+            if (CheckTime(ref inter) == false)
+                return;
+
+            army.AlarmInter = inter;
+            foreach (var kvp in turrets)
+                SendSleepOrders(kvp.Key, SleepOrderType.WakeUp);
         }
 
         private void SendSleepOrder(EntityId id, SleepOrderType order)
