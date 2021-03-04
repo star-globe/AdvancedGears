@@ -35,8 +35,10 @@ namespace AdvancedGears
         protected override void OnUpdate()
         {
             UpdateCommanderTeam();
+            UpdateTurrets();
         }
 
+#region CommanderTeam
         private void UpdateCommanderTeam()
         {
             if (CheckTime(ref commanderQuerySet.inter) == false)
@@ -59,10 +61,10 @@ namespace AdvancedGears
                     if (army.IsActive && army.SimpleUnits.Count == followers.Count)
                         SyncTroop(army.SimpleUnits, trans);
                     else
-                        Virtualize(ref army, trans, team.FollowerInfo.Followers);
+                        VirtualizeUnits(ref army, trans, team.FollowerInfo.Followers);
                 }
                 else if (army.IsActive)
-                    Realize(ref army, trans);
+                    RealizeUnits(ref army, trans);
             });
         }
 
@@ -95,7 +97,7 @@ namespace AdvancedGears
             }
         }
 
-        private void Virtualize(ref VirtualArmy.Component army, Transform trans, List<EntityId> followers)
+        private void VirtualizeUnits(ref VirtualArmy.Component army, Transform trans, List<EntityId> followers)
         {
             army.IsActive = true;
             var units = army.SimpleUnits;
@@ -107,6 +109,10 @@ namespace AdvancedGears
                 Transform t = null;
                 if (TryGetComponentObject(id, out t) == false)
                     continue;
+
+                RigidBody r = null;
+                if (TryGetComponentObject(id, out r))
+                    r.Sleep();
 
                 var simple = new SimpleUnit();
 
@@ -122,13 +128,18 @@ namespace AdvancedGears
             army.AlarmInter = IntervalCheckerInitializer.InitializedChecker(MovementDictionary.AlarmInter);
         }
 
-        private void Realize(ref VirtualArmy.Component army, Transform trans)
+        private void RealizeUnits(ref VirtualArmy.Component army, Transform trans)
         {
             army.IsActive = false;
             SyncTroop(army.SimpleUnits, trans);
 
-            foreach (var kvp in army.SimpleUnits)
+            foreach (var kvp in army.SimpleUnits) {
+                RigidBody r = null;
+                if (TryGetComponentObject(kvp.Key, out r))
+                    r.WakeUp();
+
                 SendSleepOrder(kvp.Key, SleepOrderType.WakeUp);
+            }
 
             army.SimpleUnits.Clear();
         }
@@ -143,12 +154,14 @@ namespace AdvancedGears
             foreach (var kvp in army.SimpleUnits)
                 SendSleepOrders(kvp.Key, SleepOrderType.WakeUp);
         }
+#endregion
 
         Vector3 GetGrounded(Vector3 pos, float buffer)
         {
             return PhysicsUtils.GetGroundPosition(new Vector3(pos.x, pos.y + 10.0f, pos.z)) + Vector3.up * buffer;
         }
 
+#region Turrets
         private void UpdateTurrets()
         {
             if (CheckTime(ref strongholdQuerySet.inter) == false)
@@ -208,6 +221,7 @@ namespace AdvancedGears
             foreach (var kvp in turrets)
                 SendSleepOrders(kvp.Key, SleepOrderType.WakeUp);
         }
+#endregion
 
         private void SendSleepOrder(EntityId id, SleepOrderType order)
         {
