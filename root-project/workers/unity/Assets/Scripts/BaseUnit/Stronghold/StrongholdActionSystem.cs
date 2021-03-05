@@ -154,7 +154,7 @@ namespace AdvancedGears
 
             datas.Clear();
 
-            var units = getAllyUnits(side, pos, range, allowDead: false, UnitType.Commander);
+            var units = getAllyUnits(side, pos, range, allowDead: false, GetSingleUnitTypes(UnitType.Commander));
 
             foreach (var u in units) {
                 if (hexIndex != uint.MaxValue && HexUtils.IsInsideHex(this.Origin, hexIndex, u.pos, HexDictionary.HexEdgeLength) == false)
@@ -181,7 +181,7 @@ namespace AdvancedGears
                 return;
 
             turrets.Clear();
-            var units = getAllyUnits(side, pos, RangeDictionary.Get(FixedRangeType.StrongholdRange), allowDead: false, UnitType.Turret);
+            var units = getAllyUnits(side, pos, RangeDictionary.Get(FixedRangeType.StrongholdRange), allowDead: false, GetSingleUnitTypes(UnitType.Turret));
 
             foreach (var u in units) {
                 if (TryGetComponent<TurretComponent.Component>(u.id, out var turret) == false)
@@ -258,7 +258,7 @@ namespace AdvancedGears
             if (turretOrders == null)
                 return;
 
-            var units = getAllyUnits(side, pos, RangeDictionary.Get(FixedRangeType.StrongholdRange), allowDead: false, UnitType.Turret);
+            var units = getAllyUnits(side, pos, RangeDictionary.Get(FixedRangeType.StrongholdRange), allowDead: false, GetSingleUnitTypes(UnitType.Turret));
             var underTurrets = AttackLogicDictionary.UnderTurrets;
 
             int coms = 1;

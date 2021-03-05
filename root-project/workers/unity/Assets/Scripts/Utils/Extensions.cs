@@ -240,11 +240,14 @@ namespace AdvancedGears
             return heights;
         }
 
-        public static List<EntityId> GetAllFollowers(this FollowerInfo info)
+        public static List<EntityId> GetAllFollowers(this FollowerInfo info, List<EntityId> list)
         {
-            var list = new List<EntityId>();
-            list.AddRange(info.Followers);
-            list.AddRange(info.UnderCommanders);
+            if (list != null) {
+                list.Clear();
+                list.AddRange(info.Followers);
+                list.AddRange(info.UnderCommanders);
+            }
+
             return list;
         }
 

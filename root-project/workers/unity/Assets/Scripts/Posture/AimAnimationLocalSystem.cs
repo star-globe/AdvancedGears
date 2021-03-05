@@ -14,6 +14,8 @@ namespace AdvancedGears
     {
         private EntityQuery group;
 
+        float deltaTime = 0;
+
         protected override void OnCreate()
         {
             base.OnCreate();
@@ -25,12 +27,15 @@ namespace AdvancedGears
 
         protected override void OnUpdate()
         {
-            var time = Time.DeltaTime;
+            deltaTime = Time.DeltaTime;
 
             Entities.With(group).ForEach((Entity entity,
                                           ref PostureAnimation.Component anim,
                                           ref BaseUnitStatus.Component status) =>
             {
+                if (status.State != UnitState.Alive)
+                    return;
+
                 var tracer = EntityManager.GetComponentObject<CombinedAimTracer>(entity);
                 if (tracer == null)
                     return;
@@ -47,7 +52,7 @@ namespace AdvancedGears
                 }
 
                 tracer.SetAimTarget(pos);
-                tracer.Rotate(time);
+                tracer.Rotate(deltaTime);
             });
         }
     }

@@ -78,6 +78,9 @@ namespace AdvancedGears
             retryInter.UpdateLastChecked();
         }
 
+        readonly Dictionary<EntityId, List<EntitySnapshot>> resultSnapShots = new Dictionary<EntityId, List<EntitySnapshot>>();
+        readonly Queue<List<EntitySnapshot>> listQueue = new Queue<List<EntitySnapshot>>();
+
         private void HandleEntityQueryResponses()
         {
             var entityQueryResponses = this.CommandSystem.GetResponses<WorldCommands.EntityQuery.ReceivedResponse>();
@@ -96,21 +99,22 @@ namespace AdvancedGears
 
                 if (response.StatusCode == StatusCode.Success)
                 {
-                    var snapShots = new Dictionary<EntityId, List<EntitySnapshot>>();
+                    ClearSnapshots();
+
                     foreach (var kvp in response.Result) {
                         List<EntitySnapshot> list;
-                        if (snapShots.ContainsKey(kvp.Key))
-                            list = snapShots[kvp.Key];
+                        if (resultSnapShots.ContainsKey(kvp.Key))
+                            list = resultSnapShots[kvp.Key];
                         else
-                            list = new List<EntitySnapshot>();
+                            list = listQueue.Count > 0 ? listQueue.Dequeue(): new List<EntitySnapshot>();
 
                         list.Add(kvp.Value);
-                        snapShots[kvp.Key] = list;
+                        resultSnapShots[kvp.Key] = list;
                     }
 
-                    Debug.LogFormat("Number of Snapshots. {0}:", snapShots.Count);
+                    //Debug.LogFormat("Number of Snapshots. {0}:", snapShots.Count);
 
-                    ReceiveSnapshots(snapShots);
+                    ReceiveSnapshots(resultSnapShots);
 
                     OnQueriedEvent?.Invoke();
                     OnQueriedEvent = null;
@@ -139,6 +143,15 @@ namespace AdvancedGears
         protected virtual void ReceiveSnapshots(Dictionary<EntityId, List<EntitySnapshot>> shots)
         {
 
+        }
+
+        private void ClearSnapshots()
+        {
+            foreach (var kvp in resultSnapShots) {
+                listQueue.Enqueue(kvp.Value);
+            }
+
+            resultSnapShots.Clear();
         }
     }
 }

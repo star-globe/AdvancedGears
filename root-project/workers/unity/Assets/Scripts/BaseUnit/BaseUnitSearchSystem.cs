@@ -205,7 +205,17 @@ namespace AdvancedGears
         readonly List<UnitInfo> unitList = new List<UnitInfo>();
         readonly Queue<UnitInfo> unitQueue = new Queue<UnitInfo>();
 
-        readonly CounterDictionary<LinkedEntityComponent> linkedEntityCache = new CounterDictionary<LinkedEntityComponent>();
+        readonly Dictionary<UnitType, UnitType[]> singleTypes = new Dictionary<UnitType, UnitType[]>();
+
+        protected UnitType[] GetSingleUnitTypes(UnitType unit)
+        {
+            if (singleTypes.TryGetValue(unit, out var types))
+                return types;
+
+            types = new UnitType[] { unit };
+            singleTypes.Add(unit, types);
+            return types;
+        }
 
         protected UnitInfo getUnitInfo(EntityId entityId)
         {
@@ -229,32 +239,32 @@ namespace AdvancedGears
             return info;
         }
 
-        protected UnitInfo getNearestEnemy(UnitSide self_side, in Vector3 pos, float length, bool allowDead = false, params UnitType[] types)
+        protected UnitInfo getNearestEnemy(UnitSide self_side, in Vector3 pos, float length, bool allowDead = false, UnitType[] types = null)
         {
             return getNearestUnit(self_side, pos, length, true, null, allowDead, types);
         }
 
-        protected UnitInfo getNearestAlly(EntityId selfId, UnitSide self_side, in Vector3 pos, float length, bool allowDead = false, params UnitType[] types)
+        protected UnitInfo getNearestAlly(EntityId selfId, UnitSide self_side, in Vector3 pos, float length, bool allowDead = false, UnitType[] types = null)
         {
             return getNearestUnit(self_side, pos, length, false, selfId, allowDead, types);
         }
 
-        protected UnitInfo getNearestUnit(UnitSide self_side, in Vector3 pos, float length, bool isEnemy, EntityId? selfId, bool allowDead = false, params UnitType[] types)
+        protected UnitInfo getNearestUnit(UnitSide self_side, in Vector3 pos, float length, bool isEnemy, EntityId? selfId, bool allowDead = false, UnitType[] types = null)
         {
             return getNearestUnit(self_side, pos, length, isEnemy, containsNone:false, selfId, allowDead, isPlayer:false, types);
         }
 
-        protected UnitInfo getNearestPlayer(UnitSide self_side, in Vector3 pos, float length, bool isEnemy, EntityId? selfId = null, bool allowDead = false, params UnitType[] types)
+        protected UnitInfo getNearestPlayer(UnitSide self_side, in Vector3 pos, float length, bool isEnemy, EntityId? selfId = null, bool allowDead = false, UnitType[] types = null)
         {
             return getNearestUnit(self_side, pos, length, isEnemy, containsNone:false, selfId, allowDead, isPlayer:true, types);
         }
 
-        protected UnitInfo getNearestPlayer(in Vector3 pos, float length, EntityId? selfId = null, params UnitType[] types)
+        protected UnitInfo getNearestPlayer(in Vector3 pos, float length, EntityId? selfId = null, UnitType[] types = null)
         {
             return getNearestUnit(null, pos, length, isEnemy:false, containsNone:true, selfId, allowDead:true, isPlayer:true, types);
         }
 
-        protected UnitInfo getNearestUnit(UnitSide? self_side, in Vector3 pos, float length, bool isEnemy, bool containsNone, EntityId? selfId, bool allowDead, bool isPlayer, params UnitType[] types)
+        protected UnitInfo getNearestUnit(UnitSide? self_side, in Vector3 pos, float length, bool isEnemy, bool containsNone, EntityId? selfId, bool allowDead, bool isPlayer, UnitType[] types = null)
         {
             float len = float.MaxValue;
             bool tof = false;
@@ -288,8 +298,14 @@ namespace AdvancedGears
                             continue;
                     }
 
-                    if (types.Length != 0 && types.Contains(unit.Value.Type) == false)
-                        continue;
+                    if (types != null && types.Length != 0) {
+                        bool contains = false;
+                        foreach (var t in types)
+                            contains |= t == unit.Value.Type;
+
+                        if (!contains)
+                            continue;
+                    }
 
                     var l = (col.transform.position - pos).sqrMagnitude;
                     if (l < len)
@@ -310,12 +326,12 @@ namespace AdvancedGears
             return tof ? baseInfo: null;
         }
 
-        protected List<UnitInfo> getAllyUnits(UnitSide self_side, in Vector3 pos, float length, params UnitType[] types)
+        protected List<UnitInfo> getAllyUnits(UnitSide self_side, in Vector3 pos, float length)
         {
-            return getUnits(self_side, pos, length, isEnemy: false, allowDead:false, null, types);
+            return getUnits(self_side, pos, length, isEnemy: false, allowDead:false, null, null);
         }
 
-        protected List<UnitInfo> getAllyUnits(UnitSide self_side, in Vector3 pos, float length, bool allowDead = false, params UnitType[] types)
+        protected List<UnitInfo> getAllyUnits(UnitSide self_side, in Vector3 pos, float length, bool allowDead = false, UnitType[] types = null)
         {
             return getUnits(self_side, pos, length, isEnemy: false, allowDead, null, types);
         }
@@ -330,7 +346,7 @@ namespace AdvancedGears
         /// <param name="selfId"></param>
         /// <param name="types"></param>
         /// <returns></returns>
-        protected List<UnitInfo> getAllyUnits(UnitSide self_side, in Vector3 pos, float length, bool allowDead = false, EntityId? selfId = null, params UnitType[] types)
+        protected List<UnitInfo> getAllyUnits(UnitSide self_side, in Vector3 pos, float length, bool allowDead = false, EntityId? selfId = null, UnitType[] types = null)
         {
             return getUnits(self_side, pos, length, isEnemy:false, allowDead, selfId, types);
         }
@@ -343,22 +359,22 @@ namespace AdvancedGears
         /// <param name="length"></param>
         /// <param name="types"></param>
         /// <returns></returns>
-        protected List<UnitInfo> getEnemyUnits(UnitSide self_side, in Vector3 pos, float length, bool allowDead = false, params UnitType[] types)
+        protected List<UnitInfo> getEnemyUnits(UnitSide self_side, in Vector3 pos, float length, bool allowDead = false, UnitType[] types = null)
         {
             return getUnits(self_side, pos, length, isEnemy: true, allowDead, null, types);
         }
 
-        protected List<UnitInfo> getAllUnits(in Vector3 pos, float length, EntityId? selfId, bool allowDead = false, params UnitType[] types)
+        protected List<UnitInfo> getAllUnits(in Vector3 pos, float length, EntityId? selfId, bool allowDead = false, UnitType[] types = null)
         {
             return getUnits(UnitSide.None, pos, length, isEnemy: null, allowDead, selfId, types);
         }
 
-        protected List<UnitInfo> getAllUnits(in Vector3 pos, float length, bool allowDead = false, params UnitType[] types)
+        protected List<UnitInfo> getAllUnits(in Vector3 pos, float length, bool allowDead = false, UnitType[] types = null)
         {
             return getUnits(UnitSide.None, pos, length, isEnemy: null, allowDead, null, types);
         }
 
-        protected List<UnitInfo> getUnits(UnitSide self_side, in Vector3 pos, float length, bool? isEnemy, bool allowDead, EntityId? selfId, params UnitType[] types)
+        protected List<UnitInfo> getUnits(UnitSide self_side, in Vector3 pos, float length, bool? isEnemy, bool allowDead, EntityId? selfId, UnitType[] types)
         {
             int index = 0;
             var count = Physics.OverlapSphereNonAlloc(pos, length, colls, this.UnitLayer);
@@ -381,7 +397,7 @@ namespace AdvancedGears
                 if (isEnemy != null && (unit.Value.Side == self_side) == isEnemy.Value)
                     continue;
 
-                if (types.Length != 0) {
+                if (types != null && types.Length != 0) {
                     bool contains = false;
                     foreach (var t in types) {
                         contains |= t == unit.Value.Type;
@@ -443,7 +459,7 @@ namespace AdvancedGears
         protected Vector3 GetHexCenter(uint index)
         {
             return HexUtils.GetHexCenter(this.Origin, index, HexDictionary.HexEdgeLength);
-        } 
+        }
     }
 
     // Utils

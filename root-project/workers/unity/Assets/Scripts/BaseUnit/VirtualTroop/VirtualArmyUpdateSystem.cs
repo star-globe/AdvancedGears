@@ -38,7 +38,7 @@ namespace AdvancedGears
             UpdateTurrets();
         }
 
-#region CommanderTeam
+        #region CommanderTeam
         private void UpdateCommanderTeam()
         {
             if (CheckTime(ref commanderQuerySet.inter) == false)
@@ -55,7 +55,7 @@ namespace AdvancedGears
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
                 var pos = trans.position;
 
-                var unit = getNearestPlayer(pos, HexDictionary.HexEdgeLength, selfId:null, UnitType.Advanced);
+                var unit = getNearestPlayer(pos, HexDictionary.HexEdgeLength, selfId:null, GetSingleUnitTypes(UnitType.Advanced));
                 if (unit == null) {
                     var followers = team.FollowerInfo.Followers;
                     if (army.IsActive && army.SimpleUnits.Count == followers.Count)
@@ -83,7 +83,7 @@ namespace AdvancedGears
                     continue;
 
                 var t = unit.transform.parent;
-                var buffer = unit.Bounds.extents.y + 0.1f;
+                var buffer = unit.BufferVector.magnitude;
 
                 var p = GetGrounded(pos + rot * kvp.Value.RelativePos.ToUnityVector(), buffer);
                 var p_diff = p - t.position;
@@ -110,7 +110,7 @@ namespace AdvancedGears
                 if (TryGetComponentObject(id, out t) == false)
                     continue;
 
-                RigidBody r = null;
+                Rigidbody r = null;
                 if (TryGetComponentObject(id, out r))
                     r.Sleep();
 
@@ -134,7 +134,7 @@ namespace AdvancedGears
             SyncTroop(army.SimpleUnits, trans);
 
             foreach (var kvp in army.SimpleUnits) {
-                RigidBody r = null;
+                Rigidbody r = null;
                 if (TryGetComponentObject(kvp.Key, out r))
                     r.WakeUp();
 
@@ -152,16 +152,16 @@ namespace AdvancedGears
 
             army.AlarmInter = inter;
             foreach (var kvp in army.SimpleUnits)
-                SendSleepOrders(kvp.Key, SleepOrderType.WakeUp);
+                SendSleepOrder(kvp.Key, SleepOrderType.WakeUp);
         }
-#endregion
+        #endregion
 
         Vector3 GetGrounded(Vector3 pos, float buffer)
         {
             return PhysicsUtils.GetGroundPosition(new Vector3(pos.x, pos.y + 10.0f, pos.z)) + Vector3.up * buffer;
         }
 
-#region Turrets
+        #region Turrets
         private void UpdateTurrets()
         {
             if (CheckTime(ref strongholdQuerySet.inter) == false)
@@ -178,7 +178,7 @@ namespace AdvancedGears
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
                 var pos = trans.position;
 
-                var unit = getNearestPlayer(pos, HexDictionary.HexEdgeLength, selfId:null, UnitType.Advanced);
+                var unit = getNearestPlayer(pos, HexDictionary.HexEdgeLength, selfId:null, GetSingleUnitTypes(UnitType.Advanced));
                 if (unit == null) {
                     if (army.IsActive == false)
                         VirtualizeTurrests(ref army, turret.TurretsDatas);
@@ -219,9 +219,9 @@ namespace AdvancedGears
 
             army.AlarmInter = inter;
             foreach (var kvp in turrets)
-                SendSleepOrders(kvp.Key, SleepOrderType.WakeUp);
+                SendSleepOrder(kvp.Key, SleepOrderType.WakeUp);
         }
-#endregion
+        #endregion
 
         private void SendSleepOrder(EntityId id, SleepOrderType order)
         {

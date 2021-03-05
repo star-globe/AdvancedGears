@@ -19,6 +19,7 @@ namespace AdvancedGears
     public class FuelServerSystem : BaseSearchSystem
     {
         EntityQuery group;
+        UnitType[] fuelTypes = null;
 
         protected override void OnCreate()
         {
@@ -31,6 +32,8 @@ namespace AdvancedGears
                 ComponentType.ReadOnly<Transform>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
+
+            fuelTypes = new UnitType[] { UnitType.Soldier, UnitType.Commander };
         }
 
         const int rate = 2;
@@ -64,7 +67,7 @@ namespace AdvancedGears
 
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
                 var pos = trans.position;
-                var list = getAllyUnits(status.Side, pos, range, allowDead:false, UnitType.Soldier, UnitType.Commander);
+                var list = getAllyUnits(status.Side, pos, range, allowDead:false, fuelTypes);
                 foreach (var unit in list)
                 {
                     FuelComponent.Component? comp = null;

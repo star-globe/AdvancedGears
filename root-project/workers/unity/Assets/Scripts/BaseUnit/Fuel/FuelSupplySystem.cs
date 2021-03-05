@@ -71,9 +71,12 @@ namespace AdvancedGears
                 var pos = trans.position;
 
                 var id = supply.Order.Point.StrongholdId;
-                var unit = getAllyUnits(status.Side, pos, range, allowDead:false, UnitType.Stronghold).FirstOrDefault(u => u.id == id);
-                if (unit != null)
+                var units = getAllyUnits(status.Side, pos, range, allowDead: false, GetSingleUnitTypes(UnitType.Stronghold));
+                foreach (var unit in units)
                 {
+                    if (unit.id != id)
+                        continue;
+
                     FuelModifyType type = FuelModifyType.None;
                     switch (supply.Order.Type)
                     {
@@ -84,6 +87,8 @@ namespace AdvancedGears
                     bool tof = DealOrder(unit, type, ref f_comp);
                     SendResult(tof, supply.ManagerId, entityId.EntityId, supply.Order);
                     supply.OrderFinished = true;
+
+                    break;
                 }
 
                 if (fuel.Fuel != f_comp.Fuel)

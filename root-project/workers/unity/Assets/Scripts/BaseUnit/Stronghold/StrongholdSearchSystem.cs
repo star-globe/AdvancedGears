@@ -195,13 +195,13 @@ namespace AdvancedGears
 
             var strategyVector = vector;
             var range = strategyVector.magnitude;
-            var units = getEnemyUnits(side, pos, range, allowDead:true, UnitType.Stronghold);
+            var units = getEnemyUnits(side, pos, range, allowDead:true, GetSingleUnitTypes(UnitType.Stronghold));
             if (units != null) {
                 order = OrderType.Attack;
             }
             else {
                 var newCenter = pos + strategyVector;
-                units = getAllyUnits(side, newCenter, range, allowDead:true, UnitType.Stronghold);
+                units = getAllyUnits(side, newCenter, range, allowDead:true, GetSingleUnitTypes(UnitType.Stronghold));
                 if (units != null)
                     units.RemoveAll(u => u.id == selfId);
 
@@ -241,13 +241,13 @@ namespace AdvancedGears
                 target = hex.EntityId;
             }
 
-            var units = getEnemyUnits(side, h_pos, range, allowDead:true, UnitType.Stronghold);
+            var units = getEnemyUnits(side, h_pos, range, allowDead:true, GetSingleUnitTypes(UnitType.Stronghold));
             if (units != null) {
                 order = OrderType.Attack;
             }
             else {
                 var newCenter = pos + strategyVector;
-                units = getAllyUnits(side, newCenter, range, allowDead:true, UnitType.Stronghold);
+                units = getAllyUnits(side, newCenter, range, allowDead:true, GetSingleUnitTypes(UnitType.Stronghold));
                 if (units != null)
                     units.RemoveAll(u => u.id == selfId);
             

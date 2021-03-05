@@ -41,8 +41,9 @@ namespace AdvancedGears
                     }
                     else {
                         var end = basePoints[i];
-                        foreach (var c in Enumerable.Range(1,cutNumber)) {
-                            pointList.Add((end * c + point * (cutNumber - c)) / cutNumber);
+
+                        for (int j = 1; j <= cutNumber; j++) {
+                            pointList.Add((end * j + point * (cutNumber - j)) / cutNumber);
                         }
 
                         point = end;

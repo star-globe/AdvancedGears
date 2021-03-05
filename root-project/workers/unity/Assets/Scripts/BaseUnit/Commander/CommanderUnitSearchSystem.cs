@@ -20,6 +20,7 @@ namespace AdvancedGears
 
         const float teaminTime = 1.0f;
         const int period = 15;
+
         #region ComponentSystem
         protected override void OnCreate()
         {
@@ -109,7 +110,7 @@ namespace AdvancedGears
 
                 var rank = status.Rank - 1;
                 var range = RangeDictionary.GetBoidsRange(status.Rank);
-                var allies = getAllyUnits(status.Side, pos, range, allowDead:false, UnitType.Commander);
+                var allies = getAllyUnits(status.Side, pos, range, allowDead:false, GetSingleUnitTypes(UnitType.Commander));
                 foreach(var unit in allies) {
                     if (unit.id == entityId.EntityId)
                         continue;
@@ -140,6 +141,7 @@ namespace AdvancedGears
         }
 
         #region OrderMethod
+        private readonly List<EntityId> allFollowers = new List<EntityId>();
 
         void applyOrder(in BaseUnitStatus.Component status, in SpatialEntityId entityId, in Vector3 pos, float sightRange,
                          ref CommanderStatus.Component commander,
@@ -160,7 +162,7 @@ namespace AdvancedGears
             var line = team.TargetInfoSet.FrontLine;
             var hex = team.TargetInfoSet.HexInfo;
             var stronghold = team.TargetInfoSet.Stronghold;
-            var followers = team.FollowerInfo.GetAllFollowers();
+            var followers = team.FollowerInfo.GetAllFollowers(allFollowers);
 
             var targetBit = team.IsNeedUpdate;
 

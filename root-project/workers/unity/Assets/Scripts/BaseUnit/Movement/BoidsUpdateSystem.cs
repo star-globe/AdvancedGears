@@ -65,7 +65,7 @@ namespace AdvancedGears
                 var commanderRank = status.Rank;
 
                 var soldierRange = RangeDictionary.BaseBoidsRange;
-                var soldiers = getAllyUnits(side, pos, soldierRange, allowDead:false, selfId:entityId.EntityId, UnitType.Soldier);
+                var soldiers = getAllyUnits(side, pos, soldierRange, allowDead:false, selfId:entityId.EntityId, GetSingleUnitTypes(UnitType.Soldier));
 
                 float f_length = boid.ForwardLength;
                 boid_calculate(pos + forward * f_length, pos, soldierRange, forward * speed,
@@ -75,7 +75,7 @@ namespace AdvancedGears
                     return;
 
                 var commanderRange = RangeDictionary.GetBoidsRange(commanderRank);
-                var coms = getAllyUnits(side, pos, commanderRange, allowDead: false, selfId: entityId.EntityId, UnitType.Commander);
+                var coms = getAllyUnits(side, pos, commanderRange, allowDead: false, selfId: entityId.EntityId, GetSingleUnitTypes(UnitType.Commander));
                 commanders.Clear();
                 foreach (var c in coms) {
                     if (c.rank == commanderRank - 1)

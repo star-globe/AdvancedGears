@@ -19,21 +19,24 @@ namespace AdvancedGears
         private Unity.Entities.EntityQuery group;
 
         IntervalChecker inter;
+        IConstraint[] constraints = null;
+        ImprobableEntityQuery query;
 
         protected override ImprobableEntityQuery EntityQuery
         {
             get
             {
-                var list = new IConstraint[]
-                {
-                    new ComponentConstraint(StrongholdSight.ComponentId),
-                };
+                if (constraints == null) {
+                    constraints = new IConstraint[] { new ComponentConstraint(StrongholdSight.ComponentId) };
 
-                return new ImprobableEntityQuery()
-                {
-                    Constraint = new AndConstraint(list),
-                    ResultType = new SnapshotResultType()
-                };
+                    query = new ImprobableEntityQuery()
+                    {
+                        Constraint = new AndConstraint(constraints),
+                        ResultType = new SnapshotResultType()
+                    };
+                }
+
+                return query;
             }
         }
 
@@ -167,6 +170,8 @@ namespace AdvancedGears
         }
 
         readonly Dictionary<UnitSide,List<UnitInfo>> sightDictionary = new Dictionary<UnitSide,List<UnitInfo>>();
+        readonly Queue<UnitInfo> unitQueue = new Queue<UnitInfo>();
+
         void SetStrongholdSights(Dictionary<EntityId, List<EntitySnapshot>> shots)
         {
             SetStrongholdSightsClear();
@@ -183,7 +188,7 @@ namespace AdvancedGears
                     if (snap.TryGetComponentSnapshot(out status) == false)
                         continue;
 
-                    var info = new UnitInfo();
+                    var info = unitQueue.Count > 0 ? unitQueue.Dequeue(): new UnitInfo();
                     info.id = kvp.Key;
                     info.pos = position.Coords.ToWorkerPosition(this.Origin);
                     info.type = status.Type;
@@ -202,8 +207,11 @@ namespace AdvancedGears
 
         void SetStrongholdSightsClear()
         {
-            foreach (var kvp in sightDictionary)
+            foreach (var kvp in sightDictionary) {
+                foreach (var u in kvp.Value)
+                    unitQueue.Enqueue(u);
                 kvp.Value.Clear();
+            }
         }
     }
 }
