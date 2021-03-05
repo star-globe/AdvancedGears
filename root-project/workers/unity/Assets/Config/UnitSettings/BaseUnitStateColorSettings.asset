@@ -17,7 +17,7 @@ MonoBehaviour:
     state: 1
   - col: {r: 0, g: 0, b: 0, a: 1}
     state: 2
-  - col: {r: 0, g: 0.831378, b: 1, a: 1}
+  - col: {r: 1, g: 0.9132484, b: 0, a: 1}
     state: 3
   sideColors:
   - col: {r: 1, g: 0, b: 0, a: 1}
