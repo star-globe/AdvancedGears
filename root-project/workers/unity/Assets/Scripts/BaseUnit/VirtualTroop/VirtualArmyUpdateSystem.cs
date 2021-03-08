@@ -125,7 +125,9 @@ namespace AdvancedGears
             }
 
             army.SimpleUnits = units;
-            army.AlarmInter = IntervalCheckerInitializer.InitializedChecker(MovementDictionary.AlarmInter);
+            var inter = IntervalCheckerInitializer.InitializedChecker(MovementDictionary.AlarmInter);
+            UpdateLastChecked(ref inter);
+            army.AlarmInter = inter;
         }
 
         private void RealizeUnits(ref VirtualArmy.Component army, Transform trans)
@@ -201,7 +203,9 @@ namespace AdvancedGears
         private void RealizeTurrets(ref VirtualArmy.Component army, Dictionary<EntityId,TurretInfo> turretsDatas)
         {
             army.IsActive = false;
-            army.AlarmInter = IntervalCheckerInitializer.InitializedChecker(MovementDictionary.AlarmInter);
+            var inter = IntervalCheckerInitializer.InitializedChecker(MovementDictionary.AlarmInter);
+            UpdateLastChecked(ref inter);
+            army.AlarmInter = inter;
             SendSleepOrdersToTurret(turretsDatas, SleepOrderType.WakeUp);
         }
 

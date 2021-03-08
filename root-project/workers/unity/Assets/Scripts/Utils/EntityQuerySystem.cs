@@ -75,7 +75,7 @@ namespace AdvancedGears
                 EntityQuery = entityQuery
             });
 
-            retryInter.UpdateLastChecked();
+            UpdateLastChecked(ref retryInter);
         }
 
         readonly Dictionary<EntityId, List<EntitySnapshot>> resultSnapShots = new Dictionary<EntityId, List<EntitySnapshot>>();

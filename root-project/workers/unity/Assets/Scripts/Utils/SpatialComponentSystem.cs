@@ -73,6 +73,11 @@ namespace AdvancedGears
         {
             return inter.CheckTime(this.Time.ElapsedTime);
         }
+
+        protected void UpdateLastChecked(ref IntervalChecker inter)
+        {
+            inter.UpdateLastChecked(this.Time.ElapsedTime);
+        }
     }
 
     public abstract class BaseEntitySearchSystem : SpatialComponentSystem

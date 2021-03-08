@@ -137,6 +137,7 @@ namespace AdvancedGears
                 case UnitType.HeadQuarter:
                     AddStrongholdTypeComponents(template, writeAccess);
                     template.AddComponent(new StrategyOrderManager.Snapshot { }, writeAccess);
+                    template.AddComponent(new VirtualArmy.Snapshot { SimpleUnits = new Dictionary<EntityId, SimpleUnit>() }, writeAccess);
                     //var strongholdQuery = InterestQuery.Query(Constraint.Component<StrongholdStatus.Component>())
                     //                      .FilterResults(Position.ComponentId, BaseUnitStatus.ComponentId);
                     //var strongholdInterest = InterestTemplate.Create().AddQueries<StrategyOrderManager.Component>(strongholdQuery);
