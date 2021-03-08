@@ -60,6 +60,9 @@ type ControllerInfo {
     bool running = 3;
     float yaw = 4;
     float pitch = 5;
+    bool jump = 6;
+    bool left_click = 7;
+    bool right_click = 8,
 }
 
 component AdvancedUnitController {
