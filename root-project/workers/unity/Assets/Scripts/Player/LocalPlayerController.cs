@@ -26,7 +26,7 @@ namespace AdvancedGears
             if (container == null)
                 return;
 
-            if (Input.GetKey(KeyCode.Space))
+            if (Input.GetKey(KeyCode.Mouse0))
             {
                 foreach (var kvp in container.CannonDic)
                 {

@@ -37,6 +37,7 @@ namespace AdvancedGears
             template.AddComponent(new Metadata.Snapshot { EntityType = "PlayerCreator" }, WorkerUtils.UnityGameLogic);
             template.AddComponent(new Persistence.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new PlayerCreator.Snapshot(), WorkerUtils.UnityGameLogic);
+            template.AddComponent(new WorldTimer.Snapshot(), WorkerUtils.UnityGameLogic);
 
             var query = InterestQuery.Query(Constraint.RelativeCylinder(500));
             var interest = InterestTemplate.Create()
@@ -45,7 +46,6 @@ namespace AdvancedGears
 
             template.SetReadAccess(WorkerUtils.UnityGameLogic, WorkerUtils.UnityClient, WorkerUtils.MobileClient);
             template.SetComponentWriteAccess(EntityAcl.ComponentId, WorkerUtils.UnityGameLogic);
-
             snapshot.AddEntity(template);
         }
 

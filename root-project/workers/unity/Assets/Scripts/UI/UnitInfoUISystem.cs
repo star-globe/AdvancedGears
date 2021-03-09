@@ -65,7 +65,7 @@ namespace AdvancedGears.UI
                     return;
 
                 var pos = RectTransformUtility.WorldToScreenPoint(this.Camera, trans.position + ui.Offset);
-                ui.SetInfo(pos, health.Health, health.MaxHealth);
+                ui.SetInfo(pos, health.Health, health.MaxHealth, false);
             });
         }
     }
