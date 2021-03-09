@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace AdvancedGears
 {
-    public abstract class SpatialComponentSystem : ComponentSystem
+    public abstract class SpatialComponentBaseSystem : ComponentSystem
     {
         WorkerSystem worker = null;
         protected WorkerSystem WorkerSystem
@@ -68,15 +68,39 @@ namespace AdvancedGears
                 return logDispatcher;
             }
         }
+    }
+
+    public abstract class SpatialComponentSystem : SpatialComponentBaseSystem
+    {
+        LocalTimerUpdateSystem localTimerSystem = null;
+        protected LocalTimerUpdateSystem LocalTimerSystem
+        {
+            get
+            {
+                localTimerSystem = localTimerSystem ?? World.GetExistingSystem<LocalTimerUpdateSystem>();
+                return localTimerSystem;
+            }
+        }
+
+        protected double CurrentTime
+        {
+            get
+            {
+                if (this.LocalTimerSystem == null)
+                    return (DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond) / 1000.0;
+
+                return this.LocalTimerSystem.CurrentTime;
+            }
+        }
 
         protected bool CheckTime(ref IntervalChecker inter)
         {
-            return inter.CheckTime(this.Time.ElapsedTime);
+            return inter.CheckTime(this.CurrentTime);
         }
 
         protected void UpdateLastChecked(ref IntervalChecker inter)
         {
-            inter.UpdateLastChecked(this.Time.ElapsedTime);
+            inter.UpdateLastChecked(this.CurrentTime);
         }
     }
 

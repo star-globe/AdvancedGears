@@ -15,121 +15,48 @@ namespace AdvancedGears
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
-    internal class LocalTimerUpdateSystem : BaseEntitySearchSystem
+    internal class LocalTimerUpdateSystem : SpatialComponentBaseSystem
     {
-        private TimerInfo? timerInfo;
-        public TimerInfo? Timer { get { return timerInfo;} }
-
-        private CommandRequestId? timerEntityQueryId;
-        private readonly List<EntityId> timerEntityIds = new List<EntityId>();
-        private readonly Dictionary<EntityId,EntitySnapshot> timerEntityDic = new Dictionary<EntityId, EntitySnapshot>();
-        //private readonly InterestQuery timerQuery;
-        private EntityQuery timerQuery;
-        //InterestTemplate template;
-
-        void Initialize()
+        double updateTime;
+        double baseTime;
+        double buffer;
+        
+        public double CurrentTime
         {
-            Vector3? pos = Vector3.zero;
-            double radius = 300;
-
-            var list = new IConstraint[]
-            {
-                new ComponentConstraint(WorldTimer.ComponentId),
-                new SphereConstraint(pos.Value.x, pos.Value.y, pos.Value.z, radius),
-            };
-
-            timerQuery = new EntityQuery()
-            {
-                Constraint = new AndConstraint(list),
-                ResultType = new SnapshotResultType()
-            };
-        }
-
-        private void SendTimerEntityQuery()
-        {
-            timerEntityQueryId = this.CommandSystem.SendCommand(new WorldCommands.EntityQuery.Request
-            {
-                EntityQuery = timerQuery
-            });
+            get { return buffer + updatetime; }
         }
 
         protected override void OnCreate()
         {
-            base.OnCreate();
-
-            Initialize();
-
-            SendTimerEntityQuery();
+            UpdateCurrent(DateTime.UtcNow.Ticks);
         }
 
         protected override void OnUpdate()
         {
-            if (timerEntityIds.Count > 0)
-            {
-                HandleSetTimer();
-            }
-            else
-            {
-                HandleEntityQueryResponses();
-            }
+            HandleEvents();
         }
 
-        void HandleSetTimer()
+        private void UpdateBuffer()
         {
-            var id = timerEntityIds[UnityEngine.Random.Range(0, timerEntityIds.Count)];
-            WorldTimer.Component? timer = null;
-            if (TryGetComponent(id, out timer) == false)
-                return;
-
-            SetTimer(timer.Value.CurrentTime);
+            buffer = this.Time.ElapsedTime - baseTime;
         }
 
-        public void SetTimer(TimerInfo info)
+        private void HandleEvents()
         {
-            this.timerInfo = info;
-        }
-
-        int retries = 0;
-        void HandleEntityQueryResponses()
-        {
-            var entityQueryResponses = this.CommandSystem.GetResponses<WorldCommands.EntityQuery.ReceivedResponse>();
-            for (var i = 0; i < entityQueryResponses.Count; i++)
+            var updatesEvents = UpdateSystem.GetEventsReceived<WorldTimer.Updates.Event>();
+            for (var i = 0; i < updatesEvents.Count; i++)
             {
-                ref readonly var response = ref entityQueryResponses[i];
-                if (response.RequestId != timerEntityQueryId)
-                {
-                    continue;
-                }
-
-                timerEntityQueryId = null;
-
-                if (response.StatusCode == StatusCode.Success)
-                {
-                    timerEntityIds.AddRange(response.Result.Keys);
-                }
-                else if (retries < 3)
-                {
-                    ++retries;
-
-                    this.LogDispatcher.HandleLog(LogType.Warning, new LogEvent(
-                        $"Retrying timer query, attempt {retries}.\n{response.Message}"
-                    ));
-
-                    SendTimerEntityQuery();
-                }
-                else
-                {
-                    var retryText = retries == 0
-                        ? "1 attempt"
-                        : $"{retries + 1} attempts";
-
-                    this.LogDispatcher.HandleLog(LogType.Error, new LogEvent(
-                        $"Unable to find timer after {retryText}."
-                    ));
-                }
-
+                var timerEvent = updatesEvents[i];
+                UpdateCurrent(timerEvent.Event.Payload.CurrentTicks);
                 break;
             }
+        }
+
+        private void UpdateCurrent(long ticks)
+        {
+            updateTime = (ticks / TimeSpan.TicksPerMillisecond) / 1000.0;
+            baseTime = this.Time.ElapsedTime;
+            buffer = 0;
         }
     }
 }

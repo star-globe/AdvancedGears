@@ -9,7 +9,7 @@ using UnityEngine;
 namespace AdvancedGears
 {
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
-    internal class TimerSynchronizeSystem : SpatialComponentSystem
+    internal class TimerSynchronizeSystem : SpatialComponentBaseSystem
     {
         EntityQuery group;
 
@@ -34,21 +34,13 @@ namespace AdvancedGears
                 if (UnityEngine.Random.Range(0,upInter) != 0)
                     return;
 
-                var now = DateTime.UtcNow;
-                var span = now - DateTime.MinValue;
-                var start = new DateTime(now.Year, now.Month, now.Day, 0, 0, 0);
+                var ticks = DateTime.UtcNow.Ticks;
+                timer.utc_ticks = ticks;
 
-                var sec = (now - start).TotalSeconds;
-                var d = (int)span.TotalDays;
-
-                timer.UnitTime = span.Ticks;
-                var info = new TimerInfo
+                var info = new UpdateTimerInfo
                 {
-                    Second = (float)sec,
-                    Day = d,
+                    current_ticks = ticks,
                 };
-
-                timer.CurrentTime = info;
 
                 this.UpdateSystem.SendEvent(new WorldTimer.Updates.Event(info), entityId.EntityId);
             });

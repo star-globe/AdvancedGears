@@ -1,15 +1,14 @@
 package advanced_gears;
 
-type TimerInfo
+type UpdateTimerInfo
 {
-    float second = 1;
-    int32 day = 2;
+    int64 current_ticks = 1;
 }
 
 component WorldTimer {
     id = 30000;
-    int64 unit_time = 1;
-    TimerInfo current_time = 2;
 
-    event TimerInfo updates;
+    int64 utc_ticks = 1;
+
+    event UpdateTimerInfo updates;
 }

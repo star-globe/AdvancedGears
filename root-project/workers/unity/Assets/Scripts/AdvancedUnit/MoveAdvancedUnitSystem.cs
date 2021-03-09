@@ -22,18 +22,18 @@ namespace AdvancedGears
         private EntityQuery advancedInputGroup;
 
         private const float WalkSpeed = 16.0f;
-        private const float RunSpeed = 20.0f;
-        private const float MaxSpeed = 25.0f;
+        private const float RunSpeed = 24.0f;
+        private const float MaxSpeed = 30.0f;
 
         private const float TurnSpeed = 4.0f;
         private const float MaxTurnSpeed = 5.0f;
 
         private const float InverseSpeedRate = 3.0f;
 
-        private const float TurnSmoothTime = 0.2f;
+        private const float TurnSmoothTime = 0.05f;
         private float turnSmoothVelocity;
 
-        private const float SpeedSmoothTime = 0.1f;
+        private const float SpeedSmoothTime = 0.05f;
 
         protected override void OnCreate()
         {
