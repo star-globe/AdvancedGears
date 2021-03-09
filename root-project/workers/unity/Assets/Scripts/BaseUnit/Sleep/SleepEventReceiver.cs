@@ -14,14 +14,14 @@ namespace AdvancedGears
         [Require] SleepComponentWriter sleepWriter;
         [Require] BaseUnitStatusWriter statusWriter;
 
-        SpatialComponentSystem system = null;
+        LocalTimerUpdateSystem system = null;
 
         public void OnEnable()
         {
             statusWriter.OnForceStateEvent += OnForceState;
             sleepWriter.OnSleepOrderedEvent += OnSleepOrdered;
 
-            system = world.GetExistingSystem<SleepUpdateSystem>();
+            system = world.GetExistingSystem<LocalTimerUpdateSystem>();
         }
 
         private void OnForceState(ForceStateChange change)
@@ -64,7 +64,7 @@ namespace AdvancedGears
             if (inter.Interval != MovementDictionary.SleepInter)
                 inter = IntervalCheckerInitializer.InitializedChecker(MovementDictionary.SleepInter);
 
-            inter.UpdateLastChecked(system.Time.ElapsedTime);
+            inter.UpdateLastChecked(system.CurrentTime);
             sleepWriter.SendUpdate(new SleepComponent.Update()
             {
                 Interval = inter,

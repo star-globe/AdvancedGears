@@ -15,7 +15,7 @@ namespace AdvancedGears
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
-    internal class LocalTimerUpdateSystem : SpatialComponentBaseSystem
+    public class LocalTimerUpdateSystem : SpatialComponentBaseSystem
     {
         double updateTime;
         double baseTime;
@@ -23,12 +23,12 @@ namespace AdvancedGears
         
         public double CurrentTime
         {
-            get { return buffer + updatetime; }
+            get { return buffer + updateTime; }
         }
 
         protected override void OnCreate()
         {
-            UpdateCurrent(DateTime.UtcNow.Ticks);
+            UpdateCurrent(TimerUtils.CurrentTime);
         }
 
         protected override void OnUpdate()
@@ -44,17 +44,16 @@ namespace AdvancedGears
         private void HandleEvents()
         {
             var updatesEvents = UpdateSystem.GetEventsReceived<WorldTimer.Updates.Event>();
-            for (var i = 0; i < updatesEvents.Count; i++)
-            {
+            if (updatesEvents.Count > 0) {
+                var i = UnityEngine.Random.Range(0,updatesEvents.Count);
                 var timerEvent = updatesEvents[i];
-                UpdateCurrent(timerEvent.Event.Payload.CurrentTicks);
-                break;
+                UpdateCurrent(timerEvent.Event.Payload.CurrentSeconds);
             }
         }
 
-        private void UpdateCurrent(long ticks)
+        private void UpdateCurrent(double seconds)
         {
-            updateTime = (ticks / TimeSpan.TicksPerMillisecond) / 1000.0;
+            updateTime = seconds;
             baseTime = this.Time.ElapsedTime;
             buffer = 0;
         }

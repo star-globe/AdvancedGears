@@ -12,7 +12,7 @@ namespace AdvancedGears
     internal class TimerSynchronizeSystem : SpatialComponentBaseSystem
     {
         EntityQuery group;
-        long ticks;
+        double seconds;
 
         protected override void OnCreate()
         {
@@ -31,7 +31,7 @@ namespace AdvancedGears
             if (UnityEngine.Random.Range(0,upInter) != 0)
                 return;
 
-            this.ticks = DateTime.UtcNow.Ticks;
+            this.seconds = TimerUtils.CurrentTime;
 
             Entities.With(group).ForEach((Entity entity,
                                           ref WorldTimer.Component timer,
@@ -40,11 +40,11 @@ namespace AdvancedGears
                 if (UnityEngine.Random.Range(0,upInter) != 0)
                     return;
 
-                timer.utc_ticks = this.ticks;
+                timer.UtcSeconds = this.seconds;
 
                 var info = new UpdateTimerInfo
                 {
-                    current_ticks = ticks,
+                    CurrentSeconds = seconds,
                 };
 
                 this.UpdateSystem.SendEvent(new WorldTimer.Updates.Event(info), entityId.EntityId);

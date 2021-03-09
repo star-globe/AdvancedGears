@@ -63,8 +63,12 @@ namespace AdvancedGears
                     else
                         VirtualizeUnits(ref army, trans, team.FollowerInfo.Followers);
                 }
-                else if (army.IsActive)
-                    RealizeUnits(ref army, trans);
+                else {
+                    if (army.IsActive)
+                        RealizeUnits(ref army, trans);
+                    else
+                        AlarmUnits(ref army, team.FollowerInfo.Followers);
+                }
             });
         }
 
@@ -146,15 +150,15 @@ namespace AdvancedGears
             army.SimpleUnits.Clear();
         }
 
-        private void AlarmUnits(ref VirtualArmy.Component army)
+        private void AlarmUnits(ref VirtualArmy.Component army, List<EntityId> followers)
         {
             var inter = army.AlarmInter;
             if (CheckTime(ref inter) == false)
                 return;
 
             army.AlarmInter = inter;
-            foreach (var kvp in army.SimpleUnits)
-                SendSleepOrder(kvp.Key, SleepOrderType.WakeUp);
+            foreach (var id in followers)
+                SendSleepOrder(id, SleepOrderType.WakeUp);
         }
         #endregion
 

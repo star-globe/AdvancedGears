@@ -31,7 +31,7 @@ namespace AdvancedGears.UI
                 hpText?.SetText(string.Format(fmt, hp, maxHp));
             }
 
-            if (lockOnImage != null && lockOnImage.gameObject.activeself != isLockOn)
+            if (lockOnImage != null && lockOnImage.gameObject.activeSelf != isLockOn)
                 lockOnImage.gameObject.SetActive(isLockOn);
         }
     }

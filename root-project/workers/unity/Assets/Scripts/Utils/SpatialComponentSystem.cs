@@ -113,7 +113,9 @@ namespace AdvancedGears
             if (!this.TryGetEntity(id, out entity))
                 return false;
 
-            comp = EntityManager.GetComponentObject<T>(entity);
+            if (EntityManager.HasComponent<T>(entity))
+                comp = EntityManager.GetComponentObject<T>(entity);
+
             return comp != null;
         }
 
