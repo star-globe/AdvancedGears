@@ -34,5 +34,5 @@ MonoBehaviour:
   - type: 103
     sprite: {fileID: 21300000, guid: 2b19f818dd2c0f94088c3aff1a69a1e0, type: 3}
   - type: 102
-    sprite: {fileID: 21300000, guid: ba55824502208aa48b7fa4e09b8104c0, type: 3}
+    sprite: {fileID: 21300000, guid: 457c93ae8927e834fb7055f8829bcd62, type: 3}
   colorSettings: {fileID: 11400000, guid: e9653011b1bcf4847b2c0b2d702b450d, type: 2}
