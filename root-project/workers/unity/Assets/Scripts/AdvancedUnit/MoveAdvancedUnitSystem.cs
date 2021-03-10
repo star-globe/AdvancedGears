@@ -21,14 +21,14 @@ namespace AdvancedGears
         private EntityQuery newAdvancedGroup;
         private EntityQuery advancedInputGroup;
 
-        private const float WalkSpeed = 16.0f;
-        private const float RunSpeed = 24.0f;
-        private const float MaxSpeed = 30.0f;
+        private const float WalkSpeed = 10.0f;
+        private const float RunSpeed = 3.0f * WalkSpeed;
+        private const float MaxSpeed = 1.2f * RunSpeed;
 
-        private const float TurnSpeed = 4.0f;
-        private const float MaxTurnSpeed = 5.0f;
+        private const float TurnSpeed = 7.0f;
+        private const float MaxTurnSpeed = 1.2f * TurnSpeed;
 
-        private const float InverseSpeedRate = 3.0f;
+        private const float InverseSpeedRate = 5.0f;
 
         private const float TurnSmoothTime = 0.05f;
         private float turnSmoothVelocity;
