@@ -74,7 +74,7 @@ namespace AdvancedGears
             {
                 foreach (var dic in bulletsDic) {
                     removeKeyList.Clear();
-                    foreach (var kvp in dic.value) {
+                    foreach (var kvp in dic.Value) {
                         if (kvp.Value.IsActive == false)
                             removeKeyList.Add(kvp.Key);
                     }

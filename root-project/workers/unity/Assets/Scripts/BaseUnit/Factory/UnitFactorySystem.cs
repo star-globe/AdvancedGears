@@ -173,12 +173,12 @@ namespace AdvancedGears
                 if (CalcOrderCost(out resourceCost, out timeCost, f_order, s_order, team_order) == false)
                     return;
 
-                Debug.LogFormat("ResourceCost:{0} TimeCost:{1}", resourceCost, timeCost);
+                //Debug.LogFormat("ResourceCost:{0} TimeCost:{1}", resourceCost, timeCost);
 
                 if (factory.CurrentType == FactoryOrderType.None) {
                     if (resource.Resource < resourceCost)
                     {
-                        Debug.LogFormat("ResourcePoor:{0}", resource.Resource);
+                        //Debug.LogFormat("ResourcePoor:{0}", resource.Resource);
                         return;
                     }
 
@@ -199,11 +199,11 @@ namespace AdvancedGears
 
                 if (random == null)
                 {
-                    Debug.LogFormat("There is no Empty");
+                    //Debug.LogFormat("There is no Empty");
                     return;
                 }
 
-                Debug.LogFormat("CreateUnit!");
+                //Debug.LogFormat("CreateUnit!");
 
                 factory.ProductInterval = factoryInter;
 
@@ -722,7 +722,7 @@ namespace AdvancedGears
                 foreach (var s in requestInfo.soldiers)
                     solds += string.Format("{0}, ", s);
 
-                Debug.LogFormat("SetTeam CommanderId:{0} Soldiers:{1}", requestInfo.team.CommanderId, solds);
+                //Debug.LogFormat("SetTeam CommanderId:{0} Soldiers:{1}", requestInfo.team.CommanderId, solds);
             }
             else {
                 requestDic[strongholdId][requestId] = requestInfo;
