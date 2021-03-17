@@ -29,6 +29,28 @@ namespace AdvancedGears
             }
         }
 
+        public Bounds Bounds
+        {
+            get
+            {
+                return Detect.bounds;
+            }
+        }
+
+        public Vector3 BufferVector
+        {
+            get
+            {
+                if (this.Detect == null)
+                    return this.transform.up;
+
+                var up = this.Detect.transform.up;
+                var diff = this.transform.position - this.Detect.bounds.center;
+                var dot = Vector3.Dot(up,diff);
+                return up * (dot+this.Detect.bounds.extents.y);
+            }
+        }
+
         Dictionary<PosturePoint,PostureTransform> postureDic = null;
         public Dictionary<PosturePoint,PostureTransform> PostureDic
         {

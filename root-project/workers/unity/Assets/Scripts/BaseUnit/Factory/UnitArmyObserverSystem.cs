@@ -63,7 +63,7 @@ namespace AdvancedGears
                 var trans = EntityManager.GetComponentObject<Transform>(entity);
                 var pos = trans.position;
 
-                var hq = getNearestAlly(entityId.EntityId, status.Side, pos, RangeDictionary.Get(FixedRangeType.RadioRange), allowDead:false, UnitType.HeadQuarter);
+                var hq = getNearestAlly(entityId.EntityId, status.Side, pos, RangeDictionary.Get(FixedRangeType.RadioRange), allowDead:false, GetSingleUnitTypes(UnitType.HeadQuarter));
                 if (hq == null)
                     return;
 
@@ -71,7 +71,7 @@ namespace AdvancedGears
                 if (TryGetEntity(hq.id, out hqEntity) == false)
                     return;
 
-                var list = getAllyUnits(status.Side, pos, RangeDictionary.Get(FixedRangeType.BaseRange), allowDead:false, UnitType.Commander);
+                var list = getAllyUnits(status.Side, pos, RangeDictionary.Get(FixedRangeType.BaseRange), allowDead:false, GetSingleUnitTypes(UnitType.Commander));
                 foreach (var unit in list) {
                     CommanderTeam.Component? team;
                     if (TryGetComponent(unit.id, out team) == false)

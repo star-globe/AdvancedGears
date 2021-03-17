@@ -71,9 +71,9 @@ namespace AdvancedGears
             return true;
         }
 
-        public static void UpdateLastChecked(this ref IntervalChecker inter)
+        public static void UpdateLastChecked(this ref IntervalChecker inter, double current)
         {
-            inter.LastChecked = Time.time;
+            inter.LastChecked = current;
         }
 
         public static bool Self(this OrderPair pair, OrderType self)
@@ -240,11 +240,14 @@ namespace AdvancedGears
             return heights;
         }
 
-        public static List<EntityId> GetAllFollowers(this FollowerInfo info)
+        public static List<EntityId> GetAllFollowers(this FollowerInfo info, List<EntityId> list)
         {
-            var list = new List<EntityId>();
-            list.AddRange(info.Followers);
-            list.AddRange(info.UnderCommanders);
+            if (list != null) {
+                list.Clear();
+                list.AddRange(info.Followers);
+                list.AddRange(info.UnderCommanders);
+            }
+
             return list;
         }
 

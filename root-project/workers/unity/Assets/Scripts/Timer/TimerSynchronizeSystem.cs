@@ -9,9 +9,10 @@ using UnityEngine;
 namespace AdvancedGears
 {
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
-    internal class TimerSynchronizeSystem : SpatialComponentSystem
+    internal class TimerSynchronizeSystem : SpatialComponentBaseSystem
     {
         EntityQuery group;
+        double seconds;
 
         protected override void OnCreate()
         {
@@ -23,10 +24,15 @@ namespace AdvancedGears
             );
         }
 
-        const int upInter = 300;
+        const int upInter = 10;
 
         protected override void OnUpdate()
         {
+            if (UnityEngine.Random.Range(0,upInter) != 0)
+                return;
+
+            this.seconds = TimerUtils.CurrentTime;
+
             Entities.With(group).ForEach((Entity entity,
                                           ref WorldTimer.Component timer,
                                           ref SpatialEntityId entityId) =>
@@ -34,21 +40,12 @@ namespace AdvancedGears
                 if (UnityEngine.Random.Range(0,upInter) != 0)
                     return;
 
-                var now = DateTime.UtcNow;
-                var span = now - DateTime.MinValue;
-                var start = new DateTime(now.Year, now.Month, now.Day, 0, 0, 0);
+                timer.UtcSeconds = this.seconds;
 
-                var sec = (now - start).TotalSeconds;
-                var d = (int)span.TotalDays;
-
-                timer.UnitTime = span.Ticks;
-                var info = new TimerInfo
+                var info = new UpdateTimerInfo
                 {
-                    Second = (float)sec,
-                    Day = d,
+                    CurrentSeconds = seconds,
                 };
-
-                timer.CurrentTime = info;
 
                 this.UpdateSystem.SendEvent(new WorldTimer.Updates.Event(info), entityId.EntityId);
             });

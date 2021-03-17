@@ -42,21 +42,31 @@ namespace AdvancedGears
             if (CheckAndUpdateHealth(health) == false)
                 return;
 
-            if (health > 0)
+            var status = statusWriter.Data;
+
+            UnitState state = UnitState.None;
+            if (health > 0) {
+                if (status.State == UnitState.Sleep)
+                    state = UnitState.Alive;
+            }
+            else
+                state = UnitState.Dead;
+
+            if (state == UnitState.None)
                 return;
 
-            var status = statusWriter.Data;
             var side = status.Side;
             if (UnitUtils.IsBuilding(status.Type))
                 side = UnitSide.None;
 
             statusWriter.SendUpdate(new BaseUnitStatus.Update()
             {
-                State = UnitState.Dead,
+                State = state,
                 Side = side,
             });
 
-            timerSystem?.AddDeadUnit(SpatialComp.EntityId);
+            if (state == UnitState.Dead)
+                timerSystem?.AddDeadUnit(SpatialComp.EntityId);
         }
 
         private bool CheckAndUpdateHealth(int health)

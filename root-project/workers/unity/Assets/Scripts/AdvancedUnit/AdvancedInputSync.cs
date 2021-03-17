@@ -32,8 +32,9 @@ namespace AdvancedGears
                 var input = InputUtils.GetMove();
                 var inputCam = InputUtils.GetCamera();
                 var isShiftDown = Input.GetKey(KeyCode.LeftShift);
+                var isJump = Input.GetKey(KeyCode.Space);
                 var controller = playerInput.LocalController;
-                CommonUpdate(input, inputCam, isShiftDown, entityId, ref controller);
+                CommonUpdate(input, inputCam, isShiftDown, isJump, entityId, ref controller);
                 playerInput.LocalController = controller;
             });
         }
@@ -73,8 +74,9 @@ namespace AdvancedGears
                 var x = UnityEngine.Random.Range(-1.0f, 1.0f);
                 var y = UnityEngine.Random.Range(-1.0f, 1.0f);
                 var isShiftDown = Input.GetKey(KeyCode.LeftShift);
+                var isJump = Input.GetKey(KeyCode.Space);
                 var controller = unMannedInput.LocalController;
-                CommonUpdate(new Vector2(x, y), new Vector2(x, y), isShiftDown, entityId, ref controller);
+                CommonUpdate(new Vector2(x, y), new Vector2(x, y), isShiftDown, isJump, entityId, ref controller);
                 unMannedInput.LocalController = controller;
             });
         }
@@ -85,7 +87,7 @@ namespace AdvancedGears
         private const float MinInputChange = 0.01f;
         private const float MinInputCamera = 0.01f;
 
-        protected void CommonUpdate(in Vector2 inputPos, in Vector3 inputCam, bool isShiftDown, in SpatialEntityId entityId, ref ControllerInfo oldController)
+        protected void CommonUpdate(in Vector2 inputPos, in Vector3 inputCam, bool isShiftDown, bool isJump, in SpatialEntityId entityId, ref ControllerInfo oldController)
         {
             if (CheckChange(oldController.Horizontal, inputPos.x) ||
                 CheckChange(oldController.Vertical, inputPos.y) ||
@@ -99,7 +101,8 @@ namespace AdvancedGears
                     Vertical = inputPos.y,
                     Yaw = inputCam.x,
                     Pitch = inputCam.y,
-                    Running = isShiftDown
+                    Running = isShiftDown,
+                    Jump = isJump
                 };
                 oldController = newController;
                 UpdateSystem.SendEvent(new AdvancedUnitController.ControllerChanged.Event(newController), entityId.EntityId);

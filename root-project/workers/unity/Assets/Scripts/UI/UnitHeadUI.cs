@@ -13,11 +13,14 @@ namespace AdvancedGears.UI
         [SerializeField]
         TextMeshProUGUI hpText;
 
+        [SerializeField]
+        Image lockOnImage;
+
         const string fmt = "{0}/{1}";
         int hp = -1;
         int maxHp = -1;
 
-        public void SetInfo(Vector2 pos, int hp, int maxHp)
+        public void SetInfo(Vector2 pos, int hp, int maxHp, bool isLockOn)
         {
             if (this.Rect != null)
                 this.Rect.position = pos;
@@ -27,6 +30,9 @@ namespace AdvancedGears.UI
                 this.maxHp = maxHp;
                 hpText?.SetText(string.Format(fmt, hp, maxHp));
             }
+
+            if (lockOnImage != null && lockOnImage.gameObject.activeSelf != isLockOn)
+                lockOnImage.gameObject.SetActive(isLockOn);
         }
     }
 

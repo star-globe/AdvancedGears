@@ -76,6 +76,7 @@ namespace AdvancedGears
             HandleProductResponse();
         }
 
+        readonly List<int> idList = new List<int>();
         private void HandleUnitCheck()
         {
             if (CheckTime(ref checkerInter) == false)
@@ -92,22 +93,22 @@ namespace AdvancedGears
 
                 var contaners = factory.Containers;
                 int index = -1;
-                var ids = new List<int>();
+                idList.Clear();
                 foreach (var c in contaners) {
                     index++;
 
                     if (c.State != ContainerState.Created)
                         continue;
 
-                    var list = getAllyUnits(status.Side, c.Pos.ToWorkerPosition(this.Origin), (float)RangeDictionary.TeamInter, allowDead:false, UnitType.Commander);
+                    var list = getAllyUnits(status.Side, c.Pos.ToWorkerPosition(this.Origin), (float)RangeDictionary.TeamInter, allowDead:false, GetSingleUnitTypes(UnitType.Commander));
                     if (list.Count == 0)
-                        ids.Add(index);
+                        idList.Add(index);
                 }
 
-                if (ids.Count == 0)
+                if (idList.Count == 0)
                     return;
 
-                foreach (var i in ids)
+                foreach (var i in idList)
                     contaners.ChangeState(i,ContainerState.Empty);
 
                 factory.Containers = contaners;
@@ -172,12 +173,12 @@ namespace AdvancedGears
                 if (CalcOrderCost(out resourceCost, out timeCost, f_order, s_order, team_order) == false)
                     return;
 
-                Debug.LogFormat("ResourceCost:{0} TimeCost:{1}", resourceCost, timeCost);
+                //Debug.LogFormat("ResourceCost:{0} TimeCost:{1}", resourceCost, timeCost);
 
                 if (factory.CurrentType == FactoryOrderType.None) {
                     if (resource.Resource < resourceCost)
                     {
-                        Debug.LogFormat("ResourcePoor:{0}", resource.Resource);
+                        //Debug.LogFormat("ResourcePoor:{0}", resource.Resource);
                         return;
                     }
 
@@ -198,11 +199,11 @@ namespace AdvancedGears
 
                 if (random == null)
                 {
-                    Debug.LogFormat("There is no Empty");
+                    //Debug.LogFormat("There is no Empty");
                     return;
                 }
 
-                Debug.LogFormat("CreateUnit!");
+                //Debug.LogFormat("CreateUnit!");
 
                 factory.ProductInterval = factoryInter;
 
@@ -436,6 +437,7 @@ namespace AdvancedGears
             public EntityId strongholdEntityId;
         }
 
+        readonly List<ValueTuple<EntityTemplate, UnitType>> templates = new List<(EntityTemplate, UnitType)>();
         void CreateTeam(List<TeamOrder> orders, UnitSide side, EntityId id, in Coordinates coords, out bool finished)
         {
             finished = false;
@@ -444,7 +446,7 @@ namespace AdvancedGears
 
             var current = orders[0];
             // create unit
-            List<ValueTuple<EntityTemplate,UnitType>> templates = new List<ValueTuple<EntityTemplate,UnitType>>();
+            templates.Clear();
             var temp = BaseUnitTemplate.CreateCommanderUnitEntityTemplate(side, current.CommanderRank, null, coords, TransformUtils.ToAngleAxis(current.Rot, Vector3.up));
             templates.Add((temp, UnitType.Commander));
 
@@ -720,7 +722,7 @@ namespace AdvancedGears
                 foreach (var s in requestInfo.soldiers)
                     solds += string.Format("{0}, ", s);
 
-                Debug.LogFormat("SetTeam CommanderId:{0} Soldiers:{1}", requestInfo.team.CommanderId, solds);
+                //Debug.LogFormat("SetTeam CommanderId:{0} Soldiers:{1}", requestInfo.team.CommanderId, solds);
             }
             else {
                 requestDic[strongholdId][requestId] = requestInfo;

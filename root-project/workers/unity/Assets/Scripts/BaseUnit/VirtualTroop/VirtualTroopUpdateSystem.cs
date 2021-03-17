@@ -15,7 +15,6 @@ namespace AdvancedGears
         EntityQuery group;
 
         IntervalChecker inter;
-
         protected override void OnCreate()
         {
             base.OnCreate();
@@ -58,7 +57,7 @@ namespace AdvancedGears
 
                 var boidRange = RangeDictionary.GetBoidsRange(status.Rank);
                 var range = boidRange * sightRate;
-                var unit = getNearestPlayer(pos, range, selfId:null, UnitType.Advanced);
+                var unit = getNearestPlayer(pos, range, selfId:null, GetSingleUnitTypes(UnitType.Advanced));
 
                 if ((unit == null) == troop.IsActive) {
                     if (CheckConflict(ref troop, status.Side, trans, status.Rank, out var damage))
@@ -106,7 +105,7 @@ namespace AdvancedGears
 
             float sqrtlength = float.MaxValue;
             var pos = trans.position;
-            var units = getEnemyUnits(side, pos, range, allowDead:false, UnitType.Commander);
+            var units = getEnemyUnits(side, pos, range, allowDead:false, GetSingleUnitTypes(UnitType.Commander));
             foreach(var u in units) {
                 if (this.TryGetComponent<VirtualTroop.Component>(u.id, out var tp) == false)
                     continue;
@@ -150,7 +149,7 @@ namespace AdvancedGears
         {
             dic.Clear();
 
-            var allies = getAllyUnits(side, trans.position, range, allowDead:false, UnitType.Soldier);
+            var allies = getAllyUnits(side, trans.position, range, allowDead:false, GetSingleUnitTypes(UnitType.Soldier));
             foreach(var u in allies) {
                 if (!this.TryGetComponent<BaseUnitHealth.Component>(u.id, out var health) ||
                     !this.TryGetComponent<GunComponent.Component>(u.id, out var gun))

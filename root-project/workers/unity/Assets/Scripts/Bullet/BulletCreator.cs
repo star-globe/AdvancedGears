@@ -68,12 +68,18 @@ namespace AdvancedGears
 
             readonly Queue<Rigidpair> deactiveQueue = new Queue<Rigidpair>();
             readonly Dictionary<long, Dictionary<ulong, Rigidpair>> bulletsDic = new Dictionary<long, Dictionary<ulong, Rigidpair>>();
+            readonly List<ulong> removeKeyList = new List<ulong>();
 
             public void Update()
             {
                 foreach (var dic in bulletsDic) {
-                    var removeKeys = dic.Value.Where(kvp => !kvp.Value.IsActive).Select(kvp => kvp.Key).ToArray();
-                    foreach(var r in removeKeys) {
+                    removeKeyList.Clear();
+                    foreach (var kvp in dic.Value) {
+                        if (kvp.Value.IsActive == false)
+                            removeKeyList.Add(kvp.Key);
+                    }
+
+                    foreach(var r in removeKeyList) {
                         deactiveQueue.Enqueue(dic.Value[r]);
                         dic.Value.Remove(r);
                     }

@@ -8,7 +8,16 @@ namespace AdvancedGears
 {
     public static class TimerUtils
     {
-        
+        static readonly DateTime startTime = new DateTime(2020,1,1,0,0,0, DateTimeKind.Utc);
+
+        public static double CurrentTime
+        {
+            get
+            {
+                var span = DateTime.UtcNow - startTime;
+                return span.TotalSeconds;
+            }
+        }
     }
 
     public class IntervalCounter

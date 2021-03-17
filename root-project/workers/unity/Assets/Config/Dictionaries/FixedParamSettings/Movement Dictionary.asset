@@ -20,3 +20,6 @@ MonoBehaviour:
     speed: 2
     rot: 20
   rotateLimitRate: 15
+  sleepInter: 30
+  sleepPosDiff: 0.3
+  sleepRotDiff: 0.3

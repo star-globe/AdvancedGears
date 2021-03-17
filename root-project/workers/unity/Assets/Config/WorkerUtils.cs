@@ -55,6 +55,7 @@ namespace AdvancedGears
             world.GetOrCreateSystem<SpawnPointQuerySystem>();
             world.GetOrCreateSystem<UnitUIInfoSystem>();
             world.GetOrCreateSystem<MiniMapUISystem>();
+            world.GetOrCreateSystem<LocalTimerUpdateSystem>();
         }
 
         public static void AddGameLogicSystems(World world)
@@ -92,6 +93,10 @@ namespace AdvancedGears
             world.GetOrCreateSystem<HexUpdateSystem>();
             world.GetOrCreateSystem<HexPowerUpdateSystem>();
             world.GetOrCreateSystem<TurretUpdateSystem>();
+            world.GetOrCreateSystem<SleepUpdateSystem>();
+            world.GetOrCreateSystem<VirtualArmyUpdateSystem>();
+            world.GetOrCreateSystem<LocalTimerUpdateSystem>();
+            world.GetOrCreateSystem<TimerSynchronizeSystem>();
         }
 
         public static void AddStrategyLogicSystems(World world, EntityRepresentationMapping entityRepresentationMapping)

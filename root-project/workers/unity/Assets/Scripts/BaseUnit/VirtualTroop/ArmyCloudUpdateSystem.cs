@@ -48,7 +48,7 @@ namespace AdvancedGears
                 var containers = army.TroopContainers;
 
                 float range = RangeDictionary.ArmyCloudRange;
-                var unit = getNearestPlayer(pos, range, selfId:null, UnitType.Advanced);
+                var unit = getNearestPlayer(pos, range, selfId:null, GetSingleUnitTypes(UnitType.Advanced));
                 if (unit == null)
                     Virtualize(status.Side, pos, range, containers);
                 else
@@ -60,7 +60,7 @@ namespace AdvancedGears
         {
             containers.Clear();
 
-            var allies = getAllyUnits(side, position, range, allowDead:false, UnitType.Commander);
+            var allies = getAllyUnits(side, position, range, allowDead:false, GetSingleUnitTypes(UnitType.Commander));
             foreach(var u in allies) {
                 if (!this.TryGetComponent<BaseUnitHealth.Component>(u.id, out var health) ||
                     !this.TryGetComponent<GunComponent.Component>(u.id, out var gun) ||

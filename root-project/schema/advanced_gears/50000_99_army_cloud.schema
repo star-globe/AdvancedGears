@@ -43,3 +43,11 @@ component ArmyCloud {
 
     event TotalHealthDiff total_health_diff;
 }
+
+component VirtualArmy {
+    id = 50100;
+
+    bool is_active = 1;
+    map<EntityId,SimpleUnit> simple_units = 2;
+    IntervalChecker alarm_inter = 3;
+}

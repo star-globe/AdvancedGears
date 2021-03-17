@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using Improbable.Gdk.Subscriptions;
@@ -19,18 +17,27 @@ namespace AdvancedGears
             readonly List<EntityId> followers = new List<EntityId>();
             readonly List<EntityId> underCommanders = new List<EntityId>();
 
-            IEnumerable<List<EntityId>> allLists
+            List<EntityId>[] allLists = null;
+            List<EntityId>[] AllLists
             {
                 get
                 {
-                    yield return followers;
-                    yield return underCommanders;
+                    allLists = allLists ?? new List<EntityId>[] { followers, underCommanders};
+                    return allLists;
                 }
             }
 
             public bool IsNeedToUpdate
             {
-                get { return allLists.Any(l => l.Count > 0); }
+                get
+                {
+                    foreach (var l in this.AllLists) {
+                        if (l.Count > 0)
+                            return true;
+                    }
+
+                    return false;
+                }
             }
 
             public void AddFollowerInfo(in FollowerInfo info)

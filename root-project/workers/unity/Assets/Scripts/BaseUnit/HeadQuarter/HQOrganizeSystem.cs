@@ -58,7 +58,7 @@ namespace AdvancedGears
 
                 foreach (var order in headQuarter.Orders) {
                     var pos = order.Pos.ToWorkerPosition(this.Origin);
-                    var str = getNearestAlly(entityId.EntityId, status.Side, pos, RangeDictionary.Get(FixedRangeType.RadioRange), allowDead:false, UnitType.Stronghold);
+                    var str = getNearestAlly(entityId.EntityId, status.Side, pos, RangeDictionary.Get(FixedRangeType.RadioRange), allowDead:false, GetSingleUnitTypes(UnitType.Stronghold));
                     if (str == null)
                         continue;
 

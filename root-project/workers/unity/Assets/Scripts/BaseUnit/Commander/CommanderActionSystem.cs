@@ -79,7 +79,7 @@ namespace AdvancedGears
         // boids commander
         void ApplyOrder(in Vector3 pos, UnitSide side, OrderType order, uint rank, in BaseUnitTarget.Component tgt)
         {
-            var units = getAllyUnits(side, pos, RangeDictionary.Get(FixedRangeType.PlatoonRange), allowDead:false, UnitType.Soldier);
+            var units = getAllyUnits(side, pos, RangeDictionary.Get(FixedRangeType.PlatoonRange), allowDead:false, GetSingleUnitTypes(UnitType.Soldier));
             foreach (var u in units) {
                 SetCommand(u.id, new TargetInfo(tgt.TargetUnit, tgt.PowerRate), order);
             }

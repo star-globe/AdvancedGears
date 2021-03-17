@@ -21,7 +21,8 @@ namespace AdvancedGears
         IntervalChecker interAccess;
         const int frequencyManager = 5;
 
-        protected bool hexChanged { get; private set; } = false;
+        int changedCount = 0;
+        protected bool hexChanged { get { return changedCount > 0; } }
 
         protected override void OnCreate()
         {
@@ -55,7 +56,7 @@ namespace AdvancedGears
             if (base.HexDic == null)
                 return;
 
-            int changedCount = 0;
+            changedCount = 0;
             Entities.With(facilityGroup).ForEach((Entity entity,
                                       ref HexFacility.Component facility,
                                       ref BaseUnitStatus.Component status,
@@ -75,10 +76,8 @@ namespace AdvancedGears
                 hex.Side = status.Side;
                 this.UpdateSystem.SendEvent(new HexBase.SideChanged.Event(new SideChangedEvent(side)), hex.EntityId.EntityId);
 
-                Debug.LogFormat("Updated Index:{0} Side:{1}", hexIndex, side);
+                //Debug.LogFormat("Updated Index:{0} Side:{1}", hexIndex, side);
             });
-
-            hexChanged = changedCount > 0;
         }
 
         readonly Dictionary<UnitSide,Dictionary<uint, HexDetails>> borderHexListDic = new Dictionary<UnitSide,Dictionary<uint, HexDetails>>();
