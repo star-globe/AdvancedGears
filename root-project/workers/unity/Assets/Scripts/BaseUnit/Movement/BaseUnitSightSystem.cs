@@ -24,6 +24,9 @@ namespace AdvancedGears
         IntervalChecker intervalMovement;
         IntervalChecker intervalBoid;
 
+        EntityQueryBuilder.F_EDDD<BaseUnitSight.Component, BaseUnitStatus.Component, SpatialEntityId> boidQuery;
+        EntityQueryBuilder.F_EDDDD<BaseUnitMovement.Component, BaseUnitSight.Component, BaseUnitStatus.Component, SpatialEntityId> movementQuery;
+
         double deltaTime = -1.0;
 
         const int periodMovement = 20;
@@ -56,6 +59,9 @@ namespace AdvancedGears
             intervalBoid = IntervalCheckerInitializer.InitializedChecker(periodBoid);
 
             deltaTime = Time.ElapsedTime;
+
+            boidQuery = BoidQuery;
+            movementQuery = MovementQuery;
         }
 
         protected override void OnUpdate()
@@ -76,120 +82,123 @@ namespace AdvancedGears
                 container.spread = Vector3.zero;
             }
 
-            Entities.With(boidGroup).ForEach((Entity entity,
+            Entities.With(boidGroup).ForEach(boidQuery);
+        }
+
+        private void BoidQuery(Entity entity,
                               ref BaseUnitSight.Component sight,
                               ref BaseUnitStatus.Component status,
-                              ref SpatialEntityId entityId) =>
-            {
-                if (status.State != UnitState.Alive)
-                    return;
-                
-                if (UnitUtils.IsAutomaticallyMoving(status.Type) == false)
-                    return;
+                              ref SpatialEntityId entityId)
+        {
+            if (status.State != UnitState.Alive)
+                return;
+            
+            if (UnitUtils.IsAutomaticallyMoving(status.Type) == false)
+                return;
 
-                var unit = EntityManager.GetComponentObject<UnitTransform>(entity);
+            var unit = EntityManager.GetComponentObject<UnitTransform>(entity);
 
-                // check ground
-                if (unit == null || unit.GetGrounded(out var hitInfo) == false)
-                    return;
+            // check ground
+            if (unit == null || unit.GetGrounded(out var hitInfo) == false)
+                return;
 
-                var pos = unit.transform.position;
+            var pos = unit.transform.position;
 
-                Vector3? tgt = calc_update_boid(ref sight, sight.State, pos);
-                Vector3 spread = Vector3.zero;
+            Vector3? tgt = calc_update_boid(ref sight, sight.State, pos);
+            Vector3 spread = Vector3.zero;
 
-                var range = RangeDictionary.SpreadSize;
-                var bodySize = RangeDictionary.BodySize;
-                var units = getAllUnits(pos, range, allowDead:true);
-                foreach(var u in units) {
-                    var diff = pos - u.pos;
-                    var mag = Mathf.Max(bodySize, diff.magnitude);
+            var range = RangeDictionary.SpreadSize;
+            var bodySize = RangeDictionary.BodySize;
+            var units = getAllUnits(pos, range, allowDead: true);
+            foreach(var u in units) {
+                var diff = pos - u.pos;
+                var mag = Mathf.Max(bodySize, diff.magnitude);
 
-                    spread += diff.normalized * ((range / mag) - 1.0f) * bodySize;
-                }
+                spread += diff.normalized* ((range / mag) - 1.0f) * bodySize;
+            }
 
-                if (units.Count > 0)
-                    spread /= units.Count;
+            if (units.Count > 0)
+                spread /= units.Count;
 
-                var id = entityId.EntityId;
-                if (vectorDic.ContainsKey(id)) {
-                    var container = vectorDic[id];
-                    container.boidTarget = tgt;
-                    container.spread = spread;
-                }
-                else {
-                    vectorDic[entityId.EntityId] = new VectorContainer() { boidTarget = tgt, spread = spread };
-                }
-            });
+            var id = entityId.EntityId;
+            if (vectorDic.ContainsKey(id)) {
+                var container = vectorDic[id];
+                container.boidTarget = tgt;
+                container.spread = spread;
+            }
+            else {
+                vectorDic[entityId.EntityId] = new VectorContainer() { boidTarget = tgt, spread = spread };
+            }
         }
-        
+
         private void UpdateMovement()
         {
             if (CheckTime(ref intervalMovement) == false)
                 return;
 
             deltaTime = Time.ElapsedTime - deltaTime;
+            Entities.With(movementGroup).ForEach(movementQuery);
 
-            Entities.With(movementGroup).ForEach((Entity entity,
+            deltaTime = Time.ElapsedTime;
+        }
+
+        private void MovementQuery(Entity entity,
                                           ref BaseUnitMovement.Component movement,
                                           ref BaseUnitSight.Component sight,
                                           ref BaseUnitStatus.Component status,
-                                          ref SpatialEntityId entityId) =>
-            {
-                movement.MoveSpeed = 0.0f;
-                movement.RotSpeed = 0.0f;
+                                          ref SpatialEntityId entityId)
+        {
+            movement.MoveSpeed = 0.0f;
+            movement.RotSpeed = 0.0f;
 
-                if (status.State != UnitState.Alive)
-                    return;
+            if (status.State != UnitState.Alive)
+                return;
 
-                if (UnitUtils.IsAutomaticallyMoving(status.Type) == false)
-                    return;
+            if (UnitUtils.IsAutomaticallyMoving(status.Type) == false)
+                return;
 
-                var unit = EntityManager.GetComponentObject<UnitTransform>(entity);
+            var unit = EntityManager.GetComponentObject<UnitTransform>(entity);
 
-                // check ground
-                if (unit == null || unit.GetGrounded(out var hitInfo) == false)
-                    return;
+            // check ground
+            if (unit == null || unit.GetGrounded(out var hitInfo) == false)
+                return;
 
-                if (sight.State == TargetState.None)
-                    return;
+            if (sight.State == TargetState.None)
+                return;
 
-                var trans = unit.transform;
-                var pos = trans.position;
+            var trans = unit.transform;
+            var pos = trans.position;
 
-                Vector3? tgt = null;
-                Vector3 spread = Vector3.zero;
+            Vector3? tgt = null;
+            Vector3 spread = Vector3.zero;
 
-                var id = entityId.EntityId;
-                if (vectorDic.ContainsKey(id)) {
-                    tgt = vectorDic[id].boidTarget;
-                    spread = vectorDic[id].spread;
-                }
+            var id = entityId.EntityId;
+            if (vectorDic.ContainsKey(id)) {
+                tgt = vectorDic[id].boidTarget;
+                spread = vectorDic[id].spread;
+            }
 
-                if (tgt == null)
-                    tgt = sight.TargetPosition.ToWorkerPosition(this.Origin);
+            if (tgt == null)
+                tgt = sight.TargetPosition.ToWorkerPosition(this.Origin);
 
-                if (RangeDictionary.IsSpreadValid(spread)) {
-                    var length = (tgt.Value - pos).magnitude;
-                    tgt += spread * Mathf.Max(1.0f, (length / RangeDictionary.SpreadSize));
-                }
+            if (RangeDictionary.IsSpreadValid(spread)) {
+                var length = (tgt.Value - pos).magnitude;
+                tgt += spread * Mathf.Max(1.0f, (length / RangeDictionary.SpreadSize));
+            }
 
-                var positionDiff = tgt.Value - pos;
+            var positionDiff = tgt.Value - pos;
 
-                var forward = get_forward(positionDiff, sight.TargetRange);
+            var forward = get_forward(positionDiff, sight.TargetRange);
 
-                MovementDictionary.TryGet(status.Type, out var speed, out var rot);
+            MovementDictionary.TryGet(status.Type, out var speed, out var rot);
 
-                var isRotate = rotate(rot, trans, positionDiff);
+            var isRotate = rotate(rot, trans, positionDiff);
 
-                if (forward != 0.0f)
-                    movement.MoveSpeed = forward * speed;
+            if (forward != 0.0f)
+                movement.MoveSpeed = forward * speed;
 
-                if (isRotate != 0)
-                    movement.RotSpeed = rot * isRotate;
-            });
-
-            deltaTime = Time.ElapsedTime;
+            if (isRotate != 0)
+                movement.RotSpeed = rot * isRotate;
         }
 
         #region method
