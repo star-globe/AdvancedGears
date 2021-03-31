@@ -151,7 +151,7 @@ GameObject:
   - component: {fileID: 5042866399292847529}
   - component: {fileID: 1266903413787837440}
   m_Layer: 11
-  m_Name: UpperAim
+  m_Name: UnderArmAim
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -215,10 +215,10 @@ MonoBehaviour:
     m_Offset: {x: 0, y: 0, z: 0}
     m_MinLimit: -180
     m_MaxLimit: 180
-    m_AimAxis: 4
+    m_AimAxis: 5
     m_MaintainOffset: 0
     m_ConstrainedAxes:
-      x: 0
+      x: 1
       y: 0
       z: 0
   m_SourceObjectsGUIToggle: 1
@@ -348,9 +348,9 @@ MonoBehaviour:
     m_AimAxis: 3
     m_MaintainOffset: 0
     m_ConstrainedAxes:
-      x: 1
+      x: 0
       y: 0
-      z: 0
+      z: 1
   m_SourceObjectsGUIToggle: 1
   m_SettingsGUIToggle: 1
 --- !u!1001 &827614754546241377
@@ -420,11 +420,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: shoulder_test
       objectReference: {fileID: 0}
-    - target: {fileID: 3561670916756672786, guid: c9f26f517a36f0341b7eb2458eecb9e6,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c9f26f517a36f0341b7eb2458eecb9e6, type: 3}
 --- !u!4 &934213551493785738 stripped
@@ -463,7 +458,7 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 827614754546241377}
   m_PrefabAsset: {fileID: 0}
---- !u!1001 &6045770613330935614
+--- !u!1001 &2258313175516622693
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
