@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3140021568073339255}
   m_Layer: 11
-  m_Name: target
+  m_Name: ElbowTarget
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -30,6 +30,36 @@ Transform:
   m_Father: {fileID: 5729995744257927469}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2686836785716163597
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5732529355013366332}
+  m_Layer: 11
+  m_Name: UnderArmTarget
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5732529355013366332
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2686836785716163597}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: -5, z: 11.45}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 5729995744257927469}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3018351478140721090
 GameObject:
   m_ObjectHideFlags: 0
@@ -42,7 +72,7 @@ GameObject:
   - component: {fileID: 3661862828525629576}
   - component: {fileID: 8289851205556770796}
   - component: {fileID: 1688065013105793398}
-  - component: {fileID: 4469841134859384239}
+  - component: {fileID: 4388657102043977795}
   m_Layer: 0
   m_Name: ArmUnit
   m_TagString: Untagged
@@ -64,6 +94,7 @@ Transform:
   - {fileID: 934213551493785738}
   - {fileID: 7917377250920363918}
   - {fileID: 3140021568073339255}
+  - {fileID: 5732529355013366332}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -125,7 +156,7 @@ MonoBehaviour:
     transform: {fileID: 7734396743644272523}
   - hash: 762136195
     transform: {fileID: 5626510702787545691}
---- !u!114 &4469841134859384239
+--- !u!114 &4388657102043977795
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -138,8 +169,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controllers:
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 3373522095880823796}
+  - {fileID: 7667620783478129410}
+  aimTargetOffset: {fileID: 5044700393902990258}
 --- !u!1 &4654843742343049259
 GameObject:
   m_ObjectHideFlags: 0
@@ -150,6 +182,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5042866399292847529}
   - component: {fileID: 1266903413787837440}
+  - component: {fileID: 7667620783478129410}
   m_Layer: 11
   m_Name: UnderArmAim
   m_TagString: Untagged
@@ -189,7 +222,7 @@ MonoBehaviour:
     m_SourceObjects:
       m_Length: 1
       m_Item0:
-        transform: {fileID: 3140021568073339255}
+        transform: {fileID: 5732529355013366332}
         weight: 1
       m_Item1:
         transform: {fileID: 0}
@@ -223,6 +256,19 @@ MonoBehaviour:
       z: 0
   m_SourceObjectsGUIToggle: 1
   m_SettingsGUIToggle: 1
+--- !u!114 &7667620783478129410
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4654843742343049259}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51bc9f676603f9c46bca965dabc84268, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rotSpeed: 30
 --- !u!1 &4793953771535080742
 GameObject:
   m_ObjectHideFlags: 0
@@ -279,6 +325,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5989290308085277334}
   - component: {fileID: 4219533731962772719}
+  - component: {fileID: 3373522095880823796}
   m_Layer: 11
   m_Name: ElbowAim
   m_TagString: Untagged
@@ -353,6 +400,19 @@ MonoBehaviour:
       z: 1
   m_SourceObjectsGUIToggle: 1
   m_SettingsGUIToggle: 1
+--- !u!114 &3373522095880823796
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5770106997546820680}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51bc9f676603f9c46bca965dabc84268, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rotSpeed: 30
 --- !u!1001 &827614754546241377
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -527,3 +587,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 23ccaae45c423ca498f3b13a0932c0af, type: 3}
+--- !u!114 &5044700393902990258 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6437125571009629399, guid: 23ccaae45c423ca498f3b13a0932c0af,
+    type: 3}
+  m_PrefabInstance: {fileID: 2258313175516622693}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3108d6f2fe3a2d5479fce7104d468685, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

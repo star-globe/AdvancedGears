@@ -78,15 +78,19 @@ namespace AdvancedGears
                     pos = this.ConstrainedTransform.TransformPoint(pos);
                 }
 
-                if (offsetTrans != null && offsetVector3 != Vector3.zero)
-                    pos -= offsetTrans.TransformPoint(offsetVector3);
+                if (this.ConstrainedTransform != null &&
+                    offsetTrans != null &&
+                    offsetVector3 != Vector3.zero) {
+                    pos -= offsetTrans.TransformVector(offsetVector3);
+                    pos -= offsetTrans.position - this.ConstrainedTransform.position;
+                }
 
                 return pos;
             }
         }
 
         Transform offsetTrans = null;
-        Vector3 offsetVector3 Vector3.zero;
+        Vector3 offsetVector3 = Vector3.zero;
 
         float speed = 0.0f;
 
@@ -115,6 +119,8 @@ namespace AdvancedGears
             this.offsetVector3 = vec;
         }
 
+        const float diffThreshhold = 0.02f;
+
         public void Rotate(float time)
         {
             if (this.SourceTransform == null ||
@@ -136,7 +142,7 @@ namespace AdvancedGears
             source.Normalize();
 
             var diff = tgt - source;
-            if (diff.sqrMagnitude < 0.01f * 0.01f)
+            if (diff.sqrMagnitude < diffThreshhold * diffThreshhold)
                 return;
 
             var axis = Vector3.Cross(source, tgt);

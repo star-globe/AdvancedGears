@@ -28,7 +28,7 @@ namespace AdvancedGears
                     return Vector3.zero;
 
                 var diff = aimTargetTrans.position - this.CurrentTrans.position;
-                return this.CurrentTrans.InverseTransformPoint(diff);
+                return this.CurrentTrans.InverseTransformVector(diff);
             }
         }
     }

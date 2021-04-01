@@ -19,6 +19,8 @@ namespace AdvancedGears
             }
 
             SetAimTarget(target);
+
+            Rotate(Time.deltaTime);
         }
     }
 }
