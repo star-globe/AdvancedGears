@@ -70,16 +70,23 @@ namespace AdvancedGears
         {
             get
             {
-                if (target != null)
-                    return target.Value;
-
-                var pos = defaultPosition;
-                if (this.ConstrainedTransform != null)
+                Vector3 pos = defaultPosition;
+                if (target != null) {
+                    pos = target.Value;
+                }
+                else if(this.ConstrainedTransform != null) {
                     pos = this.ConstrainedTransform.TransformPoint(pos);
+                }
+
+                if (offsetTrans != null && offsetVector3 != Vector3.zero)
+                    pos -= offsetTrans.TransformPoint(offsetVector3);
 
                 return pos;
             }
         }
+
+        Transform offsetTrans = null;
+        Vector3 offsetVector3 Vector3.zero;
 
         float speed = 0.0f;
 
@@ -100,6 +107,12 @@ namespace AdvancedGears
         public void SetRotSpeed(float speed)
         {
             this.speed = speed;
+        }
+
+        public void SetOffset(Transform trans, Vector3 vec)
+        {
+            this.offsetTrans = trans;
+            this.offsetVector3 = vec;
         }
 
         public void Rotate(float time)

@@ -10,8 +10,21 @@ namespace AdvancedGears
         [SerializeField]
         List<AimSpeedController> controllers = null;
 
+        [SerializeField]
+        AimTargetOffset aimTargetOffset = null;
+
+        bool isSetOffset = false;
+
         public void SetAimTarget(Vector3? target)
         {
+            if (isSetOffset == false && aimTargetOffset != null) {
+                var vec = aimTargetOffset.AimOffsetVector;
+                foreach(var cnt in controllers)
+                    cnt.SetOffset(aimTargetOffset.transform, vec);
+
+                isSetOffset = true;
+            }
+
             foreach(var cnt in controllers)
                 cnt.SetTargetPosition(target);
         }
