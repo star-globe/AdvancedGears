@@ -12,45 +12,47 @@ namespace AdvancedGears
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
-    internal class LocalLockOnSystem : SpatialComponentSystem
+    internal class LocalLockOnSystem : BaseSearchSystem
     {
         private EntityQuerySet querySet;
+        const int frequency = 5; 
 
-        private readonly Dictionary<EntityId,BattleCameraInfo> cameraDic = new Dictionary<EntityId,BattleCameraInfo>();
-        private readonly Dictionary<EntityId,List<EntityId>> lockOnListDic = new Dictionary<EntityId,List<EntityId>>();
+        readonly Dictionary<EntityId,BattleCameraInfo> cameraDic = new Dictionary<EntityId,BattleCameraInfo>();
+        readonly Dictionary<EntityId,List<EntityId>> lockOnListDic = new Dictionary<EntityId,List<EntityId>>();
+        readonly Collider[] colls = new Collider[256];
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
             querySet = new EntityQuerySet(GetEntityQuery(
-                                            ComponentType.ReadOnly<BaseUnitStatus.Component>(),
-                                            ComponentType.ReadOnly<Transform>(),
-                                            ComponentType.ReadOnly<SpatialEntityId>()), 4);
+                                            ComponentType.ReadOnly<BaseUnitStatus.Component>()
+                                            ComponentType.ReadOnly<BattleCameraInfo>(), frequency);
         }
 
         protected override void OnUpdate()
         {
-            if (CheckTime(ref querySet.inter) == false)
+            if (CheckTime(ref inter) == false)
                 return;
 
             foreach (var kvp in lockOnListDic)
                 kvp.Value.Clear();
 
             Entities.With(querySet.group).ForEach((Entity entity,
-                                          ref BaseUnitStatus.Component status,
-                                          ref SpatialEntityId entityId) =>
+                                            ref BaseUnitStatus.Component status,
+                                            ref BattleCameraInfo cam) =>
             {
                 if (status.State == UnitState.Dead)
                     return;
 
-                var trans = EntityManager.GetComponentObject<Transform>(entity);
+                var trans = cam.trans;
                 var pos = trans.position;
 
-                foreach (var kvp in cameraDic)
+                var units = getUnitsFromCapsel(status.Side, trans.position, cam.EndPOint, cam.CapsuleRadius, isEnemy:true, allowDead:false, null, null);
+                foreach (var u in units)
                 {
-                    if (kvp.Value.InSide(pos))
-                        lockOnListDic[kvp.Key].Add(entityId.EntityId);
+                    if (cam.InSide(u.pos))
+                        lockOnListDic[cam.entityId].Add(u.id);
                 }
             });
         }
@@ -75,11 +77,13 @@ namespace AdvancedGears
         }
     }
 
-    public struct BattleCameraInfo
+    [Serializable]
+    public struct BattleCameraInfo : IComponentData
     {
         public Transform trans;
         public float range;
         public float rad;
+        public EntityId entityId;
 
         public bool InSide(in Vector3 pos)
         {
@@ -93,6 +97,25 @@ namespace AdvancedGears
             var cross = Vector3.Cross(diff.normalized, trans.forward);
             var sin = Mathf.Sin(rad * Mathf.Deg2Rad);
             return cross.sqrMagnitude < sin * sin;
+        }
+
+        public float CapsuleRadius
+        {
+            get
+            {
+                return range * Mathf.Tan(rad * Mathf.Deg2Rad);
+            }
+        }
+
+        public Vector3 EntPoint
+        {
+            get
+            {
+                if (trans == null)
+                    return Vector3.zero;
+
+                return trans.position + trans.foward * range;
+            }
         }
     }
 }

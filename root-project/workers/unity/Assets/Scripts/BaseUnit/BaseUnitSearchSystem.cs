@@ -376,8 +376,19 @@ namespace AdvancedGears
 
         protected List<UnitInfo> getUnits(UnitSide self_side, in Vector3 pos, float length, bool? isEnemy, bool allowDead, EntityId? selfId, UnitType[] types)
         {
-            int index = 0;
             var count = Physics.OverlapSphereNonAlloc(pos, length, colls, this.UnitLayer);
+            return getUnitsFromColls(count, colls, self_side, isEnemy, allowDead, selfId, types);
+        }
+
+        protected List<UnitInfo> getUnitsFromCapsel(UnitSide self_side, in Vector3 point0, in Vector3 point1, float radius, bool? isEnemy, bool allowDead, EntityId? selfId, UnitType[] types)
+        {
+            var count = Physics.OverlapCapsuleNonAlloc(point0, point1, radius, colls, this.UnitLayer);
+            return getUnitsFromColls(count, colls, self_side, isEnemy, allowDead, selfId, types);
+        }
+
+        private List<UnitInfo> getUnitsFromColls(int count, Colliders[] colls, UnitSide self_side, bool? isEnemy, bool allowDead, EntityId? selfId, UnitType[] types)
+        {
+            int index = 0;
             for (var i = 0; i < count; i++)
             {
                 var col = colls[i];
