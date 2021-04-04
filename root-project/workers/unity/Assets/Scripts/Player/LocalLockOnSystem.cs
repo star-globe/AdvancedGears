@@ -45,10 +45,7 @@ namespace AdvancedGears
                 if (status.State == UnitState.Dead)
                     return;
 
-                var trans = cam.trans;
-                var pos = trans.position;
-
-                var units = getUnitsFromCapsel(status.Side, trans.position, cam.EndPoint, cam.CapsuleRadius, isEnemy:true, allowDead:false, null, null);
+                var units = getUnitsFromCapsel(status.Side, cam.pos, cam.EndPoint, cam.CapsuleRadius, isEnemy:true, allowDead:false, null, null);
                 foreach (var u in units)
                 {
                     if (cam.InSide(u.pos))
@@ -77,24 +74,24 @@ namespace AdvancedGears
         }
     }
 
-    [Serializable]
     public struct BattleCameraInfo : IComponentData
     {
-        public Transform trans;
+        public Vector3 pos;
+        public Vector3 forward;
         public float range;
         public float rad;
         public EntityId entityId;
 
         public bool InSide(in Vector3 pos)
         {
-            var diff = pos - trans.position;
+            var diff = pos - pos;
             if (diff.sqrMagnitude > range * range)
                 return false;
 
-            if (Vector3.Dot(diff, trans.forward) < 0)
+            if (Vector3.Dot(diff, forward) < 0)
                 return false;
 
-            var cross = Vector3.Cross(diff.normalized, trans.forward);
+            var cross = Vector3.Cross(diff.normalized, forward);
             var sin = Mathf.Sin(rad * Mathf.Deg2Rad);
             return cross.sqrMagnitude < sin * sin;
         }
@@ -111,10 +108,7 @@ namespace AdvancedGears
         {
             get
             {
-                if (trans == null)
-                    return Vector3.zero;
-
-                return trans.position + trans.forward * range;
+                return pos + forward * range;
             }
         }
     }

@@ -13,6 +13,9 @@ namespace AdvancedGears
         [SerializeField]
         PostureBoneContainer container;
 
+        [SerializeField]
+        CombinedAimTracer aimtracer;
+
 		void Start ()
 		{
 			Assert.IsNotNull(trigger);
@@ -26,6 +29,11 @@ namespace AdvancedGears
             if (container == null)
                 return;
 
+            if (aimtracer != null)
+            {
+                aimtracer.SetAimTarget(FowardTarget);
+            }
+
             if (Input.GetKey(KeyCode.Mouse0))
             {
                 foreach (var kvp in container.CannonDic)
@@ -34,5 +42,13 @@ namespace AdvancedGears
                 }
 			}
 		}
+
+        Vector3 FowardTarget
+        {
+            get
+            {
+                return this.transform.forward * 100.0f + this.transform.position;
+            }
+        }
 	}
 }
