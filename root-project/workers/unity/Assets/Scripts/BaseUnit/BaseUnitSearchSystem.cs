@@ -386,7 +386,7 @@ namespace AdvancedGears
             return getUnitsFromColls(count, colls, self_side, isEnemy, allowDead, selfId, types);
         }
 
-        private List<UnitInfo> getUnitsFromColls(int count, Colliders[] colls, UnitSide self_side, bool? isEnemy, bool allowDead, EntityId? selfId, UnitType[] types)
+        private List<UnitInfo> getUnitsFromColls(int count, Collider[] colls, UnitSide self_side, bool? isEnemy, bool allowDead, EntityId? selfId, UnitType[] types)
         {
             int index = 0;
             for (var i = 0; i < count; i++)

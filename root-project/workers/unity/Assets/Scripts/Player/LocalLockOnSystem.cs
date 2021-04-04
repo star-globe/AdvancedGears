@@ -26,13 +26,13 @@ namespace AdvancedGears
             base.OnCreate();
 
             querySet = new EntityQuerySet(GetEntityQuery(
-                                            ComponentType.ReadOnly<BaseUnitStatus.Component>()
-                                            ComponentType.ReadOnly<BattleCameraInfo>(), frequency);
+                                            ComponentType.ReadOnly<BaseUnitStatus.Component>(),
+                                            ComponentType.ReadOnly<BattleCameraInfo>()), frequency);
         }
 
         protected override void OnUpdate()
         {
-            if (CheckTime(ref inter) == false)
+            if (CheckTime(ref querySet.inter) == false)
                 return;
 
             foreach (var kvp in lockOnListDic)
@@ -48,7 +48,7 @@ namespace AdvancedGears
                 var trans = cam.trans;
                 var pos = trans.position;
 
-                var units = getUnitsFromCapsel(status.Side, trans.position, cam.EndPOint, cam.CapsuleRadius, isEnemy:true, allowDead:false, null, null);
+                var units = getUnitsFromCapsel(status.Side, trans.position, cam.EndPoint, cam.CapsuleRadius, isEnemy:true, allowDead:false, null, null);
                 foreach (var u in units)
                 {
                     if (cam.InSide(u.pos))
@@ -107,14 +107,14 @@ namespace AdvancedGears
             }
         }
 
-        public Vector3 EntPoint
+        public Vector3 EndPoint
         {
             get
             {
                 if (trans == null)
                     return Vector3.zero;
 
-                return trans.position + trans.foward * range;
+                return trans.position + trans.forward * range;
             }
         }
     }
