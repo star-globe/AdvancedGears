@@ -1,8 +1,4 @@
-using System;
-using Improbable;
 using Improbable.Gdk.Core;
-using Improbable.Gdk.TransformSynchronization;
-using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
 
@@ -13,7 +9,7 @@ namespace AdvancedGears
     internal class BaseUnitMovementSystem : SpatialComponentSystem
     {
         EntityQuery group;
-        EntityQueryBuilder.F_EDDD<BaseUnitMovement.Component, BaseUnitStatus.Component, FuelComponent.Component> action;
+        EntityQueryBuilder.F_EDD<BaseUnitMovement.Component, BaseUnitStatus.Component> action;
 
         protected override void OnCreate()
         {
@@ -22,9 +18,7 @@ namespace AdvancedGears
             group = GetEntityQuery(
                     ComponentType.ReadOnly<UnitTransform>(),
                     ComponentType.ReadOnly<BaseUnitMovement.Component>(),
-                    ComponentType.ReadOnly<BaseUnitStatus.Component>(),
-                    ComponentType.ReadWrite<FuelComponent.Component>(),
-                    ComponentType.ReadOnly<FuelComponent.HasAuthority>()
+                    ComponentType.ReadOnly<BaseUnitStatus.Component>()
             );
 
             action = Query;
@@ -37,18 +31,13 @@ namespace AdvancedGears
 
         private void Query(Entity entity,
                                           ref BaseUnitMovement.Component movement,
-                                          ref BaseUnitStatus.Component status,
-                                          ref FuelComponent.Component fuel)
+                                          ref BaseUnitStatus.Component status)
         {
             if (status.State != UnitState.Alive)
                 return;
 
             if (status.Type != UnitType.Soldier &&
                 status.Type != UnitType.Commander)
-                return;
-
-            // check fueld
-            if (fuel.Fuel == 0)
                 return;
 
             var unit = EntityManager.GetComponentObject<UnitTransform>(entity);
@@ -60,7 +49,7 @@ namespace AdvancedGears
             var rigidbody = EntityManager.GetComponentObject<Rigidbody>(entity);
 
             if (movement.MoveSpeed == 0.0f &&
-                movement.RotSpeed == 0.0f)//target.State == TargetState.None)
+                movement.RotSpeed == 0.0f)
             {
                 return;
             }
@@ -76,11 +65,6 @@ namespace AdvancedGears
 
             if (movement.RotSpeed != 0.0f)
                 trans.Rotate(trans.up, movement.RotSpeed * Time.fixedDeltaTime);
-
-            var consume = (int) (moveVec.magnitude * movement.ConsumeRate);
-            fuel.Fuel -= consume;
-            if (fuel.Fuel < 0)
-                fuel.Fuel = 0;
         }
     }
 }

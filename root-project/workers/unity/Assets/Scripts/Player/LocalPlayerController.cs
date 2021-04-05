@@ -16,6 +16,9 @@ namespace AdvancedGears
         [SerializeField]
         CombinedAimTracer aimtracer;
 
+        [SerializeField]
+        Transform baseTarget;
+
 		void Start ()
 		{
 			Assert.IsNotNull(trigger);
@@ -23,16 +26,17 @@ namespace AdvancedGears
 	
 		void Update ()
 		{
+            if (aimtracer != null)
+            {
+                aimtracer.SetAimTarget(FowardTarget);
+                aimtracer.Rotate(Time.deltaTime);
+            }
+
             if (!trigger.IsAvailable)
                 return;
 
             if (container == null)
                 return;
-
-            if (aimtracer != null)
-            {
-                aimtracer.SetAimTarget(FowardTarget);
-            }
 
             if (Input.GetKey(KeyCode.Mouse0))
             {
@@ -47,7 +51,7 @@ namespace AdvancedGears
         {
             get
             {
-                return this.transform.forward * 100.0f + this.transform.position;
+                return baseTarget.position;
             }
         }
 	}
