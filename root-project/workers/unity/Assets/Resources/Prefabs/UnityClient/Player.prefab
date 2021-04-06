@@ -115,7 +115,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   trigger: {fileID: 7801269306611005324}
   container: {fileID: 606604514533567823}
-  aimtracer: {fileID: 5490355934134304921}
+  aimtracers:
+  - {fileID: 5490355934134304921}
+  - {fileID: 4826624046747931564}
   baseTarget: {fileID: 3222224769231522126}
 --- !u!114 &-6066956962702012113
 MonoBehaviour:
@@ -258,6 +260,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4215506894099473753, guid: 1ca7c6aef45df8047b0239f705e7bbe2,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: -0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8787520871982474494, guid: 1ca7c6aef45df8047b0239f705e7bbe2,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1ca7c6aef45df8047b0239f705e7bbe2, type: 3}
 --- !u!4 &798983719167830449 stripped
@@ -329,6 +341,18 @@ MeshRenderer:
 --- !u!114 &5490355934134304921 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5127599786050176770, guid: 1ca7c6aef45df8047b0239f705e7bbe2,
+    type: 3}
+  m_PrefabInstance: {fileID: 799755572087572379}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6bca8e86911c3542a9008fa81e03520, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &4826624046747931564 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5324048108323050551, guid: 1ca7c6aef45df8047b0239f705e7bbe2,
     type: 3}
   m_PrefabInstance: {fileID: 799755572087572379}
   m_PrefabAsset: {fileID: 0}

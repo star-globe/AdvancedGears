@@ -21,11 +21,15 @@ namespace AdvancedGears
                 var vec = aimTargetOffset.AimOffsetVector;
                 foreach(var cnt in controllers)
                     cnt.SetOffset(aimTargetOffset.transform, vec);
-
+            
                 isSetOffset = true;
             }
 
-            foreach(var cnt in controllers)
+            if (target != null) {
+                target = this.transform.InverseTransformPoint(target.Value) + this.transform.position;
+            }
+
+            foreach (var cnt in controllers)
                 cnt.SetTargetPosition(target);
         }
 

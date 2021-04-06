@@ -14,7 +14,7 @@ namespace AdvancedGears
         PostureBoneContainer container;
 
         [SerializeField]
-        CombinedAimTracer aimtracer;
+        CombinedAimTracer[] aimtracers;
 
         [SerializeField]
         Transform baseTarget;
@@ -26,10 +26,10 @@ namespace AdvancedGears
 	
 		void Update ()
 		{
-            if (aimtracer != null)
+            foreach (var tracer in aimtracers)
             {
-                aimtracer.SetAimTarget(FowardTarget);
-                aimtracer.Rotate(Time.deltaTime);
+                tracer.SetAimTarget(FowardTarget);
+                tracer.Rotate(Time.deltaTime);
             }
 
             if (!trigger.IsAvailable)
