@@ -17,7 +17,6 @@ namespace AdvancedGears
         private EntityQuerySet querySet;
         const int frequency = 5; 
 
-        readonly Dictionary<EntityId,BattleCameraInfo> cameraDic = new Dictionary<EntityId,BattleCameraInfo>();
         readonly Dictionary<EntityId,List<EntityId>> lockOnListDic = new Dictionary<EntityId,List<EntityId>>();
         readonly Collider[] colls = new Collider[256];
 
@@ -27,6 +26,7 @@ namespace AdvancedGears
 
             querySet = new EntityQuerySet(GetEntityQuery(
                                             ComponentType.ReadOnly<BaseUnitStatus.Component>(),
+                                            ComponentType.ReadOnly<Transform>(),
                                             ComponentType.ReadOnly<BattleCameraInfo>()), frequency);
         }
 
@@ -45,26 +45,17 @@ namespace AdvancedGears
                 if (status.State == UnitState.Dead)
                     return;
 
-                var units = getUnitsFromCapsel(status.Side, cam.pos, cam.EndPoint, cam.CapsuleRadius, isEnemy:true, allowDead:false, null, null);
+                var trans = EntityManager.GetComponentObject<Transform>(entity);
+                if (trans == null)
+                    return;
+
+                var units = getUnitsFromCapsel(status.Side, trans.position, cam.GetEndPoint(trans), cam.CapsuleRadius, isEnemy:true, allowDead:false, null, null);
                 foreach (var u in units)
                 {
-                    if (cam.InSide(u.pos))
+                    if (cam.InSide(u.pos, trans.position))
                         lockOnListDic[cam.entityId].Add(u.id);
                 }
             });
-        }
-
-        public void RegisterCamera(EntityId entityId, BattleCameraInfo camInfo)
-        {
-            cameraDic.Add(entityId, camInfo);
-
-            if (lockOnListDic.ContainsKey(entityId) == false)
-                lockOnListDic[entityId] = new List<EntityId>();
-        }
-
-        public void RemoveCamera(EntityId entityId)
-        {
-            cameraDic.Remove(entityId);
         }
 
         public List<EntityId> GetLockOnList(EntityId entityId)
@@ -74,17 +65,16 @@ namespace AdvancedGears
         }
     }
 
+    [Serializable]
     public struct BattleCameraInfo : IComponentData
     {
-        public Vector3 pos;
-        public Vector3 forward;
         public float range;
         public float rad;
         public EntityId entityId;
 
-        public bool InSide(in Vector3 pos)
+        public bool InSide(in Vector3 pos, in Vector3 from)
         {
-            var diff = pos - pos;
+            var diff = pos - from;
             if (diff.sqrMagnitude > range * range)
                 return false;
 
@@ -104,12 +94,14 @@ namespace AdvancedGears
             }
         }
 
-        public Vector3 EndPoint
+        public Vector3 GetEndPoint(Transform trans)
         {
-            get
-            {
-                return pos + forward * range;
+            if (trans == null) {
+                Debug.Log("GetEndPoint:Transform is null.");
+                return Vector3.zero;
             }
+
+            return trans.positioin + transform.forward * range;
         }
     }
 }

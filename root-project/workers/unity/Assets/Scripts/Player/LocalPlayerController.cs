@@ -19,6 +19,10 @@ namespace AdvancedGears
         [SerializeField]
         Transform baseTarget;
 
+        List<Vector3> enemyPosList = null;
+        Vector3 targetPosition;
+
+
 		void Start ()
 		{
 			Assert.IsNotNull(trigger);
@@ -26,6 +30,24 @@ namespace AdvancedGears
 	
 		void Update ()
 		{
+            if (enemyPosList != null && enemyPosList.Count > 0) {
+                float length = float.MaxValue;
+                var pos = transform.position;
+                foreach (var e in enemyPosList) {
+                    var mag = (e - pos).sqrMagnitude;
+                    if (mag > length)
+                        continue;
+
+                    targetPosition = e;
+                    length = mag;
+                }
+            }
+            else
+            {
+                targetPosition = FowardTarget;
+            }
+
+
             foreach (var tracer in aimtracers)
             {
                 tracer.SetAimTarget(FowardTarget);
