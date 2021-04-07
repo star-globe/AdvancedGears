@@ -20,7 +20,7 @@ namespace AdvancedGears
             if (isSetOffset == false && aimTargetOffset != null) {
                 var vec = aimTargetOffset.AimOffsetVector;
                 foreach(var cnt in controllers)
-                    cnt.SetOffset(aimTargetOffset.transform, vec);
+                    cnt.SetOffset(this.transform, aimTargetOffset.transform, vec);
             
                 isSetOffset = true;
             }

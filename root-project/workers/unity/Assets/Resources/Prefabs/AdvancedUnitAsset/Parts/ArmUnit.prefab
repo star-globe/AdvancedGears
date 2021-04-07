@@ -172,7 +172,6 @@ MonoBehaviour:
   - {fileID: 3373522095880823796}
   - {fileID: 7667620783478129410}
   aimTargetOffset: {fileID: 5044700393902990258}
-  root: {fileID: 934213551493785738}
 --- !u!1 &4654843742343049259
 GameObject:
   m_ObjectHideFlags: 0
@@ -247,8 +246,8 @@ MonoBehaviour:
         transform: {fileID: 0}
         weight: 0
     m_Offset: {x: 0, y: 0, z: 0}
-    m_MinLimit: -90
-    m_MaxLimit: 0
+    m_MinLimit: 0
+    m_MaxLimit: 180
     m_AimAxis: 5
     m_MaintainOffset: 0
     m_ConstrainedAxes:

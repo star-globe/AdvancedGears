@@ -79,12 +79,10 @@ namespace AdvancedGears
                 }
 
                 if (this.ConstrainedTransform != null &&
-                    offsetTrans != null &&
+                    offsetTrans != null && rootTrans != null &&
                     offsetVector3 != Vector3.zero) {
-                    pos -= offsetTrans.TransformVector(offsetVector3);
-                    pos -= offsetTrans.position - this.ConstrainedTransform.position;
-                    // pos -= rootTrans.InverseTransformVector(offsetTrans.Transformvector(offsetVector3));
-                    // pos -= rootTrans.InverseTransformVector(offsetTrans.position - this.ConstrainedTransform.position);
+                    pos -= rootTrans.InverseTransformVector(offsetTrans.TransformVector(offsetVector3));
+                    pos -= rootTrans.InverseTransformVector(offsetTrans.position - this.ConstrainedTransform.position);
                 }
 
                 return pos;
@@ -92,6 +90,7 @@ namespace AdvancedGears
         }
 
         Transform offsetTrans = null;
+        Transform rootTrans = null;
         Vector3 offsetVector3 = Vector3.zero;
 
         float speed = 0.0f;
@@ -115,10 +114,11 @@ namespace AdvancedGears
             this.speed = speed;
         }
 
-        public void SetOffset(Transform trans, Vector3 vec)
+        public void SetOffset(Transform root, Transform trans, Vector3 vec)
         {
             this.offsetTrans = trans;
             this.offsetVector3 = vec;
+            this.rootTrans = root;
         }
 
         const float diffThreshhold = 0.02f;

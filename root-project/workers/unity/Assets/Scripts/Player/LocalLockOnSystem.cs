@@ -52,7 +52,7 @@ namespace AdvancedGears
                 var units = getUnitsFromCapsel(status.Side, trans.position, cam.GetEndPoint(trans), cam.CapsuleRadius, isEnemy:true, allowDead:false, null, null);
                 foreach (var u in units)
                 {
-                    if (cam.InSide(u.pos, trans.position))
+                    if (cam.InSide(u.pos, trans.position, trans.forward))
                         lockOnListDic[cam.entityId].Add(u.id);
                 }
             });
@@ -72,7 +72,7 @@ namespace AdvancedGears
         public float rad;
         public EntityId entityId;
 
-        public bool InSide(in Vector3 pos, in Vector3 from)
+        public bool InSide(in Vector3 pos, in Vector3 from, in Vector3 forward)
         {
             var diff = pos - from;
             if (diff.sqrMagnitude > range * range)
@@ -101,7 +101,7 @@ namespace AdvancedGears
                 return Vector3.zero;
             }
 
-            return trans.positioin + transform.forward * range;
+            return trans.position + trans.forward * range;
         }
     }
 }
