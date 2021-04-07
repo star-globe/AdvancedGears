@@ -83,6 +83,8 @@ namespace AdvancedGears
                     offsetVector3 != Vector3.zero) {
                     pos -= offsetTrans.TransformVector(offsetVector3);
                     pos -= offsetTrans.position - this.ConstrainedTransform.position;
+                    // pos -= rootTrans.InverseTransformVector(offsetTrans.Transformvector(offsetVector3));
+                    // pos -= rootTrans.InverseTransformVector(offsetTrans.position - this.ConstrainedTransform.position);
                 }
 
                 return pos;
