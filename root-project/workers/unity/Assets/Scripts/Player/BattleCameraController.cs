@@ -1,13 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Assertions;
+using Unity.Entities;
+using Improbable.Gdk.Subscriptions;
+using Improbable.Gdk.Core;
 
 namespace AdvancedGears
 {
 	public class BattleCameraController : MonoBehaviour
 	{
-        [Require] Entity entity;
+        [Require] SpatialEntityId entityId;
         [Require] World world;
 
         [SerializeField]
@@ -29,7 +31,7 @@ namespace AdvancedGears
         void Start()
         {
             system = world.GetExistingSystem<LocalLockOnSystem>();
-            battleCamera.Value = new BattleCameraInfo(range, rad, entity.entityId);
+            battleCamera.Value = new BattleCameraInfo(range, rad, entityId.EntityId);
         }
 
         void Update()
@@ -39,7 +41,7 @@ namespace AdvancedGears
 
             posList.Clear();
             if (system != null) {
-                var list = system.GetLockOnList(entity.entityId);
+                var list = system.GetLockOnList(entityId.EntityId);
                 if (list != null) {
                     foreach (var u in list)
                         posList.Add(u.pos);

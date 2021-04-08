@@ -76,7 +76,7 @@ namespace AdvancedGears
         {
             this.range = range;
             this.rad = rad;
-            this.EntityId = entityId;
+            this.entityId = entityId;
         }
 
         public bool InSide(in Vector3 pos, in Vector3 from, in Vector3 forward)
