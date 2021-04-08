@@ -22,7 +22,6 @@ namespace AdvancedGears
         List<Vector3> enemyPosList = null;
         Vector3 targetPosition;
 
-
 		void Start ()
 		{
 			Assert.IsNotNull(trigger);
@@ -75,6 +74,11 @@ namespace AdvancedGears
             {
                 return baseTarget.position;
             }
+        }
+
+        public void SetEnemyPosList(List<Vector3> posList)
+        {
+            this.enemyPosList = posList;
         }
 	}
 }

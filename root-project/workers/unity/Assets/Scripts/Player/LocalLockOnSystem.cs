@@ -17,7 +17,7 @@ namespace AdvancedGears
         private EntityQuerySet querySet;
         const int frequency = 5; 
 
-        readonly Dictionary<EntityId,List<EntityId>> lockOnListDic = new Dictionary<EntityId,List<EntityId>>();
+        readonly Dictionary<EntityId,List<UnitInfo>> lockOnListDic = new Dictionary<EntityId,List<UnitInfo>>();
         readonly Collider[] colls = new Collider[256];
 
         protected override void OnCreate()
@@ -53,12 +53,12 @@ namespace AdvancedGears
                 foreach (var u in units)
                 {
                     if (cam.InSide(u.pos, trans.position, trans.forward))
-                        lockOnListDic[cam.entityId].Add(u.id);
+                        lockOnListDic[cam.entityId].Add(u);
                 }
             });
         }
 
-        public List<EntityId> GetLockOnList(EntityId entityId)
+        public List<UnitInfo> GetLockOnList(EntityId entityId)
         {
             lockOnListDic.TryGetValue(entityId, out var list);
             return list;
@@ -71,6 +71,13 @@ namespace AdvancedGears
         public float range;
         public float rad;
         public EntityId entityId;
+
+        public BattleCameraInfo(float range, float rad, EntityId entityId)
+        {
+            this.range = range;
+            this.rad = rad;
+            this.EntityId = entityId;
+        }
 
         public bool InSide(in Vector3 pos, in Vector3 from, in Vector3 forward)
         {
