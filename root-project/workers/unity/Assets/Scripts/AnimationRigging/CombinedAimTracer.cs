@@ -26,11 +26,7 @@ namespace AdvancedGears
             }
 
             if (target != null) {
-                //this.transform.ma
-                //var rot = this.transform.rotation;
-                //var normalizedScale = this.transform.lossyScale.normalized;
-                //var pos = Matrix4x4.Scale(normalizedScale) * this.transform.InverseTransformPoint(target.Value);
-                target = this.transform.InverseTransformPoint(target.Value) + this.transform.position; //this.transform.TransformPoint(pos);//rot * this.transform.InverseTransformPoint(target.Value) + this.transform.position;//this.transform.position;//root.InverseTransformPoint(this.transform.position) + root.position;
+                target = this.transform.rotation * this.transform.InverseTransformPoint(target.Value) + this.transform.position;
             }
 
             foreach (var cnt in controllers)
