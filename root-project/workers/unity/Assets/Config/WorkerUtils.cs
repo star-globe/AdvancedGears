@@ -40,6 +40,7 @@ namespace AdvancedGears
         {
             TransformSynchronizationHelper.AddClientSystems(world);
             PlayerLifecycleHelper.AddClientSystems(world, autoRequestPlayerCreation);
+            world.GetOrCreateSystem<LocalLockOnSystem>();
             world.GetOrCreateSystem<ProcessColorChangeSystem>();
             world.GetOrCreateSystem<AimAnimationLocalSystem>();
             world.GetOrCreateSystem<AdvancedPlayerInputSync>();

@@ -17,7 +17,7 @@ namespace AdvancedGears
         private EntityQuerySet querySet;
         const int frequency = 5; 
 
-        readonly Dictionary<EntityId,List<UnitInfo>> lockOnListDic = new Dictionary<EntityId,List<UnitInfo>>();
+        readonly Dictionary<long,List<UnitInfo>> lockOnListDic = new Dictionary<long,List<UnitInfo>>();
         readonly Collider[] colls = new Collider[256];
 
         protected override void OnCreate()
@@ -58,7 +58,7 @@ namespace AdvancedGears
             });
         }
 
-        public List<UnitInfo> GetLockOnList(EntityId entityId)
+        public List<UnitInfo> GetLockOnList(long entityId)
         {
             lockOnListDic.TryGetValue(entityId, out var list);
             return list;
@@ -70,9 +70,9 @@ namespace AdvancedGears
     {
         public float range;
         public float rad;
-        public EntityId entityId;
+        public long entityId;
 
-        public BattleCameraInfo(float range, float rad, EntityId entityId)
+        public BattleCameraInfo(float range, float rad, long entityId)
         {
             this.range = range;
             this.rad = rad;

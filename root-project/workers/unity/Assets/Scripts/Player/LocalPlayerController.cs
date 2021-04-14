@@ -20,7 +20,7 @@ namespace AdvancedGears
         Transform baseTarget;
 
         List<Vector3> enemyPosList = null;
-        Vector3 targetPosition;
+        Vector3? targetPosition = null;
 
 		void Start ()
 		{
@@ -29,6 +29,7 @@ namespace AdvancedGears
 	
 		void Update ()
 		{
+            targetPosition = null;
             if (enemyPosList != null && enemyPosList.Count > 0) {
                 float length = float.MaxValue;
                 var pos = transform.position;
@@ -68,10 +69,13 @@ namespace AdvancedGears
 			}
 		}
 
-        Vector3 FowardTarget
+        Vector3? FowardTarget
         {
             get
             {
+                if (baseTarget == null)
+                    return null;
+
                 return baseTarget.position;
             }
         }

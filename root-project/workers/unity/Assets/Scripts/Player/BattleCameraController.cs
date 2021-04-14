@@ -9,7 +9,7 @@ namespace AdvancedGears
 {
 	public class BattleCameraController : MonoBehaviour
 	{
-        [Require] SpatialEntityId entityId;
+        //[Require] SpatialEntityId entityId;
         [Require] World world;
 
         [SerializeField]
@@ -27,11 +27,12 @@ namespace AdvancedGears
         LocalLockOnSystem system = null;
 
         readonly List<Vector3> posList = new List<Vector3>();
+        long cameraId = -1;
 
         void Start()
         {
             system = world.GetExistingSystem<LocalLockOnSystem>();
-            battleCamera.Value = new BattleCameraInfo(range, rad, entityId.EntityId);
+            battleCamera.Value = new BattleCameraInfo(range, rad, cameraId);
         }
 
         void Update()
@@ -41,7 +42,7 @@ namespace AdvancedGears
 
             posList.Clear();
             if (system != null) {
-                var list = system.GetLockOnList(entityId.EntityId);
+                var list = system.GetLockOnList(cameraId);
                 if (list != null) {
                     foreach (var u in list)
                         posList.Add(u.pos);
