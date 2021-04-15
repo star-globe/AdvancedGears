@@ -15,6 +15,7 @@ namespace AdvancedGears
     internal class BaseUnitActionSystem : SpatialComponentSystem
     {
         private EntityQuery group;
+        private EntityQueryBuilder.F_EDDDDDD<BaseUnitAction.Component, GunComponent.Component, PostureAnimation.Component, BaseUnitTarget.Component, BaseUnitStatus.Component, SpatialEntityId> action;
 
         protected override void OnCreate()
         {
@@ -31,56 +32,60 @@ namespace AdvancedGears
                 ComponentType.ReadOnly<PostureBoneContainer>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
+
+            action = Query;
         }
 
         protected override void OnUpdate()
         {
-            Entities.With(group).ForEach((Entity entity,
-                                          ref BaseUnitAction.Component action,
-                                          ref GunComponent.Component gun,
-                                          ref PostureAnimation.Component anim,
-                                          ref BaseUnitTarget.Component target,
-                                          ref BaseUnitStatus.Component status,
-                                          ref SpatialEntityId entityId) =>
+            Entities.With(group).ForEach(action);
+        } 
+            
+        private void Query (Entity entity,
+                            ref BaseUnitAction.Component action,
+                            ref GunComponent.Component gun,
+                            ref PostureAnimation.Component anim,
+                            ref BaseUnitTarget.Component target,
+                            ref BaseUnitStatus.Component status,
+                            ref SpatialEntityId entityId)
+        {
+            if (status.State != UnitState.Alive)
+                return;
+
+            if (UnitUtils.IsOffensive(status.Type) == false)
+                return;
+
+            if (target.State != TargetState.ActionTarget)
+                return;
+
+            var current = Time.ElapsedTime;
+
+            Vector3? epos = null;
+            if (action.EnemyPositions.Count > 0) {
+                epos = action.EnemyPositions[0].ToWorkerPosition(this.Origin);
+
+                var container = EntityManager.GetComponentObject<PostureBoneContainer>(entity);
+                Attack(container, current, epos.Value, entityId, ref gun);
+            }
+
+            var type = AnimTargetType.None;
+            bool isDiff = false;
+            if (epos != null)
             {
-                if (status.State != UnitState.Alive)
-                    return;
+                isDiff = anim.AnimTarget.Position.ToWorkerPosition(this.Origin) != epos.Value;
+                type = AnimTargetType.Position;
+            }
 
-                if (UnitUtils.IsOffensive(status.Type) == false)
-                    return;
+            if (anim.AnimTarget.Type != type || isDiff)
+            {
+                var animTarget = anim.AnimTarget;
+                animTarget.Type = type;
 
-                if (target.State != TargetState.ActionTarget)
-                    return;
-
-                var current = Time.ElapsedTime;
-
-                Vector3? epos = null;
-                if (action.EnemyPositions.Count > 0) {
-                    epos = action.EnemyPositions[0].ToWorkerPosition(this.Origin);
-
-                    var container = EntityManager.GetComponentObject<PostureBoneContainer>(entity);
-                    Attack(container, current, epos.Value, entityId, ref gun);
-                }
-
-                var type = AnimTargetType.None;
-                bool isDiff = false;
                 if (epos != null)
-                {
-                    isDiff = anim.AnimTarget.Position.ToWorkerPosition(this.Origin) != epos.Value;
-                    type = AnimTargetType.Position;
-                }
+                    animTarget.Position = epos.Value.ToWorldPosition(this.Origin);
 
-                if (anim.AnimTarget.Type != type || isDiff)
-                {
-                    var animTarget = anim.AnimTarget;
-                    animTarget.Type = type;
-
-                    if (epos != null)
-                        animTarget.Position = epos.Value.ToWorldPosition(this.Origin);
-
-                    anim.AnimTarget = animTarget;
-                }
-            });
+                anim.AnimTarget = animTarget;
+            }
         }
 
         void Attack(PostureBoneContainer container, double current, in Vector3 epos, in SpatialEntityId entityId, ref GunComponent.Component gun)

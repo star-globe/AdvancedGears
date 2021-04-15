@@ -17,6 +17,7 @@ namespace AdvancedGears
     public class BaseUnitSearchSystem : BaseSearchSystem
     {
         EntityQuery group;
+        EntityQueryBuilder.F_EDDDDDD<BaseUnitSight.Component, BaseUnitAction.Component, BaseUnitStatus.Component, BaseUnitTarget.Component, GunComponent.Component, SpatialEntityId entityId> action;
         IntervalChecker inter;
         const int frequency = 20; 
 
@@ -38,6 +39,8 @@ namespace AdvancedGears
             );
 
             inter = IntervalCheckerInitializer.InitializedChecker(frequency);
+
+            action = Query;
         }
 
         protected override void OnUpdate()
@@ -45,82 +48,84 @@ namespace AdvancedGears
             if (CheckTime(ref inter) == false)
                 return;
 
-            Entities.With(group).ForEach((Entity entity,
-                                          ref BaseUnitSight.Component sight,
-                                          ref BaseUnitAction.Component action,
-                                          ref BaseUnitStatus.Component status,
-                                          ref BaseUnitTarget.Component target,
-                                          ref GunComponent.Component gun,
-                                          ref SpatialEntityId entityId) =>
+            Entities.With(group).ForEach(action);
+        }
+        
+        private void Query (Entity entity,
+                              ref BaseUnitSight.Component sight,
+                              ref BaseUnitAction.Component action,
+                              ref BaseUnitStatus.Component status,
+                              ref BaseUnitTarget.Component target,
+                              ref GunComponent.Component gun,
+                              ref SpatialEntityId entityId)
+        {
+            if (status.State != UnitState.Alive)
+                return;
+
+            if (status.Order == OrderType.Idle)
+                return;
+
+            if (UnitUtils.IsWatcher(status.Type) == false)
+                return;
+
+            // initial
+            target.State = TargetState.None;
+            action.EnemyPositions.Clear();
+
+            var trans = EntityManager.GetComponentObject<Transform>(entity);
+            var pos = trans.position;
+
+            UnitInfo enemy = null;
+            var sightRange = action.SightRange;
+
+            var backBuffer = sightRange / 2;
+            if (status.Type == UnitType.Commander)
+                backBuffer += RangeDictionary.AllyRange / 2;
+
+            // strategy target
+            SetStrategyTarget(pos, backBuffer, ref sight, ref target);
+
+            // keep logic
+            if (status.Order == OrderType.Keep)
+                sightRange *= target.PowerRate;
+
+            enemy = getNearestEnemy(status.Side, pos, sightRange);
+
+            if (enemy != null)
             {
-                if (status.State != UnitState.Alive)
-                    return;
+                var tgtPos = sight.TargetPosition.ToWorkerPosition(this.Origin);
+                var epos = enemy.pos.ToWorldPosition(this.Origin);
 
-                if (status.Order == OrderType.Idle)
-                    return;
-
-                if (UnitUtils.IsWatcher(status.Type) == false)
-                    return;
-
-                // initial
-                target.State = TargetState.None;
-                action.EnemyPositions.Clear();
-
-                var trans = EntityManager.GetComponentObject<Transform>(entity);
-                var pos = trans.position;
-
-                UnitInfo enemy = null;
-                var sightRange = action.SightRange;
-
-                var backBuffer = sightRange / 2;
-                if (status.Type == UnitType.Commander)
-                    backBuffer += RangeDictionary.AllyRange / 2;
-
-                // strategy target
-                SetStrategyTarget(pos, backBuffer, ref sight, ref target);
-
-                // keep logic
-                if (status.Order == OrderType.Keep)
-                    sightRange *= target.PowerRate;
-
-                enemy = getNearestEnemy(status.Side, pos, sightRange);
-
-                if (enemy != null)
+                if (Vector3.Dot(tgtPos - pos, enemy.pos - pos) > 0)
                 {
-                    var tgtPos = sight.TargetPosition.ToWorkerPosition(this.Origin);
-                    var epos = enemy.pos.ToWorldPosition(this.Origin);
-
-                    if (Vector3.Dot(tgtPos - pos, enemy.pos - pos) > 0)
-                    {
-                        target.State = TargetState.ActionTarget;
-                        sight.TargetPosition = epos;
-                    }
-
-                    action.EnemyPositions.Add(epos);
+                    target.State = TargetState.ActionTarget;
+                    sight.TargetPosition = epos;
                 }
 
-                float range;
-                switch (target.State)
-                {
-                    case TargetState.ActionTarget:
-                        range = gun.GetAttackRange();
-                        range = AttackLogicDictionary.GetOrderRange(status.Order, range) * target.PowerRate;
-                        break;
+                action.EnemyPositions.Add(epos);
+            }
 
-                    default:
-                        range = RangeDictionary.BodySize;
-                        break;
-                }
+            float range;
+            switch (target.State)
+            {
+                case TargetState.ActionTarget:
+                    range = gun.GetAttackRange();
+                    range = AttackLogicDictionary.GetOrderRange(status.Order, range) * target.PowerRate;
+                    break;
 
-                // set behind
-                if (status.Type == UnitType.Commander) {
-                    var addRange = RangeDictionary.AllyRange / 2;
-                    range += AttackLogicDictionary.RankScaled(addRange, status.Rank);
-                }
+                default:
+                    range = RangeDictionary.BodySize;
+                    break;
+            }
 
-                sight.TargetRange = range;
-                sight.State = target.State;
-            });
+            // set behind
+            if (status.Type == UnitType.Commander) {
+                var addRange = RangeDictionary.AllyRange / 2;
+                range += AttackLogicDictionary.RankScaled(addRange, status.Rank);
+            }
+
+            sight.TargetRange = range;
+            sight.State = target.State;
         }
 
         readonly Dictionary<EntityId,float> dominationRangeDic = new Dictionary<EntityId, float>();

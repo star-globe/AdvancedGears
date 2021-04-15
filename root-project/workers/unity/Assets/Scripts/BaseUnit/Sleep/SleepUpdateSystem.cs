@@ -13,6 +13,7 @@ namespace AdvancedGears
     internal class SleepUpdateSystem : SpatialComponentSystem
     {
         private EntityQuerySet querySet;
+        private EntityQueryBuilder.F_EDD<SleepComponent.Component, BaseUnitStatus.Component> action;
 
         protected override void OnCreate()
         {
@@ -22,6 +23,7 @@ namespace AdvancedGears
                                           ComponentType.ReadOnly<SleepComponent.Component>(),
                                           ComponentType.ReadWrite<BaseUnitStatus.Component>(),
                                         　ComponentType.ReadOnly<BaseUnitStatus.HasAuthority>()), 4);
+            action = Query;
         }
 
         protected override void OnUpdate()
@@ -29,10 +31,13 @@ namespace AdvancedGears
             if (CheckTime(ref querySet.inter) == false)
                 return;
 
-            Entities.With(querySet.group).ForEach((Entity entity,
-                                          ref SleepComponent.Component sleep,
-                                          ref BaseUnitStatus.Component status) =>
-            {
+            Entities.With(querySet.group).ForEach(action);
+        }
+
+        private void Query(Entity entity,
+                                ref SleepComponent.Component sleep,
+                                ref BaseUnitStatus.Component status)
+        {
                 if (status.State != UnitState.Alive)
                     return;
 
@@ -41,7 +46,6 @@ namespace AdvancedGears
                     return;
 
                 status.State = UnitState.Sleep;
-            });
         }
     }
 }

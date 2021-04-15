@@ -197,6 +197,8 @@ namespace AdvancedGears
     public class HexBaseSystem : SpatialComponentSystem
     {
         EntityQuerySet hexEntityQuerySet;
+        EntityQueryBuilder.F_EDDDD<HexBase.Component, HexPower.Component, Position.Component, SpatialEntityId> action;
+
         const int updateInter = 5;
 
         readonly private Dictionary<uint, HexLocalInfo> hexDic = new Dictionary<uint, HexLocalInfo>();
@@ -213,6 +215,8 @@ namespace AdvancedGears
                                                    ComponentType.ReadOnly<Position.Component>(),
                                                    ComponentType.ReadOnly<SpatialEntityId>()
                                                    ), updateInter);
+
+            action = Query;
         }
 
         protected override void OnUpdate()
@@ -225,25 +229,27 @@ namespace AdvancedGears
             if (CheckTime(ref hexEntityQuerySet.inter) == false && hexDic.Count > 0)
                 return;
 
-            Entities.With(hexEntityQuerySet.group).ForEach((Entity entity,
-                                                            ref HexBase.Component hex,
-                                                            ref HexPower.Component power,
-                                                            ref Position.Component position,
-                                                            ref SpatialEntityId entityId) =>
-            {
-                if (hex.Attribute.IsTargetable() == false)
-                    return;
+            Entities.With(hexEntityQuerySet.group).ForEach(action);
+        }
 
-                if (hexDic.ContainsKey(hex.Index) == false)
-                    hexDic[hex.Index] = new HexLocalInfo();
+        private void Query (Entity entity,
+                            ref HexBase.Component hex,
+                            ref HexPower.Component power,
+                            ref Position.Component position,
+                            ref SpatialEntityId entityId)
+        {
+            if (hex.Attribute.IsTargetable() == false)
+                return;
 
-                hexDic[hex.Index].Index = hex.Index;
-                hexDic[hex.Index].HexId = hex.HexId;
-                hexDic[hex.Index].Side = hex.Side;
-                hexDic[hex.Index].EntityId = entityId;
-                hexDic[hex.Index].Powers = power.SidePowers;
-                hexDic[hex.Index].isActive = power.IsActive;
-            });
+            if (hexDic.ContainsKey(hex.Index) == false)
+                hexDic[hex.Index] = new HexLocalInfo();
+
+            hexDic[hex.Index].Index = hex.Index;
+            hexDic[hex.Index].HexId = hex.HexId;
+            hexDic[hex.Index].Side = hex.Side;
+            hexDic[hex.Index].EntityId = entityId;
+            hexDic[hex.Index].Powers = power.SidePowers;
+            hexDic[hex.Index].isActive = power.IsActive;
         }
     }
 }

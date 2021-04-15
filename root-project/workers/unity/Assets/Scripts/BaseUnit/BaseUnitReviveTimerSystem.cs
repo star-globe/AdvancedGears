@@ -20,6 +20,7 @@ namespace AdvancedGears
         }
 
         private EntityQuerySet querySet;
+        private EntityQueryBuilder.F_EDDD<BaseUnitReviveTimer.Component, BaseUnitStatus.Component, SpatialEntityId> action;
 
         private readonly HashSet<EntityId> deadUnitIds = new HashSet<EntityId>();
         private readonly HashSet<EntityId> deletedIds = new HashSet<EntityId>();
@@ -40,6 +41,8 @@ namespace AdvancedGears
                                           ), period);
 
             deltaTime = Time.ElapsedTime;
+
+            action = Query;
         }
 
         protected override void OnUpdate()
@@ -72,42 +75,44 @@ namespace AdvancedGears
 
             deltaTime = Time.ElapsedTime - deltaTime;
 
-            Entities.With(querySet.group).ForEach((Entity entity,
-                                                   ref BaseUnitReviveTimer.Component revive,
-                                                   ref BaseUnitStatus.Component status,
-                                                   ref SpatialEntityId entityId) =>
+            Entities.With(querySet.group).ForEach(action);
+        }
+
+        private void Query(Entity entity,
+                                ref BaseUnitReviveTimer.Component revive,
+                                ref BaseUnitStatus.Component status,
+                                ref SpatialEntityId entityId) =>
+        {
+            if (revive.IsStart == false)
+                return;
+
+            if (status.Type.BaseType() == UnitBaseType.Fixed)
+                return;
+
+            switch (status.State)
             {
-                if (revive.IsStart == false)
+                case UnitState.None:
                     return;
 
-                if (status.Type.BaseType() == UnitBaseType.Fixed)
+                case UnitState.Alive:
+                    revive.IsStart = false;
+                    revive.RestTime = 0.0f;
                     return;
+            }
 
-                switch (status.State)
-                {
-                    case UnitState.None:
-                        return;
-
-                    case UnitState.Alive:
-                        revive.IsStart = false;
-                        revive.RestTime = 0.0f;
-                        return;
-                }
-
-                if (revive.RestTime > 0)
-                    revive.RestTime -= deltaTime;
+            if (revive.RestTime > 0)
+                revive.RestTime -= deltaTime;
                 
-                var id = entityId.EntityId;
-                if (revive.RestTime < 0 && deletedIds.Contains(id) == false) {
-                    var request = new WorldCommands.DeleteEntity.Request
-                    (
-                        id,
-                        context: new DeleteUnitContext() { entityId = id }
-                    );
-                    this.CommandSystem.SendCommand(request);
-                    deletedIds.Add(id);
-                }
-            });
+            var id = entityId.EntityId;
+            if (revive.RestTime < 0 && deletedIds.Contains(id) == false) {
+                var request = new WorldCommands.DeleteEntity.Request
+                (
+                    id,
+                    context: new DeleteUnitContext() { entityId = id }
+                );
+                this.CommandSystem.SendCommand(request);
+                deletedIds.Add(id);
+            }
         }
 
         void HandleDeleteResponses()
