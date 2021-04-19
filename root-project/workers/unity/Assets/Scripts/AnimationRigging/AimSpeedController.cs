@@ -81,12 +81,12 @@ namespace AdvancedGears
                 if (this.ConstrainedTransform != null &&
                     offsetTrans != null && rootTrans != null &&
                     offsetVector3 != Vector3.zero) {
-                    //var offset = offsetTrans.TransformVector(offsetVector3) + offsetTrans.position - this.ConstrainedTransform.position;
+                    var offset = offsetTrans.TransformVector(offsetVector3) + offsetTrans.position - this.ConstrainedTransform.position;
                     //var scale = rootTrans.lossyScale.magnitude * Vector3.one;
-                    //var m = Matrix4x4.TRS(Vector3.zero, rootTrans.rotation, scale);
-                    //pos -= m.MultiplyPoint3x4(rootTrans.InverseTransformVector(offset));
-                    pos -= rootTrans.rotation * rootTrans.InverseTransformVector(offsetTrans.TransformVector(offsetVector3));
-                    pos -= rootTrans.rotation * rootTrans.InverseTransformVector(offsetTrans.position - this.ConstrainedTransform.position);
+                    var m = Matrix4x4.TRS(Vector3.zero, rootTrans.rotation, Vector3.one);//scale);
+                    pos -= m.MultiplyPoint3x4(rootTrans.InverseTransformVector(offset));
+                    //pos -= rootTrans.rotation * rootTrans.InverseTransformVector(offsetTrans.TransformVector(offsetVector3));
+                    //pos -= rootTrans.rotation * rootTrans.InverseTransformVector(offsetTrans.position - this.ConstrainedTransform.position);
                 }
 
                 return pos;

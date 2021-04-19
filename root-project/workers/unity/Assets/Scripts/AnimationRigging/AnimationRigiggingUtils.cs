@@ -36,5 +36,12 @@ namespace AdvancedGears
 
             return Vector3.zero;
         }
+
+        readonly static float root3 = Mathf.Sqrt(3.0f);
+
+        public static float GetScaleRate(Vector3 scale)
+        {
+            return scale.magnitude / root3;
+        }
     }
 }
