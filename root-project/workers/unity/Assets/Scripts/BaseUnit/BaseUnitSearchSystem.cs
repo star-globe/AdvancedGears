@@ -17,7 +17,7 @@ namespace AdvancedGears
     public class BaseUnitSearchSystem : BaseSearchSystem
     {
         EntityQuery group;
-        EntityQueryBuilder.F_EDDDDDD<BaseUnitSight.Component, BaseUnitAction.Component, BaseUnitStatus.Component, BaseUnitTarget.Component, GunComponent.Component, SpatialEntityId entityId> action;
+        EntityQueryBuilder.F_EDDDDDD<BaseUnitSight.Component, BaseUnitAction.Component, BaseUnitStatus.Component, BaseUnitTarget.Component, GunComponent.Component, SpatialEntityId> action;
         IntervalChecker inter;
         const int frequency = 20; 
 

@@ -81,7 +81,7 @@ namespace AdvancedGears
         private void Query(Entity entity,
                                 ref BaseUnitReviveTimer.Component revive,
                                 ref BaseUnitStatus.Component status,
-                                ref SpatialEntityId entityId) =>
+                                ref SpatialEntityId entityId)
         {
             if (revive.IsStart == false)
                 return;
