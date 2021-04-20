@@ -28,13 +28,8 @@ namespace AdvancedGears
             if (target != null) {
 #if true
                 target = this.transform.rotation * this.transform.InverseTransformPoint(target.Value) + this.transform.position;
-#elif true
+#elif false
                 target = this.transform.InverseTransformPoint(target.Value) + this.transform.position;
-#elif true
-                var pos = this.transform.position;
-                var rot = this.transform.rotation;
-                Matrix4x4 m = Matrix4x4.TRS(pos, rot, Vector3.one);
-                target = m.MultiplyPoint(this.transform.InverseTransformPoint(target.Value));
 #elif true
                 var rot = Matrix4x4.Rotate(this.transform.rotation);
                 var scale = Matrix4x4.Scale(AnimationRiggingUtils.GetScaleRate(this.transform.lossyScale) * Vector3.one);
