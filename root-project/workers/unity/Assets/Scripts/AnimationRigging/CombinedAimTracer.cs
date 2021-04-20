@@ -17,21 +17,29 @@ namespace AdvancedGears
 
         public void SetAimTarget(Vector3? target)
         {
-            if (isSetOffset == false && aimTargetOffset != null) {
-                var vec = aimTargetOffset.AimOffsetVector;
-                foreach(var cnt in controllers)
-                    cnt.SetOffset(this.transform, aimTargetOffset.transform, vec);
-            
-                isSetOffset = true;
-            }
+            //if (isSetOffset == false && aimTargetOffset != null) {
+            //    var vec = aimTargetOffset.AimOffsetVector;
+            //    foreach(var cnt in controllers)
+            //        cnt.SetOffset(this.transform, aimTargetOffset.transform, vec);
+            //
+            //    isSetOffset = true;
+            //}
 
             if (target != null) {
-                // target = this.transform.rotation * this.transform.InverseTransformPoint(target.Value) + this.transform.position;
+#if true
+                target = this.transform.rotation * this.transform.InverseTransformPoint(target.Value) + this.transform.position;
+#elif true
+                target = this.transform.InverseTransformPoint(target.Value) + this.transform.position;
+#elif true
                 var pos = this.transform.position;
                 var rot = this.transform.rotation;
-                //var scale = AnimationRiggingUtils.GetScaleRate(this.transform.lossyScale);
                 Matrix4x4 m = Matrix4x4.TRS(pos, rot, Vector3.one);
                 target = m.MultiplyPoint(this.transform.InverseTransformPoint(target.Value));
+#elif true
+                var rot = Matrix4x4.Rotate(this.transform.rotation);
+                var scale = Matrix4x4.Scale(AnimationRiggingUtils.GetScaleRate(this.transform.lossyScale) * Vector3.one);
+                target = (rot * scale).MultiplyPoint3x4(this.transform.InverseTransformPoint(target.Value)) + this.transform.position;
+#endif
             }
 
             foreach (var cnt in controllers)
