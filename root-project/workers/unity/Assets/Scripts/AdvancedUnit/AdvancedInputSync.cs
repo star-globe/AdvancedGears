@@ -49,7 +49,7 @@ namespace AdvancedGears
     internal class AdvancedUnmannedInputSync : AdvancedInputSync
     {
         private EntityQuery inputUnmannedGroup;
-        private EntityQueryBuilder.F_DDD<BaseUnitStatus.Component, AdvancedPlayerInput.Component, SpatialEntityId> action;
+        private EntityQueryBuilder.F_DDD<BaseUnitStatus.Component, AdvancedUnmannedInput.Component, SpatialEntityId> action;
 
         protected override void OnCreate()
         {

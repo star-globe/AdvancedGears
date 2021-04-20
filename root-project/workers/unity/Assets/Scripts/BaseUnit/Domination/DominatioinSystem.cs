@@ -40,7 +40,7 @@ namespace AdvancedGears
             hexPowerGroup = new EntityQuerySet(GetEntityQuery(
                                              ComponentType.ReadOnly<StrategyHexAccessPortal.Component>()
                                              ), 1.0f);
-            hexActioin = HexQuery;
+            hexAction = HexQuery;
         }
 
         protected override void OnUpdate()

@@ -17,7 +17,7 @@ namespace AdvancedGears
     public class BaseUnitSleepManageSystem : BaseSearchSystem
     {
         EntityQuerySet unitQuerySet;
-        private EntityQueryBuilder.F_ED<StrategyHexAccessPortal.Component> unitAction;
+        private EntityQueryBuilder.F_EDD<BaseUnitStatus.Component, Position.Component> unitAction;
         EntityQuerySet portalQuerySet;
         private EntityQueryBuilder.F_ED<StrategyHexAccessPortal.Component> portalAction;
         const float frequency =1.0f; 

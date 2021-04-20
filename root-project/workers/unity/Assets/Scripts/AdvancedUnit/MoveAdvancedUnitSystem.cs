@@ -20,7 +20,7 @@ namespace AdvancedGears
 
         private EntityQuery newAdvancedGroup;
         private EntityQuery advancedInputGroup;
-        private EntityQueryBuilder.F_EDDDD<Rigidbody, AdvancedUnitController.Component, BaseUnitStatus.Component, Speed> action;
+        private EntityQueryBuilder.F_ECDDD<Rigidbody, AdvancedUnitController.Component, BaseUnitStatus.Component, Speed> action;
 
         private const float WalkSpeed = 10.0f;
         private const float RunSpeed = 3.0f * WalkSpeed;
