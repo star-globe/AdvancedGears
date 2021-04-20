@@ -17,7 +17,9 @@ namespace AdvancedGears
     public class BaseUnitSleepManageSystem : BaseSearchSystem
     {
         EntityQuerySet unitQuerySet;
+        private EntityQueryBuilder.F_ED<StrategyHexAccessPortal.Component> unitAction;
         EntityQuerySet portalQuerySet;
+        private EntityQueryBuilder.F_ED<StrategyHexAccessPortal.Component> portalAction;
         const float frequency =1.0f; 
         private Dictionary<uint, HexIndex> hexIndexes;
 
@@ -31,10 +33,13 @@ namespace AdvancedGears
                                               ComponentType.ReadOnly<Position.Component>(),
                                               ComponentType.ReadOnly<Rigidbody>()
                                               ), frequency);
+            unitAction = UnitQuery;
 
             portalQuerySet = new EntityQuerySet(GetEntityQuery(
                                                 ComponentType.ReadOnly<StrategyHexAccessPortal.Component>()
                                                 ), frequency);
+
+            portalAction = PortalQuery;
         }
 
         protected override void OnUpdate()
@@ -47,11 +52,13 @@ namespace AdvancedGears
             if (CheckTime(ref portalQuerySet.inter) == false)
                 return;
 
-            Entities.With(portalQuerySet.group).ForEach((Unity.Entities.Entity entity,
-                                          ref StrategyHexAccessPortal.Component portal) =>
-            {
-                hexIndexes = portal.HexIndexes;
-            });
+            Entities.With(portalQuerySet.group).ForEach(portalAction);
+        }
+
+        private void PortalQuery(Unity.Entities.Entity entity,
+                                 ref StrategyHexAccessPortal.Component portal)
+        {
+            hexIndexes = portal.HexIndexes;
         }
 
         private void UpdateBaseUnitSleep()
@@ -59,30 +66,32 @@ namespace AdvancedGears
             if (CheckTime(ref unitQuerySet.inter) == false)
                 return;
 
-            Entities.With(unitQuerySet.group).ForEach((Entity entity,
-                                          ref BaseUnitStatus.Component status,
-                                          ref Position.Component position) =>
+            Entities.With(unitQuerySet.group).ForEach(unitAction);
+        }
+        
+        private void UnitQuery(Entity entity,
+                                ref BaseUnitStatus.Component status,
+                                ref Position.Component position)
+        {
+            bool isActive = false;
+            var pos = position.Coords.ToUnityVector() + this.Origin;
+            foreach (var kvp in hexIndexes) {
+                if (HexUtils.IsInsideHex(this.Origin, kvp.Key, pos) == false)
+                    continue;
+
+                isActive = kvp.Value.IsActive;
+                break;
+            }
+
+            if (isActive) {
+                if (status.State == UnitState.Sleep)
+                    status.State = UnitState.Alive;
+            }
+            else
             {
-                bool isActive = false;
-                var pos = position.Coords.ToUnityVector() + this.Origin;
-                foreach (var kvp in hexIndexes) {
-                    if (HexUtils.IsInsideHex(this.Origin, kvp.Key, pos) == false)
-                        continue;
-
-                    isActive = kvp.Value.IsActive;
-                    break;
-                }
-
-                if (isActive) {
-                    if (status.State == UnitState.Sleep)
-                        status.State = UnitState.Alive;
-                }
-                else
-                {
-                    if (status.State == UnitState.Alive)
-                        status.State = UnitState.Sleep;
-                }
-            });
+                if (status.State == UnitState.Alive)
+                    status.State = UnitState.Sleep;
+            }
         }
     }
 }

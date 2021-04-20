@@ -10,6 +10,7 @@ namespace AdvancedGears
     internal class AdvancedPlayerInputSync : AdvancedInputSync
     {
         private EntityQuery inputPlayerGroup;
+        private EntityQueryBuilder.F_DDD<CameraTransform, AdvancedPlayerInput.Component, SpatialEntityId> action;
 
         protected override void OnCreate()
         {
@@ -19,24 +20,27 @@ namespace AdvancedGears
                 ComponentType.ReadOnly<CameraTransform>(),
                 ComponentType.ReadOnly<AdvancedPlayerInput.HasAuthority>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
-
             );
+
+            action = Query;
         }
 
         protected override void OnUpdate()
         {
-            Entities.With(inputPlayerGroup).ForEach((ref CameraTransform cameraTransform,
+            Entities.With(inputPlayerGroup).ForEach(action);
+        }
+
+        private void Query(ref CameraTransform cameraTransform,
                                                      ref AdvancedPlayerInput.Component playerInput,
-                                                     ref SpatialEntityId entityId) =>
-            {
-                var input = InputUtils.GetMove();
-                var inputCam = InputUtils.GetCamera();
-                var isShiftDown = Input.GetKey(KeyCode.LeftShift);
-                var isJump = Input.GetKey(KeyCode.Space);
-                var controller = playerInput.LocalController;
-                CommonUpdate(input, inputCam, isShiftDown, isJump, entityId, ref controller);
-                playerInput.LocalController = controller;
-            });
+                                                     ref SpatialEntityId entityId) 
+        {
+            var input = InputUtils.GetMove();
+            var inputCam = InputUtils.GetCamera();
+            var isShiftDown = Input.GetKey(KeyCode.LeftShift);
+            var isJump = Input.GetKey(KeyCode.Space);
+            var controller = playerInput.LocalController;
+            CommonUpdate(input, inputCam, isShiftDown, isJump, entityId, ref controller);
+            playerInput.LocalController = controller;
         }
     }
 
@@ -45,6 +49,7 @@ namespace AdvancedGears
     internal class AdvancedUnmannedInputSync : AdvancedInputSync
     {
         private EntityQuery inputUnmannedGroup;
+        private EntityQueryBuilder.F_DDD<BaseUnitStatus.Component, AdvancedPlayerInput.Component, SpatialEntityId> action;
 
         protected override void OnCreate()
         {
@@ -55,30 +60,34 @@ namespace AdvancedGears
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
+
+            action = Query;
         }
 
         protected override void OnUpdate()
         {
-            Entities.With(inputUnmannedGroup).ForEach((ref BaseUnitStatus.Component status,
-                                                       ref AdvancedUnmannedInput.Component unMannedInput,
-                                                       ref SpatialEntityId entityId) =>
-            {
-                if (status.State != UnitState.Alive)
-                    return;
+            Entities.With(inputUnmannedGroup).ForEach(action);
+        }
 
-                var inter = unMannedInput.Interval;
-                if (CheckTime(ref inter) == false)
-                    return;
+        private void Query(ref BaseUnitStatus.Component status,
+                           ref AdvancedUnmannedInput.Component unMannedInput,
+                           ref SpatialEntityId entityId)
+        {
+            if (status.State != UnitState.Alive)
+                return;
 
-                unMannedInput.Interval = inter;
-                var x = UnityEngine.Random.Range(-1.0f, 1.0f);
-                var y = UnityEngine.Random.Range(-1.0f, 1.0f);
-                var isShiftDown = Input.GetKey(KeyCode.LeftShift);
-                var isJump = Input.GetKey(KeyCode.Space);
-                var controller = unMannedInput.LocalController;
-                CommonUpdate(new Vector2(x, y), new Vector2(x, y), isShiftDown, isJump, entityId, ref controller);
-                unMannedInput.LocalController = controller;
-            });
+            var inter = unMannedInput.Interval;
+            if (CheckTime(ref inter) == false)
+                return;
+
+            unMannedInput.Interval = inter;
+            var x = UnityEngine.Random.Range(-1.0f, 1.0f);
+            var y = UnityEngine.Random.Range(-1.0f, 1.0f);
+            var isShiftDown = Input.GetKey(KeyCode.LeftShift);
+            var isJump = Input.GetKey(KeyCode.Space);
+            var controller = unMannedInput.LocalController;
+            CommonUpdate(new Vector2(x, y), new Vector2(x, y), isShiftDown, isJump, entityId, ref controller);
+            unMannedInput.LocalController = controller;
         }
     }
 

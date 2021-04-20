@@ -19,7 +19,10 @@ namespace AdvancedGears
     public class DominationSystem : BaseSearchSystem
     {
         EntityQuerySet deviceGroup;
+        EntityQueryBuilder.F_EDDD<DominationStamina.Component, BaseUnitStatus.Component, SpatialEntityId> deviceAction;
+
         EntityQuerySet hexPowerGroup;
+        EntityQueryBuilder.F_ED<StrategyHexAccessPortal.Component> hexAction;
 
         protected override void OnCreate()
         {
@@ -32,10 +35,12 @@ namespace AdvancedGears
                                              ComponentType.ReadOnly<Transform>(),
                                              ComponentType.ReadOnly<SpatialEntityId>()
                                              ), 1.0f);
+            deviceAction = DeviceQuery;
 
             hexPowerGroup = new EntityQuerySet(GetEntityQuery(
                                              ComponentType.ReadOnly<StrategyHexAccessPortal.Component>()
                                              ), 1.0f);
+            hexActioin = HexQuery;
         }
 
         protected override void OnUpdate()
@@ -49,97 +54,99 @@ namespace AdvancedGears
             if (CheckTime(ref deviceGroup.inter) == false)
                 return;
 
-            Entities.With(deviceGroup.group).ForEach((Unity.Entities.Entity entity,
-                                          ref DominationStamina.Component domination,
-                                          ref BaseUnitStatus.Component status,
-                                          ref SpatialEntityId entityId) =>
+            Entities.With(deviceGroup.group).ForEach(deviceAction);
+        }
+            
+        private void DeviceQuery(Unity.Entities.Entity entity,
+                                 ref DominationStamina.Component domination,
+                                 ref BaseUnitStatus.Component status,
+                                 ref SpatialEntityId entityId)
+        {
+            if (status.Side != UnitSide.None)
+                return;
+
+            if (status.Type != UnitType.Stronghold)
+                return;
+
+            float range = domination.Range;
+            var staminas = domination.SideStaminas;
+
+            var trans = EntityManager.GetComponentObject<Transform>(entity);
+            var pos = trans.position;
+            var list = getAllUnits(pos, range, allowDead:false, AttackLogicDictionary.DominationUnitTypes);
+
+            var sumsDic = new Dictionary<UnitSide,float>();
+            foreach (var unit in list)
             {
-                if (status.Side != UnitSide.None)
-                    return;
+                DominationDevice.Component? comp = null;
+                if (TryGetComponent(unit.id, out comp) == false)
+                    continue;
 
-                if (status.Type != UnitType.Stronghold)
-                    return;
+                var speed = 1.5f;
 
-                float range = domination.Range;
-                var staminas = domination.SideStaminas;
-
-                var trans = EntityManager.GetComponentObject<Transform>(entity);
-                var pos = trans.position;
-                var list = getAllUnits(pos, range, allowDead:false, AttackLogicDictionary.DominationUnitTypes);
-
-                var sumsDic = new Dictionary<UnitSide,float>();
-                foreach (var unit in list)
+                switch(comp.Value.Type)
                 {
-                    DominationDevice.Component? comp = null;
-                    if (TryGetComponent(unit.id, out comp) == false)
+                    case DominationDeviceType.Capturing:
+                        AffectCapture(unit.side, speed, sumsDic);
+                        break;
+
+                    case DominationDeviceType.Jamming:
+                        AffectJamming(unit.side, speed, sumsDic);
+                        break;
+                }
+            }
+
+            if (hexIndexes != null)
+            {
+                foreach (var kvp in hexIndexes)
+                {
+                    if (HexUtils.IsInsideHex(this.Origin, kvp.Key, pos, HexDictionary.HexEdgeLength) == false)
                         continue;
 
-                    var speed = 1.5f;
-
-                    switch(comp.Value.Type)
+                    var hex = kvp.Value;
+                    if (HexUtils.TryGetOneSidePower(hex, out var side, out var val))
                     {
-                        case DominationDeviceType.Capturing:
-                            AffectCapture(unit.side, speed, sumsDic);
-                            break;
-
-                        case DominationDeviceType.Jamming:
-                            AffectJamming(unit.side, speed, sumsDic);
-                            break;
-                    }
-                }
-
-                if (hexIndexes != null)
-                {
-                    foreach (var kvp in hexIndexes)
-                    {
-                        if (HexUtils.IsInsideHex(this.Origin, kvp.Key, pos, HexDictionary.HexEdgeLength) == false)
-                            continue;
-
-                        var hex = kvp.Value;
-                        if (HexUtils.TryGetOneSidePower(hex, out var side, out var val))
-                        {
-                            if (sumsDic.ContainsKey(side))
-                                sumsDic[side] += val;
-                            else
-                                sumsDic[side] = val;
+                        if (sumsDic.ContainsKey(side))
+                            sumsDic[side] += val;
+                        else
+                            sumsDic[side] = val;
                         }
-                        break;
-                    }
+                    break;
                 }
+            }
 
-                // check over
-                var orderedList = sumsDic.OrderByDescending(kvp => kvp.Value).ToList();
-                if (orderedList.Count == 0)
-                    return;
+            // check over
+            var orderedList = sumsDic.OrderByDescending(kvp => kvp.Value).ToList();
+            if (orderedList.Count == 0)
+                return;
                     
-                var first = orderedList[0];
-                var underSum = orderedList.Skip(1).Sum(kvp => kvp.Value);
+            var first = orderedList[0];
+            var underSum = orderedList.Skip(1).Sum(kvp => kvp.Value);
 
-                if (first.Value <= underSum)
-                    return;
+            if (first.Value <= underSum)
+                return;
                 
-                var over = first.Value - underSum;
-                if (staminas.ContainsKey(first.Key) == false)
-                    staminas[first.Key] = over;
-                else
-                    staminas[first.Key] += over;
+            var over = first.Value - underSum;
+            if (staminas.ContainsKey(first.Key) == false)
+                staminas[first.Key] = over;
+            else
+                staminas[first.Key] += over;
 
-                var keys = staminas.Keys.ToArray();
-                foreach (var k in keys) {
-                    if (k != first.Key) {
-                        var val = staminas[k];
-                        staminas[k] = Mathf.Max(0.0f, val - over);
-                    }
+            var keys = staminas.Keys.ToArray();
+            foreach (var k in keys) {
+                if (k != first.Key) {
+                    var val = staminas[k];
+                    staminas[k] = Mathf.Max(0.0f, val - over);
                 }
+            }
 
-                // capture
-                if (staminas[first.Key] >= domination.MaxStamina) {
-                    Capture(entityId.EntityId, first.Key);
-                    staminas.Clear();
-                }
+            // capture
+            if (staminas[first.Key] >= domination.MaxStamina) {
+                Capture(entityId.EntityId, first.Key);
+                staminas.Clear();
+            }
 
-                domination.SideStaminas = staminas;
-            });
+            domination.SideStaminas = staminas;
         }
 
         private Dictionary<uint, HexIndex> hexIndexes;
@@ -149,12 +156,14 @@ namespace AdvancedGears
             if (CheckTime(ref hexPowerGroup.inter) == false)
                 return;
 
-            Entities.With(hexPowerGroup.group).ForEach((Unity.Entities.Entity entity,
-                                          ref StrategyHexAccessPortal.Component portal) =>
-            {
-                if (portal.Index != uint.MaxValue)
-                    hexIndexes = portal.HexIndexes;
-            });
+            Entities.With(hexPowerGroup.group).ForEach(hexAction);
+        }
+            
+        private void HexQuery(Unity.Entities.Entity entity,
+                              ref StrategyHexAccessPortal.Component portal)
+        {
+            if (portal.Index != uint.MaxValue)
+                hexIndexes = portal.HexIndexes;
         }
 
         private void AffectCapture(UnitSide side, float speed, Dictionary<UnitSide,float> sumsDic)

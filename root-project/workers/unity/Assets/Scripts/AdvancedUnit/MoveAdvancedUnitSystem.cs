@@ -20,6 +20,7 @@ namespace AdvancedGears
 
         private EntityQuery newAdvancedGroup;
         private EntityQuery advancedInputGroup;
+        private EntityQueryBuilder.F_EDDDD<Rigidbody, AdvancedUnitController.Component, BaseUnitStatus.Component, Speed> action;
 
         private const float WalkSpeed = 10.0f;
         private const float RunSpeed = 3.0f * WalkSpeed;
@@ -53,6 +54,8 @@ namespace AdvancedGears
                 ComponentType.ReadOnly<TransformInternal.HasAuthority>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>()
             );
+
+            action = Query;
        }
 
         protected override void OnUpdate()
@@ -83,74 +86,76 @@ namespace AdvancedGears
 
         private void HandleControllers()
         {
-            Entities.With(advancedInputGroup).ForEach((Entity entity,
-                                                       Rigidbody rigidbody,
-                                                       ref AdvancedUnitController.Component unitController,
-                                                       ref BaseUnitStatus.Component status,
-                                                       ref Speed speed) =>
+            Entities.With(advancedInputGroup).ForEach(action);
+        }    
+        
+        private void Query(Entity entity,
+                            Rigidbody rigidbody,
+                            ref AdvancedUnitController.Component unitController,
+                            ref BaseUnitStatus.Component status,
+                            ref Speed speed)
+        {
+            if (status.State != UnitState.Alive)
+                return;
+
+            if (status.Type != UnitType.Advanced)
+                return;
+
+            // todo Fuel check
+
+            var controller = unitController.Controller;
+            var inputDir = new Vector2(controller.Horizontal, controller.Vertical).normalized;
+            var inputCam = new Vector2(controller.Yaw, controller.Pitch);
+
+            var currentSpeed = speed.CurrentSpeed;
+            var speedSmoothVelocity = speed.SpeedSmoothVelocity;
+            var currentRotSpeed = speed.CurrentRotSpeed;
+            var speedSmoothRotVelocity = speed.SpeedSmoothRotVelocity;
+
+            bool updateSpeed = false;
+            var x = rigidbody.velocity.x;
+            var z = rigidbody.velocity.z;
+            if (x * x + z * z <= MaxSpeed * MaxSpeed)
             {
-                if (status.State != UnitState.Alive)
-                    return;
+                var targetSpeed = (unitController.Controller.Running ? RunSpeed : WalkSpeed) * inputDir.magnitude;
+                currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref speedSmoothVelocity, SpeedSmoothTime, MaxSpeed, Time.DeltaTime);
 
-                if (status.Type != UnitType.Advanced)
-                    return;
+                updateSpeed = true;
+            }
 
-                // todo Fuel check
+            Vector3? rotVector = null;
+            var anglerVelocity = rigidbody.angularVelocity;
+            if (anglerVelocity.y < MaxTurnSpeed && anglerVelocity.y > -MaxTurnSpeed)
+            {
+                float rate = inputCam.x * anglerVelocity.y < 0 ? InverseSpeedRate : 1.0f;
 
-                var controller = unitController.Controller;
-                var inputDir = new Vector2(controller.Horizontal, controller.Vertical).normalized;
-                var inputCam = new Vector2(controller.Yaw, controller.Pitch);
+                var targetSpeed = inputCam.x * TurnSpeed;
+                currentRotSpeed = Mathf.SmoothDamp(currentRotSpeed, targetSpeed, ref speedSmoothRotVelocity, SpeedSmoothTime, MaxTurnSpeed, Time.DeltaTime);
 
-                var currentSpeed = speed.CurrentSpeed;
-                var speedSmoothVelocity = speed.SpeedSmoothVelocity;
-                var currentRotSpeed = speed.CurrentRotSpeed;
-                var speedSmoothRotVelocity = speed.SpeedSmoothRotVelocity;
+                rotVector = Vector2.up * currentRotSpeed;
+            }
 
-                bool updateSpeed = false;
-                var x = rigidbody.velocity.x;
-                var z = rigidbody.velocity.z;
-                if (x * x + z * z <= MaxSpeed * MaxSpeed)
-                {
-                    var targetSpeed = (unitController.Controller.Running ? RunSpeed : WalkSpeed) * inputDir.magnitude;
-                    currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref speedSmoothVelocity, SpeedSmoothTime, MaxSpeed, Time.DeltaTime);
+            speed = new Speed
+            {
+                CurrentSpeed = currentSpeed,
+                SpeedSmoothVelocity = speedSmoothVelocity,
+                CurrentRotSpeed = currentRotSpeed,
+                SpeedSmoothRotVelocity = speedSmoothRotVelocity,
+            };
+            // This needs to be used instead of add force because this is running in update.
+            // It would be better to store this in another component and have something else use it on fixed update.
 
-                    updateSpeed = true;
-                }
+            if (rotVector != null)
+            {
+                rigidbody.AddTorque(rotVector.Value, ForceMode.Acceleration);
+            }
 
-                Vector3? rotVector = null;
-                var anglerVelocity = rigidbody.angularVelocity;
-                if (anglerVelocity.y < MaxTurnSpeed && anglerVelocity.y > -MaxTurnSpeed)
-                {
-                    float rate = inputCam.x * anglerVelocity.y < 0 ? InverseSpeedRate : 1.0f;
-
-                    var targetSpeed = inputCam.x * TurnSpeed;
-                    currentRotSpeed = Mathf.SmoothDamp(currentRotSpeed, targetSpeed, ref speedSmoothRotVelocity, SpeedSmoothTime, MaxTurnSpeed, Time.DeltaTime);
-
-                    rotVector = Vector2.up * currentRotSpeed;
-                }
-
-                speed = new Speed
-                {
-                    CurrentSpeed = currentSpeed,
-                    SpeedSmoothVelocity = speedSmoothVelocity,
-                    CurrentRotSpeed = currentRotSpeed,
-                    SpeedSmoothRotVelocity = speedSmoothRotVelocity,
-                };
-                // This needs to be used instead of add force because this is running in update.
-                // It would be better to store this in another component and have something else use it on fixed update.
-
-                if (rotVector != null)
-                {
-                    rigidbody.AddTorque(rotVector.Value, ForceMode.Acceleration);
-                }
-
-                if (updateSpeed)
-                {
-                    var vec = new Vector3(inputDir.x, 0, inputDir.y);
-                    vec = rigidbody.transform.TransformDirection(vec);
-                    rigidbody.AddForce(vec * currentSpeed, ForceMode.Acceleration);
-                }
-            });
+            if (updateSpeed)
+            {
+                var vec = new Vector3(inputDir.x, 0, inputDir.y);
+                vec = rigidbody.transform.TransformDirection(vec);
+                rigidbody.AddForce(vec * currentSpeed, ForceMode.Acceleration);
+            }
         }
 
         private void HandleEvets()

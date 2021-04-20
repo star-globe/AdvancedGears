@@ -16,8 +16,9 @@ namespace AdvancedGears
     public class CommanderUnitSearchSystem : BaseCommanderSearch
     {
         private EntityQuerySet targettingQuerySet;
+        private EntityQueryBuilder.F_EDDDDD<CommanderStatus.Component, CommanderTeam.Component, BaseUnitStatus.Component, BaseUnitAction.Component, SpatialEntityId> targetAction;
         private EntityQuerySet teamingQuerySet;
-
+        private EntityQueryBuilder.F_EDDDD<CommanderSight.Component, CommanderTeam.Component, BaseUnitStatus.Component, SpatialEntityId> teamAction;
         const float teaminTime = 1.0f;
         const int period = 15;
 
@@ -36,6 +37,7 @@ namespace AdvancedGears
                                                     ComponentType.ReadOnly<Transform>(),
                                                     ComponentType.ReadOnly<SpatialEntityId>()
                                                     ), period);
+            targetAction = TargetQuery;
 
             teamingQuerySet = new EntityQuerySet(GetEntityQuery(
                                                  ComponentType.ReadWrite<CommanderTeam.Component>(),
@@ -45,6 +47,7 @@ namespace AdvancedGears
                                                  ComponentType.ReadOnly<Transform>(),
                                                  ComponentType.ReadOnly<SpatialEntityId>()
                                                 ), teaminTime);
+            teamAction = TeamQuery;
         }
 
         protected override void OnUpdate()
@@ -57,74 +60,79 @@ namespace AdvancedGears
             if (CheckTime(ref targettingQuerySet.inter) == false)
                 return;
 
-            Entities.With(targettingQuerySet.group).ForEach((Entity entity,
+            Entities.With(targettingQuerySet.group).ForEach(targetAction);
+        }
+
+        private void TargetQuery(Entity entity,
                               ref CommanderStatus.Component commander,
                               ref CommanderTeam.Component team,
                               ref BaseUnitStatus.Component status,
                               ref BaseUnitAction.Component action,
-                              ref SpatialEntityId entityId) =>
-            {
-                if (status.State != UnitState.Alive)
-                    return;
+                              ref SpatialEntityId entityId)
+        {
+            if (status.State != UnitState.Alive)
+                return;
 
-                if (status.Type != UnitType.Commander)
-                    return;
+            if (status.Type != UnitType.Commander)
+                return;
 
-                if (status.Order == OrderType.Idle)
-                    return;
+            if (status.Order == OrderType.Idle)
+                return;
 
-                var trans = EntityManager.GetComponentObject<Transform>(entity);
-                var pos = trans.position;
+            var trans = EntityManager.GetComponentObject<Transform>(entity);
+            var pos = trans.position;
 
-                applyOrder(status, entityId, pos, action.SightRange, ref commander, ref team);
-            });
+            applyOrder(status, entityId, pos, action.SightRange, ref commander, ref team);
         }
+
         
         private void HandleTeaming()
         {
             if (CheckTime(ref teamingQuerySet.inter) == false)
                 return;
 
-            Entities.With(teamingQuerySet.group).ForEach((Entity entity,
+            Entities.With(teamingQuerySet.group).ForEach(teamAction);
+        }
+        
+        private void TeamQuery(Entity entity,
                               ref CommanderSight.Component sight,
                               ref CommanderTeam.Component team,
                               ref BaseUnitStatus.Component status,
-                              ref SpatialEntityId entityId) =>
-            {
-                if (status.State != UnitState.Alive)
-                    return;
+                              ref SpatialEntityId entityId)
+        {
+            if (status.State != UnitState.Alive)
+                return;
 
-                if (UnitUtils.IsOfficer(status.Type) == false)
-                    return;
+            if (UnitUtils.IsOfficer(status.Type) == false)
+                return;
 
-                if (status.Order == OrderType.Idle)
-                    return;
+            if (status.Order == OrderType.Idle)
+                return;
 
-                if (status.Rank == 0)
-                    return;
+            if (status.Rank == 0)
+                return;
 
-                var trans = EntityManager.GetComponentObject<Transform>(entity);
-                var pos = trans.position;
+            var trans = EntityManager.GetComponentObject<Transform>(entity);
+            var pos = trans.position;
 
-                team.FollowerInfo.UnderCommanders.Clear();
+            team.FollowerInfo.UnderCommanders.Clear();
 
-                var rank = status.Rank - 1;
-                var range = RangeDictionary.GetBoidsRange(status.Rank);
-                var allies = getAllyUnits(status.Side, pos, range, allowDead:false, GetSingleUnitTypes(UnitType.Commander));
-                foreach(var unit in allies) {
-                    if (unit.id == entityId.EntityId)
-                        continue;
+            var rank = status.Rank - 1;
+            var range = RangeDictionary.GetBoidsRange(status.Rank);
+            var allies = getAllyUnits(status.Side, pos, range, allowDead:false, GetSingleUnitTypes(UnitType.Commander));
+            foreach(var unit in allies) {
+                if (unit.id == entityId.EntityId)
+                    continue;
 
-                    BaseUnitStatus.Component? sts;
-                    if (this.TryGetComponent(unit.id, out sts) == false)
-                        continue;
+                BaseUnitStatus.Component? sts;
+                if (this.TryGetComponent(unit.id, out sts) == false)
+                    continue;
                     
-                    if (sts.Value.Rank != rank)
-                        continue;
+                if (sts.Value.Rank != rank)
+                    continue;
 
-                    team.FollowerInfo.UnderCommanders.Add(unit.id);
-                }
-            });
+                team.FollowerInfo.UnderCommanders.Add(unit.id);
+            }
         }
         #endregion
 

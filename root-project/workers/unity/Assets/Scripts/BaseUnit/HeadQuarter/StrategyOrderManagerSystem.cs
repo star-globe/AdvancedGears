@@ -17,6 +17,7 @@ namespace AdvancedGears
     class StrategyOrderManagerSystem : EntityQuerySystem
     {
         private Unity.Entities.EntityQuery group;
+        EntityQueryBuilder.F_EDDD<StrategyOrderManager.Component, BaseUnitStatus.Component, SpatialEntityId> action;
 
         IntervalChecker inter;
         IConstraint[] constraints = null;
@@ -56,6 +57,8 @@ namespace AdvancedGears
             );
 
             inter = IntervalCheckerInitializer.InitializedChecker(1.0f);
+
+            action = Query;
         }
 
         protected override void OnUpdate()
@@ -65,53 +68,55 @@ namespace AdvancedGears
             if (CheckTime(ref inter) == false)
                 return;
 
-            Entities.With(group).ForEach((Entity entity,
-                                  ref StrategyOrderManager.Component manager,
-                                  ref BaseUnitStatus.Component status,
-                                  ref SpatialEntityId spatialEntityId) =>
-            {
-                if (status.State != UnitState.Alive)
-                    return;
+            Entities.With(group).ForEach(action);
+        }
+            
+        private void Query(Entity entity,
+                            ref StrategyOrderManager.Component manager,
+                            ref BaseUnitStatus.Component status,
+                            ref SpatialEntityId spatialEntityId)
+        {
+            if (status.State != UnitState.Alive)
+                return;
 
-                if (status.Type != UnitType.HeadQuarter)
-                    return;
+            if (status.Type != UnitType.HeadQuarter)
+                return;
 
-                var inter = manager.Interval;
-                if (CheckTime(ref inter) == false)
-                    return;
+            var inter = manager.Interval;
+            if (CheckTime(ref inter) == false)
+                return;
 
-                manager.Interval = inter;
+            manager.Interval = inter;
 
-                var trans = EntityManager.GetComponentObject<Transform>(entity);
-                var range = RangeDictionary.Get(FixedRangeType.HeadQuarterRange);
+            var trans = EntityManager.GetComponentObject<Transform>(entity);
+            var range = RangeDictionary.Get(FixedRangeType.HeadQuarterRange);
 
-                var enemy = getNearestEnemy(status.Side, trans.position);
-                if (enemy == null)
-                    return;
+            var enemy = getNearestEnemy(status.Side, trans.position);
+            if (enemy == null)
+                return;
 
-                var entityId = new EntityId();
-                entityId = enemy.id;
+            var entityId = new EntityId();
+            entityId = enemy.id;
 
-                var target = manager.TargetHq;
-                if (target.HeadQuarterId != entityId) {
-                    manager.TargetHq = new TargetHeadQuartersInfo()
-                    {
-                        HeadQuarterId = enemy.id,
-                        Side = enemy.side,
-                        Position = enemy.pos.ToWorldCoordinates(this.Origin),
-                    };
-                }
+            var target = manager.TargetHq;
+            if (target.HeadQuarterId != entityId) {
+                manager.TargetHq = new TargetHeadQuartersInfo()
+                {
+                    HeadQuarterId = enemy.id,
+                    Side = enemy.side,
+                    Position = enemy.pos.ToWorldCoordinates(this.Origin),
+                };
+            }
 
-                var st_range = RangeDictionary.Get(FixedRangeType.StrongholdRange);
-                var allies = getAllyUnits(status.Side, trans.position);
-                var diff = (enemy.pos - trans.position).normalized;
-                foreach(var unit in allies) {
-                    if (unit.type != UnitType.Stronghold)
-                        continue;
+            var st_range = RangeDictionary.Get(FixedRangeType.StrongholdRange);
+            var allies = getAllyUnits(status.Side, trans.position);
+            var diff = (enemy.pos - trans.position).normalized;
+            foreach(var unit in allies) {
+                if (unit.type != UnitType.Stronghold)
+                    continue;
 
-                    SendCommand(unit.id, enemy.side, diff * st_range);
-                }
-            });
+                SendCommand(unit.id, enemy.side, diff * st_range);
+            }
         }
 
         void SendCommand(EntityId id, UnitSide side, Vector3 vec)

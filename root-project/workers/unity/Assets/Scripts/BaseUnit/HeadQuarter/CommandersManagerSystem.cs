@@ -11,6 +11,7 @@ using UnityEngine;
 
 namespace AdvancedGears
 {
+    [Obsolete]
     [DisableAutoCreation]
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     class CommandersManagerSystem : BaseSearchSystem

@@ -19,10 +19,13 @@ namespace AdvancedGears
     public class UnitFactorySystem : BaseSearchSystem
     {
         EntityQuery factoryGroup;
+        EntityQueryBuilder.F_EDDDDDD<UnitFactory.Component, ResourceComponent.Component, BaseUnitStatus.Component, Position.Component, StrongholdSight.Component, SpatialEntityId> factoryAction;
+
         IntervalChecker factoryInter;
 
         EntityQuery checkerGroup;
         IntervalChecker checkerInter;
+        EntityQueryBuilder.F_DD<UnitFactory.Component, BaseUnitStatus.Component>  checkAction;
 
         private class ProductOrderContext
         {
@@ -59,6 +62,7 @@ namespace AdvancedGears
             );
 
             factoryInter = IntervalCheckerInitializer.InitializedChecker(1.0f);
+            factoryAction = FactoryQuery;
 
             checkerGroup = GetEntityQuery(
                 ComponentType.ReadWrite<UnitFactory.Component>(),
@@ -67,6 +71,7 @@ namespace AdvancedGears
             );
 
             checkerInter = IntervalCheckerInitializer.InitializedChecker(1.5f);
+            checkAction = CheckQuery;
         }
 
         protected override void OnUpdate()
@@ -82,37 +87,39 @@ namespace AdvancedGears
             if (CheckTime(ref checkerInter) == false)
                 return;
 
-            Entities.With(checkerGroup).ForEach((ref UnitFactory.Component factory,
-                                                 ref BaseUnitStatus.Component status) =>
-            {
-                if (status.State != UnitState.Alive)
-                    return;
+            Entities.With(checkerGroup).ForEach(checkAction);
+        }
+            
+        private void CheckQuery(ref UnitFactory.Component factory,
+                                  ref BaseUnitStatus.Component status)
+        {
+            if (status.State != UnitState.Alive)
+                return;
 
-                if (UnitUtils.IsBuilding(status.Type))
-                    return;
+            if (UnitUtils.IsBuilding(status.Type))
+                return;
 
-                var contaners = factory.Containers;
-                int index = -1;
-                idList.Clear();
-                foreach (var c in contaners) {
-                    index++;
+            var contaners = factory.Containers;
+            int index = -1;
+            idList.Clear();
+            foreach (var c in contaners) {
+                index++;
 
-                    if (c.State != ContainerState.Created)
-                        continue;
+                if (c.State != ContainerState.Created)
+                    continue;
 
-                    var list = getAllyUnits(status.Side, c.Pos.ToWorkerPosition(this.Origin), (float)RangeDictionary.TeamInter, allowDead:false, GetSingleUnitTypes(UnitType.Commander));
-                    if (list.Count == 0)
-                        idList.Add(index);
-                }
+                var list = getAllyUnits(status.Side, c.Pos.ToWorkerPosition(this.Origin), (float)RangeDictionary.TeamInter, allowDead:false, GetSingleUnitTypes(UnitType.Commander));
+                if (list.Count == 0)
+                    idList.Add(index);
+            }
 
-                if (idList.Count == 0)
-                    return;
+            if (idList.Count == 0)
+                return;
 
-                foreach (var i in idList)
-                    contaners.ChangeState(i,ContainerState.Empty);
+            foreach (var i in idList)
+                contaners.ChangeState(i,ContainerState.Empty);
 
-                factory.Containers = contaners;
-            });
+            factory.Containers = contaners;
         }
 
         // TODO:getFromSettings;
@@ -123,128 +130,130 @@ namespace AdvancedGears
             if (CheckTime(ref factoryInter) == false)
                 return;
 
-            Entities.With(factoryGroup).ForEach((Unity.Entities.Entity entity,
-                                          ref UnitFactory.Component factory,
-                                          ref ResourceComponent.Component resource,
-                                          ref BaseUnitStatus.Component status,
-                                          ref Position.Component position,
-                                          ref StrongholdSight.Component sight,
-                                          ref SpatialEntityId entityId) =>
+            Entities.With(factoryGroup).ForEach(factoryAction);
+        }
+        
+        private void FactoryQuery(Unity.Entities.Entity entity,
+                                    ref UnitFactory.Component factory,
+                                    ref ResourceComponent.Component resource,
+                                    ref BaseUnitStatus.Component status,
+                                    ref Position.Component position,
+                                    ref StrongholdSight.Component sight,
+                                    ref SpatialEntityId entityId)
+        {
+            if (status.State != UnitState.Alive)
+                return;
+
+            if (UnitUtils.IsBuilding(status.Type) == false)
+                return;
+
+            if (status.Order == OrderType.Idle)
+                return;
+
+            FollowerOrder? f_order = null;
+            SuperiorOrder? s_order = null;
+            TeamOrder? team_order = null;
+            TurretOrder? turret_order = null;
+
+            FactoryOrderType orderType = FactoryOrderType.None;
+
+            if (factory.SuperiorOrders.Count > 0) {
+                s_order = factory.SuperiorOrders[0];
+                orderType = FactoryOrderType.Superior;
+            }
+            else if (factory.FollowerOrders.Count > 0) {
+                f_order = factory.FollowerOrders[0];
+                orderType = FactoryOrderType.Follower;
+            }
+            else if (factory.TeamOrders.Count > 0) {
+                team_order = factory.TeamOrders[0];
+                orderType = FactoryOrderType.Team;
+            }
+            else if (factory.TurretOrders.Count > 0) {
+                turret_order = factory.TurretOrders[0];
+                orderType = FactoryOrderType.Turret;
+            }
+
+            if (orderType == FactoryOrderType.None)
+                return;
+
+            // calc time cost
+            int resourceCost;
+            float timeCost;
+            if (CalcOrderCost(out resourceCost, out timeCost, f_order, s_order, team_order) == false)
+                return;
+
+            //Debug.LogFormat("ResourceCost:{0} TimeCost:{1}", resourceCost, timeCost);
+
+            if (factory.CurrentType == FactoryOrderType.None) {
+                if (resource.Resource < resourceCost)
+                {
+                    //Debug.LogFormat("ResourcePoor:{0}", resource.Resource);
+                    return;
+                }
+
+                factory.ProductInterval = IntervalCheckerInitializer.InitializedChecker(timeCost);
+                factory.CurrentType = orderType;
+                resource.Resource -= resourceCost;
+            }
+
+            factoryInter = factory.ProductInterval;
+            if (CheckTime(ref factoryInter) == false)
+                return;
+
+            Coordinates? random = null;
+            if (sight.StrategyVector.Side != UnitSide.None)
             {
-                if (status.State != UnitState.Alive)
-                    return;
+                random = GetEmptyCoordinates(entityId.EntityId, position.Coords, sight.StrategyVector.Vector, height_buffer, factory.Containers);
+            }
 
-                if (UnitUtils.IsBuilding(status.Type) == false)
-                    return;
+            if (random == null)
+            {
+                //Debug.LogFormat("There is no Empty");
+                return;
+            }
 
-                if (status.Order == OrderType.Idle)
-                    return;
+            //Debug.LogFormat("CreateUnit!");
 
-                FollowerOrder? f_order = null;
-                SuperiorOrder? s_order = null;
-                TeamOrder? team_order = null;
-                TurretOrder? turret_order = null;
+            factory.ProductInterval = factoryInter;
 
-                FactoryOrderType orderType = FactoryOrderType.None;
+            var coords = random.Value;//GetEmptyCoordinates(entityId.EntityId, position.Coords, height_buffer, factory.Containers);
+            EntityTemplate template = null;
 
-                if (factory.SuperiorOrders.Count > 0) {
-                    s_order = factory.SuperiorOrders[0];
-                    orderType = FactoryOrderType.Superior;
-                }
-                else if (factory.FollowerOrders.Count > 0) {
-                    f_order = factory.FollowerOrders[0];
-                    orderType = FactoryOrderType.Follower;
-                }
-                else if (factory.TeamOrders.Count > 0) {
-                    team_order = factory.TeamOrders[0];
-                    orderType = FactoryOrderType.Team;
-                }
-                else if (factory.TurretOrders.Count > 0) {
-                    turret_order = factory.TurretOrders[0];
-                    orderType = FactoryOrderType.Turret;
-                }
+            bool finished = false;
+            UnitType type = UnitType.None;
+            if (s_order != null)
+            {
+                template = CreateSuperior(factory.SuperiorOrders, coords, out finished);
+                type = UnitType.Commander;
+            }
+            else if (f_order != null)
+            {
+                template = CreateFollower(factory.FollowerOrders, coords, f_order.Value.Customer, out finished);
+                type = UnitType.Soldier;
+            }
 
-                if (orderType == FactoryOrderType.None)
-                    return;
+            if (template != null) {
+                var request = new WorldCommands.CreateEntity.Request
+                (
+                    template,
+                    context: new ProductOrderContext() { f_order = f_order,
+                                                            s_order = s_order,
+                                                            type = type,
+                                                            strongholdId = entityId.EntityId,
+                                                            container = new UnitContainer(coords.ToFixedPointVector3(), ContainerState.Created) }
+                );
+                this.CommandSystem.SendCommand(request);
+            }
+            else if (team_order != null) {
+                CreateTeam(factory.TeamOrders, status.Side, entityId.EntityId, coords, out finished);
+            }
+            else if  (turret_order != null) {
+                // todo turret
+            }
 
-                // calc time cost
-                int resourceCost;
-                float timeCost;
-                if (CalcOrderCost(out resourceCost, out timeCost, f_order, s_order, team_order) == false)
-                    return;
-
-                //Debug.LogFormat("ResourceCost:{0} TimeCost:{1}", resourceCost, timeCost);
-
-                if (factory.CurrentType == FactoryOrderType.None) {
-                    if (resource.Resource < resourceCost)
-                    {
-                        //Debug.LogFormat("ResourcePoor:{0}", resource.Resource);
-                        return;
-                    }
-
-                    factory.ProductInterval = IntervalCheckerInitializer.InitializedChecker(timeCost);
-                    factory.CurrentType = orderType;
-                    resource.Resource -= resourceCost;
-                }
-
-                factoryInter = factory.ProductInterval;
-                if (CheckTime(ref factoryInter) == false)
-                    return;
-
-                Coordinates? random = null;
-                if (sight.StrategyVector.Side != UnitSide.None)
-                {
-                    random = GetEmptyCoordinates(entityId.EntityId, position.Coords, sight.StrategyVector.Vector, height_buffer, factory.Containers);
-                }
-
-                if (random == null)
-                {
-                    //Debug.LogFormat("There is no Empty");
-                    return;
-                }
-
-                //Debug.LogFormat("CreateUnit!");
-
-                factory.ProductInterval = factoryInter;
-
-                var coords = random.Value;//GetEmptyCoordinates(entityId.EntityId, position.Coords, height_buffer, factory.Containers);
-                EntityTemplate template = null;
-
-                bool finished = false;
-                UnitType type = UnitType.None;
-                if (s_order != null)
-                {
-                    template = CreateSuperior(factory.SuperiorOrders, coords, out finished);
-                    type = UnitType.Commander;
-                }
-                else if (f_order != null)
-                {
-                    template = CreateFollower(factory.FollowerOrders, coords, f_order.Value.Customer, out finished);
-                    type = UnitType.Soldier;
-                }
-
-                if (template != null) {
-                    var request = new WorldCommands.CreateEntity.Request
-                    (
-                        template,
-                        context: new ProductOrderContext() { f_order = f_order,
-                                                             s_order = s_order,
-                                                             type = type,
-                                                             strongholdId = entityId.EntityId,
-                                                             container = new UnitContainer(coords.ToFixedPointVector3(), ContainerState.Created) }
-                    );
-                    this.CommandSystem.SendCommand(request);
-                }
-                else if (team_order != null) {
-                    CreateTeam(factory.TeamOrders, status.Side, entityId.EntityId, coords, out finished);
-                }
-                else if  (turret_order != null) {
-                    // todo turret
-                }
-
-                if (finished)
-                    factory.CurrentType = FactoryOrderType.None;
-            });
+            if (finished)
+                factory.CurrentType = FactoryOrderType.None;
         }
 
         readonly Dictionary<EntityId, VortexCoordsContainer> strDic = new Dictionary<EntityId, VortexCoordsContainer>();
