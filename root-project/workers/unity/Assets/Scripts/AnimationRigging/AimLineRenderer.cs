@@ -16,8 +16,14 @@ namespace AdvancedGears
         LineRenderer line;
     
         [SerializeField]
-        float length = 100.0f;
-    
+        float length = 5.0f;
+
+        [SerializeField]
+        float width = 0.1f;
+
+        [SerializeField]
+        UnityEngine.Color col = UnityEngine.Color.white;
+
         MultiAimConstraint aimConstraint;
         MultiAimConstraint AimConstraint
         {
@@ -45,7 +51,18 @@ namespace AdvancedGears
         }
 
         readonly Vector3[] points = new Vector3[2];
-    
+
+        private void Start()
+        {
+            if (line != null)
+            {
+                line.startWidth = width;
+                line.endWidth = width;
+                line.startColor = col;
+                line.endColor = col;
+            }
+        }
+
         void Update()
         {
             if (line == null)
@@ -55,7 +72,7 @@ namespace AdvancedGears
                 return;
 
             points[0] = this.ConstrainedTransform.position;
-            points[1] = this.ConstrainedTransform.rotation * AnimationRiggingUtils.GetAimAxis(this.AimConstraint.data) * length + points[0];
+            points[1] = AnimationRiggingUtils.GetAimAxis(ref this.AimConstraint.data) * length + points[0];
     
             bool changed = false;
             var count = line.positionCount;

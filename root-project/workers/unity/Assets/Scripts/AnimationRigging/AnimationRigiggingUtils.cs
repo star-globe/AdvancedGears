@@ -42,7 +42,12 @@ namespace AdvancedGears
             return scale.magnitude / Vector3.one.magnitude;
         }
 
-        public static Vector3 GetAimAxis(MultiAimConstraintData data)
+        public static Vector3 NormilizedScaleVector(Vector3 scale)
+        {
+            return scale.normalized * Vector3.one.magnitude;
+        }
+
+        public static Vector3 GetAimAxis(ref MultiAimConstraintData data)
         {
             var trans = data.constrainedObject;
             if (trans == null)
