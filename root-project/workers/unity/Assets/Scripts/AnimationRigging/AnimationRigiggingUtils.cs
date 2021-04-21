@@ -37,11 +37,40 @@ namespace AdvancedGears
             return Vector3.zero;
         }
 
-        readonly static float root3 = Mathf.Sqrt(3.0f);
-
         public static float GetScaleRate(Vector3 scale)
         {
-            return scale.magnitude / root3;
+            return scale.magnitude / Vector3.one.magnitude;
+        }
+
+        public static Vector3 GetAimAxis(MultiAimConstraintData data)
+        {
+            var trans = data.constrainedObject;
+            if (trans == null)
+                return Vector3.zero;
+
+            var axis = data.aimAxis;
+            switch (axis)
+            {
+                case MultiAimConstraintData.Axis.X:
+                    return trans.right;
+
+                case MultiAimConstraintData.Axis.X_NEG:
+                    return -trans.right;
+
+                case MultiAimConstraintData.Axis.Y:
+                    return trans.up;
+
+                case MultiAimConstraintData.Axis.Y_NEG:
+                    return -trans.up;
+
+                case MultiAimConstraintData.Axis.Z:
+                    return trans.forward;
+
+                case MultiAimConstraintData.Axis.Z_NEG:
+                    return -trans.forward;
+            }
+
+            return Vector3.zero;
         }
     }
 }

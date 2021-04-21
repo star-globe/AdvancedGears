@@ -4,9 +4,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using Snapshot = Improbable.Gdk.Core.Snapshot;
-using AdvancedGears;
+using UnityEngine.Animations.Rigging;
 
-namespace AdvancedGears.Editor
+
+namespace AdvancedGears
 {
     [RequireComponent(typeof(MultiAimConstraint))]
     public class AimLineRenderer : MonoBehaviour
@@ -54,7 +55,7 @@ namespace AdvancedGears.Editor
                 return;
 
             points[0] = this.ConstrainedTransform.position;
-            points[1] = this.ConstrainedTransform.rotation * this.AimConstraint.data.aimAxis * length + points[0];
+            points[1] = this.ConstrainedTransform.rotation * AnimationRiggingUtils.GetAimAxis(this.AimConstraint.data) * length + points[0];
     
             bool changed = false;
             var count = line.positionCount;
