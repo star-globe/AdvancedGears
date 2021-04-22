@@ -118,8 +118,8 @@ MonoBehaviour:
   trigger: {fileID: 7801269306611005324}
   container: {fileID: 606604514533567823}
   aimtracers:
-  - {fileID: 5490355934134304921}
-  - {fileID: 4826624046747931564}
+  - {fileID: 1498951369588124289}
+  - {fileID: 6755952988339646929}
   baseTarget: {fileID: 3222224769231522126}
 --- !u!114 &-6066956962702012113
 MonoBehaviour:
@@ -406,9 +406,9 @@ MeshRenderer:
     type: 3}
   m_PrefabInstance: {fileID: 799755572087572379}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &5490355934134304921 stripped
+--- !u!114 &1498951369588124289 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5127599786050176770, guid: 1ca7c6aef45df8047b0239f705e7bbe2,
+  m_CorrespondingSourceObject: {fileID: 2293481340416945434, guid: 1ca7c6aef45df8047b0239f705e7bbe2,
     type: 3}
   m_PrefabInstance: {fileID: 799755572087572379}
   m_PrefabAsset: {fileID: 0}
@@ -418,9 +418,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6bca8e86911c3542a9008fa81e03520, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &4826624046747931564 stripped
+--- !u!114 &6755952988339646929 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5324048108323050551, guid: 1ca7c6aef45df8047b0239f705e7bbe2,
+  m_CorrespondingSourceObject: {fileID: 6257956218645673546, guid: 1ca7c6aef45df8047b0239f705e7bbe2,
     type: 3}
   m_PrefabInstance: {fileID: 799755572087572379}
   m_PrefabAsset: {fileID: 0}

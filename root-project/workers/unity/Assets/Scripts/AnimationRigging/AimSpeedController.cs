@@ -81,22 +81,9 @@ namespace AdvancedGears
                 if (this.ConstrainedTransform != null &&
                     offsetTrans != null && rootTrans != null &&
                     offsetVector3 != Vector3.zero) {
-                    var offset = offsetTrans.TransformVector(offsetVector3) + offsetTrans.position - this.ConstrainedTransform.position;
-                    //var scale = rootTrans.lossyScale.magnitude * Vector3.one;
-                    var m = Matrix4x4.TRS(Vector3.zero, rootTrans.rotation, Vector3.one);//scale);
-                    pos -= m.MultiplyPoint3x4(rootTrans.InverseTransformVector(offset));
-                    //pos -= rootTrans.rotation * rootTrans.InverseTransformVector(offsetTrans.TransformVector(offsetVector3));
-                    //pos -= rootTrans.rotation * rootTrans.InverseTransformVector(offsetTrans.position - this.ConstrainedTransform.position);
+                    pos -= offsetTrans.TransformVector(offsetVector3) + offsetTrans.position - this.ConstrainedTransform.position;
                 }
 
-#if true
-                if (this.ConstrainedTransform != null)
-                {
-                    var rot = Matrix4x4.Rotate(this.ConstrainedTransform.rotation);
-                    var scale = Matrix4x4.Scale(AnimationRiggingUtils.GetScaleRate(this.ConstrainedTransform.lossyScale) * Vector3.one);
-                    pos = (rot * scale).MultiplyPoint3x4(this.ConstrainedTransform.InverseTransformPoint(pos)) + this.ConstrainedTransform.position;
-                }
-#endif
                 return pos;
             }
         }
@@ -133,7 +120,7 @@ namespace AdvancedGears
             this.rootTrans = root;
         }
 
-        const float diffThreshhold = 0.02f;
+        const float diffThreshhold = 0.005f;
 
         public void Rotate(float time)
         {
