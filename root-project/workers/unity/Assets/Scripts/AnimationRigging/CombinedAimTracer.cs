@@ -15,7 +15,7 @@ namespace AdvancedGears
 
         bool isSetOffset = false;
 
-        public void SetAimTarget(Vector3? target)
+        public void SetAimTarget(Vector3? target, Transform centerTrans = null)
         {
             //if (isSetOffset == false && aimTargetOffset != null) {
             //    var vec = aimTargetOffset.AimOffsetVector;
@@ -33,11 +33,18 @@ namespace AdvancedGears
 #elif false
                 var rot = Matrix4x4.Rotate(this.transform.rotation);
                 var scale = Matrix4x4.Scale(AnimationRiggingUtils.GetScaleRate(this.transform.lossyScale) * Vector3.one);
-                target = (scale * rot).MultiplyPoint3x4(this.transform.InverseTransformPoint(target.Value)) + this.transform.position;
+                target = (rot * scale).MultiplyPoint3x4(this.transform.InverseTransformPoint(target.Value)) + this.transform.position;
 #elif false
                 var diff = target.Value - this.transform.position;
                 var scale = Matrix4x4.Scale(AnimationRiggingUtils.NormilizedScaleVector(this.transform.lossyScale));
                 target = scale.MultiplyPoint3x4(diff) + this.transform.position;
+#elif false
+                var scale = Matrix4x4.Scale(AnimationRiggingUtils.GetScaleRate(this.transform.lossyScale) * Vector3.one);
+                target = scale.MultiplyPoint3x4(this.transform.InverseTransformPoint(target.Value)) + this.transform.position;
+#elif false
+                var rot = Matrix4x4.Rotate(this.transform.rotation);
+                var scale = Matrix4x4.Scale(this.transform.lossyScale);
+                target = (rot * scale).MultiplyPoint3x4(this.transform.InverseTransformPoint(target.Value)) + this.transform;
 #endif
             }
 

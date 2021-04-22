@@ -89,6 +89,14 @@ namespace AdvancedGears
                     //pos -= rootTrans.rotation * rootTrans.InverseTransformVector(offsetTrans.position - this.ConstrainedTransform.position);
                 }
 
+#if true
+                if (this.ConstrainedTransform != null)
+                {
+                    var rot = Matrix4x4.Rotate(this.ConstrainedTransform.rotation);
+                    var scale = Matrix4x4.Scale(AnimationRiggingUtils.GetScaleRate(this.ConstrainedTransform.lossyScale) * Vector3.one);
+                    pos = (rot * scale).MultiplyPoint3x4(this.ConstrainedTransform.InverseTransformPoint(pos)) + this.ConstrainedTransform.position;
+                }
+#endif
                 return pos;
             }
         }
