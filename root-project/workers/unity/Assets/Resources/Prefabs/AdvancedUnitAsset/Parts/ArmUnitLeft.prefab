@@ -146,16 +146,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bones:
-  - hash: -522569001
+  - hash: -1079046846
     transform: {fileID: 3324385909560429412}
-  - hash: 1505414476
+  - hash: -1574201633
     transform: {fileID: 3258750102057837337}
-  - hash: 1776483987
+  - hash: -774800106
     transform: {fileID: 9071696450637591787}
-  - hash: -609791394
+  - hash: 1483839697
     transform: {fileID: 5296921204984624229}
-  - hash: 762136195
+  - hash: -1980122376
     transform: {fileID: 7836554403943852469}
+  - hash: -717037222
+    transform: {fileID: 8473457315164440208}
+  - hash: -721848414
+    transform: {fileID: 2474427074150879396}
 --- !u!114 &4388657102043977795
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -278,7 +282,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4654843742343049259}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3f49850be0ee7a94e9c9d746bcab2921, type: 3}
   m_Name: 
@@ -294,7 +298,7 @@ LineRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4654843742343049259}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -536,7 +540,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5770106997546820680}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3f49850be0ee7a94e9c9d746bcab2921, type: 3}
   m_Name: 
@@ -552,7 +556,7 @@ LineRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5770106997546820680}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -842,3 +846,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3108d6f2fe3a2d5479fce7104d468685, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!4 &2474427074150879396 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 973641207231582772, guid: 23ccaae45c423ca498f3b13a0932c0af,
+    type: 3}
+  m_PrefabInstance: {fileID: 3446942378754556560}
+  m_PrefabAsset: {fileID: 0}

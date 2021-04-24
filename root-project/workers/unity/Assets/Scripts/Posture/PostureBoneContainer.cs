@@ -16,7 +16,32 @@ namespace AdvancedGears
         }
 
         [SerializeField] List<HashTransform> bones;
-        public List<HashTransform> Bones { get { return bones;}}
+        List<HashTransform> bonesList = null;
+        public List<HashTransform> Bones
+        {
+            get
+            {
+                if (bonesList == null)
+                {
+                    if (bones == null)
+                        return null;
+
+                    bonesList = new List<HashTransform>();
+
+                    foreach (var t in bones)
+                    {
+                        bonesList.Add(t);
+
+                        var container = t.transform?.GetComponent<PostureBoneContainer>();
+                        var bones = container?.Bones;
+                        if (bones != null)
+                            bonesList.AddRange(bones);
+                    }
+                }
+
+                return bonesList;
+            }
+        }
 
         Dictionary<int, CannonTransform> cannonDic = null;
         public Dictionary<int, CannonTransform> CannonDic
@@ -26,9 +51,9 @@ namespace AdvancedGears
                 if (cannonDic == null)
                 {
                     cannonDic = new Dictionary<int, CannonTransform>();
-                    if (bones != null)
+                    if (this.Bones != null)
                     {
-                        foreach (var b in bones)
+                        foreach (var b in this.Bones)
                         {
                             var cannon = b.transform.GetComponent<CannonTransform>();
                             if (cannon != null)
@@ -97,6 +122,7 @@ namespace AdvancedGears
             if (bones == null)
                 return;
 
+            var baseName = this.transform.name;
             var hashSet = new HashSet<int>();
             for (var i = 0; i < bones.Count; i++)
             {
@@ -106,7 +132,7 @@ namespace AdvancedGears
                     break;
                 }
                 
-                var hash = t.name.GetHashCode();
+                var hash = (t.name+baseName).GetHashCode();
                 if (hashSet.Add(hash) == false) {
                     Debug.LogError($"Dupulicated Hash ! index:{i} hash:{hash}");
                     break;

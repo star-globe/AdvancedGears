@@ -25,13 +25,12 @@ namespace AdvancedGears
         [SerializeField]
         PostureBoneContainer container;
 
-        protected Transform GetMuzzleTransform(int bone)
+        protected CannonTransform GetMuzzleTransform(int bone)
         {
-            var cannon = container.GetCannon(bone);
-            return cannon == null ? null: cannon.Muzzle;
+            return container.GetCannon(bone);
         }
 
-        float fireTime = 0.0f;
+        Dictionary<int, float> fireTimeDic = null;
 
         LinkedEntityComponent spatialComp = null;
         LinkedEntityComponent SpatialComp
@@ -75,17 +74,22 @@ namespace AdvancedGears
                 return;
 
             var time = Time.time;
+            fireTimeDic = fireTimeDic ?? new Dictionary<int, float>();
+
+            float fireTime = 0.0f;
+            fireTimeDic.TryGetValue(bone, out fireTime);
+
             if (time - fireTime <= gun.Inter)
                 return;
 
-            var muzzle = GetMuzzleTransform(bone);
-            if (muzzle == null)
+            var cannon = GetMuzzleTransform(bone);
+            if (cannon == null)
                 return;
 
-            fireTime = time;
+            fireTimeDic[bone] = time;
 
-            var pos = muzzle.position - origin;
-            var vec = muzzle.forward;
+            var pos = cannon.Muzzle.position - origin;
+            var vec = cannon.Forward;
             vec *= gun.BulletSpeed;
 
             var id = this.BulletWriter.Data.CurrentId;

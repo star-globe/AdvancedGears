@@ -25,6 +25,6 @@ namespace AdvancedGears
             Assert.IsNotNull(muzzle);
         }
 
-        public Vector3 Forward { get { return barell.forward; } }
+        public Vector3 Forward { get { return (muzzle.position - barell.position).normalized; } }
     }
 }
