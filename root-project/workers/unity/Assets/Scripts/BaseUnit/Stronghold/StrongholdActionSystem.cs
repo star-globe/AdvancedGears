@@ -41,7 +41,7 @@ namespace AdvancedGears
                                                 ComponentType.ReadOnly<Transform>()
                                                 ), 2);
             
-            orderActioin = OrderQuery;
+            orderAction = OrderQuery;
             factoryAction = FactoryQuery;
         }
 

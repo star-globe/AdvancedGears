@@ -81,7 +81,7 @@ namespace AdvancedGears.UI
             Entities.With(playerGroup).ForEach(playerAction);
         }
         
-        void PlayerAction(Entity entity,
+        void PlayerQuery(Entity entity,
                           ref PlayerInfo.Component player,
                           ref BaseUnitStatus.Component status,
                           ref Position.Component position,

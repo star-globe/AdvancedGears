@@ -1,3 +1,4 @@
+using System;
 using Improbable.Gdk.Core;
 using AdvancedGears.Scripts.UI;
 using Unity.Entities;
@@ -37,7 +38,7 @@ namespace AdvancedGears
                     if (authUpdates.Count > 0)
                     {
                         var ui = Resources.Load("Prefabs/UIGameObject");
-                        var inst = (GameObject) Object.Instantiate(ui, Vector3.zero, Quaternion.identity);
+                        var inst = (GameObject) UnityEngine.Object.Instantiate(ui, Vector3.zero, Quaternion.identity);
                         var uiComponent = inst.GetComponent<UIComponent>();
                         UIComponent.Main = uiComponent;
                         uiComponent.TestText.text = $"Energy: {launcher.EnergyLeft}";
