@@ -12,7 +12,9 @@ namespace AdvancedGears
     internal class StrongholdActionSystem : BaseSearchSystem
     {
         private EntityQuerySet orderQuerySet;
+        private EntityQueryBuilder.F_EDDD<BaseUnitStatus.Component, StrongholdSight.Component, StrategyHexAccessPortal.Component> orderAction;
         private EntityQuerySet factoryQuerySet;
+        private EntityQueryBuilder.F_EDDDD<UnitFactory.Component, BaseUnitStatus.Component, StrongholdSight.Component, StrategyHexAccessPortal.Component> factoryAction;
 
         readonly HashSet<EntityId> requestLists = new HashSet<EntityId>();
         readonly Dictionary<EntityId, TeamInfo> teamsDic = new Dictionary<EntityId, TeamInfo>();
@@ -38,6 +40,9 @@ namespace AdvancedGears
                                                 ComponentType.ReadOnly<StrategyHexAccessPortal.Component>(),
                                                 ComponentType.ReadOnly<Transform>()
                                                 ), 2);
+            
+            orderActioin = OrderQuery;
+            factoryAction = FactoryQuery;
         }
 
         protected override void OnUpdate()
@@ -52,35 +57,37 @@ namespace AdvancedGears
             if (CheckTime(ref orderQuerySet.inter) == false)
                 return;
 
-            Entities.With(orderQuerySet.group).ForEach((Unity.Entities.Entity entity,
-                                                        ref BaseUnitStatus.Component status,
-                                                        ref StrongholdSight.Component sight,
-                                                        ref StrategyHexAccessPortal.Component portal) =>
-            {
-                if (status.State != UnitState.Alive)
-                    return;
+            Entities.With(orderQuerySet.group).ForEach(orderAction);
+        }
 
-                if (UnitUtils.IsBuilding(status.Type) == false)
-                    return;
+        void OrderQuery(Unity.Entities.Entity entity,
+                        ref BaseUnitStatus.Component status,
+                        ref StrongholdSight.Component sight,
+                        ref StrategyHexAccessPortal.Component portal)
+        {
+            if (status.State != UnitState.Alive)
+                return;
 
-                if (status.Side == UnitSide.None)
-                    return;
+            if (UnitUtils.IsBuilding(status.Type) == false)
+                return;
 
-                var trans = EntityManager.GetComponentObject<Transform>(entity);
-                CheckAlive(trans.position, status.Side, portal.Index, HexDictionary.HexEdgeLength, teamsDic);
+            if (status.Side == UnitSide.None)
+                return;
 
-                sendIds.Clear();
+            var trans = EntityManager.GetComponentObject<Transform>(entity);
+            CheckAlive(trans.position, status.Side, portal.Index, HexDictionary.HexEdgeLength, teamsDic);
 
-                // order check
-                // Not Set Strongholds
-                CheckOrder(portal.Index, status.Order, sight.TargetStrongholds, sight.StrategyVector.Vector.ToUnityVector(), teamsDic, sendIds);
+            sendIds.Clear();
 
-                // FrontLineCorners
-                CheckOrder(portal.Index, status.Order, status.Side, sight.FrontLineCorners, sight.StrategyVector.Vector.ToUnityVector(), teamsDic, sendIds);
+            // order check
+            // Not Set Strongholds
+            CheckOrder(portal.Index, status.Order, sight.TargetStrongholds, sight.StrategyVector.Vector.ToUnityVector(), teamsDic, sendIds);
 
-                // Hex
-                CheckOrder(portal.Index, status.Order, sight.TargetHexes, sight.StrategyVector.Vector.ToUnityVector(), teamsDic, sendIds);
-            });
+            // FrontLineCorners
+            CheckOrder(portal.Index, status.Order, status.Side, sight.FrontLineCorners, sight.StrategyVector.Vector.ToUnityVector(), teamsDic, sendIds);
+
+            // Hex
+            CheckOrder(portal.Index, status.Order, sight.TargetHexes, sight.StrategyVector.Vector.ToUnityVector(), teamsDic, sendIds);
         }
 
         void HandleFactoryRequests()
@@ -88,41 +95,43 @@ namespace AdvancedGears
             if (CheckTime(ref factoryQuerySet.inter) == false)
                 return;
 
-            Entities.With(factoryQuerySet.group).ForEach((Unity.Entities.Entity entity,
-                                                          ref UnitFactory.Component factory,
-                                                          ref BaseUnitStatus.Component status,
-                                                          ref StrongholdSight.Component sight,
-                                                          ref StrategyHexAccessPortal.Component portal) =>
-            {
-                if (status.State != UnitState.Alive)
-                    return;
+            Entities.With(factoryQuerySet.group).ForEach(factoryAction);
+        }
 
-                if (UnitUtils.IsBuilding(status.Type) == false)
-                    return;
+        void FactoryQuery(Unity.Entities.Entity entity,
+                        ref UnitFactory.Component factory,
+                        ref BaseUnitStatus.Component status,
+                        ref StrongholdSight.Component sight,
+                        ref StrategyHexAccessPortal.Component portal)
+        {
+            if (status.State != UnitState.Alive)
+                return;
 
-                if (status.Side == UnitSide.None)
-                    return;
+            if (UnitUtils.IsBuilding(status.Type) == false)
+                return;
 
-                var trans = EntityManager.GetComponentObject<Transform>(entity);
-                CheckAlive(trans.position, status.Side, uint.MaxValue, HexDictionary.HexEdgeLength * 2, teamsDic);
+            if (status.Side == UnitSide.None)
+                return;
 
-                // number check
-                if (factory.TeamOrders.Count == 0 && sight.StrategyVector.Side != UnitSide.None) {
-                    var teamOrders = factory.TeamOrders;
-                    makeOrders(status.Side, status.Rank, PostureUtils.RotFoward(sight.StrategyVector.Vector.ToUnityVector()), status.Order, portal.Index,
-                               sight.FrontLineCorners, sight.TargetHexes, teamsDic, teamOrders);
+            var trans = EntityManager.GetComponentObject<Transform>(entity);
+            CheckAlive(trans.position, status.Side, uint.MaxValue, HexDictionary.HexEdgeLength * 2, teamsDic);
 
-                    factory.TeamOrders = teamOrders;
-                }
+            // number check
+            if (factory.TeamOrders.Count == 0 && sight.StrategyVector.Side != UnitSide.None) {
+                var teamOrders = factory.TeamOrders;
+                makeOrders(status.Side, status.Rank, PostureUtils.RotFoward(sight.StrategyVector.Vector.ToUnityVector()), status.Order, portal.Index,
+                            sight.FrontLineCorners, sight.TargetHexes, teamsDic, teamOrders);
+
+                factory.TeamOrders = teamOrders;
+            }
 
 #if false
-                if (factory.TurretOrders.Count == 0) {
-                    var turretOrders = factory.TurretOrders;
-                    makeOrders(trans.position, status.Side, status.Rank, turretOrders);
-                    factory.TurretOrders = turretOrders;
-                }
+            if (factory.TurretOrders.Count == 0) {
+                var turretOrders = factory.TurretOrders;
+                makeOrders(trans.position, status.Side, status.Rank, turretOrders);
+                factory.TurretOrders = turretOrders;
+            }
 #endif
-            });
         }
 
         void HandleResponses()
