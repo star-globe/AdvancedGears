@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace AdvancedGears
 {
+    [Obsolete]
     [DisableAutoCreation]
     [UpdateInGroup(typeof(SpatialOSUpdateGroup))]
     public class InitUISystem : ComponentSystem

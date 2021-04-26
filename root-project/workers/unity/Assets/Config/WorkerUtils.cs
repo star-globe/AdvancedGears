@@ -48,7 +48,7 @@ namespace AdvancedGears
             world.GetOrCreateSystem<InitCameraSystem>();
             world.GetOrCreateSystem<FollowCameraSystem>();
             world.GetOrCreateSystem<InitUISystem>();
-            world.GetOrCreateSystem<UpdateUISystem>();
+            //world.GetOrCreateSystem<UpdateUISystem>();
             world.GetOrCreateSystem<PlayerCommandsSystem>();
             world.GetOrCreateSystem<MetricSendSystem>();
             world.GetOrCreateSystem<BulletMovementSystem>();

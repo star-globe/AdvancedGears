@@ -18,6 +18,7 @@ namespace AdvancedGears.UI
         protected override UIType uiType => UIType.HeadStatus;
 
         private EntityQuery group;
+        private EntityQueryBuilder.F_EDDD<BaseUnitStatus.Component, BaseUnitHealth.Component, SpatialEntityId> action;
 
         protected override void OnCreate()
         {
@@ -29,6 +30,8 @@ namespace AdvancedGears.UI
                 ComponentType.ReadOnly<Transform>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
+
+            action = Query;
         }
 
         const float size = 1.1f;
@@ -42,31 +45,33 @@ namespace AdvancedGears.UI
 
         protected override void UpdateAction()
         {
-            Entities.With(group).ForEach((Entity entity,
-                                          ref BaseUnitStatus.Component status,
-                                          ref BaseUnitHealth.Component health,
-                                          ref SpatialEntityId entityId) =>
-            {
-                var trans = EntityManager.GetComponentObject<Transform>(entity);
-                if (trans == null)
-                    return;
+            Entities.With(group).ForEach(action);
+        }
+         
+        private void Query(Entity entity,
+                           ref BaseUnitStatus.Component status,
+                           ref BaseUnitHealth.Component health,
+                           ref SpatialEntityId entityId)
+        {
+            var trans = EntityManager.GetComponentObject<Transform>(entity);
+            if (trans == null)
+                return;
 
-                var range = RangeDictionary.UIRange;
-                var diff = trans.position - this.Camera.transform.position;
-                if (diff.sqrMagnitude > range * range)
-                    return;
+            var range = RangeDictionary.UIRange;
+            var diff = trans.position - this.Camera.transform.position;
+            if (diff.sqrMagnitude > range * range)
+                return;
 
-                var view = this.Camera.WorldToViewportPoint(trans.position);
-                if (viewBounds.Contains(view) == false)
-                    return;
+            var view = this.Camera.WorldToViewportPoint(trans.position);
+            if (viewBounds.Contains(view) == false)
+                return;
 
-                var ui = GetOrCreateUI(entityId.EntityId);
-                if (ui == null)
-                    return;
+            var ui = GetOrCreateUI(entityId.EntityId);
+            if (ui == null)
+                return;
 
-                var pos = RectTransformUtility.WorldToScreenPoint(this.Camera, trans.position + ui.Offset);
-                ui.SetInfo(pos, health.Health, health.MaxHealth, false);
-            });
+            var pos = RectTransformUtility.WorldToScreenPoint(this.Camera, trans.position + ui.Offset);
+            ui.SetInfo(pos, health.Health, health.MaxHealth, false);
         }
     }
 

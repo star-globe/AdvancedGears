@@ -4,6 +4,7 @@ using Unity.Entities;
 
 namespace AdvancedGears
 {
+    [Obsolete]
     [UpdateInGroup(typeof(SpatialOSUpdateGroup))]
     public class UpdateUISystem : ComponentSystem
     {

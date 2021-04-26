@@ -17,7 +17,9 @@ namespace AdvancedGears.UI
     internal class MiniMapUISystem : BaseUISystem<MiniMapUIObject>
     {
         private EntityQuery playerGroup;
+        private EntityQueryBuilder.F_EDDDD<PlayerInfo.Component, BaseUnitStatus.Component, Position.Component, SpatialEntityId> playerAction;
         private EntityQuery unitGroup;
+        private EntityQueryBuilder.F_EDDD<BaseUnitStatus.Component, Position.Component, SpatialEntityId> unitAction;
 
         MiniMapUIDisplay MiniMapUIDisplay => MiniMapUIDisplay.Instance;
 
@@ -43,6 +45,10 @@ namespace AdvancedGears.UI
                 ComponentType.ReadOnly<Position.Component>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
+
+            playerAction = PlayerQuery;
+
+            unitAction = UnitQuery;
         }
 
         const float size = 1.1f;
@@ -72,23 +78,25 @@ namespace AdvancedGears.UI
 
         void UpdatePlayerPositions()
         {
-            Entities.With(playerGroup).ForEach((Entity entity,
-                                          ref PlayerInfo.Component player,
-                                          ref BaseUnitStatus.Component status,
-                                          ref Position.Component position,
-                                          ref SpatialEntityId entityId) =>
+            Entities.With(playerGroup).ForEach(playerAction);
+        }
+        
+        void PlayerAction(Entity entity,
+                          ref PlayerInfo.Component player,
+                          ref BaseUnitStatus.Component status,
+                          ref Position.Component position,
+                          ref SpatialEntityId entityId)
+        {
+            var pos = position.Coords.ToUnityVector();
+
+            if (player.ClientWorkerId.Equals(this.WorkerSystem.WorkerId))
             {
-                var pos = position.Coords.ToUnityVector();
+                playerPosition = position.Coords.ToUnityVector();
+            }
 
-                if (player.ClientWorkerId.Equals(this.WorkerSystem.WorkerId))
-                {
-                    playerPosition = position.Coords.ToUnityVector();
-                }
-
-                var minimapObject = this.GetOrCreateUI(entityId.EntityId);
-                if (minimapObject != null)
-                    minimapObject.SetName(player.Name);
-            });
+            var minimapObject = this.GetOrCreateUI(entityId.EntityId);
+            if (minimapObject != null)
+                minimapObject.SetName(player.Name);
         }
 
         protected override void UpdateAction()
@@ -103,13 +111,15 @@ namespace AdvancedGears.UI
 
         void UpdateUIObject()
         {
-            Entities.With(unitGroup).ForEach((Entity entity,
-                              ref BaseUnitStatus.Component status,
-                              ref Position.Component position,
-                              ref SpatialEntityId entityId) =>
-            {
-                SetUIObject(status, entityId.EntityId, position);
-            });
+            Entities.With(unitGroup).ForEach(unitAction);
+        }
+
+        void UnitQuery(Entity entity,
+                        ref BaseUnitStatus.Component status,
+                        ref Position.Component position,
+                        ref SpatialEntityId entityId)
+        {
+            SetUIObject(status, entityId.EntityId, position);
         }
     }
 }
