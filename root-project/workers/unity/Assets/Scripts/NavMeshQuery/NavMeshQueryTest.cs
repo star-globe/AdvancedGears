@@ -34,11 +34,20 @@ namespace AdvancedGears
 
             NativeArray<PolygonId> path = new NativeArray<PolygonId>(pathsize, Allocator.Temp);
             int pathResult = query.GetPathResult(path);
-            NativeArray<NavMeshLocation> pathStraight = new NativeArray<NavMeshLocation>(maxPath, Allocator.Temp);
-            //NativeArray<StraightPathFlag> pathStreaigthFlag = new NativeArray<StraightPathFlags>(maxPath, Allocator.Temp);
-            NativeArray<float> vertexSize = new NativeArray<float>(maxPath, Allocator.Temp);
+            //NativeArray<NavMeshLocation> pathStraight = new NativeArray<NavMeshLocation>(maxPath, Allocator.Temp);
+            ////NativeArray<StraightPathFlag> pathStreaigthFlag = new NativeArray<StraightPathFlags>(maxPath, Allocator.Temp);
+            //NativeArray<float> vertexSize = new NativeArray<float>(maxPath, Allocator.Temp);
+            //
+            //int straghtPathCount = 0;
 
-            int straghtPathCount = 0;
+            for (var i = 0; i < pathResult; i++)
+            {
+                var p = path[i];
+
+                 var loc = query.CreateLocation(start.position, p);
+                 var target = loc.position;
+            }
+
             query.Dispose();
         }
     }
