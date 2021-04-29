@@ -13,7 +13,8 @@
         "Unity.Entities.Hybrid",
         "Unity.Mathematics",
         "Unity.TextMeshPro",
-        "Unity.Animation.Rigging"
+        "Unity.Animation.Rigging",
+        "NavMeshComponents"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
