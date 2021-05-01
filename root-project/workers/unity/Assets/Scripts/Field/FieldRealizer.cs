@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Entities;
+using UnityEngine.AI;
 using UnityEngine;
 using Improbable.Gdk.Subscriptions;
 using UnityEngine.Assertions;
@@ -58,6 +59,10 @@ namespace AdvancedGears
 
             terrain.terrainData = terrainData;
             collider.terrainData = terrainData;
+
+            var surface = this.GetComponent<NavMeshSurface>();
+            if (surface != null)
+                surface.BuildNavMesh();
         }
 
         public void Reset()

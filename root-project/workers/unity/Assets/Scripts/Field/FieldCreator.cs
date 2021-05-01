@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.AI;
 using Unity.Entities;
 using Improbable;
 using Improbable.Gdk.Core;
@@ -83,10 +82,6 @@ namespace AdvancedGears
 
             var realizer = fieldObject.GetComponent<FieldRealizer>();
             realizer.Setup(this.Settings.FieldSize);
-
-            var surface = fieldObject.GetComponent<NavMeshSurface>();
-            if (surface != null)
-                surface.BuildNavMesh();
 
             return realizer;
         }
