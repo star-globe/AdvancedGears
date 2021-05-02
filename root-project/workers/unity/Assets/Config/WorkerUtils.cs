@@ -25,6 +25,15 @@ namespace AdvancedGears
             }
         }
 
+        public static IEnumerable<string> AllClientAttributes
+        {
+            get
+            {
+                yield return UnityClient;
+                yield return MobileClient;
+            }
+        }
+
         public static IEnumerable <string> AllWorkerAttributes
         {
             get

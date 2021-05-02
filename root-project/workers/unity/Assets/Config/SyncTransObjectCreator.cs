@@ -36,6 +36,28 @@ namespace AdvancedGears
             }
         }
 
+        bool? isClient = null;
+        bool IsClient
+        {
+            get
+            {
+                if (isClient == null)
+                {
+                    isClient = false;
+                    foreach (var w in WorkerUtils.AllClientAttributes)
+                    {
+                        if (string.Equals(this.WorkerType, w))
+                        {
+                            isClient = true;
+                            break;
+                        }
+                    }
+                }
+
+                return isClient.Value;
+            }
+        }
+
         private readonly Type[] componentsToAdd =
         {
             typeof(Transform), typeof(Rigidbody)
@@ -56,18 +78,18 @@ namespace AdvancedGears
         public void OnEntityCreated(SpatialOSEntityInfo entityInfo, GameObject prefab, EntityManager entityManager, EntityGameObjectLinker linker)
         {
             Coordinates position = Coordinates.Zero;
-            if (TryGetComponent<Position.Component>(entityManager, entityInfo.Entity, out var pos))
+            if (TryGetComponent<Position.Component>(ref entityManager, entityInfo.Entity, out var pos))
                 position = pos.Value.Coords;
 
             Quaternion rot = Quaternion.identity;
             Vector3 scale = Vector3.one;
-            if (TryGetComponent<PostureRoot.Component>(entityManager, entityInfo.Entity, out var posture)) {
+            if (TryGetComponent<PostureRoot.Component>(ref entityManager, entityInfo.Entity, out var posture)) {
                 rot = posture.Value.RootTrans.Rotation.ToUnityQuaternion();
                 scale = posture.Value.RootTrans.Scale.ToUnityVector();
             }
 
             Dictionary<int,CompressedLocalTransform> boneMap = null;
-            if (TryGetComponent<PostureAnimation.Component>(entityManager, entityInfo.Entity, out var anim))
+            if (TryGetComponent<PostureAnimation.Component>(ref entityManager, entityInfo.Entity, out var anim))
                 boneMap = anim.Value.BoneMap;
 
             var gameObject = UnityEngine.Object.Instantiate(prefab, position.ToUnityVector() + this.WorkerOrigin, rot);
@@ -79,17 +101,17 @@ namespace AdvancedGears
                 container?.SetTrans(boneMap);
             }
 
+            if (this.IsClient && entityManager.HasComponent<BaseUnitMovement.Component>(entityInfo.Entity))
+                entityManager.AddComponent<NavPathData>(entityInfo.Entity);
+
             gameObjectsCreated.Add(entityInfo.SpatialOSEntityId, gameObject);
             gameObject.name = $"{prefab.name}(SpatialOS: {entityInfo.SpatialOSEntityId}, Worker: {this.WorkerType})";
             linker.LinkGameObjectToSpatialOSEntity(entityInfo.SpatialOSEntityId, gameObject, types);
         }
 
-        private bool TryGetComponent<T>(EntityManager entityManager, in Entity entity, out T? comp) where T : struct, IComponentData
+        private bool TryGetComponent<T>(ref EntityManager entityManager, in Entity entity, out T? comp) where T : struct, IComponentData
         {
             comp = null;
-            if (entityManager == null)
-                return false;
-
             if (entityManager.HasComponent<T>(entity))
             {
                 comp = entityManager.GetComponentData<T>(entity);

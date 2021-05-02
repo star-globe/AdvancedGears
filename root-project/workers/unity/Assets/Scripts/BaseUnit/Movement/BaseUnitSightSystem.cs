@@ -5,6 +5,7 @@ using Improbable.Gdk.TransformSynchronization;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace AdvancedGears
 {
@@ -25,7 +26,7 @@ namespace AdvancedGears
         IntervalChecker intervalBoid;
 
         EntityQueryBuilder.F_EDDD<BaseUnitSight.Component, BaseUnitStatus.Component, SpatialEntityId> boidQuery;
-        EntityQueryBuilder.F_EDDDD<BaseUnitMovement.Component, BaseUnitSight.Component, BaseUnitStatus.Component, SpatialEntityId> movementQuery;
+        EntityQueryBuilder.F_EDDDDD<BaseUnitMovement.Component, NavPathData, BaseUnitSight.Component, BaseUnitStatus.Component, SpatialEntityId> movementQuery;
 
         double deltaTime = -1.0;
 
@@ -142,8 +143,11 @@ namespace AdvancedGears
             deltaTime = Time.ElapsedTime;
         }
 
+        const float unitsize = 2.0f;
+
         private void MovementQuery(Entity entity,
                                           ref BaseUnitMovement.Component movement,
+                                          ref NavPathData path,
                                           ref BaseUnitSight.Component sight,
                                           ref BaseUnitStatus.Component status,
                                           ref SpatialEntityId entityId)
@@ -174,12 +178,14 @@ namespace AdvancedGears
 
             var id = entityId.EntityId;
             if (vectorDic.ContainsKey(id)) {
-                tgt = vectorDic[id].boidTarget;
+                //tgt = vectorDic[id].boidTarget;
                 spread = vectorDic[id].spread;
             }
 
             if (tgt == null)
                 tgt = sight.TargetPosition.ToWorkerPosition(this.Origin);
+
+            tgt = CheckNavPathAndTarget(tgt.Value, pos, unitsize, ref path);
 
             if (RangeDictionary.IsSpreadValid(spread)) {
                 var length = (tgt.Value - pos).magnitude;
@@ -310,6 +316,36 @@ namespace AdvancedGears
             sight.BoidVector = boidVector;
 
             return tgt;
+        }
+
+        const float checkRange = 0.1f;
+        readonly NavMeshPath navPath = new NavMeshPath();
+        readonly Vector3[] points = new Vector3[256];
+
+        Vector3 CheckNavPathAndTarget(Vector3 target, Vector3 current, float size, ref NavPathData path)
+        {
+            if ((target - path.target).sqrMagnitude < checkRange * checkRange)
+            {
+                if ((path.CurrentCorner - current).sqrMagnitude < size * size)
+                {
+                    path.Next();
+                }
+
+                return path.CurrentCorner;
+            }
+            else
+            {
+                navPath.ClearCorners();
+                if (NavMesh.CalculatePath(current, target, NavMesh.AllAreas, navPath))
+                {
+                    path.count = navPath.GetCornersNonAlloc(points);
+                    path.current = 0;
+                    path.corners.CopyFrom(points);
+                    return path.CurrentCorner;
+                }
+            }
+
+            return target;
         }
         #endregion
     }
