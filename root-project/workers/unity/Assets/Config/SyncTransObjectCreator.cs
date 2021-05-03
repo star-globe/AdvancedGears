@@ -101,8 +101,8 @@ namespace AdvancedGears
                 container?.SetTrans(boneMap);
             }
 
-            if (this.IsClient && entityManager.HasComponent<BaseUnitMovement.Component>(entityInfo.Entity))
-                entityManager.AddComponent<NavPathData>(entityInfo.Entity);
+            if (this.IsClient == false && entityManager.HasComponent<BaseUnitMovement.Component>(entityInfo.Entity))
+                entityManager.AddComponentData<NavPathData>(entityInfo.Entity, NavPathData.CreateData());
 
             gameObjectsCreated.Add(entityInfo.SpatialOSEntityId, gameObject);
             gameObject.name = $"{prefab.name}(SpatialOS: {entityInfo.SpatialOSEntityId}, Worker: {this.WorkerType})";

@@ -62,7 +62,10 @@ namespace AdvancedGears
 
             var surface = this.GetComponent<NavMeshSurface>();
             if (surface != null)
+            {
                 surface.BuildNavMesh();
+                Debug.Log("BuildNavMesh");
+            }
         }
 
         public void Reset()

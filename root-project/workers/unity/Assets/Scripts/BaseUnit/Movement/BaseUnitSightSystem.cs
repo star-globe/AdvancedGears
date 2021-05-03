@@ -43,6 +43,7 @@ namespace AdvancedGears
                 ComponentType.ReadOnly<UnitTransform>(),
                 ComponentType.ReadWrite<BaseUnitMovement.Component>(),
                 ComponentType.ReadOnly<BaseUnitMovement.HasAuthority>(),
+                ComponentType.ReadWrite<NavPathData>(),
                 ComponentType.ReadOnly<BaseUnitSight.Component>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
@@ -132,6 +133,8 @@ namespace AdvancedGears
             }
         }
 
+        int navCount = 0;
+
         private void UpdateMovement()
         {
             if (CheckTime(ref intervalMovement) == false)
@@ -185,7 +188,7 @@ namespace AdvancedGears
             if (tgt == null)
                 tgt = sight.TargetPosition.ToWorkerPosition(this.Origin);
 
-            tgt = CheckNavPathAndTarget(tgt.Value, pos, unitsize, ref path);
+            tgt = CheckNavPathAndTarget(tgt.Value, pos, unitsize, entityId.EntityId.Id, ref path);
 
             if (RangeDictionary.IsSpreadValid(spread)) {
                 var length = (tgt.Value - pos).magnitude;
@@ -320,29 +323,33 @@ namespace AdvancedGears
 
         const float checkRange = 0.1f;
         readonly NavMeshPath navPath = new NavMeshPath();
-        readonly Vector3[] points = new Vector3[256];
+        readonly Dictionary<long, Vector3[]> pointsDic = new Dictionary<long, Vector3[]>();
 
-        Vector3 CheckNavPathAndTarget(Vector3 target, Vector3 current, float size, ref NavPathData path)
+        Vector3 CheckNavPathAndTarget(Vector3 target, Vector3 current, float size, long uid, ref NavPathData path)
         {
-            if ((target - path.target).sqrMagnitude < checkRange * checkRange)
-            {
-                if ((path.CurrentCorner - current).sqrMagnitude < size * size)
-                {
-                    path.Next();
-                }
+            if (pointsDic.ContainsKey(uid) == false)
+                pointsDic[uid] = new Vector3[256];
 
-                return path.CurrentCorner;
-            }
-            else
+            var points = pointsDic[uid];
+            if (path.IsSetData == false || (target - path.target).sqrMagnitude > checkRange * checkRange)
             {
                 navPath.ClearCorners();
                 if (NavMesh.CalculatePath(current, target, NavMesh.AllAreas, navPath))
                 {
                     path.count = navPath.GetCornersNonAlloc(points);
                     path.current = 0;
-                    path.corners.CopyFrom(points);
-                    return path.CurrentCorner;
+                    path.target = target;
+                    return path.GetCurrentCorner(points);
                 }
+            }
+            else
+            {
+                if ((path.GetCurrentCorner(points) - current).sqrMagnitude < size * size)
+                {
+                    path.Next();
+                }
+
+                return path.GetCurrentCorner(points);
             }
 
             return target;
