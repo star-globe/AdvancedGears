@@ -37,6 +37,14 @@ namespace AdvancedGears
             }
         }
 
+        public float SizeRadius
+        {
+            get
+            {
+                return this.Bounds.extents.magnitude;
+            }
+        }
+
         public Vector3 BufferVector
         {
             get
