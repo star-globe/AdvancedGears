@@ -30,6 +30,10 @@ namespace AdvancedGears
         float sleepRotDiff = 0.2f;
         public static float SleepRotDiff => Instance.sleepRotDiff;
 
+        [SerializeField]
+        int randomCount = 5;
+        public static int RandomCount => Instance.randomCount;
+
         Dictionary<UnitType, MovementSettings> movementDic = null;
         Dictionary<UnitType, MovementSettings> MovementDic
         {

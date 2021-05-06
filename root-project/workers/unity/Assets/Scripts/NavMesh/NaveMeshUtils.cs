@@ -7,9 +7,38 @@ using Unity.Collections;
 
 namespace AdvancedGears
 {
-    public static class NaveMeshUtils
+    public static class NavMeshUtils
     {
+        static readonly NavMeshPath path = new NavMeshPath();
+        public static Vector3 GetNavPoint(Vector3 current, Vector3 target, float range)
+        {
+            return GetNavPoint(current, target, range, out var count, points:null);
+        }
 
+        public static Vector3 GetNavPoint(Vector3 current, Vector3 target, float range, out int count, Vector3[] points)
+        {
+            Vector3 tgt = target;
+            var random = MovementDictionary.RandomCount;
+            for (var i = 0; i < random; i++)
+            {
+                path.ClearCorners();
+                if (NavMesh.CalculatePath(current, tgt, NavMesh.AllAreas, path))
+                {
+                    if (points != null)
+                        count = path.GetCornersNonAlloc(points);
+                    else
+                        count = 0;
+
+                    return tgt;
+                }
+
+                var circle = UnityEngine.Random.insideUnitCircle;
+                tgt += new Vector3(circle.x, 0, circle.y) * range;
+            }
+
+            count = 0;
+            return current;
+        }
     }
 
     public struct NavPathData : IComponentData

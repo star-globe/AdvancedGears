@@ -146,8 +146,6 @@ namespace AdvancedGears
             deltaTime = Time.ElapsedTime;
         }
 
-        const float unitsize = 2.0f;
-
         private void MovementQuery(Entity entity,
                                           ref BaseUnitMovement.Component movement,
                                           ref NavPathData path,
@@ -188,7 +186,7 @@ namespace AdvancedGears
             if (tgt == null)
                 tgt = sight.TargetPosition.ToWorkerPosition(this.Origin);
 
-            tgt = CheckNavPathAndTarget(tgt.Value, pos, unitsize, entityId.EntityId.Id, ref path);
+            tgt = CheckNavPathAndTarget(tgt.Value, pos, unit.Bounds.size.magnitude, entityId.EntityId.Id, ref path);
 
             if (RangeDictionary.IsSpreadValid(spread)) {
                 var length = (tgt.Value - pos).magnitude;
@@ -322,7 +320,6 @@ namespace AdvancedGears
         }
 
         const float checkRange = 0.1f;
-        readonly NavMeshPath navPath = new NavMeshPath();
         readonly Dictionary<long, Vector3[]> pointsDic = new Dictionary<long, Vector3[]>();
 
         Vector3 CheckNavPathAndTarget(Vector3 target, Vector3 current, float size, long uid, ref NavPathData path)
@@ -333,10 +330,10 @@ namespace AdvancedGears
             var points = pointsDic[uid];
             if (path.IsSetData == false || (target - path.target).sqrMagnitude > checkRange * checkRange)
             {
-                navPath.ClearCorners();
-                if (NavMesh.CalculatePath(current, target, NavMesh.AllAreas, navPath))
+                NavMeshUtils.GetNavPoint(current, target, size, out var count, points);
+                if (count > 0)
                 {
-                    path.count = navPath.GetCornersNonAlloc(points);
+                    path.count = count;
                     path.current = 0;
                     path.target = target;
                     return path.GetCurrentCorner(points);
