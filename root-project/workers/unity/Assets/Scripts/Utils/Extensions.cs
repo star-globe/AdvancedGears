@@ -352,6 +352,13 @@ namespace AdvancedGears
                    unitInfo.state == UnitState.Dead;
         }
 
+        public static Vector3 GetTargetPosition(this BaseUnitSight.Component sight, Vector3 origin, Vector3 current)
+        {
+            var tgt = sight.TargetPosition.ToWorkerPosition(origin);
+            var diff = current - tgt;
+            return tgt + diff.normalized * sight.TargetSize;
+        }
+
         public static bool IsValid(this HexBaseInfo hexInfo)
         {
             return hexInfo.HexIndex < uint.MaxValue;

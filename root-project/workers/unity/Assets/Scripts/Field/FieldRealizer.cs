@@ -63,6 +63,8 @@ namespace AdvancedGears
             var surface = this.GetComponent<NavMeshSurface>();
             if (surface != null)
             {
+                surface.center = terrainData.bounds.center;
+                surface.size = terrainData.bounds.size;
                 surface.BuildNavMesh();
                 Debug.Log("BuildNavMesh");
             }

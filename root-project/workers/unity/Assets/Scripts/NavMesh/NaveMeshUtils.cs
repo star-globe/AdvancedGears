@@ -10,19 +10,19 @@ namespace AdvancedGears
     public static class NavMeshUtils
     {
         static readonly NavMeshPath path = new NavMeshPath();
-        public static Vector3 GetNavPoint(Vector3 current, Vector3 target, float range)
+        public static Vector3 GetNavPoint(Vector3 current, Vector3 target, float range, int area)
         {
-            return GetNavPoint(current, target, range, out var count, points:null);
+            return GetNavPoint(current, target, range, area, out var count, points:null);
         }
 
-        public static Vector3 GetNavPoint(Vector3 current, Vector3 target, float range, out int count, Vector3[] points)
+        public static Vector3 GetNavPoint(Vector3 current, Vector3 target, float range, int area, out int count, Vector3[] points)
         {
             Vector3 tgt = target;
             var random = MovementDictionary.RandomCount;
             for (var i = 0; i < random; i++)
             {
                 path.ClearCorners();
-                if (NavMesh.CalculatePath(current, tgt, NavMesh.AllAreas, path))
+                if (NavMesh.CalculatePath(current, tgt, area, path))
                 {
                     if (points != null)
                         count = path.GetCornersNonAlloc(points);
@@ -38,6 +38,11 @@ namespace AdvancedGears
 
             count = 0;
             return current;
+        }
+
+        public static int GetNavArea(string areaName)
+        {
+            return 1 >> NavMesh.GetAreaFromName(areaName);
         }
     }
 

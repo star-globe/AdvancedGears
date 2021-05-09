@@ -144,6 +144,7 @@ namespace AdvancedGears
             baseInfo.Type = tgt.type;
             baseInfo.Side = tgt.side;
             baseInfo.State = tgt.state;
+            baseInfo.Size = tgt.size;
 
             targetInfo = new TargetInfo(baseInfo,1.0f);
         }

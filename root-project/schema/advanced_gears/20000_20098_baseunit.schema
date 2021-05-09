@@ -100,7 +100,8 @@ component BaseUnitSight {
     TargetState state = 1;
     improbable.gdk.transform_synchronization.FixedPointVector3 target_position = 2;
     float target_range = 3;
-    
+    float target_size = 4;
+
     BoidVector boid_vector = 7;
     double boid_update_time = 8;
 
@@ -121,6 +122,7 @@ type UnitBaseInfo {
     UnitType type = 3;
     UnitSide side = 4;
     UnitState state = 5;
+    float size = 6;
 }
 
 type HexBaseInfo

@@ -26,7 +26,7 @@ GameObject:
   - component: {fileID: 5626431488711200078}
   - component: {fileID: 2852426682652613271}
   - component: {fileID: 5767747211734542613}
-  - component: {fileID: 2747063284762935629}
+  - component: {fileID: 2141604814428037113}
   m_Layer: 11
   m_Name: StrongholdUnit
   m_TagString: Untagged
@@ -278,7 +278,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c19dcae8c6f54f438e5f446e15e992c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!208 &2747063284762935629
+--- !u!208 &2141604814428037113
 NavMeshObstacle:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

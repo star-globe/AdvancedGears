@@ -25,7 +25,7 @@ GameObject:
   - component: {fileID: 2684193555817035303}
   - component: {fileID: 3403501448980568949}
   - component: {fileID: 1545585458141920565}
-  - component: {fileID: 3726553465565411287}
+  - component: {fileID: 1859046108240667416}
   m_Layer: 11
   m_Name: TurretUnit
   m_TagString: Untagged
@@ -265,7 +265,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b337e4658d9f3f34a8a74f89e9d72d32, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!208 &3726553465565411287
+--- !u!208 &1859046108240667416
 NavMeshObstacle:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

@@ -189,7 +189,7 @@ namespace AdvancedGears
             return isTarget ? OrderType.Attack: OrderType.Keep;
         }
 
-        private OrderType GetTargetStronghold(in Vector3 pos, UnitSide side, UnitType type, UnitState state, in Vector3 vector, EntityId selfId, Dictionary<EntityId,UnitBaseInfo> targets)
+        private OrderType GetTargetStronghold(in Vector3 pos, UnitSide side, UnitType type, UnitState state, float size, in Vector3 vector, EntityId selfId, Dictionary<EntityId,UnitBaseInfo> targets)
         {
             OrderType order = OrderType.Idle;
 
@@ -212,17 +212,17 @@ namespace AdvancedGears
             targets.Clear();
             if (units != null && units.Count > 0) {
                 foreach (var u in units) {
-                    targets.Add(u.id, new UnitBaseInfo(u.id, u.pos.ToWorldCoordinates(this.Origin), u.type, u.side, u.state));
+                    targets.Add(u.id, new UnitBaseInfo(u.id, u.pos.ToWorldCoordinates(this.Origin), u.type, u.side, u.state, u.size));
                 }
             }
             else {
-                targets.Add(selfId, new UnitBaseInfo(selfId, pos.ToWorldCoordinates(this.Origin), type, side, state));
+                targets.Add(selfId, new UnitBaseInfo(selfId, pos.ToWorldCoordinates(this.Origin), type, side, state, size));
                 order = OrderType.Keep;
             }
 
             return order;
         }
-        private OrderType GetTargetStronghold(in Vector3 pos, UnitSide side, UnitType type, UnitState state, in Vector3 vector, EntityId selfId, List<HexIndex> indexes, Dictionary<EntityId, UnitBaseInfo> targets)
+        private OrderType GetTargetStronghold(in Vector3 pos, UnitSide side, UnitType type, UnitState state, float size, in Vector3 vector, EntityId selfId, List<HexIndex> indexes, Dictionary<EntityId, UnitBaseInfo> targets)
         {
             OrderType order = OrderType.Idle;
 
@@ -258,11 +258,11 @@ namespace AdvancedGears
             targets.Clear();
             if (units != null && units.Count > 0) {
                 foreach (var u in units) {
-                    targets.Add(u.id, new UnitBaseInfo(u.id, u.pos.ToWorldCoordinates(this.Origin), u.type, u.side, u.state));
+                    targets.Add(u.id, new UnitBaseInfo(u.id, u.pos.ToWorldCoordinates(this.Origin), u.type, u.side, u.state, u.size));
                 }
             }
             else {
-                targets.Add(selfId, new UnitBaseInfo(selfId, pos.ToWorldCoordinates(this.Origin), type, side, state));
+                targets.Add(selfId, new UnitBaseInfo(selfId, pos.ToWorldCoordinates(this.Origin), type, side, state, size));
                 order = OrderType.Keep;
             }
 

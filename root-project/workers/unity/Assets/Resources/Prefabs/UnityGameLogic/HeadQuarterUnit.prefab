@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 6219044561266868164}
   - component: {fileID: 526124300522231972}
   - component: {fileID: 5284226851696852331}
-  - component: {fileID: 2249951574579780896}
+  - component: {fileID: 1489922077088622296}
   m_Layer: 11
   m_Name: HeadQuarterUnit
   m_TagString: Untagged
@@ -252,7 +252,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   settings: {fileID: 11400000, guid: d7d6f89784f414849b6a177066a587e2, type: 2}
---- !u!208 &2249951574579780896
+--- !u!208 &1489922077088622296
 NavMeshObstacle:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

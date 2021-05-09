@@ -93,7 +93,7 @@ namespace AdvancedGears
                 var p = GetGrounded(pos + rot * kvp.Value.RelativePos.ToUnityVector(), buffer);
                 var p_diff = p - t.position;
                 if (p_diff.sqrMagnitude >= posDiff * posDiff)
-                    t.position = NavMeshUtils.GetNavPoint(t.position, p, unit.Bounds.size.magnitude);
+                    t.position = NavMeshUtils.GetNavPoint(t.position, p, unit.Bounds.size.magnitude, WalkableNavArea);
 
                 var r = kvp.Value.RelativeRot.ToUnityQuaternion() * rot;
                 var r_diff = Vector3.Angle(t.forward, r * Vector3.forward);

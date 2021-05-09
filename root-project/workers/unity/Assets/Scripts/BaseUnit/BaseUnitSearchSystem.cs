@@ -100,6 +100,7 @@ namespace AdvancedGears
                 {
                     target.State = TargetState.ActionTarget;
                     sight.TargetPosition = epos;
+                    sight.TargetSize = enemy.size;
                 }
 
                 action.EnemyPositions.Add(epos);
@@ -159,6 +160,7 @@ namespace AdvancedGears
                     if (target.TargetUnit.IsValid())
                     {
                         sight.TargetPosition = target.TargetUnit.Position.ToFixedPointVector3();
+                        sight.TargetSize = target.TargetUnit.Size;
                         target.State = TargetState.MovementTarget;
                         isTarget = true;
                     }
@@ -169,6 +171,7 @@ namespace AdvancedGears
                 case TargetType.FrontLine:
                     if (target.FrontLine.IsValid()) {
                         sight.TargetPosition = target.FrontLine.GetOnLinePosition(this.Origin, pos, -backBuffer).ToWorldPosition(this.Origin);
+                        sight.TargetSize = 0.0f;
                         target.State = TargetState.MovementTarget;
                         isTarget = true;
                     }
@@ -179,6 +182,7 @@ namespace AdvancedGears
                 case TargetType.Hex:
                     if (target.HexInfo.IsValid()) {
                         sight.TargetPosition = HexUtils.GetHexCenter(this.Origin, target.HexInfo.HexIndex, HexDictionary.HexEdgeLength).ToWorldPosition(this.Origin);
+                        sight.TargetSize = HexDictionary.HexTargetRadius;
                         target.State = TargetState.MovementTarget;
                         isTarget = true;
                     }
@@ -202,6 +206,18 @@ namespace AdvancedGears
                     layer = LayerMask.GetMask("Unit");
 
                 return layer;
+            }
+        }
+
+        int unitNavArea = 0;
+        protected int WalkableNavArea
+        {
+            get
+            {
+                if (unitNavArea == 0)
+                    unitNavArea = NavMeshUtils.GetNavArea("Walkable");
+
+                return unitNavArea;
             }
         }
 
@@ -232,9 +248,13 @@ namespace AdvancedGears
             if (TryGetComponentObject(entityId, out trans) == false)
                 return null;
 
+            UnitTransform unitTransform;
+            TryGetComponentObject(entityId, out unitTransform);
+
             var info = new UnitInfo();
             info.id = entityId;
             info.pos = trans.position;
+            info.size = unitTransform == null ? 0.0f: unitTransform.SizeRadius;
             info.rot = trans.rotation;
             info.type = unit.Value.Type;
             info.side = unit.Value.Side;
@@ -483,6 +503,7 @@ namespace AdvancedGears
     {
         public EntityId id;
         public Vector3 pos;
+        public float size;
         public Quaternion rot;
         public UnitType type;
         public UnitSide side;

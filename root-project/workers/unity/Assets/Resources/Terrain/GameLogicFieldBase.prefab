@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7544641739345941694}
   - component: {fileID: 1867463141291357884}
   - component: {fileID: 3403004807609476740}
-  - component: {fileID: 3129719786944440719}
+  - component: {fileID: 128540109337015298}
   m_Layer: 14
   m_Name: GameLogicFieldBase
   m_TagString: Untagged
@@ -105,7 +105,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67d19078e982ef448a877dc3b29f4e24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &3129719786944440719
+--- !u!114 &128540109337015298
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -118,9 +118,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_AgentTypeID: 0
-  m_CollectObjects: 0
-  m_Size: {x: 10, y: 10, z: 10}
-  m_Center: {x: 0, y: 2, z: 0}
+  m_CollectObjects: 1
+  m_Size: {x: 150, y: 10, z: 150}
+  m_Center: {x: 75, y: 0, z: 75}
   m_LayerMask:
     serializedVersion: 2
     m_Bits: 4294967295

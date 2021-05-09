@@ -184,9 +184,9 @@ namespace AdvancedGears
             }
 
             if (tgt == null)
-                tgt = sight.TargetPosition.ToWorkerPosition(this.Origin);
+                tgt = sight.GetTargetPosition(this.Origin, pos);//sight.TargetPosition.ToWorkerPosition(this.Origin);
 
-            tgt = CheckNavPathAndTarget(tgt.Value, pos, unit.Bounds.size.magnitude, entityId.EntityId.Id, ref path);
+            tgt = CheckNavPathAndTarget(tgt.Value, pos, unit.SizeRadius, sight.State, entityId.EntityId.Id, ref path);
 
             if (RangeDictionary.IsSpreadValid(spread)) {
                 var length = (tgt.Value - pos).magnitude;
@@ -322,7 +322,7 @@ namespace AdvancedGears
         const float checkRange = 0.1f;
         readonly Dictionary<long, Vector3[]> pointsDic = new Dictionary<long, Vector3[]>();
 
-        Vector3 CheckNavPathAndTarget(Vector3 target, Vector3 current, float size, long uid, ref NavPathData path)
+        Vector3 CheckNavPathAndTarget(Vector3 target, Vector3 current, float size, TargetState state, long uid, ref NavPathData path)
         {
             if (pointsDic.ContainsKey(uid) == false)
                 pointsDic[uid] = new Vector3[256];
@@ -330,7 +330,7 @@ namespace AdvancedGears
             var points = pointsDic[uid];
             if (path.IsSetData == false || (target - path.target).sqrMagnitude > checkRange * checkRange)
             {
-                NavMeshUtils.GetNavPoint(current, target, size, out var count, points);
+                NavMeshUtils.GetNavPoint(current, target, size, WalkableNavArea, out var count, points);
                 if (count > 0)
                 {
                     path.count = count;
