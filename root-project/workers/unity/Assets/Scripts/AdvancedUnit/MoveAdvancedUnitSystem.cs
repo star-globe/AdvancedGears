@@ -29,7 +29,7 @@ namespace AdvancedGears
         private const float TurnSpeed = 7.0f;
         private const float MaxTurnSpeed = 1.2f * TurnSpeed;
 
-        private const float InverseSpeedRate = 5.0f;
+        private const float InverseSpeedRate = 15.0f;
 
         private const float TurnSmoothTime = 0.05f;
         private float turnSmoothVelocity;
