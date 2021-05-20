@@ -30,14 +30,14 @@ component FieldComponent {
 
 type TreeInfo {
     int32 tree_id = 1;
-    improbable.gdk.transform_synchronization.FixedPointVector3 pos = 2;
-    float height = 3;
+    int32 pos_x = 2;
+    int32 pos_z = 3;
 }
 
 component TreeComponent {
     id = 31001;
 
-    map<int32,TreeInfo> tree_map = 1;
+    list<TreeInfo> trees = 1;
 }
 
 component MinimapRepresentaion {

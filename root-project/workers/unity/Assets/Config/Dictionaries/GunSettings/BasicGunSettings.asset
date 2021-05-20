@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   typeId: 0
   stock: 30
-  atkRange: 15
+  atkRange: 30
   atkAngle: 1
   inter: 0.5
   bulletTypeId: 0
-  bulletSpeed: 15
+  bulletSpeed: 30
   attached: 1

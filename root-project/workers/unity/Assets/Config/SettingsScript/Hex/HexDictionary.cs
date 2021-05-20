@@ -16,7 +16,7 @@ namespace AdvancedGears
         public float EdgeLength => edgeLength;
         public static float HexEdgeLength => Instance.edgeLength;
 
-        [SerializeField] private float hexTargetRadiusRate = 0.2f;
+        [SerializeField] private float hexTargetRadiusRate = 0.05f;
         public static float HexTargetRadius => HexEdgeLength * Instance.hexTargetRadiusRate;
 
         public override void Initialize()
