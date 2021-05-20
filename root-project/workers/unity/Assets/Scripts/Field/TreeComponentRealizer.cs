@@ -24,7 +24,7 @@ namespace AdvancedGears
             foreach (var t in trees){
                 var go = GameObject.Instantiate(treeObjectBase, this.transform);
                 // = StaticObjectCreator.GetTree(t.TreeId);
-                go.position = FieldUtils.GetGround(t.PosX, t.PosZ, inter, FieldDictionary.MaxHeight, this.Origin);
+                go.transform.position = FieldUtils.GetGround(t.PosX, t.PosZ, inter, FieldDictionary.WorldHeight, this.Origin);
             }
         }
     }
