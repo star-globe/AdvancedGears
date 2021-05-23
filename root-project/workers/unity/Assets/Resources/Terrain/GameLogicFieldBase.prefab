@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 1867463141291357884}
   - component: {fileID: 3403004807609476740}
   - component: {fileID: 128540109337015298}
+  - component: {fileID: 431786206141684560}
   m_Layer: 14
   m_Name: GameLogicFieldBase
   m_TagString: Untagged
@@ -134,3 +135,16 @@ MonoBehaviour:
   m_VoxelSize: 0.16666667
   m_BuildHeightMesh: 0
   m_NavMeshData: {fileID: 0}
+--- !u!114 &431786206141684560
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6408312529055956839}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69cc9f8a970884a4e9bb52e13e269120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  surface: {fileID: 128540109337015298}

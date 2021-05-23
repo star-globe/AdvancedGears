@@ -60,12 +60,11 @@ namespace AdvancedGears
             terrain.terrainData = terrainData;
             collider.terrainData = terrainData;
 
-            var surface = this.GetComponent<NavMeshSurface>();
-            if (surface != null)
+            var builder = this.GetComponent<AsyncNavMeshBuilder>();
+            if (builder != null)
             {
-                surface.center = terrainData.bounds.center;
-                surface.size = terrainData.bounds.size;
-                surface.BuildNavMesh();
+                builder.SetData(terrainData.bounds.center, terrainData.bounds.size);
+                builder.StartBake();
                 Debug.Log("BuildNavMesh");
             }
         }

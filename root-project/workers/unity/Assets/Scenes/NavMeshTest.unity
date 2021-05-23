@@ -390,6 +390,7 @@ GameObject:
   m_Component:
   - component: {fileID: 337313922}
   - component: {fileID: 337313921}
+  - component: {fileID: 337313923}
   m_Layer: 0
   m_Name: NavMeshTest
   m_TagString: Untagged
@@ -433,6 +434,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &337313923
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 337313920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 434618be7468086409f0e50dfff948ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  surface: {fileID: 1414108333}
 --- !u!1 &363168213
 GameObject:
   m_ObjectHideFlags: 0
@@ -545,7 +559,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &562649611
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -674,7 +688,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &590490050
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -803,7 +817,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &722812958
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1041,7 +1055,7 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.16666667
   m_BuildHeightMesh: 0
-  m_NavMeshData: {fileID: 23800000, guid: c7ca3d9c92ee77149b9e7b99303a257d, type: 2}
+  m_NavMeshData: {fileID: 0}
 --- !u!64 &1414108334
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1564,7 +1578,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1999550668
 MonoBehaviour:
   m_ObjectHideFlags: 0
