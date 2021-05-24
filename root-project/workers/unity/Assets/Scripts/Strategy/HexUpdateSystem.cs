@@ -21,7 +21,7 @@ namespace AdvancedGears
         EntityQuery facilityGroup;
         EntityQueryBuilder.F_EDDD<HexFacility.Component, BaseUnitStatus.Component, SpatialEntityId> facilityQuery;
         IntervalChecker interAccess;
-        const int frequencyManager = 5;
+        const int frequencyManager = 1;
 
         int changedCount = 0;
         protected bool hexChanged { get { return changedCount > 0; } }
@@ -43,7 +43,7 @@ namespace AdvancedGears
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
 
-            interAccess = IntervalCheckerInitializer.InitializedChecker(1.0f / frequencyManager);
+            interAccess = IntervalCheckerInitializer.InitializedChecker(frequencyManager);
 
             portalQuery = PortalQuery;
             facilityQuery = FacilityQuery;

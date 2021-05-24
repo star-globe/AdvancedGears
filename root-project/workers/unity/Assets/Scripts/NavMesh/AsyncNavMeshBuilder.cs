@@ -23,7 +23,13 @@ namespace AdvancedGears
 
         IEnumerator AsyncBake()
         {
-            if (operation == null || surface == null)
+            if (surface == null)
+                yield break;
+
+            data = InitializeBakeData(surface);
+            operation = surface.UpdateNavMesh(data);
+
+            if (operation == null)
                 yield break;
 
             while (!operation.isDone)

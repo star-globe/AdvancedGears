@@ -39,8 +39,8 @@ namespace AdvancedGears
             var isShiftDown = Input.GetKey(KeyCode.LeftShift);
             var isJump = Input.GetKey(KeyCode.Space);
             var controller = playerInput.LocalController;
-            CommonUpdate(input, inputCam, isShiftDown, isJump, entityId, ref controller);
-            playerInput.LocalController = controller;
+            if (CommonUpdate(input, inputCam, isShiftDown, isJump, entityId, ref controller))
+                playerInput.LocalController = controller;
         }
     }
 
@@ -86,8 +86,8 @@ namespace AdvancedGears
             var isShiftDown = Input.GetKey(KeyCode.LeftShift);
             var isJump = Input.GetKey(KeyCode.Space);
             var controller = unMannedInput.LocalController;
-            CommonUpdate(new Vector2(x, y), new Vector2(x, y), isShiftDown, isJump, entityId, ref controller);
-            unMannedInput.LocalController = controller;
+            if (CommonUpdate(new Vector2(x, y), new Vector2(x, y), isShiftDown, isJump, entityId, ref controller))
+                unMannedInput.LocalController = controller;
         }
     }
 
@@ -96,7 +96,7 @@ namespace AdvancedGears
         private const float MinInputChange = 0.01f;
         private const float MinInputCamera = 0.01f;
 
-        protected void CommonUpdate(in Vector2 inputPos, in Vector3 inputCam, bool isShiftDown, bool isJump, in SpatialEntityId entityId, ref ControllerInfo oldController)
+        protected bool CommonUpdate(in Vector2 inputPos, in Vector3 inputCam, bool isShiftDown, bool isJump, in SpatialEntityId entityId, ref ControllerInfo oldController)
         {
             if (CheckChange(oldController.Horizontal, inputPos.x) ||
                 CheckChange(oldController.Vertical, inputPos.y) ||
@@ -114,8 +114,11 @@ namespace AdvancedGears
                     Jump = isJump
                 };
                 oldController = newController;
-                UpdateSystem.SendEvent(new AdvancedUnitController.ControllerChanged.Event(newController), entityId.EntityId);
+                return true;
+                //UpdateSystem.SendEvent(new AdvancedUnitController.ControllerChanged.Event(newController), entityId.EntityId);
             }
+
+            return false;
         }
 
         private bool CheckChange(float oldValue, float newValue)
