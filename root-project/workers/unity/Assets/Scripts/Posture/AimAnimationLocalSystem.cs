@@ -13,6 +13,7 @@ namespace AdvancedGears
     internal class AimAnimationLocalSystem : SpatialComponentSystem
     {
         private EntityQuery group;
+        EntityQueryBuilder.F_EDD<PostureAnimation.Component, BaseUnitStatus.Component> action;
 
         float deltaTime = 0;
 
@@ -23,37 +24,39 @@ namespace AdvancedGears
             group = GetEntityQuery(ComponentType.ReadOnly<PostureAnimation.Component>(),
                                    ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                                    ComponentType.ReadOnly<CombinedAimTracer>());
+            action = Query;
         }
 
         protected override void OnUpdate()
         {
             deltaTime = Time.DeltaTime;
 
-            Entities.With(group).ForEach((Entity entity,
-                                          ref PostureAnimation.Component anim,
-                                          ref BaseUnitStatus.Component status) =>
+            Entities.With(group).ForEach(action);
+        }    
+
+        private void Query(Entity entity, ref PostureAnimation.Component anim,
+                                          ref BaseUnitStatus.Component status)
+        {
+            if (status.State != UnitState.Alive)
+                return;
+
+            var tracer = EntityManager.GetComponentObject<CombinedAimTracer>(entity);
+            if (tracer == null)
+                return;
+
+            Vector3? pos = null;
+            switch(anim.AnimTarget.Type)
             {
-                if (status.State != UnitState.Alive)
-                    return;
+                case AnimTargetType.None:
+                    break;
 
-                var tracer = EntityManager.GetComponentObject<CombinedAimTracer>(entity);
-                if (tracer == null)
-                    return;
+                case AnimTargetType.Position:
+                    pos = anim.AnimTarget.Position.ToWorkerPosition(this.Origin);
+                    break;
+            }
 
-                Vector3? pos = null;
-                switch(anim.AnimTarget.Type)
-                {
-                    case AnimTargetType.None:
-                        break;
-
-                    case AnimTargetType.Position:
-                        pos = anim.AnimTarget.Position.ToWorkerPosition(this.Origin);
-                        break;
-                }
-
-                tracer.SetAimTarget(pos);
-                tracer.Rotate(deltaTime);
-            });
+            tracer.SetAimTarget(pos);
+            tracer.Rotate(deltaTime);
         }
     }
 }
