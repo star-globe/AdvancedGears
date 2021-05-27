@@ -26,7 +26,7 @@ namespace AdvancedGears
                                              ComponentType.ReadWrite<TurretHub.Component>(),
                                              ComponentType.ReadOnly<TurretHub.HasAuthority>(),
                                              ComponentType.ReadOnly<BaseUnitStatus.Component>(),
-                                             ComponentType.ReadOnly<StrategyHexAccessPortal.Component>(),
+                                             ComponentType.ReadOnly<HexFacility.Component>(),
                                              ComponentType.ReadOnly<Transform>(),
                                              ComponentType.ReadOnly<SpatialEntityId>()
                                              ), period);
@@ -45,7 +45,7 @@ namespace AdvancedGears
             Entities.With(hubQuerySet.group).ForEach((Entity entity,
                                                       ref TurretHub.Component turret,
                                                       ref BaseUnitStatus.Component status,
-                                                      ref StrategyHexAccessPortal.Component portal,
+                                                      ref HexFacility.Component hex,
                                                       ref SpatialEntityId entityId) =>
             {
                 if (status.State != UnitState.Alive)
@@ -60,7 +60,7 @@ namespace AdvancedGears
                 var datas = turret.TurretsDatas;
                 datas.Clear();
 
-                var hexIndex = portal.Index;
+                var hexIndex = hex.HexIndex;
                 foreach(var u in units) {
                     if (hexIndex != uint.MaxValue && HexUtils.IsInsideHex(this.Origin, hexIndex, u.pos, HexDictionary.HexEdgeLength) == false)
                         continue;

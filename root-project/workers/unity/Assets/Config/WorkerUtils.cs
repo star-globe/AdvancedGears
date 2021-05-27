@@ -93,6 +93,7 @@ namespace AdvancedGears
             world.GetOrCreateSystem<ResourceSupplyManagerSystem>();
             //world.GetOrCreateSystem<UnitArmyObserveSystem>();
             //world.GetOrCreateSystem<CommandersManagerSystem>();
+            world.GetOrCreateSystem<StrategyHexAccessPortalUpdateSystem>();
             world.GetOrCreateSystem<DominationSystem>();
             world.GetOrCreateSystem<StrongholdSearchSystem>();
             world.GetOrCreateSystem<StrongholdActionSystem>();

@@ -12,9 +12,9 @@ namespace AdvancedGears
     internal class StrongholdActionSystem : BaseSearchSystem
     {
         private EntityQuerySet orderQuerySet;
-        private EntityQueryBuilder.F_EDDD<BaseUnitStatus.Component, StrongholdSight.Component, StrategyHexAccessPortal.Component> orderAction;
+        private EntityQueryBuilder.F_EDDD<BaseUnitStatus.Component, StrongholdSight.Component, HexFacility.Component> orderAction;
         private EntityQuerySet factoryQuerySet;
-        private EntityQueryBuilder.F_EDDDD<UnitFactory.Component, BaseUnitStatus.Component, StrongholdSight.Component, StrategyHexAccessPortal.Component> factoryAction;
+        private EntityQueryBuilder.F_EDDDD<UnitFactory.Component, BaseUnitStatus.Component, StrongholdSight.Component, HexFacility.Component> factoryAction;
 
         readonly HashSet<EntityId> requestLists = new HashSet<EntityId>();
         readonly Dictionary<EntityId, TeamInfo> teamsDic = new Dictionary<EntityId, TeamInfo>();
@@ -28,7 +28,7 @@ namespace AdvancedGears
             orderQuerySet = new EntityQuerySet(GetEntityQuery(
                                                ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                                                ComponentType.ReadOnly<StrongholdSight.Component>(),
-                                               ComponentType.ReadOnly<StrategyHexAccessPortal.Component>(),
+                                               ComponentType.ReadOnly<HexFacility.Component>(),
                                                ComponentType.ReadOnly<Transform>()
                                                ), 0.5f);
 
@@ -37,7 +37,7 @@ namespace AdvancedGears
                                                 ComponentType.ReadOnly<UnitFactory.HasAuthority>(),
                                                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                                                 ComponentType.ReadOnly<StrongholdSight.Component>(),
-                                                ComponentType.ReadOnly<StrategyHexAccessPortal.Component>(),
+                                                ComponentType.ReadOnly<HexFacility.Component>(),
                                                 ComponentType.ReadOnly<Transform>()
                                                 ), 2);
             
@@ -63,7 +63,7 @@ namespace AdvancedGears
         void OrderQuery(Unity.Entities.Entity entity,
                         ref BaseUnitStatus.Component status,
                         ref StrongholdSight.Component sight,
-                        ref StrategyHexAccessPortal.Component portal)
+                        ref HexFacility.Component hex)
         {
             if (status.State != UnitState.Alive)
                 return;
@@ -75,19 +75,19 @@ namespace AdvancedGears
                 return;
 
             var trans = EntityManager.GetComponentObject<Transform>(entity);
-            CheckAlive(trans.position, status.Side, portal.Index, HexDictionary.HexEdgeLength, teamsDic);
+            CheckAlive(trans.position, status.Side, hex.HexIndex, HexDictionary.HexEdgeLength, teamsDic);
 
             sendIds.Clear();
 
             // order check
             // Not Set Strongholds
-            CheckOrder(portal.Index, status.Order, sight.TargetStrongholds, sight.StrategyVector.Vector.ToUnityVector(), teamsDic, sendIds);
+            CheckOrder(hex.HexIndex, status.Order, sight.TargetStrongholds, sight.StrategyVector.Vector.ToUnityVector(), teamsDic, sendIds);
 
             // FrontLineCorners
-            CheckOrder(portal.Index, status.Order, status.Side, sight.FrontLineCorners, sight.StrategyVector.Vector.ToUnityVector(), teamsDic, sendIds);
+            CheckOrder(hex.HexIndex, status.Order, status.Side, sight.FrontLineCorners, sight.StrategyVector.Vector.ToUnityVector(), teamsDic, sendIds);
 
             // Hex
-            CheckOrder(portal.Index, status.Order, sight.TargetHexes, sight.StrategyVector.Vector.ToUnityVector(), teamsDic, sendIds);
+            CheckOrder(hex.HexIndex, status.Order, sight.TargetHexes, sight.StrategyVector.Vector.ToUnityVector(), teamsDic, sendIds);
         }
 
         void HandleFactoryRequests()
@@ -102,7 +102,7 @@ namespace AdvancedGears
                         ref UnitFactory.Component factory,
                         ref BaseUnitStatus.Component status,
                         ref StrongholdSight.Component sight,
-                        ref StrategyHexAccessPortal.Component portal)
+                        ref HexFacility.Component hex)
         {
             if (status.State != UnitState.Alive)
                 return;
@@ -119,7 +119,7 @@ namespace AdvancedGears
             // number check
             if (factory.TeamOrders.Count == 0 && sight.StrategyVector.Side != UnitSide.None) {
                 var teamOrders = factory.TeamOrders;
-                makeOrders(status.Side, status.Rank, PostureUtils.RotFoward(sight.StrategyVector.Vector.ToUnityVector()), status.Order, portal.Index,
+                makeOrders(status.Side, status.Rank, PostureUtils.RotFoward(sight.StrategyVector.Vector.ToUnityVector()), status.Order, hex.HexIndex,
                             sight.FrontLineCorners, sight.TargetHexes, teamsDic, teamOrders);
 
                 factory.TeamOrders = teamOrders;

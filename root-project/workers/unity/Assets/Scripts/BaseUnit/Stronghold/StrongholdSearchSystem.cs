@@ -20,6 +20,10 @@ namespace AdvancedGears
         IntervalChecker inter;
 
         const int period = 2;
+
+        StrategyHexAccessPortalUpdateSystem portalUpdateSytem = null;
+        private Dictionary<UnitSide, FrontHexInfo> FrontHexes => portalUpdateSytem?.FrontHexes;
+        private Dictionary<uint, HexIndex> HexIndexes => portalUpdateSytem?.HexIndexes;
         protected override void OnCreate()
         {
             base.OnCreate();
@@ -29,12 +33,13 @@ namespace AdvancedGears
                 ComponentType.ReadOnly<StrongholdSight.HasAuthority>(),
                 ComponentType.ReadWrite<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<BaseUnitStatus.HasAuthority>(),
-                ComponentType.ReadOnly<StrategyHexAccessPortal.Component>(),
+                ComponentType.ReadOnly<HexFacility.Component>(),
                 ComponentType.ReadOnly<Transform>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
 
             inter = IntervalCheckerInitializer.InitializedChecker(period);
+            portalUpdateSytem = World.GetExistingSystem<StrategyHexAccessPortalUpdateSystem>();
         }
 
         protected override void OnUpdate()
@@ -45,7 +50,7 @@ namespace AdvancedGears
             Entities.With(group).ForEach((Entity entity,
                                           ref StrongholdSight.Component sight,
                                           ref BaseUnitStatus.Component status,
-                                          ref StrategyHexAccessPortal.Component portal,
+                                          ref HexFacility.Component hex,
                                           ref SpatialEntityId entityId) =>
             {
                 if (status.State != UnitState.Alive)
@@ -71,7 +76,7 @@ namespace AdvancedGears
                 var corners = sight.FrontLineCorners;
                 var hexes = sight.TargetHexes;
 
-                var order = GetTarget(trans.position, portal.Index, portal.FrontHexes, portal.HexIndexes, status.Side, enemySide, hexes, corners);
+                var order = GetTarget(trans.position, hex.HexIndex, this.FrontHexes, this.HexIndexes, status.Side, enemySide, hexes, corners);
 
                 sight.TargetStrongholds = targets;
                 sight.FrontLineCorners = corners;

@@ -55,7 +55,7 @@ type StrategyHexVector {
 }
 
 // manager
-component StrategyHexManager {
+component StrategyHexIndex {
     id = 220010;
 }
 
@@ -76,7 +76,6 @@ type FrontHexInfo {
 component StrategyHexAccessPortal {
     id = 220011;
 
-    uint32 index = 1;
     map<UnitSide,FrontHexInfo> front_hexes = 2;
     map<uint32,HexIndex> hex_indexes = 3;
 }

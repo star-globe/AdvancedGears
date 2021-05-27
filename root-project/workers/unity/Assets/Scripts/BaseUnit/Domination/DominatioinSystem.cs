@@ -21,9 +21,8 @@ namespace AdvancedGears
         EntityQuerySet deviceGroup;
         EntityQueryBuilder.F_EDDD<DominationStamina.Component, BaseUnitStatus.Component, SpatialEntityId> deviceAction;
 
-        EntityQuerySet hexPowerGroup;
-        EntityQueryBuilder.F_ED<StrategyHexAccessPortal.Component> hexAction;
-
+        StrategyHexAccessPortalUpdateSystem portalUpdateSytem = null;
+        private Dictionary<uint, HexIndex> HexIndexes => portalUpdateSytem?.HexIndexes;
         protected override void OnCreate()
         {
             base.OnCreate();
@@ -36,16 +35,11 @@ namespace AdvancedGears
                                              ComponentType.ReadOnly<SpatialEntityId>()
                                              ), 1.0f);
             deviceAction = DeviceQuery;
-
-            hexPowerGroup = new EntityQuerySet(GetEntityQuery(
-                                             ComponentType.ReadOnly<StrategyHexAccessPortal.Component>()
-                                             ), 1.0f);
-            hexAction = HexQuery;
+            portalUpdateSytem = World.GetExistingSystem<StrategyHexAccessPortalUpdateSystem>();
         }
 
         protected override void OnUpdate()
         {
-            GatherPortalData();
             HandleCaputure();
         }
 
@@ -96,9 +90,9 @@ namespace AdvancedGears
                 }
             }
 
-            if (hexIndexes != null)
+            if (this.HexIndexes != null)
             {
-                foreach (var kvp in hexIndexes)
+                foreach (var kvp in this.HexIndexes)
                 {
                     if (HexUtils.IsInsideHex(this.Origin, kvp.Key, pos, HexDictionary.HexEdgeLength) == false)
                         continue;
@@ -147,23 +141,6 @@ namespace AdvancedGears
             }
 
             domination.SideStaminas = staminas;
-        }
-
-        private Dictionary<uint, HexIndex> hexIndexes;
-
-        void GatherPortalData()
-        {
-            if (CheckTime(ref hexPowerGroup.inter) == false)
-                return;
-
-            Entities.With(hexPowerGroup.group).ForEach(hexAction);
-        }
-            
-        private void HexQuery(Unity.Entities.Entity entity,
-                              ref StrategyHexAccessPortal.Component portal)
-        {
-            if (portal.Index != uint.MaxValue)
-                hexIndexes = portal.HexIndexes;
         }
 
         private void AffectCapture(UnitSide side, float speed, Dictionary<UnitSide,float> sumsDic)

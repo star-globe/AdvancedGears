@@ -155,7 +155,6 @@ namespace AdvancedGears
                 hexes[index] = hex;
             }
 
-            portal.Index = facility.HexIndex;
             portal.FrontHexes = fronts;
             portal.HexIndexes = hexes;
         }
