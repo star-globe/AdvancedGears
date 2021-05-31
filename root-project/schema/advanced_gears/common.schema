@@ -2,6 +2,22 @@ package advanced_gears;
 import "improbable/standard_library.schema";
 import "improbable/gdk/core/common.schema";
 
+enum ObjectType {
+    None = 0;
+    // natural
+    Tree = 1;
+    Rock = 2;
+    Grass = 3;
+    Ice = 4;
+    // artificial
+    Building = 100;
+    Bridge = 101;
+    Wall = 102;
+    // Strategy
+    Tower = 200;
+    Resource = 201;
+}
+
 enum UnitType {
     None = 0;
     // moving
