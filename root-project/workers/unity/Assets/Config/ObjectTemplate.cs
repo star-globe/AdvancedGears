@@ -60,12 +60,13 @@ namespace AdvancedGears
 
                 case ObjectType.Tower:
                     template.AddComponent(new SymbolicTower.Snapshot(), writeAccess);
+                    break;
             }
         }
 
-        public static EntityTemplate CreateTowerTemplate(UnitType side, float height, Coordinates coords, CompressedQuaternion? rotation = null, FixedPointVector3? scale = null)
+        public static EntityTemplate CreateTowerTemplate(UnitSide side, float height, Coordinates coords, CompressedQuaternion? rotation = null, FixedPointVector3? scale = null)
         {
-            var template = CreateObjectEntityTemplate(ObjectType.Tower, coords, rotatioin, scale);
+            var template = CreateObjectEntityTemplate(ObjectType.Tower, coords, rotation, scale);
             var tower = template.GetComponent<SymbolicTower.Snapshot>();
             if (tower != null) {
                 var t = tower.Value;

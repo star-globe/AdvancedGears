@@ -53,8 +53,8 @@ namespace AdvancedGears
             if (isUpdated)
                 return;
 
-            indexes = portal.HexIndexes;
-            hexes = portal.FrontHexes;
+            var indexes = portal.HexIndexes;
+            var hexes = portal.FrontHexes;
 
             this.hexIndexes.Clear();
             foreach (var i in indexes)
