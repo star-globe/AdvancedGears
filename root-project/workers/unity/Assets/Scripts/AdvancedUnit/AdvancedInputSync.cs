@@ -10,15 +10,15 @@ namespace AdvancedGears
     internal class AdvancedPlayerInputSync : AdvancedInputSync
     {
         private EntityQuery inputPlayerGroup;
-        private EntityQueryBuilder.F_DDD<CameraTransform, AdvancedPlayerInput.Component, SpatialEntityId> action;
+        private EntityQueryBuilder.F_DDDD<CameraTransform, AdvancedPlayerInput.Component, AdvancedUnitController.Component, SpatialEntityId> action;
 
         protected override void OnCreate()
         {
             // local
             inputPlayerGroup = GetEntityQuery(
                 ComponentType.ReadWrite<AdvancedPlayerInput.Component>(),
+                ComponentType.ReadWrite<AdvancedUnitController.Component>(),
                 ComponentType.ReadOnly<CameraTransform>(),
-                ComponentType.ReadOnly<AdvancedPlayerInput.HasAuthority>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
 
@@ -32,6 +32,7 @@ namespace AdvancedGears
 
         private void Query(ref CameraTransform cameraTransform,
                                                      ref AdvancedPlayerInput.Component playerInput,
+                                                     ref AdvancedUnitController.Component unitController,
                                                      ref SpatialEntityId entityId) 
         {
             var input = InputUtils.GetMove();
@@ -39,8 +40,11 @@ namespace AdvancedGears
             var isShiftDown = Input.GetKey(KeyCode.LeftShift);
             var isJump = Input.GetKey(KeyCode.Space);
             var controller = playerInput.LocalController;
-            if (CommonUpdate(input, inputCam, isShiftDown, isJump, entityId, ref controller))
-                playerInput.LocalController = controller;
+            if (CommonUpdate(input, inputCam, isShiftDown, isJump, entityId, ref controller) == false)
+                return;
+
+            playerInput.LocalController = controller;
+            unitController.Controller = controller;
         }
     }
 
@@ -115,7 +119,6 @@ namespace AdvancedGears
                 };
                 oldController = newController;
                 return true;
-                //UpdateSystem.SendEvent(new AdvancedUnitController.ControllerChanged.Event(newController), entityId.EntityId);
             }
 
             return false;
