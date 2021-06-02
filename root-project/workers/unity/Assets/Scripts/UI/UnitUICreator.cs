@@ -156,18 +156,28 @@ namespace AdvancedGears.UI
             containersDic.Add(uiType, new UIContainer<T>(uiType));
         }
 
-        public void ResetAll(params UIType [] types)
+        public void ResetAll(UIType [] types)
         {
             foreach (var t in types) {
-                GetContainer(t)?.ResetAll();
+                ResetAll(t);
             }
         }
 
-        public void SleepAllUnused(params UIType[] types)
+        public void ResetAll(UIType type)
+        {
+            GetContainer(type)?.ResetAll();
+        }
+
+        public void SleepAllUnused(UIType[] types)
         {
             foreach (var t in types) {
-                GetContainer(t)?.SleepAllUnused();
+                SleepAllUnused(t);
             }
+        }
+
+        public void SleepAllUnused(UIType type)
+        {
+            GetContainer(type)?.SleepAllUnused();
         }
 
         public Component GetOrCreateUI(UIType type, EntityId id, Transform parent = null)

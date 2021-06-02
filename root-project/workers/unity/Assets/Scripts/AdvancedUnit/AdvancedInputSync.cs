@@ -1,6 +1,7 @@
 using System;
 using Improbable.Gdk.Core;
 using Unity.Entities;
+using Unity.Collections;
 using UnityEngine;
 
 namespace AdvancedGears
@@ -10,7 +11,7 @@ namespace AdvancedGears
     internal class AdvancedPlayerInputSync : AdvancedInputSync
     {
         private EntityQuery inputPlayerGroup;
-        private EntityQueryBuilder.F_DDDD<CameraTransform, AdvancedUnitController.Component, LocalController> action;
+        private EntityQueryBuilder.F_DDD<CameraTransform, AdvancedUnitController.Component, LocalController> action;
 
         protected override void OnCreate()
         {
@@ -28,6 +29,7 @@ namespace AdvancedGears
 
         protected override void OnUpdate()
         {
+            base.OnUpdate();
             Entities.With(inputPlayerGroup).ForEach(action);
         }
 
@@ -53,7 +55,7 @@ namespace AdvancedGears
             if (TryGetComponent<PlayerInfo.Component>(entity, out var comp) == false)
                 return false;
             
-            return string.Equals(comp.Value.ClientWorkerId, this.Worker.WorkerId);
+            return string.Equals(comp.Value.ClientWorkerId, this.WorkerSystem.WorkerId);
         }
     }
 
@@ -62,7 +64,7 @@ namespace AdvancedGears
     internal class AdvancedUnmannedInputSync : AdvancedInputSync
     {
         private EntityQuery inputUnmannedGroup;
-        private EntityQueryBuilder.F_DDD<BaseUnitStatus.Component, AdvancedUnmannedInput.Component, AdvancedUnitController.Component, LocalController> action;
+        private EntityQueryBuilder.F_DDDD<BaseUnitStatus.Component, AdvancedUnmannedInput.Component, AdvancedUnitController.Component, LocalController> action;
 
         protected override void OnCreate()
         {

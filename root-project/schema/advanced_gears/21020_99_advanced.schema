@@ -86,6 +86,10 @@ component AdvancedUnitController {
     ActionControllerInfo action = 2;
 }
 
+component AdvancedPlayerInput {
+    id = 21040;
+}
+
 component AdvancedUnmannedInput {
     id = 21041;
 

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
+using Improbable.Gdk.Subscriptions;
 
 namespace AdvancedGears
 {
@@ -17,7 +18,7 @@ namespace AdvancedGears
                 if (reader == null)
                     return false;
 
-                return reader.Action.LeftClick;
+                return reader.Data.Action.LeftClick;
             }
         }
     }

@@ -205,6 +205,7 @@ namespace AdvancedGears
             InterestTemplate interest = InterestTemplate.Create();
 
             if (isPlayer) {
+                template.AddComponent(new AdvancedPlayerInput.Snapshot(), controllAttribute);
                 template.AddComponent(new PlayerInfo.Snapshot { ClientWorkerId = workerId }, controllAttribute);
                 PlayerLifecycleHelper.AddPlayerLifecycleComponents(template, workerId, WorkerUtils.UnityGameLogic);
 

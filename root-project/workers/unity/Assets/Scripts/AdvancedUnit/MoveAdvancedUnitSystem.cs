@@ -194,7 +194,6 @@ namespace AdvancedGears
 
         protected override void OnUpdate()
         {
-            base.OnUpdate();
             Entities.With(advancedOtherGroup).ForEach(action);
         }
 
