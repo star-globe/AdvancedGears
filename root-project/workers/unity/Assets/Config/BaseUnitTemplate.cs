@@ -197,7 +197,7 @@ namespace AdvancedGears
             template.AddComponent(new Position.Snapshot { Coords = coords }, controllAttribute);
             template.AddComponent(new Metadata.Snapshot(isPlayer ? "Player" : "AdvancedUnit"), WorkerUtils.UnityGameLogic);
             template.AddComponent(new BulletComponent.Snapshot(), controllAttribute);
-            template.AddComponent(new AdvancedUnitController.Snapshot(), controllAttribute);
+            template.AddComponent(new AdvancedUnitController.Snapshot { IsPlayer = isPlayer }, controllAttribute);
             template.AddComponent(new BaseUnitHealth.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new GunComponent.Snapshot { GunsDic = new Dictionary<int, GunInfo>() }, WorkerUtils.UnityGameLogic);
             template.AddComponent(new FuelComponent.Snapshot(), WorkerUtils.UnityGameLogic);
@@ -205,7 +205,6 @@ namespace AdvancedGears
             InterestTemplate interest = InterestTemplate.Create();
 
             if (isPlayer) {
-                template.AddComponent(new AdvancedPlayerInput.Snapshot(), controllAttribute);
                 template.AddComponent(new PlayerInfo.Snapshot { ClientWorkerId = workerId }, controllAttribute);
                 PlayerLifecycleHelper.AddPlayerLifecycleComponents(template, workerId, WorkerUtils.UnityGameLogic);
 

@@ -20,7 +20,7 @@ namespace AdvancedGears
 
         private EntityQuery newAdvancedGroup;
         private EntityQuery advancedInputGroup;
-        private EntityQueryBuilder.F_ECDDD<Rigidbody, AdvancedUnitController.Component, BaseUnitStatus.Component, Speed> action;
+        private EntityQueryBuilder.F_ECDDD<Rigidbody, LocalController, BaseUnitStatus.Component, Speed> action;
 
         private const float WalkSpeed = 10.0f;
         private const float RunSpeed = 3.0f * WalkSpeed;
@@ -41,8 +41,7 @@ namespace AdvancedGears
             base.OnCreate();
 
             newAdvancedGroup = GetEntityQuery(
-                ComponentType.ReadOnly<AdvancedUnitController.Component>(),
-                ComponentType.ReadOnly<AdvancedUnitController.HasAuthority>(),
+                ComponentType.ReadOnly<LocalController>(),
                 ComponentType.Exclude<Speed>()
             );
 
@@ -50,8 +49,7 @@ namespace AdvancedGears
                 ComponentType.ReadWrite<Rigidbody>(),
                 ComponentType.ReadWrite<Speed>(),
                 ComponentType.ReadOnly<UnitTransform>(),
-                ComponentType.ReadOnly<AdvancedUnitController.Component>(),
-                ComponentType.ReadOnly<TransformInternal.HasAuthority>(),
+                ComponentType.ReadOnly<LocalController>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>()
             );
 
@@ -62,7 +60,7 @@ namespace AdvancedGears
         {
             HandleNews();
             HandleControllers();
-            HandleEvets();
+            //HandleEvets();
         }
 
         private void HandleNews()
@@ -91,7 +89,7 @@ namespace AdvancedGears
         
         private void Query(Entity entity,
                             Rigidbody rigidbody,
-                            ref AdvancedUnitController.Component unitController,
+                            ref LocalController localController,
                             ref BaseUnitStatus.Component status,
                             ref Speed speed)
         {
@@ -103,9 +101,9 @@ namespace AdvancedGears
 
             // todo Fuel check
 
-            var controller = unitController.Controller;
-            var inputDir = new Vector2(controller.Horizontal, controller.Vertical).normalized;
-            var inputCam = new Vector2(controller.Yaw, controller.Pitch);
+            var stick = localController.Stick;
+            var inputDir = new Vector2(stick.Horizontal, stick.Vertical).normalized;
+            var inputCam = new Vector2(stick.Yaw, stick.Pitch);
 
             var currentSpeed = speed.CurrentSpeed;
             var speedSmoothVelocity = speed.SpeedSmoothVelocity;
@@ -117,7 +115,7 @@ namespace AdvancedGears
             var z = rigidbody.velocity.z;
             if (x * x + z * z <= MaxSpeed * MaxSpeed)
             {
-                var targetSpeed = (unitController.Controller.Running ? RunSpeed : WalkSpeed) * inputDir.magnitude;
+                var targetSpeed = (localController.Action.Running ? RunSpeed : WalkSpeed) * inputDir.magnitude;
                 currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref speedSmoothVelocity, SpeedSmoothTime, MaxSpeed, Time.DeltaTime);
 
                 updateSpeed = true;
@@ -129,7 +127,7 @@ namespace AdvancedGears
             {
                 float rate = inputCam.x * anglerVelocity.y < 0 ? InverseSpeedRate : 1.0f;
 
-                var targetSpeed = inputCam.x * TurnSpeed;
+                var targetSpeed = rate * inputCam.x * TurnSpeed;
                 currentRotSpeed = Mathf.SmoothDamp(currentRotSpeed, targetSpeed, ref speedSmoothRotVelocity, SpeedSmoothTime, MaxTurnSpeed, Time.DeltaTime);
 
                 rotVector = Vector2.up * currentRotSpeed;
@@ -158,19 +156,19 @@ namespace AdvancedGears
             }
         }
 
-        private void HandleEvets()
-        {
-            var controllerEvents = UpdateSystem.GetEventsReceived<AdvancedUnitController.ControllerChanged.Event>();
-            for (var i = 0; i < controllerEvents.Count; i++)
-            {
-                var ctrlEvent = controllerEvents[i];
-                AdvancedUnitController.Component? comp = null;
-                if (TryGetComponent(ctrlEvent.EntityId, out comp)) {
-                    var value = comp.Value;
-                    value.Controller = ctrlEvent.Event.Payload;
-                    SetComponent(ctrlEvent.EntityId, value);
-                }
-            }
-        }
+        //private void HandleEvets()
+        //{
+        //    var controllerEvents = UpdateSystem.GetEventsReceived<AdvancedUnitController.ControllerChanged.Event>();
+        //    for (var i = 0; i < controllerEvents.Count; i++)
+        //    {
+        //        var ctrlEvent = controllerEvents[i];
+        //        AdvancedUnitController.Component? comp = null;
+        //        if (TryGetComponent(ctrlEvent.EntityId, out comp)) {
+        //            var value = comp.Value;
+        //            value.Controller = ctrlEvent.Event.Payload;
+        //            SetComponent(ctrlEvent.EntityId, value);
+        //        }
+        //    }
+        //}
     }
 }

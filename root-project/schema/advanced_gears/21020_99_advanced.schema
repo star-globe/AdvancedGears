@@ -54,6 +54,20 @@ component EquipComponent {
     command improbable.gdk.core.Empty change_form(ChangeFormInfo);
 }
 
+type StickControllerInfo {
+    float horizontal = 1;
+    float vertical = 2;
+    float yaw = 3;
+    float pitch = 4;
+}
+
+type ActionControllerInfo {
+    bool running = 1;
+    bool jump = 2;
+    bool left_click = 3;
+    bool right_click = 4;
+}
+
 type ControllerInfo {
     float horizontal = 1;
     float vertical = 2;
@@ -68,26 +82,15 @@ type ControllerInfo {
 component AdvancedUnitController {
     id = 21030;
 
-    ControllerInfo controller = 1;
-
-    event ControllerInfo controller_changed;
-}
-
-component AdvancedPlayerInput {
-    id = 21040;
-
-    ControllerInfo local_controller = 1;
+    bool is_player = 1;
+    ActionControllerInfo action = 2;
 }
 
 component AdvancedUnmannedInput {
     id = 21041;
 
-    ControllerInfo local_controller = 1;
-
     IntervalChecker interval = 2;
-
     int32 logic_pattern = 3;
-
 }
 
 component MinimapComponent {
