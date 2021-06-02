@@ -102,8 +102,8 @@ namespace AdvancedGears
             unMannedInput.Interval = inter;
             var x = UnityEngine.Random.Range(-1.0f, 1.0f);
             var y = UnityEngine.Random.Range(-1.0f, 1.0f);
-            var isShiftDown = Input.GetKey(KeyCode.LeftShift);
-            var isJump = Input.GetKey(KeyCode.Space);
+            var isShiftDown = false;//Input.GetKey(KeyCode.LeftShift);
+            var isJump = false;//Input.GetKey(KeyCode.Space);
             var action = local.Action;
             var stick = local.Stick;
             if (CommonUpdate(new Vector2(x, y), new Vector2(x, y), isShiftDown, isJump, false, false, ref stick, ref action))
