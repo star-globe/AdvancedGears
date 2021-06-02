@@ -171,4 +171,40 @@ namespace AdvancedGears
         //    }
         //}
     }
+
+    [DisableAutoCreation]
+    [UpdateInGroup(typeof(SpatialOSUpdateGroup))]
+    internal class OtherAdvancedUnitSystem : BaseEntitySearchSystem
+    {
+        private EntityQuery advancedOtherGroup;
+        private EntityQueryBuilder.F_DD<BaseUnitStatus.Component, AdvancedUnitController.Component> action;
+
+        protected override void OnCreate()
+        {
+            base.OnCreate();
+        
+            advancedOtherGroup = GetEntityQuery(
+                ComponentType.ReadOnly<BaseUnitStatus.Component>(),
+                ComponentType.ReadOnly<AdvancedUnitController.Component>(),
+                ComponentType.Exclude<LocalController>()
+            );
+
+            action = Query;
+        }
+
+        protected override void OnUpdate()
+        {
+            base.OnUpdate();
+            Entities.With(advancedOtherGroup).ForEach(action);
+        }
+
+        private void Query(ref BaseUnitStatus.Component status,
+                           ref AdvancedUnitController.Component controller)
+        {
+            if (status.State != UnitState.Alive)
+                return;
+
+            // action
+        }
+    }
 }
