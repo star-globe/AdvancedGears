@@ -20,6 +20,5 @@ MonoBehaviour:
   maxHeight: 500
   maxRange: 1000
   queryRangeRate: 1.5
-  checkRangeRate: 0.5
-  chunkRangeRate: 0.7
+  chunkRangeRate: 0.5
   baseTerrainData: {fileID: 15600000, guid: 043177bb622af0446a82c5d83d63dce5, type: 2}
