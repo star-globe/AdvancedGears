@@ -411,6 +411,7 @@ type UnitContainer {
 component UnitFactory {
     id = 20032;
 
+    StrategyVector strategy_vector = 2;
     transient list<UnitContainer> containers = 3;
 
     FactoryOrderType current_type = 4;

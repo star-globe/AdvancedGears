@@ -86,3 +86,34 @@ component GunComponent {
     event SupplyBulletInfo bullet_supplied;
     event BulletDiffList bullet_diffed;
 }
+
+component LongRangeBulletComponent {
+    id = 21002;
+
+    uint32 long_range_bullet_id = 1;
+    improbable.gdk.transform_synchronization.FixedPointVector3 speed = 2;
+    bool is_free;
+}
+
+component GuidComponent {
+    id = 21003;
+
+    uint32 guid_id = 1;
+    improbable.gdk.transform_synchronization.FixedPointVector3 target_position = 2;
+    EntityId target_entity_id = 3;
+}
+
+type LaserFireInfo {
+    improbable.gdk.transform_synchronization.FixedPointVector3 start_position = 1;
+    improbable.gdk.transform_synchronization.FixedPointVector3 forward = 2;
+    float fire_time = 3;
+}
+
+component LongRangeLaserComponent {
+    id = 21004;
+
+    unt32 laser_id = 1;
+    LaserFireInfo fire = 2;
+
+    event LaserFireInfo laser_fired;
+}
