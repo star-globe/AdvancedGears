@@ -56,6 +56,9 @@ namespace AdvancedGears
             var indexes = portal.HexIndexes;
             var hexes = portal.FrontHexes;
 
+            if (indexes.Count == 0 && hexes.Count == 0)
+                return;
+
             this.hexIndexes.Clear();
             foreach (var i in indexes)
                 this.hexIndexes.Add(i.Key, i.Value);
