@@ -92,7 +92,7 @@ component LongRangeBulletComponent {
 
     uint32 long_range_bullet_id = 1;
     improbable.gdk.transform_synchronization.FixedPointVector3 speed = 2;
-    bool is_free;
+    bool is_free = 3;
 }
 
 component GuidComponent {
@@ -112,7 +112,7 @@ type LaserFireInfo {
 component LongRangeLaserComponent {
     id = 21004;
 
-    unt32 laser_id = 1;
+    uint32 laser_id = 1;
     LaserFireInfo fire = 2;
 
     event LaserFireInfo laser_fired;

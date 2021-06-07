@@ -78,7 +78,7 @@ namespace AdvancedGears
             var speed = bullet.Speed;
         }
 
-        UpdateGravity()
+        private void UpdateGravity()
         {
             Entities.With(gravityQuery).ForEach(gravityAction);
         }
