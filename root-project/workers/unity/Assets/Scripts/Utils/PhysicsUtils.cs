@@ -39,5 +39,15 @@ namespace AdvancedGears
 
             return origin + diff.normalized * enter;
         }
+
+        public static float CalcAimHeight(float velocity, float length)
+        {
+            var gravity = Mathf.Abs(Physics.gravity.y);
+            var mag = velocity * velocity / gravity;
+            if (length > mag)
+                return 0;
+
+            return mag - Mathf.Sqrt(mag * mag - length * length);
+        }
     }
 }
