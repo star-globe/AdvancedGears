@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Improbable;
 using Improbable.Gdk.Core;
 using Improbable.Gdk.Core.Commands;
@@ -23,6 +22,8 @@ namespace AdvancedGears
 
         StrategyHexAccessPortalUpdateSystem portalUpdateSytem = null;
         private Dictionary<uint, HexIndex> HexIndexes => portalUpdateSytem?.HexIndexes;
+        private readonly Dictionary<UnitSide,float> sumsDic = new Dictionary<UnitSide,float>();
+
         protected override void OnCreate()
         {
             base.OnCreate();
@@ -69,7 +70,7 @@ namespace AdvancedGears
             var pos = trans.position;
             var list = getAllUnits(pos, range, allowDead:false, AttackLogicDictionary.DominationUnitTypes);
 
-            var sumsDic = new Dictionary<UnitSide,float>();
+            sumsDic.Clear();
             foreach (var unit in list)
             {
                 DominationDevice.Component? comp = null;
@@ -110,33 +111,44 @@ namespace AdvancedGears
             }
 
             // check over
-            var orderedList = sumsDic.OrderByDescending(kvp => kvp.Value).ToList();
-            if (orderedList.Count == 0)
+            if (sumsDic.Count == 0)
                 return;
-                    
-            var first = orderedList[0];
-            var underSum = orderedList.Skip(1).Sum(kvp => kvp.Value);
 
-            if (first.Value <= underSum)
+            UnitSide firstSide = UnitSide.None;
+            float firstValue = 0.0f;
+            float underSum = 0.0f;
+
+            foreach(var kvp in sumsDic) {
+                if (kvp.Value > firstValue) {
+                    underSum += firstValue;
+                    firstSide = kvp.Key;
+                    firstValue = kvp.Value;
+                }
+                else {
+                    underSum += kvp.Value;
+                }
+            }
+
+            if (firstValue <= underSum)
                 return;
                 
-            var over = first.Value - underSum;
-            if (staminas.ContainsKey(first.Key) == false)
-                staminas[first.Key] = over;
+            var over = firstValue - underSum;
+            if (staminas.ContainsKey(firstSide) == false)
+                staminas[firstSide] = over;
             else
-                staminas[first.Key] += over;
+                staminas[firstSide] += over;
 
-            var keys = staminas.Keys.ToArray();
+            var keys = staminas.Keys;
             foreach (var k in keys) {
-                if (k != first.Key) {
+                if (k != firstSide) {
                     var val = staminas[k];
                     staminas[k] = Mathf.Max(0.0f, val - over);
                 }
             }
 
             // capture
-            if (staminas[first.Key] >= domination.MaxStamina) {
-                Capture(entityId.EntityId, first.Key);
+            if (staminas[firstSide] >= domination.MaxStamina) {
+                Capture(entityId.EntityId, firstSide);
                 staminas.Clear();
             }
 

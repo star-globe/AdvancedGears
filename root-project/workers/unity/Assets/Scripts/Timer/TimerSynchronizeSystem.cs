@@ -12,6 +12,7 @@ namespace AdvancedGears
     internal class TimerSynchronizeSystem : SpatialComponentBaseSystem
     {
         EntityQuery group;
+        EntityQueryBuilder.F_EDD<WorldTimer.Component, SpatialEntityId> action;
         double seconds;
 
         protected override void OnCreate()
@@ -22,9 +23,11 @@ namespace AdvancedGears
                     ComponentType.ReadWrite<WorldTimer.Component>(),
                     ComponentType.ReadOnly<SpatialEntityId>()
             );
+
+            action = Query;
         }
 
-        const int upInter = 10;
+        const int upInter = 15;
 
         protected override void OnUpdate()
         {
@@ -33,22 +36,24 @@ namespace AdvancedGears
 
             this.seconds = TimerUtils.CurrentTime;
 
-            Entities.With(group).ForEach((Entity entity,
-                                          ref WorldTimer.Component timer,
-                                          ref SpatialEntityId entityId) =>
+            Entities.With(group).ForEach(action);
+        }
+
+        private void Query (Entity entity,
+                            ref WorldTimer.Component timer,
+                            ref SpatialEntityId entityId)
+        {
+            if (UnityEngine.Random.Range(0,upInter) != 0)
+                return;
+
+            timer.UtcSeconds = this.seconds;
+
+            var info = new UpdateTimerInfo
             {
-                if (UnityEngine.Random.Range(0,upInter) != 0)
-                    return;
+                CurrentSeconds = seconds,
+            };
 
-                timer.UtcSeconds = this.seconds;
-
-                var info = new UpdateTimerInfo
-                {
-                    CurrentSeconds = seconds,
-                };
-
-                this.UpdateSystem.SendEvent(new WorldTimer.Updates.Event(info), entityId.EntityId);
-            });
+            this.UpdateSystem.SendEvent(new WorldTimer.Updates.Event(info), entityId.EntityId);
         }
     }
 }

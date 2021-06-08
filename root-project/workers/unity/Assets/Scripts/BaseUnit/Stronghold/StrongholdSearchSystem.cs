@@ -16,7 +16,7 @@ namespace AdvancedGears
     internal class StrongholdSearchSystem : BaseSearchSystem
     {
         private EntityQuery group;
-        private EntityQuery hexGroup;
+        private EntityQueryBuilder.F_EDDDD<StrongholdSight.Component, BaseUnitStatus.Component, HexFacility.Component, SpatialEntityId> action;
         IntervalChecker inter;
 
         const int period = 2;
@@ -39,6 +39,7 @@ namespace AdvancedGears
             );
 
             inter = IntervalCheckerInitializer.InitializedChecker(period);
+            action = Query;
             portalUpdateSytem = World.GetExistingSystem<StrategyHexAccessPortalUpdateSystem>();
         }
 
@@ -47,42 +48,44 @@ namespace AdvancedGears
             if (CheckTime(ref inter) == false)
                 return;
 
-            Entities.With(group).ForEach((Entity entity,
-                                          ref StrongholdSight.Component sight,
-                                          ref BaseUnitStatus.Component status,
-                                          ref HexFacility.Component hex,
-                                          ref SpatialEntityId entityId) =>
-            {
-                if (status.State != UnitState.Alive)
-                    return;
+            Entities.With(group).ForEach(action);
+        }
 
-                if (UnitUtils.IsBuilding(status.Type) == false)
-                    return;
+        private void Query(Entity entity,
+                            ref StrongholdSight.Component sight,
+                            ref BaseUnitStatus.Component status,
+                            ref HexFacility.Component hex,
+                            ref SpatialEntityId entityId)
+        {
+            if (status.State != UnitState.Alive)
+                return;
 
-                if (status.Side == UnitSide.None)
-                    return;
+            if (UnitUtils.IsBuilding(status.Type) == false)
+                return;
 
-                var inter = sight.Interval;
-                if (CheckTime(ref inter) == false)
-                    return;
+            if (status.Side == UnitSide.None)
+                return;
 
-                sight.Interval = inter;
+            var inter = sight.Interval;
+            if (CheckTime(ref inter) == false)
+                return;
 
-                var trans = EntityManager.GetComponentObject<Transform>(entity);
+            sight.Interval = inter;
 
-                var targets = sight.TargetStrongholds;
-                var enemySide = sight.StrategyVector.Side;
-                var vector = sight.StrategyVector.Vector.ToUnityVector();
-                var corners = sight.FrontLineCorners;
-                var hexes = sight.TargetHexes;
+            var trans = EntityManager.GetComponentObject<Transform>(entity);
 
-                var order = GetTarget(trans.position, hex.HexIndex, this.FrontHexes, this.HexIndexes, status.Side, enemySide, hexes, corners);
+            var targets = sight.TargetStrongholds;
+            var enemySide = sight.StrategyVector.Side;
+            var vector = sight.StrategyVector.Vector.ToUnityVector();
+            var corners = sight.FrontLineCorners;
+            var hexes = sight.TargetHexes;
 
-                sight.TargetStrongholds = targets;
-                sight.FrontLineCorners = corners;
-                sight.TargetHexes = hexes;
-                status.Order = order;
-            });
+            var order = GetTarget(trans.position, hex.HexIndex, this.FrontHexes, this.HexIndexes, status.Side, enemySide, hexes, corners);
+
+            sight.TargetStrongholds = targets;
+            sight.FrontLineCorners = corners;
+            sight.TargetHexes = hexes;
+            status.Order = order;
         }
 
         readonly List<HexIndex> hexList = new List<HexIndex>();

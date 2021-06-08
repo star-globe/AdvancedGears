@@ -39,7 +39,7 @@ namespace AdvancedGears
 
         EntityQuery group;
         IntervalChecker inter;
-
+        EntityQueryBuilder.F_ED<BaseUnitStatus.Component> action;
         const int period = 10;
         protected override void OnCreate()
         {
@@ -52,6 +52,7 @@ namespace AdvancedGears
             );
 
             inter = IntervalCheckerInitializer.InitializedChecker(period);
+            action = Query;
         }
 
         //Ray vertical = new Ray();
@@ -62,20 +63,22 @@ namespace AdvancedGears
             if (CheckTime(ref inter) == false)
                 return;
 
-            Entities.With(group).ForEach((Entity entity, ref BaseUnitStatus.Component status) =>
-            {
-                var rigidbody = EntityManager.GetComponentObject<Rigidbody>(entity);
-                if (rigidbody == null ||
-                    rigidbody.isKinematic)
-                    return;
+            Entities.With(group).ForEach(action);
+        }
 
-                var unit = EntityManager.GetComponentObject<UnitTransform>(entity);
-                if (unit == null)
-                    return;
+        private void Query(Entity entity, ref BaseUnitStatus.Component status)
+        {
+            var rigidbody = EntityManager.GetComponentObject<Rigidbody>(entity);
+            if (rigidbody == null ||
+                rigidbody.isKinematic)
+                return;
 
-                if (unit.GetGrounded() && UnitUtils.IsBuilding(status.Type))
-                    rigidbody.isKinematic = true;
-            });
+            var unit = EntityManager.GetComponentObject<UnitTransform>(entity);
+            if (unit == null)
+                return;
+
+            if (unit.GetGrounded() && UnitUtils.IsBuilding(status.Type))
+                rigidbody.isKinematic = true;
         }
     }
 }

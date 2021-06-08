@@ -16,7 +16,7 @@ namespace AdvancedGears
     internal class TurretUpdateSystem : BaseSearchSystem
     {
         private EntityQuerySet hubQuerySet;
-
+        private EntityQueryBuilder.F_EDDDD<TurretHub.Component, BaseUnitStatus.Component, HexFacility.Component, SpatialEntityId> action;
         const int period = 2;
         protected override void OnCreate()
         {
@@ -30,6 +30,7 @@ namespace AdvancedGears
                                              ComponentType.ReadOnly<Transform>(),
                                              ComponentType.ReadOnly<SpatialEntityId>()
                                              ), period);
+            action = Query;
         }
 
         protected override void OnUpdate()
@@ -42,37 +43,39 @@ namespace AdvancedGears
             if (CheckTime(ref hubQuerySet.inter) == false)
                 return;
 
-            Entities.With(hubQuerySet.group).ForEach((Entity entity,
-                                                      ref TurretHub.Component turret,
-                                                      ref BaseUnitStatus.Component status,
-                                                      ref HexFacility.Component hex,
-                                                      ref SpatialEntityId entityId) =>
-            {
-                if (status.State != UnitState.Alive)
-                    return;
+            Entities.With(hubQuerySet.group).ForEach(action);
+        }
 
-                if (UnitUtils.IsBuilding(status.Type) == false)
-                    return;
+        private void Query(Entity entity,
+                            ref TurretHub.Component turret,
+                            ref BaseUnitStatus.Component status,
+                            ref HexFacility.Component hex,
+                            ref SpatialEntityId entityId)
+        {
+            if (status.State != UnitState.Alive)
+                return;
 
-                var trans = EntityManager.GetComponentObject<Transform>(entity);
-                var units = getAllUnits(trans.position, HexDictionary.HexEdgeLength, allowDead:true, GetSingleUnitTypes(UnitType.Turret));
+            if (UnitUtils.IsBuilding(status.Type) == false)
+                return;
 
-                var datas = turret.TurretsDatas;
-                datas.Clear();
+            var trans = EntityManager.GetComponentObject<Transform>(entity);
+            var units = getAllUnits(trans.position, HexDictionary.HexEdgeLength, allowDead:true, GetSingleUnitTypes(UnitType.Turret));
 
-                var hexIndex = hex.HexIndex;
-                foreach(var u in units) {
-                    if (hexIndex != uint.MaxValue && HexUtils.IsInsideHex(this.Origin, hexIndex, u.pos, HexDictionary.HexEdgeLength) == false)
-                        continue;
+            var datas = turret.TurretsDatas;
+            datas.Clear();
 
-                    if (TryGetComponent<TurretComponent.Component>(u.id, out var comp) == false)
-                        continue;
-                    
-                    datas[u.id] = new TurretInfo(u.side, comp.Value.MasterId, u.id);
-                }
+            var hexIndex = hex.HexIndex;
+            foreach(var u in units) {
+                if (hexIndex != uint.MaxValue && HexUtils.IsInsideHex(this.Origin, hexIndex, u.pos, HexDictionary.HexEdgeLength) == false)
+                    continue;
 
-                turret.TurretsDatas = datas;
-            });
+                if (TryGetComponent<TurretComponent.Component>(u.id, out var comp) == false)
+                    continue;
+                
+                datas[u.id] = new TurretInfo(u.side, comp.Value.MasterId, u.id);
+            }
+
+            turret.TurretsDatas = datas;
         }
     }
 }
