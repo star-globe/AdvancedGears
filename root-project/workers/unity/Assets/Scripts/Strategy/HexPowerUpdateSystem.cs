@@ -39,7 +39,7 @@ namespace AdvancedGears
                                                   ComponentType.ReadOnly<Position.Component>()
                                                   ), frequencyResource, Time.ElapsedTime);
             powerAction = PowerQuery;
-            resourceAction = PowerQuery;
+            resourceAction = ResourceQuery;
         }
 
         readonly Dictionary<uint, float> resourceDictionary = new Dictionary<uint, float>();
@@ -54,6 +54,7 @@ namespace AdvancedGears
         }
 
         const float flowValueRate = 0.05f;
+        double deltaTime = 0;
 
         private void UpdateHexPower()
         {
@@ -63,7 +64,7 @@ namespace AdvancedGears
             if (CheckTime(ref hexpowerQuerySet.inter) == false)
                 return;
 
-            var deltaTime = hexpowerQuerySet.GetDelta(Time.ElapsedTime);
+            deltaTime = hexpowerQuerySet.GetDelta(Time.ElapsedTime);
 
             foreach (var kvp in flowDictionary)
                 kvp.Value.Clear();

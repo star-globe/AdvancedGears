@@ -8,7 +8,7 @@ using Unity.Entities;
 using UnityEngine;
 namespace AdvancedGears
 {
-    [Obsolute]
+    [Obsolete]
     [DisableAutoCreation]
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     internal class BoidsUpdateSystem : BaseSearchSystem
