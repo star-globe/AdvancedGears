@@ -25,8 +25,8 @@ namespace AdvancedGears
         IntervalChecker intervalMovement;
         IntervalChecker intervalBoid;
 
-        EntityQueryBuilder.F_EDDD<BaseUnitSight.Component, BaseUnitStatus.Component, SpatialEntityId> boidQuery;
-        EntityQueryBuilder.F_EDDDDD<BaseUnitMovement.Component, NavPathData, BaseUnitSight.Component, BaseUnitStatus.Component, SpatialEntityId> movementQuery;
+        EntityQueryBuilder.F_EDD<BaseUnitStatus.Component, SpatialEntityId> boidQuery;
+        EntityQueryBuilder.F_EDDDDD<MovementData, NavPathData, BaseUnitSight.Component, BaseUnitStatus.Component, SpatialEntityId> movementQuery;
 
         double deltaTime = -1.0;
 
@@ -50,8 +50,6 @@ namespace AdvancedGears
 
             boidGroup = GetEntityQuery(
                 ComponentType.ReadOnly<UnitTransform>(),
-                ComponentType.ReadWrite<BaseUnitSight.Component>(),
-                ComponentType.ReadOnly<BaseUnitSight.HasAuthority>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
@@ -87,7 +85,6 @@ namespace AdvancedGears
         }
 
         private void BoidQuery(Entity entity,
-                              ref BaseUnitSight.Component sight,
                               ref BaseUnitStatus.Component status,
                               ref SpatialEntityId entityId)
         {
@@ -105,7 +102,7 @@ namespace AdvancedGears
 
             var pos = unit.transform.position;
 
-            Vector3? tgt = calc_update_boid(ref sight, sight.State, pos);
+            Vector3? tgt = null;//calc_update_boid(ref sight, sight.State, pos);
             Vector3 spread = Vector3.zero;
 
             var range = RangeDictionary.SpreadSize;
@@ -146,7 +143,7 @@ namespace AdvancedGears
         }
 
         private void MovementQuery(Entity entity,
-                                          ref BaseUnitMovement.Component movement,
+                                          ref MovementData movement,
                                           ref NavPathData path,
                                           ref BaseUnitSight.Component sight,
                                           ref BaseUnitStatus.Component status,

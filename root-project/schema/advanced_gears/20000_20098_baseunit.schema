@@ -537,7 +537,7 @@ component TurretComponent {
 component CarrierComponent {
     id = 20060;
 
-    EnitityId owner_id = 1;
+    EntityId owner_id = 1;
 
     map<PosturePoint,EquipData> equip_map = 2;
 }

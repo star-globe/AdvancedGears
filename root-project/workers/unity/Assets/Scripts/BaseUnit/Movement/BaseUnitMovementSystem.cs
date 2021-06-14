@@ -120,7 +120,7 @@ namespace AdvancedGears
     public struct MovementData : IComponentData
     {
         public float MoveSpeed;
-        public flot RotSpeed;
+        public float RotSpeed;
 
         public static MovementData CreateData(float move, float rot)
         {
