@@ -101,8 +101,10 @@ namespace AdvancedGears
                 container?.SetTrans(boneMap);
             }
 
-            if (this.IsClient == false && entityManager.HasComponent<BaseUnitMovement.Component>(entityInfo.Entity))
+            if (this.IsClient == false && TryGetComponent<BaseUnitMovement.Component>(ref entityManager, entityInfo.Entity, out var movement)) {
                 entityManager.AddComponentData<NavPathData>(entityInfo.Entity, NavPathData.CreateData());
+                entityManager.AddComponentData<MovementData>(entityInfo.Entity, MovementData.CreateData(movement.Value.MoveSpeed, movement.Value.RotSpeed));
+            }
 
             gameObjectsCreated.Add(entityInfo.SpatialOSEntityId, gameObject);
             gameObject.name = $"{prefab.name}(SpatialOS: {entityInfo.SpatialOSEntityId}, Worker: {this.WorkerType})";

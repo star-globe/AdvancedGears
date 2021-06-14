@@ -15,6 +15,7 @@ namespace AdvancedGears
     internal class BulletMovementSystem : ComponentSystem
     {
         EntityQuery group;
+        EntityQueryBuilder.F_CD<Rigidbody, BulletInfo> action;
 
         private WorkerSystem worker;
 
@@ -32,24 +33,28 @@ namespace AdvancedGears
                 ComponentType.ReadWrite<Rigidbody>(),
                 ComponentType.ReadWrite<BulletInfo>()
            );
+
+           action = Query;
         }
 
         protected override void OnUpdate()
         {
-            Entities.With(group).ForEach((Rigidbody rigid, ref BulletInfo info) =>
-            {
-                if (!info.IsActive)
-                    return;
+            Entities.With(group).ForEach(action);
+        }
 
-                // time check
-                var diff = Time.ElapsedTime - info.LaunchTime;
-                if (diff >= info.LifeTime)
-                {
-                    info.IsActive = false;
-                    rigid.gameObject.SetActive(false);
-                    return;
-                }
-            });
+        private void Query(Rigidbody rigid, ref BulletInfo info)
+        {
+            if (!info.IsActive)
+                return;
+
+            // time check
+            var diff = Time.ElapsedTime - info.LaunchTime;
+            if (diff >= info.LifeTime)
+            {
+                info.IsActive = false;
+                rigid.gameObject.SetActive(false);
+                return;
+            }
         }
     }
 

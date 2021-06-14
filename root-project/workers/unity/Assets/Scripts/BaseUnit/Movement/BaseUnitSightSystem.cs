@@ -41,8 +41,7 @@ namespace AdvancedGears
 
             movementGroup = GetEntityQuery(
                 ComponentType.ReadOnly<UnitTransform>(),
-                ComponentType.ReadWrite<BaseUnitMovement.Component>(),
-                ComponentType.ReadOnly<BaseUnitMovement.HasAuthority>(),
+                ComponentType.ReadWrite<MovementData>(),
                 ComponentType.ReadWrite<NavPathData>(),
                 ComponentType.ReadOnly<BaseUnitSight.Component>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
