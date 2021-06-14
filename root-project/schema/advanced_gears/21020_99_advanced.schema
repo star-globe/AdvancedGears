@@ -3,21 +3,6 @@ import "improbable/gdk/core/common.schema";
 import "advanced_gears/common.schema";
 
 // advanced:21020~21099
-enum EquipCategory {
-    None = 0;
-    Weapon = 1;
-    Armor = 2;
-    Insides = 3;
-    Other = 99;
-}
-
-type EquipData {
-    uint64 equip_id = 1;
-    uint32 equip_type_id = 2;
-    EquipCategory category = 3;
-    int32 tune = 4;
-}
-
 type ChangeEquipInfo {
     PosturePoint point = 1;
     EquipData equip = 2;

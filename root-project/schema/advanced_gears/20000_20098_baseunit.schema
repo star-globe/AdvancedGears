@@ -532,3 +532,12 @@ component TurretComponent {
 
     int32 master_id = 1;
 }
+
+// carrier:20060~
+component CarrierComponent {
+    id = 20060;
+
+    EnitityId owner_id = 1;
+
+    map<PosturePoint,EquipData> equip_map = 2;
+}

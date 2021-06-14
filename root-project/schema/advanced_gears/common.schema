@@ -26,6 +26,7 @@ enum UnitType {
     Advanced = 3;
     Supply = 4;
     Recon = 5;
+    Carrier = 6;
 
     // fixed
     Stronghold = 101;
@@ -89,4 +90,19 @@ type FrontLineInfo
 {
     improbable.Coordinates left_corner = 1;
     improbable.Coordinates right_corner = 2;
+}
+
+enum EquipCategory {
+    None = 0;
+    Weapon = 1;
+    Armor = 2;
+    Insides = 3;
+    Other = 99;
+}
+
+type EquipData {
+    uint64 equip_id = 1;
+    uint32 equip_type_id = 2;
+    EquipCategory category = 3;
+    int32 tune = 4;
 }
