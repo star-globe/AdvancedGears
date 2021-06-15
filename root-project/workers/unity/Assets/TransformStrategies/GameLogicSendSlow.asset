@@ -9,11 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 493fc6fb409a3184aa5bab9bcf441a63, type: 3}
-  m_Name: ClientFieldSettings
+  m_Script: {fileID: 11500000, guid: fa52c09b412caec4e92775dd45ad2fb2, type: 3}
+  m_Name: GameLogicSendSlow
   m_EditorClassIdentifier: 
-  fieldObject: {fileID: 6408312529055956839, guid: 56b336b39da8cec4084d0b121513abfd,
-    type: 3}
-  workerType: 1
-  fieldSize: 700
-  updateInterval: 0.1
+  WorkerType: UnityGameLogic
+  MaxTransformUpdateRateHz: 10
+  MaxPositionUpdateRateHz: 1

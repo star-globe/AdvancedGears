@@ -30,7 +30,7 @@ namespace AdvancedGears
                 Type = TargetType.Unit,
             });
 
-            Debug.Log("OnSetTarget");
+            //Debug.Log("OnSetTarget");
         }
 
         private void OnSetFrontLine(TargetFrontLineInfo lineInfo)
@@ -42,7 +42,7 @@ namespace AdvancedGears
                 Type = TargetType.FrontLine,
             });
 
-            Debug.LogFormat("OnSetFrontLine: Left:{0} Right{1}", lineInfo.FrontLine.LeftCorner, lineInfo.FrontLine.RightCorner);
+            //Debug.LogFormat("OnSetFrontLine: Left:{0} Right{1}", lineInfo.FrontLine.LeftCorner, lineInfo.FrontLine.RightCorner);
         }
 
         private void OnSetHex(TargetHexInfo hexInfo)
@@ -54,7 +54,7 @@ namespace AdvancedGears
                 Type = TargetType.Hex,
             });
 
-            Debug.Log("OnSetHex");
+            //Debug.Log("OnSetHex");
         }
 
         private void OnSetPowerRate(TargetPowerRate powerInfo)
@@ -64,7 +64,7 @@ namespace AdvancedGears
                 PowerRate = powerInfo.PowerRate,
             });
 
-            Debug.Log("OnSetPowerRate");
+            //Debug.Log("OnSetPowerRate");
         }
 
         private void OnBoidDiffed(BoidVector vector)
