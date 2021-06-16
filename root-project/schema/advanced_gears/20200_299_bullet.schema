@@ -3,7 +3,7 @@ import "improbable/gdk/core/common.schema";
 import "improbable/gdk/transform_synchronization/transform_internal.schema";
 import "advanced_gears/common.schema";
 
-// bullet/gun:21000~21009
+// bullet/gun:20200~20299
 
 type BulletFireInfo {
     int32 power = 1;
@@ -25,7 +25,7 @@ type BulletVanishInfo {
 }
 
 component BulletComponent {
-    id = 21000;
+    id = 20200;
     uint64 current_id = 1;
 
     event BulletFireInfo fires;
@@ -78,7 +78,7 @@ type BulletDiffList {
 }
 
 component GunComponent {
-    id = 21001;
+    id = 20201;
 
     map<int32,GunInfo> guns_dic = 1;
 
@@ -87,8 +87,18 @@ component GunComponent {
     event BulletDiffList bullet_diffed;
 }
 
+component SimpleGunComponent {
+    id = 20202;
+
+    GunInfo gun_info = 1;
+
+    event AttackTargetInfo fire_triggered;
+    event SupplyBulletInfo bullet_supplied;
+    event BulletDiffList bullet_diffed;
+}
+
 component LongRangeBulletComponent {
-    id = 21002;
+    id = 20210;
 
     uint32 long_range_bullet_id = 1;
     improbable.gdk.transform_synchronization.FixedPointVector3 speed = 2;
@@ -96,7 +106,7 @@ component LongRangeBulletComponent {
 }
 
 component GuidComponent {
-    id = 21003;
+    id = 20211;
 
     uint32 guid_id = 1;
     improbable.gdk.transform_synchronization.FixedPointVector3 target_position = 2;
@@ -110,7 +120,7 @@ type LaserFireInfo {
 }
 
 component LongRangeLaserComponent {
-    id = 21004;
+    id = 20212;
 
     uint32 laser_id = 1;
     LaserFireInfo fire = 2;

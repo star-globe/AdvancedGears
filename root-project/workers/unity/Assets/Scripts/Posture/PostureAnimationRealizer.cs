@@ -8,7 +8,7 @@ namespace AdvancedGears
 {
     public class PostureAnimationRealizer : MonoBehaviour
     {
-        [Require] PostureAnimationReader reader;
+        [Require] BoneAnimationReader reader;
 
         [SerializeField] PostureBoneContainer container;
 

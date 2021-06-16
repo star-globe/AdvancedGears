@@ -89,7 +89,7 @@ namespace AdvancedGears
             }
 
             Dictionary<int,CompressedLocalTransform> boneMap = null;
-            if (TryGetComponent<PostureAnimation.Component>(ref entityManager, entityInfo.Entity, out var anim))
+            if (TryGetComponent<BoneAnimation.Component>(ref entityManager, entityInfo.Entity, out var anim))
                 boneMap = anim.Value.BoneMap;
 
             var gameObject = UnityEngine.Object.Instantiate(prefab, position.ToUnityVector() + this.WorkerOrigin, rot);

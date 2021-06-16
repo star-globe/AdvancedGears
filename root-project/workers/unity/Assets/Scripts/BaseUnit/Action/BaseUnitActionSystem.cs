@@ -131,6 +131,46 @@ namespace AdvancedGears
                 gun.GunsDic = gunsDic;
         }
 
+        void Attack(PostureBoneContainer container, double current, in Vector3 epos, in SpatialEntityId entityId, ref SimpleGunComponent.Component gun)
+        {
+            var updGuns = false;
+            if (container == null || container.Bones == null)
+                return;
+
+            var gunInfo = gun.GunInfo;
+            foreach (var bone in container.Bones)
+            {
+                if (bone.hash != gunInfo.AttachedBone)
+                    continue;
+
+                var result = CheckRange(container.GetCannon(bone.hash), epos, gunInfo.AttackRange, gunInfo.AttackAngle);
+                switch (result)
+                {
+                    case Result.InRange:
+                        if (gunInfo.StockBullets == 0)
+                            break;
+                        var inter = gunInfo.Interval;
+                        if (inter.CheckTime(current) == false)
+                            break;
+                        gunInfo.Interval = inter;
+                        var atk = new AttackTargetInfo
+                        {
+                            GunTypeId = gunInfo.GunTypeId,
+                            TargetPosition = epos.ToFixedPointVector3(),
+                            AttachedBone = bone.hash,
+                        };
+                        updGuns |= true;
+                        this.UpdateSystem.SendEvent(new SimpleGunComponent.FireTriggered.Event(atk), entityId.EntityId);
+                        break;
+                    case Result.Rotate:
+                        break;
+                }
+            }
+
+            if (updGuns)
+                gun.GunInfo = gunInfo;
+        }
+
         enum Result
         {
             OutOfRange = 0,

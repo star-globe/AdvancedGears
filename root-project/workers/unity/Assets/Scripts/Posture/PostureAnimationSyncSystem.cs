@@ -20,8 +20,8 @@ namespace AdvancedGears
             base.OnCreate();
 
             querySet = new EntityQuerySet(GetEntityQuery(
-                                          ComponentType.ReadWrite<PostureAnimation.Component>(),
-                                          ComponentType.ReadOnly<PostureAnimation.HasAuthority>(),
+                                          ComponentType.ReadWrite<BoneAnimation.Component>(),
+                                          ComponentType.ReadOnly<BoneAnimation.HasAuthority>(),
                                           ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                                           ComponentType.ReadOnly<PostureBoneContainer>()), 3);
         }
@@ -33,7 +33,7 @@ namespace AdvancedGears
 
             Entities.With(querySet.group).ForEach((Entity entity,
                                           ref BaseUnitStatus.Component status,
-                                          ref PostureAnimation.Component anim) =>
+                                          ref BoneAnimation.Component anim) =>
             {
                 if (UnitUtils.IsBuilding(status.Type))
                     return;

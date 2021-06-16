@@ -55,11 +55,17 @@ type AnimTarget
 component PostureAnimation {
     id = 25001;
 
-    map<int32, CompressedLocalTransform> bone_map = 1;
     AnimState anim_state = 2;
     AnimTarget anim_target = 3;
 
-    event PostureTransDataList reset_posture;
     event AnimState state_changed;
     event AnimTarget target_changed;
+}
+
+component BoneAnimation {
+    id = 25002;
+
+    map<int32, CompressedLocalTransform> bone_map = 1;
+
+    event PostureTransDataList reset_posture;
 }
