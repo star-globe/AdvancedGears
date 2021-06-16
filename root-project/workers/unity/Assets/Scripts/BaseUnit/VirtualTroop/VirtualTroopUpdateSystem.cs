@@ -8,6 +8,7 @@ using UnityEngine;
 
 namespace AdvancedGears
 {
+    [Obsolete]
     [DisableAutoCreation]
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     internal class VirtualTroopUpdateSystem : BaseSearchSystem

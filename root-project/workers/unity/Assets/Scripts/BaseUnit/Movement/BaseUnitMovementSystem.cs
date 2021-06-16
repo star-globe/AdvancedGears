@@ -13,7 +13,7 @@ namespace AdvancedGears
 
         EntityQuerySet syncQuerySet;
         EntityQueryBuilder.F_EDDD<MovementData, BaseUnitMovement.Component, BaseUnitStatus.Component> syncAction;
-        const int syncInterval = 4;
+        const int syncInterval = 2;
 
         protected override void OnCreate()
         {

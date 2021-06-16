@@ -14,7 +14,9 @@ namespace AdvancedGears
     internal class VirtualArmyUpdateSystem : BaseSearchSystem
     {
         private EntityQuerySet commanderQuerySet;
-        private EntityQuerySet strongholdQuerySet;
+        private EntityQuerySet turretQuerySet;
+        EntityQueryBuilder.F_EDDD<VirtualArmy.Component, CommanderTeam.Component, BaseUnitStatus.Component> commanderAction;
+        EntityQueryBuilder.F_EDDD<VirtualArmy.Component, TurretHub.Component, BaseUnitStatus.Component> turretAction;
 
         protected override void OnCreate()
         {
@@ -26,11 +28,14 @@ namespace AdvancedGears
                                                     ComponentType.ReadOnly<CommanderTeam.Component>(),
                                                     ComponentType.ReadOnly<BaseUnitStatus.Component>()), 1);
 
-            strongholdQuerySet = new EntityQuerySet(GetEntityQuery(
+            turretQuerySet = new EntityQuerySet(GetEntityQuery(
                                                     ComponentType.ReadWrite<VirtualArmy.Component>(),
                                                     ComponentType.ReadOnly<VirtualArmy.HasAuthority>(),
                                                     ComponentType.ReadOnly<TurretHub.Component>(),
                                                     ComponentType.ReadOnly<BaseUnitStatus.Component>()), 1);
+
+            commanderAction = CommanderQuery;
+            turretAction = TurretQuery;
         }
 
         protected override void OnUpdate()
@@ -45,32 +50,34 @@ namespace AdvancedGears
             if (CheckTime(ref commanderQuerySet.inter) == false)
                 return;
 
-            Entities.With(commanderQuerySet.group).ForEach((Entity entity,
-                                                    ref VirtualArmy.Component army,
-                                                    ref CommanderTeam.Component team,
-                                                    ref BaseUnitStatus.Component status) =>
-            {
-                if (status.State != UnitState.Alive)
-                    return;
+            Entities.With(commanderQuerySet.group).ForEach(commanderAction);
+        }
 
-                var trans = EntityManager.GetComponentObject<Transform>(entity);
-                var pos = trans.position;
+        private void CommanderQuery(Entity entity,
+                                    ref VirtualArmy.Component army,
+                                    ref CommanderTeam.Component team,
+                                    ref BaseUnitStatus.Component status)
+        {
+            if (status.State != UnitState.Alive)
+                return;
 
-                var unit = getNearestPlayer(pos, HexDictionary.HexEdgeLength, selfId:null, GetSingleUnitTypes(UnitType.Advanced));
-                if (unit == null) {
-                    var followers = team.FollowerInfo.Followers;
-                    if (army.IsActive && army.SimpleUnits.Count == followers.Count)
-                        SyncTroop(army.SimpleUnits, trans);
-                    else
-                        VirtualizeUnits(ref army, trans, team.FollowerInfo.Followers);
-                }
-                else {
-                    if (army.IsActive)
-                        RealizeUnits(ref army, trans);
-                    else
-                        AlarmUnits(ref army, team.FollowerInfo.Followers);
-                }
-            });
+            var trans = EntityManager.GetComponentObject<Transform>(entity);
+            var pos = trans.position;
+
+            var unit = getNearestPlayer(pos, HexDictionary.HexEdgeLength, selfId:null, GetSingleUnitTypes(UnitType.Advanced));
+            if (unit == null) {
+                var followers = team.FollowerInfo.Followers;
+                if (army.IsActive && army.SimpleUnits.Count == followers.Count)
+                    SyncTroop(army.SimpleUnits, trans);
+                else
+                    VirtualizeUnits(ref army, trans, team.FollowerInfo.Followers);
+            }
+            else {
+                if (army.IsActive)
+                    RealizeUnits(ref army, trans);
+                else
+                    AlarmUnits(ref army, team.FollowerInfo.Followers);
+            }
         }
 
         private void SyncTroop(Dictionary<EntityId,SimpleUnit> simpleUnits, Transform trans)
@@ -171,32 +178,34 @@ namespace AdvancedGears
         #region Turrets
         private void UpdateTurrets()
         {
-            if (CheckTime(ref strongholdQuerySet.inter) == false)
+            if (CheckTime(ref turretQuerySet.inter) == false)
                 return;
 
-            Entities.With(strongholdQuerySet.group).ForEach((Entity entity,
-                                                    ref VirtualArmy.Component army,
-                                                    ref TurretHub.Component turret,
-                                                    ref BaseUnitStatus.Component status) =>
-            {
-                if (status.State != UnitState.Alive)
-                    return;
+            Entities.With(turretQuerySet.group).ForEach(turretAction);
+        }
 
-                var trans = EntityManager.GetComponentObject<Transform>(entity);
-                var pos = trans.position;
+        private void TurretQuery(Entity entity,
+                                ref VirtualArmy.Component army,
+                                ref TurretHub.Component turret,
+                                ref BaseUnitStatus.Component status)
+        {
+            if (status.State != UnitState.Alive)
+                return;
 
-                var unit = getNearestPlayer(pos, HexDictionary.HexEdgeLength, selfId:null, GetSingleUnitTypes(UnitType.Advanced));
-                if (unit == null) {
-                    if (army.IsActive == false)
-                        VirtualizeTurrests(ref army, turret.TurretsDatas);
-                }
-                else {
-                    if (army.IsActive) 
-                        RealizeTurrets(ref army, turret.TurretsDatas);
-                    else
-                        AlarmTurrets(ref army, turret.TurretsDatas);
-                }
-            });
+            var trans = EntityManager.GetComponentObject<Transform>(entity);
+            var pos = trans.position;
+
+            var unit = getNearestPlayer(pos, HexDictionary.HexEdgeLength, selfId:null, GetSingleUnitTypes(UnitType.Advanced));
+            if (unit == null) {
+                if (army.IsActive == false)
+                    VirtualizeTurrests(ref army, turret.TurretsDatas);
+            }
+            else {
+                if (army.IsActive) 
+                    RealizeTurrets(ref army, turret.TurretsDatas);
+                else
+                    AlarmTurrets(ref army, turret.TurretsDatas);
+            }
         }
 
         private void VirtualizeTurrests(ref VirtualArmy.Component army, Dictionary<EntityId,TurretInfo> turretsDatas)

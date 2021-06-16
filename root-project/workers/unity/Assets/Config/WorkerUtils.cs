@@ -90,7 +90,7 @@ namespace AdvancedGears
             //world.GetOrCreateSystem<BoidsUpdateSystem>();
             world.GetOrCreateSystem<UnitFactorySystem>();
             world.GetOrCreateSystem<StrategyOrderManagerSystem>();
-            world.GetOrCreateSystem<ResourceSupplyManagerSystem>();
+            //world.GetOrCreateSystem<ResourceSupplyManagerSystem>();
             //world.GetOrCreateSystem<UnitArmyObserveSystem>();
             //world.GetOrCreateSystem<CommandersManagerSystem>();
             world.GetOrCreateSystem<StrategyHexAccessPortalUpdateSystem>();
@@ -118,7 +118,7 @@ namespace AdvancedGears
 
             world.GetOrCreateSystem<ProcessLaunchCommandSystem>();
             world.GetOrCreateSystem<MetricSendSystem>();
-            world.GetOrCreateSystem<ArmyCloudUpdateSystem>();
+            //world.GetOrCreateSystem<ArmyCloudUpdateSystem>();
         }
     }
 
