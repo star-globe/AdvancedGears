@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace AdvancedGears
 {
-    [CreateAssetMenu(menuName = "AdvancedGears/Field Config/Bullet Dictionary", order = 0)]
+    [CreateAssetMenu(menuName = "AdvancedGears/Field Config/Tower Dictionary", order = 0)]
     class TowerDictionary : DictionarySettings
     {
         public static TowerDictionary Instance { get; private set; }

@@ -21,7 +21,7 @@ namespace AdvancedGears
             var str = string.Format("Index:{0} HexId:{1}", index, hexId);
             foreach (var kvp in powers) {
                 str += Environment.NewLine;
-                str += string.Format("{0}:Pow:{1:0.00}", kvp.Key, kvp.Value);
+                str += string.Format("{0}:Pow:{1:0.0}", kvp.Key, kvp.Value);
             }
             text.SetText(str);
             text.color = ColorDictionary.GetSideColor(side);

@@ -22,6 +22,13 @@ namespace AdvancedGears
             }
         }
 
+        public void SetLinesColor(UnitSide side)
+        {
+            var col = ColorDictionary.GetSideColor(side);
+            this.Renderer.startColor = col;
+            this.Renderer.endColor = col;
+        }
+
         public void SetLines(UnitSide side, Vector3[] basePoints, int layerMask, int cutNumber, float fromHeight, float underHeight, float buffer)
         {
             if (basePoints == null)

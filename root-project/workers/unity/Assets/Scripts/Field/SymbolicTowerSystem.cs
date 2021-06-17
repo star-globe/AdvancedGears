@@ -61,9 +61,9 @@ namespace AdvancedGears
             }
 
             UpdatePlayerPosition();
-            var min = UpdateTowers(interval.Value.Interval);
+            var min = UpdateTowers();
 
-            if (min < float.MaxValue)
+            if (min < float.MaxValue && min > 0)
                 interval = IntervalCheckerInitializer.InitializedChecker(min);
         }
 
@@ -82,10 +82,10 @@ namespace AdvancedGears
             playerPosition = transform.position;
         }
 
-        private float UpdateTowers(float inter)
+        private float UpdateTowers()
         {
             if (playerPosition == null)
-                return inter;
+                return 0;
 
             minLength = float.MaxValue;
 
@@ -102,12 +102,17 @@ namespace AdvancedGears
                                 ref Position.Component position)
         {
             var settings = TowerDictionary.Get(tower.Side);
+            if (settings == null)
+            {
+                Debug.LogErrorFormat("There is no Tower Settings. Side:{0}", tower.Side);
+            }
 
             GameObject towerObj;
             if (towerObjDic.ContainsKey(tower.Side) == false)
             {
                 towerObj = GameObject.Instantiate(settings.TowerObject);
                 towerObj.transform.SetParent(rootObject.transform, false);
+                towerObjDic[tower.Side] = towerObj;
             }
             else
             {

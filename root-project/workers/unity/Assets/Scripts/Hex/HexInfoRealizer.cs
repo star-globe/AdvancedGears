@@ -27,6 +27,8 @@ namespace AdvancedGears
         IntervalCounter inter;
         readonly Vector3[] corners = new Vector3[7];
 
+        const float diffMin = 0.1f;
+
         private void OnEnable()
         {
             reader.OnSideUpdate += UpdateSide;
@@ -73,12 +75,14 @@ namespace AdvancedGears
         {
             bool changed = true;
             if (currentPowers != null) {
-                if (currentPowers.Count == powers.Count)
-                {
+                if (currentPowers.Count == powers.Count) {
                     var keys = powers.Keys;
                     foreach (var k in keys) {
-                        if (currentPowers.TryGetValue(k, out var p))
-                            changed &= p == powers[k];
+                        if (currentPowers.TryGetValue(k, out var p) == false)
+                            continue;
+
+                        var diff = p - powers[k];
+                        changed &= diff * diff > diffMin * diffMin;
                     }
 
                     changed = !changed;
