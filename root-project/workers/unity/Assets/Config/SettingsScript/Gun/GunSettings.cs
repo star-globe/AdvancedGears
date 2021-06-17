@@ -39,9 +39,6 @@ namespace AdvancedGears
                 GunId = uid,
                 GunTypeId = typeId,
                 StockBullets = stock,
-                StockMax = stock,
-                AttackRange = atkRange,
-                AttackAngle = atkAngle,
                 Interval = IntervalCheckerInitializer.InitializedChecker(inter),
                 AttachedBone = bone,
             };

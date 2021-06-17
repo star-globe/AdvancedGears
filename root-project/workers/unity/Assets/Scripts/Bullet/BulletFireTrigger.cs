@@ -101,7 +101,6 @@ namespace AdvancedGears
                 LaunchPosition = pos.ToFixedPointVector3(),
                 InitialVelocity = vec.ToFixedPointVector3(),
                 LaunchTime = Time.time,
-                LifeTime = gun.BulletLifeTime,
                 GunId = gunId,
                 ShooterEntityId = SpatialComp.EntityId.Id,
                 BulletId = id,

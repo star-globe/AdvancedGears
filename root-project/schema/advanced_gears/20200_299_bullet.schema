@@ -12,7 +12,6 @@ type BulletFireInfo {
     improbable.gdk.transform_synchronization.FixedPointVector3 launch_position = 4;
     improbable.gdk.transform_synchronization.FixedPointVector3 initial_velocity = 5;
     float launch_time = 6;
-    float life_time = 7;
     uint32 gun_id = 8;
     int64 shooter_entity_id = 9;
     uint64 bullet_id = 10;
@@ -48,9 +47,6 @@ type GunInfo {
     uint64 gun_id = 1;
     uint32 gun_type_id = 2;
     int32 stock_bullets = 3;
-    int32 stock_max = 4;
-    float attack_range = 5;
-    float attack_angle = 6;
     IntervalChecker interval = 7;
     int32 attached_bone = 8;
 }

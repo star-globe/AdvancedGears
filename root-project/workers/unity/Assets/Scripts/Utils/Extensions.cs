@@ -299,6 +299,43 @@ namespace AdvancedGears
             gun.StockBullets = Mathf.Clamp(gun.StockBullets + num, 0, gun.StockMax);
         }
 
+        public static int StockMax (this GunInfo gun)
+        {
+            var gun = GunDictionary.GetGunSettings(gun.GunId);
+            if (gun == null)
+                return 0;
+
+            return gun.Stock;
+        }
+
+        public static float AttackRange (this GunInfo gun)
+        {
+            var gun = GunDictionary.GetGunSettings(gun.GunId);
+            if (gun == null)
+                return 0;
+
+            return gun.AttackRange;
+        }
+
+        public static float AttackAngle (this GunInfo gun)
+        {
+            var gun = GunDictionary.GetGunSettings(gun.GunId);
+            if (gun == null)
+                return 0;
+
+            return gun.AttackAngle;
+        }
+
+        public static float LifeTime (this BulletFireInfo bullet)
+        {
+            var gun = GunDictionary.GetGunSettings(bullet.GunId);
+            if (gun == null)
+                return 0;
+
+            return gun.AttackAngle;
+        }
+
+
         public static void ChangeState(this List<UnitContainer> containers, int index, ContainerState state)
         {
             if (containers == null || containers.Count <= index)
