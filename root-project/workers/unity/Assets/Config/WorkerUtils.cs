@@ -66,6 +66,7 @@ namespace AdvancedGears
             world.GetOrCreateSystem<UnitUIInfoSystem>();
             world.GetOrCreateSystem<MiniMapUISystem>();
             world.GetOrCreateSystem<LocalTimerUpdateSystem>();
+            world.GetOrCreateSystem<SymbolicTowerSystem>();
         }
 
         public static void AddGameLogicSystems(World world)

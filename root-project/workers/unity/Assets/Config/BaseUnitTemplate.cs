@@ -209,9 +209,13 @@ namespace AdvancedGears
                 template.AddComponent(new PlayerInfo.Snapshot { ClientWorkerId = workerId }, controllAttribute);
                 PlayerLifecycleHelper.AddPlayerLifecycleComponents(template, workerId, WorkerUtils.UnityGameLogic);
 
-                // ミニマップ用QBI
+                // for minimap QBI
                 template.AddComponent(new MinimapComponent.Snapshot(), controllAttribute);
                 AddMinimapQuery<MinimapComponent.Component>(interest);
+
+                // for symbolic_tower QBI
+                template.AddComponent(new SymbolicTowerSight.snapshot(), controllAttribute);
+                AddSymbolicTowerQuery<SymbolicTowerSight.Component>(interest);
             }
             else {
                 template.AddComponent(new AdvancedUnmannedInput.Snapshot(), controllAttribute);
@@ -266,6 +270,19 @@ namespace AdvancedGears
                .WithMaxFrequencyHz(FixedParams.WorldInterestFrequency);
 
             interest.AddQueries<T>(minimapQuery);
+        }
+
+        static void AddSymbolicTowerQuery<T>(InterestTemplate interest) where T : ISpatialComponentData
+        {
+            var towerQuery = InterestQuery.Query(
+               Constraint.All(
+                   Constraint.Component(SymbolicTower.ComponentId),
+                   Constraint.RelativeSphere(FixedParams.WorldInterestLimit)))
+               .FilterResults(Position.ComponentId,
+                              SymbolicTower.ComponentId)
+               .WithMaxFrequencyHz(FixedParams.WorldInterestFrequency);
+
+            interest.AddQueries<T>(towerQuery);
         }
     }
 

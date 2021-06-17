@@ -21,9 +21,16 @@ namespace AdvancedGears
         private GameObject rootObject;
 
         private EntityQuery groupTower;
+        private EntityQueryBuilder.F_EDD<SymbolicTower.Component, Position.Component> towerAction;
+
         private EntityQuery groupPlayer;
+        private EntityQueryBuilder.F_EDC<PlayerInfo.Component, Transform> playerAction;
 
         Vector3? playerPosition = null;
+        float minLength = float.MaxValue;
+
+        const float speed = 10.0f;
+        const float minInter = 1/10;
 
         protected override void OnCreate()
         {
@@ -33,21 +40,21 @@ namespace AdvancedGears
 
             groupTower = GetEntityQuery(
                 ComponentType.ReadOnly<SymbolicTower.Component>(),
-                ComponentType.ReadOnly<Position.Component>(),
-                ComponentType.ReadOnly<SpatialEntityId>()
+                ComponentType.ReadOnly<Position.Component>()
             );
 
             groupPlayer = GetEntityQuery(
                 ComponentType.ReadOnly<PlayerInfo.Component>(),
-                ComponentType.ReadOnly<Position.Component>(),
-                ComponentType.ReadOnly<SpatialEntityId>()
+                ComponentType.ReadOnly<Transform>()
             );
+
+            towerAction = TowerQuery;
+            playerAction = PlayerQuery
         }
 
         protected override void OnUpdate()
         {
-            if (interval != null)
-            {
+            if (interval != null) {
                 var inter = interval.Value;
                 if (CheckTime(ref inter) == false)
                     return;
@@ -62,15 +69,17 @@ namespace AdvancedGears
 
         private void UpdatePlayerPosition()
         {
-            Entities.With(groupPlayer).ForEach((Unity.Entities.Entity entity,
-                                  ref PlayerInfo.Component playerInfo,
-                                  ref Position.Component position) =>
-            {
-                if (playerInfo.ClientWorkerId.Equals(this.WorkerSystem.WorkerId) == false)
-                    return;
+            Entities.With(groupPlayer).ForEach(playerAction);
+        }
 
-                playerPosition = position.Coords.ToUnityVector() + this.Origin;
-            });
+        private void PlayerQuery(Unity.Entities.Entity entity,
+                                    ref PlayerInfo.Component playerInfo,
+                                    Transform transform)
+        {
+            if (playerInfo.ClientWorkerId.Equals(this.WorkerSystem.WorkerId) == false)
+                return;
+
+            playerPosition = transform.position;
         }
 
         private float UpdateTowers(float inter)
@@ -78,42 +87,46 @@ namespace AdvancedGears
             if (playerPosition == null)
                 return inter;
 
-            float minLength = float.MaxValue;
+            minLength = float.MaxValue;
 
-            Entities.With(groupTower).ForEach((Entity entity,
-                                          ref SymbolicTower.Component tower,
-                                          ref Position.Component position,
-                                          ref SpatialEntityId entityId) =>
+            Entities.With(groupTower).ForEach(towerAction);
+
+            if (minLength == float.MaxValue)
+                return float.MaxValue;
+
+            return Mathf.Max(minLength / speed, minInter);
+        }
+
+        private void TowerQuery(Entity entity,
+                                ref SymbolicTower.Component tower,
+                                ref Position.Component position)
+        {
+            var settings = TowerDictionary.Get(tower.Side);
+
+            GameObject towerObj;
+            if (towerObjDic.ContainsKey(tower.Side) == false)
             {
-                var settings = TowerDictionary.Get(tower.Side);
+                towerObj = GameObject.Instantiate(settings.TowerObject);
+                towerObj.transform.SetParent(rootObject.transform, false);
+            }
+            else
+            {
+                towerObj = towerObjDic[tower.Side];
+            }
 
-                GameObject towerObj;
-                if (towerObjDic.ContainsKey(tower.Side) == false)
-                {
-                    towerObj = GameObject.Instantiate(settings.TowerObject);
-                    towerObj.transform.SetParent(rootObject.transform, false);
-                }
-                else
-                {
-                    towerObj = towerObjDic[tower.Side];
-                }
+            var t_pos = position.Coords.ToUnityVector() + this.Origin;
+            var diff = t_pos - playerPosition.Value;
+            var length = diff.magnitude;
 
-                var t_pos = position.Coords.ToUnityVector() + this.Origin;
-                var diff = t_pos - playerPosition.Value;
-                var length = diff.magnitude;
+            if (minLength > length)
+                minLength = length;
 
-                if (minLength > length)
-                    minLength = length;
+            var rate = length / TowerDictionary.DispLength;
 
-                var rate = length / TowerDictionary.DispLength;
+            var scaledPos = rate * diff + playerPosition.Value;
 
-                var scaledPos = rate * diff + playerPosition.Value;
-
-                towerObj.transform.localScale = Vector3.one * rate;
-                towerObj.transform.position = scaledPos;
-            });
-
-            return minLength;
+            towerObj.transform.localScale = Vector3.one * rate;
+            towerObj.transform.position = scaledPos;
         }
     }
 }

@@ -44,11 +44,19 @@ component MinimapRepresentaion {
     id = 31002;
 }
 
+enum TowerState {
+    Idle = 1;
+    Working = 2;
+    Broken = 3;
+}
+
 component SymbolicTower {
     id = 31003;
 
     UnitSide side = 1;
     float height = 2;
+
+    TowerState state = 3;
 }
 
 enum SpawnType {

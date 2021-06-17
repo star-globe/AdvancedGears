@@ -34,7 +34,7 @@ namespace AdvancedGears
         protected override FieldWorkerType FieldWorkerType => FieldWorkerType.Client;
         IntervalChecker inter;
         private Unity.Entities.EntityQuery group;
-        EntityQueryBuilder.F_EDD<PlayerInfo.Component, Transform> action;
+        EntityQueryBuilder.F_EDC<PlayerInfo.Component, Transform> action;
         protected override void OnCreate()
         {
             base.OnCreate();

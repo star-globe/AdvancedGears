@@ -85,3 +85,7 @@ component AdvancedUnmannedInput {
 component MinimapComponent {
     id = 21050;
 }
+
+component SymbolicTowerSight {
+    id = 21051;
+}

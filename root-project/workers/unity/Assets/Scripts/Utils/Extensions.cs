@@ -332,7 +332,7 @@ namespace AdvancedGears
             if (gun == null)
                 return 0;
 
-            return gun.AttackAngle;
+            return gun.BulletLifeTime;
         }
 
 
