@@ -45,9 +45,9 @@ component MinimapRepresentaion {
 }
 
 enum TowerState {
-    Idle = 1;
-    Working = 2;
-    Broken = 3;
+    Idle = 0;
+    Working = 1;
+    Broken = 2;
 }
 
 component SymbolicTower {
@@ -55,6 +55,7 @@ component SymbolicTower {
 
     UnitSide side = 1;
     float height = 2;
+    float radius = 3;
 
     TowerState state = 3;
 }

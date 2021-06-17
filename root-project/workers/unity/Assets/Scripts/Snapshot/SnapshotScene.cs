@@ -32,6 +32,10 @@ namespace AdvancedGears.Editor
         public List<FieldSnapshot> Fields => fields;
 
         [SerializeField]
+        List<SymbolicTowerSnapshot> towers = null;
+        public List<SymbolicTowerSnapshot> Towers => towers;
+
+        [SerializeField]
         FieldDictionary dictionary;
         float WorldHeight => dictionary.MaxHeight;
 
@@ -61,6 +65,10 @@ namespace AdvancedGears.Editor
             fields.Clear();
             foreach (var f in FindObjectsOfType<FieldSnapshotComponent>())
                 fields.Add(f.GetFieldSnapshot(rate, rate, dictionary.MaxRange));
+
+            towers.Clear();
+            foreach (var t in FindObjectOfType<SymbolicTowerSnapshotComponent>())
+                towers.Add(t.GetSymbolicTowerSnapshot(rate, rate));
         }
 
         public void ShowTestField()
@@ -90,6 +98,9 @@ namespace AdvancedGears.Editor
         public virtual Snapshot GenerateSnapshot()
         {
             var snapshot = SnapshotUtils.GenerateGroundSnapshot(this.WorldSize, this.GetHeight);
+
+            foreach (var t in Towers)
+                snapshot.AddEntity(SymbolicTowerTemplate.CreateSymbolicTowerTemplate(t.pos.ToCoordinates(), t.height, t.radius, t.side));
 
             foreach(var f in Fields)
                 snapshot.AddEntity(FieldTemplate.CreateFieldEntityTemplate(f.pos.ToCoordinates(), f.range, f.highest, f.materialType, f.seeds));
