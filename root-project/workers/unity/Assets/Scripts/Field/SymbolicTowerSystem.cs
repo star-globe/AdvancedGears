@@ -49,7 +49,7 @@ namespace AdvancedGears
             );
 
             towerAction = TowerQuery;
-            playerAction = PlayerQuery
+            playerAction = PlayerQuery;
         }
 
         protected override void OnUpdate()

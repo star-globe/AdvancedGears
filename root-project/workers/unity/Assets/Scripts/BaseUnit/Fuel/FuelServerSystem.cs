@@ -98,7 +98,7 @@ namespace AdvancedGears
                         foreach(var kvp in dic) {
                             var info = kvp.Value;
                             var b = info.StockBullets;
-                            var max = info.StockMax;
+                            var max = info.StockMax();
                             if (b >= max)
                                 continue;
                             

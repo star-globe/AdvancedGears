@@ -25,7 +25,7 @@ namespace AdvancedGears
             }
         }
 
-        protected EntityManager EntityManager
+        protected EntityManager? EntityManager
         {
             get { return SpatialComp?.World?.EntityManager; }
         }

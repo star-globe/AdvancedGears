@@ -57,7 +57,7 @@ component SymbolicTower {
     float height = 2;
     float radius = 3;
 
-    TowerState state = 3;
+    TowerState state = 10;
 }
 
 enum SpawnType {

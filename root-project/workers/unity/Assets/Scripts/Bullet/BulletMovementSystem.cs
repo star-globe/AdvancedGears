@@ -95,7 +95,7 @@ namespace AdvancedGears
             InitialVelocity = fire.InitialVelocity;
             CurrentVelocity = InitialVelocity;
             LaunchTime = fire.LaunchTime;
-            LifeTime = fire.LifeTime;
+            LifeTime = fire.LifeTime();
             GunId = fire.GunId;
             ShooterEntityId = fire.ShooterEntityId;
             BulletId = fire.BulletId;

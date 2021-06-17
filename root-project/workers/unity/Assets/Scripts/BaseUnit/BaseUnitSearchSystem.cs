@@ -19,7 +19,10 @@ namespace AdvancedGears
         EntityQuery group;
         EntityQueryBuilder.F_EDDDDD<BaseUnitSight.Component, UnitActionData, BaseUnitStatus.Component, BaseUnitTarget.Component, SpatialEntityId> action;
         IntervalChecker inter;
-        const int frequency = 20; 
+        const int frequency = 20;
+
+        Dictionary<long, List<FixedPointVector3>> enemyPositionsContainer = new Dictionary<long, List<FixedPointVector3>>();
+        public Dictionary<long, List<FixedPointVector3>> EnemyPositionsContainer => enemyPositionsContainer;
 
         protected override void OnCreate()
         {
@@ -67,7 +70,13 @@ namespace AdvancedGears
 
             // initial
             target.State = TargetState.None;
-            action.EnemyPositions.Clear();
+
+            var id = entityId.EntityId.Id;
+            if (enemyPositionsContainer.ContainsKey(id) == false)
+                enemyPositionsContainer[id] = new List<FixedPointVector3>();
+
+            var enemyPositions = enemyPositionsContainer[id];
+            enemyPositions.Clear();
 
             var trans = EntityManager.GetComponentObject<Transform>(entity);
             var pos = trans.position;
@@ -100,7 +109,7 @@ namespace AdvancedGears
                     sight.TargetSize = enemy.size;
                 }
 
-                action.EnemyPositions.Add(epos);
+                enemyPositions.Add(epos);
             }
 
             float range;

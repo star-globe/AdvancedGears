@@ -67,7 +67,7 @@ namespace AdvancedGears.Editor
                 fields.Add(f.GetFieldSnapshot(rate, rate, dictionary.MaxRange));
 
             towers.Clear();
-            foreach (var t in FindObjectOfType<SymbolicTowerSnapshotComponent>())
+            foreach (var t in FindObjectsOfType<SymbolicTowerSnapshotComponent>())
                 towers.Add(t.GetSymbolicTowerSnapshot(rate, rate));
         }
 
@@ -100,7 +100,7 @@ namespace AdvancedGears.Editor
             var snapshot = SnapshotUtils.GenerateGroundSnapshot(this.WorldSize, this.GetHeight);
 
             foreach (var t in Towers)
-                snapshot.AddEntity(SymbolicTowerTemplate.CreateSymbolicTowerTemplate(t.pos.ToCoordinates(), t.height, t.radius, t.side));
+                snapshot.AddEntity(SymbolicTowerTemplate.CreateSymbolicTowerEntityTemplate(t.pos.ToCoordinates(), t.height, t.radius, t.side));
 
             foreach(var f in Fields)
                 snapshot.AddEntity(FieldTemplate.CreateFieldEntityTemplate(f.pos.ToCoordinates(), f.range, f.highest, f.materialType, f.seeds));

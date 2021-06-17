@@ -59,7 +59,7 @@ namespace AdvancedGears
 
             if (this.EntityManager != null &&
                 this.Worker != null && this.Worker.TryGetEntity(SpatialComp.EntityId, out Entity entity)) {
-                this.EntityManager.AddComponentData<UnitActionData>(entity, UnitActionData.CreateData(sightRange, attackRange));
+                this.EntityManager.Value.AddComponentData<UnitActionData>(entity, UnitActionData.CreateData(sightRange, attackRange));
             }
         }
     }

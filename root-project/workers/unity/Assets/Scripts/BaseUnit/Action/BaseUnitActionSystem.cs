@@ -14,14 +14,32 @@ namespace AdvancedGears
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     internal class BaseUnitActionSystem : SpatialComponentSystem
     {
-        private EntityQuery group;
+        private EntityQuerySet querySet;
         private EntityQueryBuilder.F_EDDDDDD<UnitActionData, GunComponent.Component, PostureAnimation.Component, BaseUnitTarget.Component, BaseUnitStatus.Component, SpatialEntityId> action;
+
+        const int frequency = 10;
+
+        BaseUnitSearchSystem searchSystem = null;
+        BaseUnitSearchSystem SearchSystem
+        {
+            get
+            {
+                searchSystem = searchSystem ?? this.World.GetExistingSystem<BaseUnitSearchSystem>();
+
+                return searchSystem;
+            }
+        }
+
+        Dictionary<long, List<FixedPointVector3>> EnemyPositionsContainer
+        {
+            get { return this.SearchSystem?.EnemyPositionsContainer; }
+        }
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            group = GetEntityQuery(
+            querySet = new EntityQuerySet(GetEntityQuery(
                 ComponentType.ReadOnly<UnitActionData>(),
                 ComponentType.ReadWrite<GunComponent.Component>(),
                 ComponentType.ReadOnly<GunComponent.HasAuthority>(),
@@ -30,17 +48,21 @@ namespace AdvancedGears
                 ComponentType.ReadOnly<BaseUnitTarget.Component>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadOnly<PostureBoneContainer>(),
-                ComponentType.ReadOnly<SpatialEntityId>()
-            );
+                ComponentType.ReadOnly<SpatialEntityId>()), frequency);
 
             action = Query;
+
+            
         }
 
         protected override void OnUpdate()
         {
-            Entities.With(group).ForEach(action);
-        } 
-            
+            if (CheckTime(ref querySet.inter) == false)
+                return;
+
+            Entities.With(querySet.group).ForEach(action);
+        }
+
         private void Query (Entity entity,
                             ref UnitActionData action,
                             ref GunComponent.Component gun,
@@ -60,9 +82,14 @@ namespace AdvancedGears
 
             var current = Time.ElapsedTime;
 
+            var id = entityId.EntityId.Id;
+            if (this.EnemyPositionsContainer == null ||
+                this.EnemyPositionsContainer.TryGetValue(id, out var enemyPositions) == false)
+                return;
+
             Vector3? epos = null;
-            if (action.EnemyPositions.Count > 0) {
-                epos = action.EnemyPositions[0].ToWorkerPosition(this.Origin);
+            if (enemyPositions.Count > 0) {
+                epos = enemyPositions[0].ToWorkerPosition(this.Origin);
 
                 var container = EntityManager.GetComponentObject<PostureBoneContainer>(entity);
                 Attack(container, current, epos.Value, entityId, ref gun);
@@ -102,7 +129,7 @@ namespace AdvancedGears
                 if (gunsDic.TryGetValue(bone.hash, out gunInfo) == false)
                     continue;
 
-                var result = CheckRange(container.GetCannon(bone.hash), epos, gunInfo.AttackRange, gunInfo.AttackAngle);
+                var result = CheckRange(container.GetCannon(bone.hash), epos, gunInfo.AttackRange(), gunInfo.AttackAngle());
                 switch (result)
                 {
                     case Result.InRange:
@@ -158,14 +185,11 @@ namespace AdvancedGears
         public float SightRange;
         public float AttackRange;
 
-        public List<FixedPointVector3> EnemyPositions = null;
-
         public static UnitActionData CreateData(float sightRange, float attackRange)
         {
             var data = new UnitActionData();
             data.SightRange = sightRange;
             data.AttackRange = attackRange;
-            data.EnemyPositions = new List<FixedPointVector3>();
             return data;
         }
     }

@@ -55,7 +55,7 @@ namespace AdvancedGears
         void UpdateGuns(Dictionary<int,GunInfo> gunsDic)
         {
             foreach(var kvp in gunsDic) {
-                gunTupleDic[kvp.Key] = (kvp.Value.StockBullets, kvp.Value.StockMax);
+                gunTupleDic[kvp.Key] = (kvp.Value.StockBullets, kvp.Value.StockMax());
             }
 
             UpdateInfo();

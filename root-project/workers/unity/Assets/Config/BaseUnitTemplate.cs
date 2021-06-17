@@ -214,7 +214,7 @@ namespace AdvancedGears
                 AddMinimapQuery<MinimapComponent.Component>(interest);
 
                 // for symbolic_tower QBI
-                template.AddComponent(new SymbolicTowerSight.snapshot(), controllAttribute);
+                template.AddComponent(new SymbolicTowerSight.Snapshot(), controllAttribute);
                 AddSymbolicTowerQuery<SymbolicTowerSight.Component>(interest);
             }
             else {

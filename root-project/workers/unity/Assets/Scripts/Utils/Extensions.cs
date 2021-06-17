@@ -153,7 +153,7 @@ namespace AdvancedGears
             float length = 0;
             foreach (var kvp in gun.GunsDic)
             {
-                var l = kvp.Value.AttackRange;
+                var l = kvp.Value.AttackRange();
                 if (length < l)
                     length = l;
             }
@@ -275,7 +275,7 @@ namespace AdvancedGears
 
         public static bool IsPoor(this GunInfo gun)
         {
-            return gun.StockBullets < gun.StockMax;
+            return gun.StockBullets < gun.StockMax();
         }
 
         public static bool IsPoor(this GunComponent.Component gun, out List<GunInfo> emptyList)
@@ -296,34 +296,34 @@ namespace AdvancedGears
 
         public static void AddBullets(ref this GunInfo gun, int num)
         {
-            gun.StockBullets = Mathf.Clamp(gun.StockBullets + num, 0, gun.StockMax);
+            gun.StockBullets = Mathf.Clamp(gun.StockBullets + num, 0, gun.StockMax());
         }
 
-        public static int StockMax (this GunInfo gun)
+        public static int StockMax (this GunInfo info)
         {
-            var gun = GunDictionary.GetGunSettings(gun.GunId);
+            var gun = GunDictionary.GetGunSettings(info.GunTypeId);
             if (gun == null)
                 return 0;
 
             return gun.Stock;
         }
 
-        public static float AttackRange (this GunInfo gun)
+        public static float AttackRange (this GunInfo info)
         {
-            var gun = GunDictionary.GetGunSettings(gun.GunId);
+            var gun = GunDictionary.GetGunSettings(info.GunTypeId);
             if (gun == null)
                 return 0;
 
-            return gun.AttackRange;
+            return gun.AtkRange;
         }
 
-        public static float AttackAngle (this GunInfo gun)
+        public static float AttackAngle (this GunInfo info)
         {
-            var gun = GunDictionary.GetGunSettings(gun.GunId);
+            var gun = GunDictionary.GetGunSettings(info.GunTypeId);
             if (gun == null)
                 return 0;
 
-            return gun.AttackAngle;
+            return gun.AtkRange;
         }
 
         public static float LifeTime (this BulletFireInfo bullet)

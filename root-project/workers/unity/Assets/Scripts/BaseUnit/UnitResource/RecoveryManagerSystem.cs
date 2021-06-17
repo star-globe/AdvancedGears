@@ -101,7 +101,7 @@ namespace AdvancedGears
 
                     GunComponent.Component? gun;
                     if (this.TryGetComponent(unit.id, out gun) && gun.Value.IsPoor(out var emptyList)) {
-                        var diffs = emptyList.Select(emp => new BulletDiff { GunId = emp.GunId, Diff = (int)(emp.StockMax * recoveryRate * delta) })
+                        var diffs = emptyList.Select(emp => new BulletDiff { GunId = emp.GunId, Diff = (int)(emp.StockMax() * recoveryRate * delta) })
                                              .Where(d => d.Diff > 0).ToList();
                         if (diffs.Count > 0)
                             this.UpdateSystem.SendEvent(new GunComponent.BulletDiffed.Event(new BulletDiffList { Diffs = diffs }), unit.id);
