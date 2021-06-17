@@ -87,16 +87,6 @@ component GunComponent {
     event BulletDiffList bullet_diffed;
 }
 
-component SimpleGunComponent {
-    id = 20202;
-
-    GunInfo gun_info = 1;
-
-    event AttackTargetInfo fire_triggered;
-    event SupplyBulletInfo bullet_supplied;
-    event BulletDiffList bullet_diffed;
-}
-
 component LongRangeBulletComponent {
     id = 20210;
 
