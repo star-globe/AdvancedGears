@@ -42,5 +42,16 @@ namespace AdvancedGears
                 GunsDic = dic
             });
         }
+
+        public float AttackRange
+        {
+            get
+            {
+                if (gunWriter == null)
+                    return 0;
+
+                return gunWriter.Data.GetAttackRange();
+            }
+        }
     }
 }

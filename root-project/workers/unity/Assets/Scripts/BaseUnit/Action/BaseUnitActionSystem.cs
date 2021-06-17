@@ -15,14 +15,14 @@ namespace AdvancedGears
     internal class BaseUnitActionSystem : SpatialComponentSystem
     {
         private EntityQuery group;
-        private EntityQueryBuilder.F_EDDDDDD<BaseUnitAction.Component, GunComponent.Component, PostureAnimation.Component, BaseUnitTarget.Component, BaseUnitStatus.Component, SpatialEntityId> action;
+        private EntityQueryBuilder.F_EDDDDDD<UnitActionData, GunComponent.Component, PostureAnimation.Component, BaseUnitTarget.Component, BaseUnitStatus.Component, SpatialEntityId> action;
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
             group = GetEntityQuery(
-                ComponentType.ReadOnly<BaseUnitAction.Component>(),
+                ComponentType.ReadOnly<UnitActionData>(),
                 ComponentType.ReadWrite<GunComponent.Component>(),
                 ComponentType.ReadOnly<GunComponent.HasAuthority>(),
                 ComponentType.ReadWrite<PostureAnimation.Component>(),
@@ -42,7 +42,7 @@ namespace AdvancedGears
         } 
             
         private void Query (Entity entity,
-                            ref BaseUnitAction.Component action,
+                            ref UnitActionData action,
                             ref GunComponent.Component gun,
                             ref PostureAnimation.Component anim,
                             ref BaseUnitTarget.Component target,
@@ -150,6 +150,23 @@ namespace AdvancedGears
                 return Result.InRange;
 
             return Result.Rotate;
+        }
+    }
+
+    public struct UnitActionData : IComponentData
+    {
+        public float SightRange;
+        public float AttackRange;
+
+        public List<FixedPointVector3> EnemyPositions = null;
+
+        public static UnitActionData CreateData(float sightRange, float attackRange)
+        {
+            var data = new UnitActionData();
+            data.SightRange = sightRange;
+            data.AttackRange = attackRange;
+            data.EnemyPositions = new List<FixedPointVector3>();
+            return data;
         }
     }
 }

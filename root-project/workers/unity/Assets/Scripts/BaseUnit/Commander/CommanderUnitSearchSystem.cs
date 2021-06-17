@@ -16,7 +16,7 @@ namespace AdvancedGears
     public class CommanderUnitSearchSystem : BaseCommanderSearch
     {
         private EntityQuerySet targettingQuerySet;
-        private EntityQueryBuilder.F_EDDDDD<CommanderStatus.Component, CommanderTeam.Component, BaseUnitStatus.Component, BaseUnitAction.Component, SpatialEntityId> targetAction;
+        private EntityQueryBuilder.F_EDDDDD<CommanderStatus.Component, CommanderTeam.Component, BaseUnitStatus.Component, UnitActionData, SpatialEntityId> targetAction;
         private EntityQuerySet teamingQuerySet;
         private EntityQueryBuilder.F_EDDDD<CommanderSight.Component, CommanderTeam.Component, BaseUnitStatus.Component, SpatialEntityId> teamAction;
         const float teaminTime = 1.0f;
@@ -33,7 +33,7 @@ namespace AdvancedGears
                                                     ComponentType.ReadWrite<CommanderTeam.Component>(),
                                                     ComponentType.ReadOnly<CommanderTeam.HasAuthority>(),
                                                     ComponentType.ReadOnly<BaseUnitStatus.Component>(),
-                                                    ComponentType.ReadOnly<BaseUnitAction.Component>(),
+                                                    ComponentType.ReadOnly<UnitActionData>(),
                                                     ComponentType.ReadOnly<Transform>(),
                                                     ComponentType.ReadOnly<SpatialEntityId>()
                                                     ), period);
@@ -67,7 +67,7 @@ namespace AdvancedGears
                               ref CommanderStatus.Component commander,
                               ref CommanderTeam.Component team,
                               ref BaseUnitStatus.Component status,
-                              ref BaseUnitAction.Component action,
+                              ref UnitActionData action,
                               ref SpatialEntityId entityId)
         {
             if (status.State != UnitState.Alive)

@@ -1,15 +1,18 @@
 using System;
-using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
+using Unity.Entities;
+using Improbable.Gdk;
 using Improbable.Gdk.Subscriptions;
+using Improbable.Gdk.Core;
 
 namespace AdvancedGears
 {
-    public class BaseUnitInitializer : MonoBehaviour
+    public class BaseUnitInitializer : SpatialMonoBehaviour
     {
-        [Require] BaseUnitActionWriter action;
         [Require] BaseUnitHealthWriter health;
         [Require] FuelComponentWriter fuel;
 
@@ -26,10 +29,8 @@ namespace AdvancedGears
         {
             Assert.IsNotNull(settings);
 
-            action.SendUpdate(new BaseUnitAction.Update
-            {
-                SightRange = settings.SightRange,
-            });
+            float sightRange = settings.SightRange;
+            float attackRange = 0;
 
             health.SendUpdate(new BaseUnitHealth.Update
             {
@@ -53,6 +54,12 @@ namespace AdvancedGears
                 }
 
                 gunInitializer.SetGunIds(gunIds);
+                attackRange = gunInitializer.AttackRange;
+            }
+
+            if (this.EntityManager != null &&
+                this.Worker != null && this.Worker.TryGetEntity(SpatialComp.EntityId, out Entity entity)) {
+                this.EntityManager.AddComponentData<UnitActionData>(entity, UnitActionData.CreateData(sightRange, attackRange));
             }
         }
     }

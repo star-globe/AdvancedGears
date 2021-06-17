@@ -17,7 +17,7 @@ namespace AdvancedGears
     public class BaseUnitSearchSystem : BaseSearchSystem
     {
         EntityQuery group;
-        EntityQueryBuilder.F_EDDDDDD<BaseUnitSight.Component, BaseUnitAction.Component, BaseUnitStatus.Component, BaseUnitTarget.Component, GunComponent.Component, SpatialEntityId> action;
+        EntityQueryBuilder.F_EDDDDD<BaseUnitSight.Component, UnitActionData, BaseUnitStatus.Component, BaseUnitTarget.Component, SpatialEntityId> action;
         IntervalChecker inter;
         const int frequency = 20; 
 
@@ -28,12 +28,10 @@ namespace AdvancedGears
             group = GetEntityQuery(
                 ComponentType.ReadWrite<BaseUnitSight.Component>(),
                 ComponentType.ReadOnly<BaseUnitSight.HasAuthority>(),
-                ComponentType.ReadWrite<BaseUnitAction.Component>(),
-                ComponentType.ReadOnly<BaseUnitAction.HasAuthority>(),
+                ComponentType.ReadWrite<UnitActionData>(),
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                 ComponentType.ReadWrite<BaseUnitTarget.Component>(),
                 ComponentType.ReadOnly<BaseUnitTarget.HasAuthority>(),
-                ComponentType.ReadOnly<GunComponent.Component>(),
                 ComponentType.ReadOnly<Transform>(),
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
@@ -53,10 +51,9 @@ namespace AdvancedGears
         
         private void Query (Entity entity,
                               ref BaseUnitSight.Component sight,
-                              ref BaseUnitAction.Component action,
+                              ref UnitActionData action,
                               ref BaseUnitStatus.Component status,
                               ref BaseUnitTarget.Component target,
-                              ref GunComponent.Component gun,
                               ref SpatialEntityId entityId)
         {
             if (status.State != UnitState.Alive)
@@ -110,7 +107,7 @@ namespace AdvancedGears
             switch (target.State)
             {
                 case TargetState.ActionTarget:
-                    range = gun.GetAttackRange();
+                    range = action.AttackRange;
                     range = AttackLogicDictionary.GetOrderRange(status.Order, range) * target.PowerRate;
                     break;
 
