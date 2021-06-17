@@ -34,15 +34,14 @@ namespace AdvancedGears
         protected override FieldWorkerType FieldWorkerType => FieldWorkerType.Client;
         IntervalChecker inter;
         private Unity.Entities.EntityQuery group;
-        EntityQueryBuilder.F_EDD<PlayerInfo.Component, Position.Component> action;
+        EntityQueryBuilder.F_EDD<PlayerInfo.Component, Transform> action;
         protected override void OnCreate()
         {
             base.OnCreate();
 
             group = GetEntityQuery(
                 ComponentType.ReadOnly<PlayerInfo.Component>(),
-                ComponentType.ReadOnly<Position.Component>(),
-                ComponentType.ReadOnly<SpatialEntityId>()
+                ComponentType.ReadOnly<Transform>()
             );
 
             inter = IntervalCheckerInitializer.InitializedChecker(this.IntervalTime, setChecked: true);
@@ -62,13 +61,13 @@ namespace AdvancedGears
                 
         private void Query(Unity.Entities.Entity entity,
                             ref PlayerInfo.Component playerInfo,
-                            ref Position.Component position)
+                            Transform transform)
         {
             if (playerInfo.ClientWorkerId.Equals(this.WorkerSystem.WorkerId) == false)
                 return;
 
-            var pos = position.Coords.ToUnityVector();
-            playerPosition = new Vector3(pos.x, 0, pos.z);//position.Coords.ToUnityVector() + this.Origin;
+            var pos = transform.position - this.Origin;
+            playerPosition = new Vector3(pos.x, 0, pos.z);
         }
 
         public void SetXZPosition(float x, float z)
