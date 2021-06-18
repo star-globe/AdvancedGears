@@ -31,6 +31,7 @@ namespace AdvancedGears
 
         const float speed = 10.0f;
         const float minInter = 1/10;
+        const float minLimitLength = 0.1f
 
         protected override void OnCreate()
         {
@@ -121,12 +122,12 @@ namespace AdvancedGears
 
             var t_pos = position.Coords.ToUnityVector() + this.Origin;
             var diff = t_pos - playerPosition.Value;
-            var length = diff.magnitude;
+            var length = Mathf.Max(minLimitLength, diff.magnitude);
 
             if (minLength > length)
                 minLength = length;
 
-            var rate = length / TowerDictionary.DispLength;
+            var rate = Mathf.Max(1.0f, TowerDictionary.DispLength / length);
 
             var scaledPos = rate * diff + playerPosition.Value;
 
