@@ -174,3 +174,23 @@ component RecoveryComponent {
     double checked_time = 4;
     float end_time = 5;
 }
+
+//---------------------------------
+// coal:21150~21159
+component CoalSolids {
+    id = 21150;
+
+    int32 amount = 1;
+}
+
+type CaolStocksModifier {
+    int32 amount = 1;
+}
+
+component CoalStocks {
+    id = 21151;
+
+    int32 stock = 1;
+
+    event CaolStocksModifier modified;
+}
