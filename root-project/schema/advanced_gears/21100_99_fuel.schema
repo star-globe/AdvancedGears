@@ -177,10 +177,17 @@ component RecoveryComponent {
 
 //---------------------------------
 // coal:21150~21159
+type CoalObjectInfo {
+    int32 amount = 1;
+    FixedPointVector3 pos = 2;
+}
+
 component CoalSolids {
     id = 21150;
 
-    int32 amount = 1;
+    list<CoalObjectInfo> coals = 1;
+
+    event CoalObjectInfo added;
 }
 
 type CaolStocksModifier {
