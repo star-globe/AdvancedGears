@@ -178,16 +178,24 @@ component RecoveryComponent {
 //---------------------------------
 // coal:21150~21159
 type CoalObjectInfo {
-    int32 amount = 1;
-    FixedPointVector3 pos = 2;
+    uint64 coal_uid = 1;
+    int32 amount = 2;
+    FixedPointVector3 pos = 3;
+}
+
+type AddCoalInfo {
+    uint32 type = 1;
+    int32 amount = 2;
+    FixedPointVector3 pos = 3;
 }
 
 component CoalSolids {
     id = 21150;
 
-    list<CoalObjectInfo> coals = 1;
+    ulong64 current_id = 1;
+    list<CoalObjectInfo> coals = 2;
 
-    event CoalObjectInfo added;
+    event AddCoalInfo added;
 }
 
 type CaolStocksModifier {

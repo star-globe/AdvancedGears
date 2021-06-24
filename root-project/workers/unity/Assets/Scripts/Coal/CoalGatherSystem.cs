@@ -43,9 +43,6 @@ namespace AdvancedGears
             }
         }
 
-        private readonly HashSet<EntityId> removeCoalIds = new HashSet<EntityId>();
-        private readonly HashSet<EntityId> deletedIds = new HashSet<EntityId>();
-
         protected override void OnCreate()
         {
             base.OnCreate();
@@ -64,8 +61,6 @@ namespace AdvancedGears
         protected override void OnUpdate()
         {
             GatherCoals();
-            RemoveCoals();
-            HandleDeleteResponses();
         }
 
         private void GatherCoals()
@@ -77,38 +72,11 @@ namespace AdvancedGears
             Entities.With(querySet.group).ForEach(action);
         }
 
-        private void RemoveCoals()
-        {
-            foreach (var id in removeCoalIds) {
-                var request = new WorldCommands.DeleteEntity.Request
-                (
-                    id,
-                    context: new DeleteCoalContext() { entityId = id }
-                );
-                this.CommandSystem.SendCommand(request);
-                deletedIds.Add(id);
-            }
-        }
-
-        void HandleDeleteResponses()
-        {
-            var responses = this.CommandSystem.GetResponses<WorldCommands.DeleteEntity.ReceivedResponse>();
-            for (var i = 0; i < responses.Count; i++) {
-                ref readonly var response = ref responses[i];
-                if (!(response.Context is DeleteCoalContext requestContext)) {
-                    // Ignore non-player entity creation requests
-                    continue;
-                }
-
-                deletedIds.Remove(requestContext.entityId);
-            }
-        }
-
         private void Query (Entity entity,
                             Transform transform,
                             ref CoalStocks.Component stocks,
                             ref BaseUnitStatus.Component status,
-                            ref SpatialEntityId entityId) =>
+                            ref SpatialEntityId entityId)
         {
             if (status.State != UnitState.Alive)
                 return;
@@ -120,18 +88,10 @@ namespace AdvancedGears
             var count = Physics.OverlapSphereNonAlloc(pos, gatherRange, colls, this.CoalLayer);
             for (var i = 0; i < count; i++) {
                 var col = colls[i];
-                if (col.TryGetComponent<LinkedEntityComponent>(out var comp) == false)
+                if (col.TryGetComponent<CoalInfoContainer>(out var coal) == false)
                     continue;
 
-                var entityId = comp.EntityId;
-                if (removeCoalIds.Contains(entityId) || deletedIds.Contains(entityId))
-                    continue;
-
-                CoalSolids.Component? coal;
-                if (TryGetComponent(entityId, out coal) == false)
-                    continue;
-
-                addCoal += coal.Value.Amount;
+                addCoal += coal.Gather();
                 removeCoalIds.Add(entityId);
             }
 

@@ -9,13 +9,13 @@ namespace AdvancedGears
 {
     public static class CoalTemplate
     {
-        public static EntityTemplate CreateCoalSolidsEntityTemplate(Coordinates coords, int amount)
+        public static EntityTemplate CreateCoalSolidsEntityTemplate(Coordinates coords)
         {
             var template = new EntityTemplate();
             template.AddComponent(new Position.Snapshot(coords), WorkerUtils.UnityGameLogic);
             template.AddComponent(new Metadata.Snapshot("CoalSolids"), WorkerUtils.UnityGameLogic);
             template.AddComponent(new Persistence.Snapshot(), WorkerUtils.UnityGameLogic);
-            template.AddComponent(new CoalSolids.Snapshot { Amount = amount }, WorkerUtils.UnityGameLogic);
+            template.AddComponent(new CoalSolids.Snapshot { Coals = new List<CoalObjectInfo>() }, WorkerUtils.UnityGameLogic);
 
             template.SetReadAccess(WorkerUtils.AllWorkerAttributes.ToArray());
             template.SetComponentWriteAccess(EntityAcl.ComponentId, WorkerUtils.UnityGameLogic);

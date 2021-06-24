@@ -157,8 +157,11 @@ namespace AdvancedGears
 
         private void Update()
         {
-            if (Time.time - checkTime < interval)
+            var current = Time.time;
+            if (current - checkTime < interval)
                 return;
+
+            checkTime = current + interval;
 
             foreach (var kvp in containerDic)
                 kvp.Value.Update();
@@ -198,9 +201,6 @@ namespace AdvancedGears
 
         public void OnFire(BulletFireInfo info)
         {
-            if (entityManager == null)
-                return;
-
             BulletsContainer container;
             var type = info.Type;
             if (containerDic.TryGetValue(type, out container) == false) {
