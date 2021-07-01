@@ -35,15 +35,15 @@ namespace AdvancedGears
                     if (coalObject == null) {
                         var settings = CoalDictionary.Get(this.typeId);
                         if (settings != null)
-                            coalObject = settings.BulletModel;
+                            coalObject = settings.CoalModel;
                     }
 
                     return coalObject;
                 }
             }
 
-            readonly Queue<CoalObject> deactiveQueue = new Queue<CoalObject>();
-            readonly Dictionary<long, Dictionary<ulong, CoalObject>> coalsDic = new Dictionary<long, Dictionary<ulong, CoalObject>>();
+            readonly Queue<CoalInfoObject> deactiveQueue = new Queue<CoalInfoObject>();
+            readonly Dictionary<long, Dictionary<ulong, CoalInfoObject>> coalsDic = new Dictionary<long, Dictionary<ulong, CoalInfoObject>>();
             readonly List<ulong> removeKeyList = new List<ulong>();
 
             public void Update()
@@ -65,19 +65,19 @@ namespace AdvancedGears
             public void OnCreate(AddCoalInfo add, long entityId, ulong coalId)
             {
                 // check
-                CoalObject coal;
+                CoalInfoObject coal;
                 if (deactiveQueue.Count > 1) {
                     coal = deactiveQueue.Dequeue();
                 }
                 else {
                     var go = Instantiate(this.CoalObject, this.coalParent);
-                    coal = go.GetComponent<CoalObject>();
-                    coal.SetCallback();
+                    coal = go.GetComponent<CoalInfoObject>();
+                    coal.SetCallback(OnVanish);
                 }
 
                 coal.IsActive = true;
                 coal.SetCoal(add.Amount, entityId, coalId);
-                coal.transform.position = add.pos.ToUnityVector() + this.Origin;
+                coal.transform.position = add.Pos.ToUnityVector() + this.Origin;
 
                 // add
                 var key = entityId;
@@ -90,7 +90,7 @@ namespace AdvancedGears
                         dic.Add(id, coal);
                 }
                 else {
-                    var dic = new Dictionary<ulong, CoalObject>();
+                    var dic = new Dictionary<ulong, CoalInfoObject>();
                     dic.Add(id, coal);
                     coalsDic.Add(key, dic);
                 }
@@ -101,7 +101,7 @@ namespace AdvancedGears
                 if (coalsDic.TryGetValue(entityId, out var dic) == false)
                     return;
 
-                if (dic.TryGetValue(info.BulletId, out var coal) == false)
+                if (dic.TryGetValue(coalId, out var coal) == false)
                     return;
 
                 coal.IsActive = false;

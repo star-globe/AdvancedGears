@@ -31,7 +31,7 @@ namespace AdvancedGears
 
         const float speed = 10.0f;
         const float minInter = 1/10;
-        const float minLimitLength = 0.1f
+        const float minLimitLength = 0.1f;
 
         protected override void OnCreate()
         {

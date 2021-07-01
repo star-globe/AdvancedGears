@@ -6,9 +6,9 @@ using Improbable.Gdk.Subscriptions;
 
 namespace AdvancedGears
 {
-    public class CoalSolidsRealizer : MonoBehaviour
+    public class CoalSolidsInfoWriter : MonoBehaviour
     {
-        [Require] CoalSoldisReader reader;
+        [Require] CoalSolidsWriter writer;
 
         private void OnEnable()
         {

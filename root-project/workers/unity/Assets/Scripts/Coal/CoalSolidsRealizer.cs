@@ -8,7 +8,7 @@ namespace AdvancedGears
 {
     public class CoalSolidsRealizer : MonoBehaviour
     {
-        [Require] CoalSoldisReader reader;
+        [Require] CoalSolidsReader reader;
 
         private void OnEnable()
         {

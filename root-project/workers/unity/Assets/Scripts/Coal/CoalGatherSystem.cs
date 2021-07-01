@@ -53,7 +53,7 @@ namespace AdvancedGears
                                             ComponentType.ReadOnly<Transform>(),
                                             ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                                             ComponentType.ReadOnly<SpatialEntityId>()
-                                        ), frequency;
+                                        ), frequency);
 
             action = Query;
         }
@@ -68,11 +68,10 @@ namespace AdvancedGears
             if (CheckTime(ref querySet.inter) == false)
                 return;
 
-            removeCoalIds.Clear();
             Entities.With(querySet.group).ForEach(action);
         }
 
-        private void Query (Entity entity,
+        private void Query (Unity.Entities.Entity entity,
                             Transform transform,
                             ref CoalStocks.Component stocks,
                             ref BaseUnitStatus.Component status,
@@ -88,11 +87,10 @@ namespace AdvancedGears
             var count = Physics.OverlapSphereNonAlloc(pos, gatherRange, colls, this.CoalLayer);
             for (var i = 0; i < count; i++) {
                 var col = colls[i];
-                if (col.TryGetComponent<CoalInfoContainer>(out var coal) == false)
+                if (col.TryGetComponent<CoalInfoObject>(out var coal) == false)
                     continue;
 
                 addCoal += coal.Gather();
-                removeCoalIds.Add(entityId);
             }
 
             if (addCoal > 0)

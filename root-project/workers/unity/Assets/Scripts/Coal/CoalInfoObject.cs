@@ -6,7 +6,7 @@ using Improbable.Gdk.Subscriptions;
 
 namespace AdvancedGears
 {
-    public class CoalObject : MonoBehaviour
+    public class CoalInfoObject : MonoBehaviour
     {
         int amount;
         long entityId = 0;
@@ -19,7 +19,7 @@ namespace AdvancedGears
             set
             {
                 if (value != this.gameObject.activeSelf)
-                    this.gameObjec.SetActive(value);
+                    this.gameObject.SetActive(value);
             }
         }
 
