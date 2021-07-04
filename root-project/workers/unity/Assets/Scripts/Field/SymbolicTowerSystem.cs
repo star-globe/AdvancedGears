@@ -127,7 +127,7 @@ namespace AdvancedGears
             if (minLength > length)
                 minLength = length;
 
-            var rate = Mathf.Max(1.0f, TowerDictionary.DispLength / length);
+            var rate = Mathf.Min(1.0f, TowerDictionary.DispLength / length);
 
             var scaledPos = rate * diff + playerPosition.Value;
 

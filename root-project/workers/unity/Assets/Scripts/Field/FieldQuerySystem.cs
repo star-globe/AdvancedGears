@@ -32,7 +32,7 @@ namespace AdvancedGears
         protected override Vector3? BasePosition => playerPosition;
         protected override bool CheckRegularly => true;
         protected override FieldWorkerType FieldWorkerType => FieldWorkerType.Client;
-        IntervalChecker inter;
+        IntervalChecker interClient;
         private Unity.Entities.EntityQuery group;
         EntityQueryBuilder.F_EDC<PlayerInfo.Component, Transform> action;
         protected override void OnCreate()
@@ -44,7 +44,7 @@ namespace AdvancedGears
                 ComponentType.ReadOnly<Transform>()
             );
 
-            inter = IntervalCheckerInitializer.InitializedChecker(this.IntervalTime, setChecked: true);
+            interClient = IntervalCheckerInitializer.InitializedChecker(this.IntervalTime, setChecked: true);
 
             action = Query;
         }
@@ -53,7 +53,7 @@ namespace AdvancedGears
         {
             base.OnUpdate();
 
-            if (CheckTime(ref inter) == false)
+            if (CheckTime(ref interClient) == false)
                 return;
 
             Entities.With(group).ForEach(action);

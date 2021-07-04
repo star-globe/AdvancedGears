@@ -25,7 +25,7 @@ namespace AdvancedGears
         private async void Start()
         {
             var connParams = CreateConnectionParameters(WorkerType);
-            connParams.Network.ConnectionType = NetworkConnectionType.Kcp;
+            connParams.Network.ConnectionType = NetworkConnectionType.ModularKcp;
 
             var builder = new SpatialOSConnectionHandlerBuilder()
                 .SetConnectionParameters(connParams);
@@ -96,6 +96,8 @@ namespace AdvancedGears
 
             var pos = startPoint.ToUnityVector();
             var point = pos + Vector3.up * height;
+
+            Debug.Log("Send Player Create");
 
             system.RequestPlayerCreation(SerializeUtils.SerializeArguments(new PlayerInitInfo(side, point - this.Worker.Origin)));
         }
