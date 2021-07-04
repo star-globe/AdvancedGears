@@ -17,4 +17,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 6834258f62832384d9f1a457adff37db, type: 2}
   - {fileID: 11400000, guid: 6dca9c2b01612b6488e2139e5a38445d, type: 2}
   intervalRate: 0.01
-  dispLength: 700
+  dispLength: 200
