@@ -104,7 +104,6 @@ type LaserFireInfo {
     improbable.gdk.transform_synchronization.FixedPointVector3 start_position = 5;
     improbable.gdk.transform_synchronization.FixedPointVector3 forward = 6;
     float fire_time = 7;
-    int64 shooter_entity_id = 9;
     uint64 laser_id = 10;
 }
 

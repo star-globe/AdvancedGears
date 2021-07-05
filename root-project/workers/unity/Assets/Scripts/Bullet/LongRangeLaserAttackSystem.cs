@@ -49,12 +49,12 @@ namespace AdvancedGears
             for (var i = 0; i < laserFireEvents.Count; i++)
             {
                 var laser = laserFireEvents[i];
-                var id = laser.ShooterEntityId;
+                var id = laser.EntityId.Id;
                 if (laserContainer.ContainsKey(id) == false)
                     laserContainer.Add(id, new LaserContainer(id));
 
                 var container = laserContainer[id];
-                container.AddLaser(laser);
+                container.AddLaser(laser.Event.Payload);
             }
         }
 
