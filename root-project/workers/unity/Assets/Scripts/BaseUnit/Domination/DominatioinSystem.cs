@@ -24,6 +24,8 @@ namespace AdvancedGears
         private Dictionary<uint, HexIndex> HexIndexes => portalUpdateSytem?.HexIndexes;
         private readonly Dictionary<UnitSide,float> sumsDic = new Dictionary<UnitSide,float>();
 
+        private readonly List<UnitSide> keys = new List<UnitSide>();
+
         protected override void OnCreate()
         {
             base.OnCreate();
@@ -138,9 +140,11 @@ namespace AdvancedGears
             else
                 staminas[firstSide] += over;
 
-            var keys = staminas.Keys;
-            foreach (var k in keys) {
-                if (k != firstSide) {
+            this.keys.Clear();
+            this.keys.AddRange(staminas.Keys);
+
+            foreach (var k in this.keys) {
+                if (k != firstSide && staminas.ContainsKey(k)) {
                     var val = staminas[k];
                     staminas[k] = Mathf.Max(0.0f, val - over);
                 }

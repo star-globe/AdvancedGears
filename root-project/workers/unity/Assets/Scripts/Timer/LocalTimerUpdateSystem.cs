@@ -34,6 +34,7 @@ namespace AdvancedGears
         protected override void OnUpdate()
         {
             HandleEvents();
+            UpdateBuffer();
         }
 
         private void UpdateBuffer()

@@ -13,6 +13,10 @@ namespace AdvancedGears
 {
     public class UnityClientConnector : WorkerConnector
     {
+        public static UnityClientConnector Instance { get; private set; } = null;
+
+        public bool IsConnectionEstablished { get; private set; } = false;
+
         [SerializeField] private EntityRepresentationMapping entityRepresentationMapping = default;
 
         [SerializeField]
@@ -22,7 +26,15 @@ namespace AdvancedGears
 
         Coordinates startPoint;
 
-        private async void Start()
+        private void Awake()
+        {
+            if (Instance == null)
+                Instance = this;
+            else
+                Debug.LogError("Another UnityClientConnector exists.");
+        }
+
+        public async void StartConnect()
         {
             var connParams = CreateConnectionParameters(WorkerType);
             connParams.Network.ConnectionType = NetworkConnectionType.ModularKcp;
@@ -67,6 +79,8 @@ namespace AdvancedGears
 
             var current = this.transform.position - this.Worker.Origin;
             spawnPointSystem.RequestGetNearestSpawn(side, SpawnType.Start, current.ToCoordinates(), SetFieldQueryClientSystem);
+
+            IsConnectionEstablished = true;
         }
 
         void SetFieldQueryClientSystem(Coordinates? point)
@@ -82,13 +96,13 @@ namespace AdvancedGears
             var fieldSystem = Worker.World.GetExistingSystem<FieldQueryClientSystem>();
             if (fieldSystem != null)
             {
-                fieldSystem.OnQueriedEvent += CreatePlayerRequest;
+                //fieldSystem.OnQueriedEvent += CreatePlayerRequest;
                 fieldSystem.SetXZPosition(pos.x, pos.z);
             }
         }
 
         float height = 1.0f;
-        void CreatePlayerRequest()
+        public void CreatePlayerRequest()
         {
             var system = Worker.World.GetExistingSystem<SendCreatePlayerRequestSystem>();
             if (system == null)

@@ -105,7 +105,7 @@ namespace AdvancedGears
                 this.ConstrainedTransform != null)
                 defaultPosition = this.ConstrainedTransform.InverseTransformPoint(this.SourceTransform.position);
 
-            Debug.Log($"DefaultPosition:{defaultPosition}");
+            //Debug.Log($"DefaultPosition:{defaultPosition}");
         }
 
         public void SetRotSpeed(float speed)
