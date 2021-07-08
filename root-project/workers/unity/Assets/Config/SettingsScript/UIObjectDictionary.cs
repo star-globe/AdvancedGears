@@ -66,30 +66,6 @@ namespace AdvancedGears.UI
             return sprite;
         }
 
-
-        [Serializable]
-        public abstract class UISettings<Key,Value>
-        {
-            public abstract Key key { get; }
-            public abstract Value value { get; }
-
-            public static Dictionary<Key,Value> GetDictionary(UISettings<Key, Value>[] settings)
-            {
-                var dic = new Dictionary<Key, Value>();
-
-                foreach (var set in settings)
-                {
-                    if (dic.ContainsKey(set.key))
-                        continue;
-
-                    dic.Add(set.key, set.value);
-                }
-
-                return dic;
-            }
-        }
-
-
         [Serializable]
         public class UIObjectSettings : UISettings<UIType, GameObject>
         {
@@ -112,6 +88,28 @@ namespace AdvancedGears.UI
             [SerializeField]
             Sprite sprite;
             public override Sprite value => sprite;
+        }
+    }
+
+    [Serializable]
+    public abstract class UISettings<Key, Value>
+    {
+        public abstract Key key { get; }
+        public abstract Value value { get; }
+
+        public static Dictionary<Key, Value> GetDictionary(UISettings<Key, Value>[] settings)
+        {
+            var dic = new Dictionary<Key, Value>();
+
+            foreach (var set in settings)
+            {
+                if (dic.ContainsKey(set.key))
+                    continue;
+
+                dic.Add(set.key, set.value);
+            }
+
+            return dic;
         }
     }
 }

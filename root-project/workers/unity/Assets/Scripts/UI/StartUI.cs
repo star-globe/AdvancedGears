@@ -1,80 +1,38 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using AdvancedGears;
 
-namespace AdvancedGears.Scripts.UI
+namespace AdvancedGears.UI
 {
-    public class StartUI : MonoBehaviour
+    public class StartUI : UIGameStateObject
     {
-        enum GameState
-        {
-            Init = 0,
-            StartConnect,
-            Connected,
-            CreatePlayer,
-        }
-
-        [SerializeField]
-        GameObject uiObject = null;
-
         [SerializeField]
         Button startButton;
 
         [SerializeField]
-        TextMeshProUGUI stateText;
-
-        GameState state = GameState.Init;
-        GameState State
-        {
-            get { return state; }
-            set
-            {
-                state = value;
-
-                if (stateText != null)
-                    stateText.SetText(value.ToString());
-            }
-        }
+        TextMeshProUGUI buttonText;
 
         private void Start()
         {
-            this.State = GameState.Init;
-
             if (startButton != null)
                 startButton.onClick.AddListener(StartConnect);
         }
 
-        private void Update()
-        {
-            switch (state)
-            {
-                case GameState.StartConnect:
-                    CheckConnection();
-                    break;
-            }
-        }
-
-
         private void StartConnect()
         {
-            if (this.State == GameState.Init) {
-                this.State = GameState.StartConnect;
-                UnityClientConnector.Instance?.StartConnect();
-                return;
-            }
+            var state = MainUI.Instance.State;
 
-            if (this.State == GameState.Connected) {
-                this.State = GameState.CreatePlayer;
-                UnityClientConnector.Instance?.CreatePlayerRequest();
-                return;
-            }
-        }
+            switch (state)
+            {
+                case GameState.Init:
+                    UnityClientConnector.Instance?.StartConnect();
+                    return;
 
-        private void CheckConnection()
-        {
-            if (UnityClientConnector.Instance != null &&
-                UnityClientConnector.Instance.IsConnectionEstablished)
-                this.State = GameState.Connected;
+                case GameState.CreatePlayer:
+                    UnityClientConnector.Instance?.CreatePlayerRequest();
+                    return;
+            }
         }
     }
 }
