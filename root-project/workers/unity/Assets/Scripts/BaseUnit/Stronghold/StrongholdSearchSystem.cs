@@ -23,7 +23,7 @@ namespace AdvancedGears
 
         StrategyHexAccessPortalUpdateSystem portalUpdateSytem = null;
         private Dictionary<UnitSide, FrontHexInfo> FrontHexes => portalUpdateSytem?.FrontHexes;
-        private Dictionary<uint, HexIndex> HexIndexes => portalUpdateSytem?.HexIndexes;
+        private Dictionary<uint, HexIndexPower> HexIndexes => portalUpdateSytem?.HexIndexes;
         protected override void OnCreate()
         {
             base.OnCreate();
@@ -90,7 +90,7 @@ namespace AdvancedGears
 
         readonly List<HexIndex> hexList = new List<HexIndex>();
 
-        private OrderType GetTarget(Vector3 pos, uint index, Dictionary<UnitSide,FrontHexInfo> frontHexes, Dictionary<uint,HexIndex> hexIndexes, UnitSide selfSide, UnitSide enemySide, Dictionary<uint,TargetHexInfo> hexes, List<FrontLineInfo> corners)
+        private OrderType GetTarget(Vector3 pos, uint index, Dictionary<UnitSide,FrontHexInfo> frontHexes, Dictionary<uint,HexIndexPower> hexIndexes, UnitSide selfSide, UnitSide enemySide, Dictionary<uint,TargetHexInfo> hexes, List<FrontLineInfo> corners)
         {
             var order = OrderType.Idle;
             if (frontHexes.TryGetValue(selfSide, out var frontHexInfo) == false)
@@ -99,7 +99,7 @@ namespace AdvancedGears
             hexList.Clear();
             foreach (var i in frontHexInfo.Indexes) {
                 if (hexIndexes.ContainsKey(i))
-                    hexList.Add(hexIndexes[i]);
+                    hexList.Add(hexIndexes[i].hexIndex);
             }
 
             FrontHexInfo targetHexInfo;
@@ -116,7 +116,7 @@ namespace AdvancedGears
             return order;
         }
 
-        private OrderType GetTargetFrontLine(in Vector3 pos, uint index, UnitSide selfSide, Dictionary<uint, HexIndex> hexIndexes, List<FrontLineInfo> corners)
+        private OrderType GetTargetFrontLine(in Vector3 pos, uint index, UnitSide selfSide, Dictionary<uint, HexIndexPower> hexIndexes, List<FrontLineInfo> corners)
         {
             corners.Clear();
 
@@ -144,7 +144,7 @@ namespace AdvancedGears
             return OrderType.Idle;
         }
 
-        private OrderType GetTargetHex(in Vector3 pos, uint index, UnitSide selfSide, Dictionary<uint, HexIndex> hexIndexes, FrontHexInfo targetFront, Dictionary<uint,TargetHexInfo> hexes)
+        private OrderType GetTargetHex(in Vector3 pos, uint index, UnitSide selfSide, Dictionary<uint, HexIndexPower> hexIndexes, FrontHexInfo targetFront, Dictionary<uint,TargetHexInfo> hexes)
         {
             hexes.Clear();
 
@@ -161,7 +161,7 @@ namespace AdvancedGears
                     continue;
 
                 var hex = hexIndexes[indexes[idx]];
-                if (HexUtils.ExistOtherSidePowers(hex, selfSide) == false)
+                if (HexUtils.ExistOtherSidePowers(hex.SidePowers, selfSide) == false)
                     continue;
 
                 hexes[hex.Index] = new TargetHexInfo(new HexBaseInfo(hex.Index, UnitSide.None) , 1.0f);

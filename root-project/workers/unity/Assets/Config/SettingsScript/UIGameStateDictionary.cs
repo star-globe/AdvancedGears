@@ -11,14 +11,14 @@ namespace AdvancedGears.UI
     {
         public static UIGameStateDictionary Instance { private get; set; }
 
-        [SerializeField] private UIGameStateSettings[] uiGameStateSettings;
+        [SerializeField] private UIGameStateObject[] uiGameStateObjects;
 
         Dictionary<GameState, UIGameStateObject> uiDic = null;
         Dictionary<GameState, UIGameStateObject> UIDic
         {
             get
             {
-                uiDic = uiDic ?? UIGameStateSettings.GetDictionary(uiGameStateSettings);
+                uiDic = uiDic ?? CreateDictionary(uiGameStateObjects);
                 return uiDic;
             }
         }
@@ -37,16 +37,16 @@ namespace AdvancedGears.UI
             return null;
         }
 
-        [Serializable]
-        public class UIGameStateSettings : UISettings<GameState, UIGameStateObject>
+        private Dictionary<GameState, UIGameStateObject> CreateDictionary(UIGameStateObject[] stateObjects)
         {
-            [SerializeField]
-            GameState state;
-            public override GameState key => state;
+            var dic = new Dictionary<GameState, UIGameStateObject>();
 
-            [SerializeField]
-            UIGameStateObject uiObject;
-            public override UIGameStateObject value => uiObject;
+            foreach (var ui in stateObjects)
+                foreach (var s in ui.States)
+                    dic[s] = ui;
+
+            return dic;
         }
+
     }
 }

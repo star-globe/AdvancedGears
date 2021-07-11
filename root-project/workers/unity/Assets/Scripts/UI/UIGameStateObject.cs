@@ -9,6 +9,7 @@ namespace AdvancedGears.UI
     {
         [SerializeField]
         GameState[] states;
+        public GameState[] States => states;
 
         public bool ContainsState(GameState state)
         {

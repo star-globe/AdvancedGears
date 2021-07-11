@@ -216,6 +216,12 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!224 &489502888 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 5318558072228198888, guid: a5b98d975c497064f82f3f344b194c51,
+    type: 3}
+  m_PrefabInstance: {fileID: 1631369166}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &534669902
 GameObject:
   m_ObjectHideFlags: 0
@@ -364,6 +370,82 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 43c846c58bf01564d8a10b8fa8dd9146, type: 3}
+--- !u!1 &989479558
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 989479562}
+  - component: {fileID: 989479561}
+  - component: {fileID: 989479559}
+  m_Layer: 5
+  m_Name: Canvas
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &989479559
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 989479558}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreReversedGraphics: 1
+  m_BlockingObjects: 0
+  m_BlockingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+--- !u!223 &989479561
+Canvas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 989479558}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_RenderMode: 0
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 0
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 0
+  m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
+  m_AdditionalShaderChannelsFlag: 0
+  m_SortingLayerID: 0
+  m_SortingOrder: 0
+  m_TargetDisplay: 0
+--- !u!224 &989479562
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 989479558}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_Children:
+  - {fileID: 489502888}
+  m_Father: {fileID: 0}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0, y: 0}
 --- !u!1001 &1186097860
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -561,7 +643,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 989479562}
     m_Modifications:
     - target: {fileID: 5318558072228198888, guid: a5b98d975c497064f82f3f344b194c51,
         type: 3}
@@ -581,17 +663,17 @@ PrefabInstance:
     - target: {fileID: 5318558072228198888, guid: a5b98d975c497064f82f3f344b194c51,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 5318558072228198888, guid: a5b98d975c497064f82f3f344b194c51,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 5318558072228198888, guid: a5b98d975c497064f82f3f344b194c51,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 5318558072228198888, guid: a5b98d975c497064f82f3f344b194c51,
         type: 3}
@@ -601,7 +683,7 @@ PrefabInstance:
     - target: {fileID: 5318558072228198888, guid: a5b98d975c497064f82f3f344b194c51,
         type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5318558072228198888, guid: a5b98d975c497064f82f3f344b194c51,
         type: 3}
@@ -621,22 +703,22 @@ PrefabInstance:
     - target: {fileID: 5318558072228198888, guid: a5b98d975c497064f82f3f344b194c51,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 704
       objectReference: {fileID: 0}
     - target: {fileID: 5318558072228198888, guid: a5b98d975c497064f82f3f344b194c51,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: 382.5
       objectReference: {fileID: 0}
     - target: {fileID: 5318558072228198888, guid: a5b98d975c497064f82f3f344b194c51,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 1408
       objectReference: {fileID: 0}
     - target: {fileID: 5318558072228198888, guid: a5b98d975c497064f82f3f344b194c51,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 765
       objectReference: {fileID: 0}
     - target: {fileID: 5318558072228198888, guid: a5b98d975c497064f82f3f344b194c51,
         type: 3}
@@ -661,22 +743,17 @@ PrefabInstance:
     - target: {fileID: 5318558072228198888, guid: a5b98d975c497064f82f3f344b194c51,
         type: 3}
       propertyPath: m_Pivot.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 5318558072228198888, guid: a5b98d975c497064f82f3f344b194c51,
         type: 3}
       propertyPath: m_Pivot.y
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 5366581700065550702, guid: a5b98d975c497064f82f3f344b194c51,
         type: 3}
       propertyPath: m_AdditionalShaderChannelsFlag
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5366581700065550702, guid: a5b98d975c497064f82f3f344b194c51,
-        type: 3}
-      propertyPath: m_RenderMode
-      value: 0
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 5532770686109888638, guid: a5b98d975c497064f82f3f344b194c51,
         type: 3}

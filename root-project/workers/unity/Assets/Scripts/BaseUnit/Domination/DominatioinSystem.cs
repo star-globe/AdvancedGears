@@ -21,7 +21,7 @@ namespace AdvancedGears
         EntityQueryBuilder.F_EDDD<DominationStamina.Component, BaseUnitStatus.Component, SpatialEntityId> deviceAction;
 
         StrategyHexAccessPortalUpdateSystem portalUpdateSytem = null;
-        private Dictionary<uint, HexIndex> HexIndexes => portalUpdateSytem?.HexIndexes;
+        private Dictionary<uint, HexIndexPower> HexIndexes => portalUpdateSytem?.HexIndexes;
         private readonly Dictionary<UnitSide,float> sumsDic = new Dictionary<UnitSide,float>();
 
         private readonly List<UnitSide> keys = new List<UnitSide>();
@@ -101,7 +101,7 @@ namespace AdvancedGears
                         continue;
 
                     var hex = kvp.Value;
-                    if (HexUtils.TryGetOneSidePower(hex, out var side, out var val))
+                    if (HexUtils.TryGetOneSidePower(hex.SidePowers, out var side, out var val))
                     {
                         if (sumsDic.ContainsKey(side))
                             sumsDic[side] += val;

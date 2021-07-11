@@ -11,11 +11,19 @@ using UnityEngine;
 
 namespace AdvancedGears
 {
+    public enum ConnectionState
+    {
+        NotConnected,
+        Connecting,
+        ConnectionEstablished,
+        PlayerCreated,
+    }
+
     public class UnityClientConnector : WorkerConnector
     {
         public static UnityClientConnector Instance { get; private set; } = null;
 
-        public bool IsConnectionEstablished { get; private set; } = false;
+        public ConnectionState ConnectionState { get; private set; } = ConnectionState.NotConnected;
 
         [SerializeField] private EntityRepresentationMapping entityRepresentationMapping = default;
 
@@ -62,6 +70,8 @@ namespace AdvancedGears
                 builder.SetConnectionFlow(new ReceptionistFlow(CreateNewWorkerId(WorkerType)));
             }
 
+            this.ConnectionState = ConnectionState.Connecting;
+
             await Connect(builder, new ForwardingDispatcher()).ConfigureAwait(false);
         }
 
@@ -70,17 +80,7 @@ namespace AdvancedGears
             GameObjectCreationHelper.EnableStandardGameObjectCreation(Worker.World, new SyncTransObjectCreation(Worker), entityRepresentationMapping);
             WorkerUtils.AddClientSystems(Worker.World, false);
 
-            var spawnPointSystem = Worker.World.GetExistingSystem<SpawnPointQuerySystem>();
-            if (spawnPointSystem == null)
-            {
-                Debug.LogErrorFormat("There is no SpawnPointQuerySystem. {0}", this.Worker.World);
-                return;
-            }
-
-            var current = this.transform.position - this.Worker.Origin;
-            spawnPointSystem.RequestGetNearestSpawn(side, SpawnType.Start, current.ToCoordinates(), SetFieldQueryClientSystem);
-
-            IsConnectionEstablished = true;
+            this.ConnectionState = ConnectionState.ConnectionEstablished;
         }
 
         void SetFieldQueryClientSystem(Coordinates? point)
@@ -96,13 +96,26 @@ namespace AdvancedGears
             var fieldSystem = Worker.World.GetExistingSystem<FieldQueryClientSystem>();
             if (fieldSystem != null)
             {
-                //fieldSystem.OnQueriedEvent += CreatePlayerRequest;
+                fieldSystem.OnQueriedEvent += CreatePlayerRequest;
                 fieldSystem.SetXZPosition(pos.x, pos.z);
             }
         }
 
+        public void JoinFieldRequest()
+        {
+            var spawnPointSystem = Worker.World.GetExistingSystem<SpawnPointQuerySystem>();
+            if (spawnPointSystem == null)
+            {
+                Debug.LogErrorFormat("There is no SpawnPointQuerySystem. {0}", this.Worker.World);
+                return;
+            }
+
+            var current = this.transform.position - this.Worker.Origin;
+            spawnPointSystem.RequestGetNearestSpawn(side, SpawnType.Start, current.ToCoordinates(), SetFieldQueryClientSystem);
+        }
+
         float height = 1.0f;
-        public void CreatePlayerRequest()
+        private void CreatePlayerRequest()
         {
             var system = Worker.World.GetExistingSystem<SendCreatePlayerRequestSystem>();
             if (system == null)
@@ -113,7 +126,15 @@ namespace AdvancedGears
 
             Debug.Log("Send Player Create");
 
-            system.RequestPlayerCreation(SerializeUtils.SerializeArguments(new PlayerInitInfo(side, point - this.Worker.Origin)));
+            system.RequestPlayerCreation(SerializeUtils.SerializeArguments(new PlayerInitInfo(side, point - this.Worker.Origin)), PlayerCreated);
+        }
+
+        private void PlayerCreated(PlayerCreator.CreatePlayer.ReceivedResponse response)
+        {
+            if (response.StatusCode == StatusCode.Success)
+            {
+                this.ConnectionState = ConnectionState.PlayerCreated;
+            }
         }
     }
 

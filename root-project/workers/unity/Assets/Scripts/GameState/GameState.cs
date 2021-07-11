@@ -6,7 +6,8 @@ namespace AdvancedGears
 {
     public enum GameState
     {
-        Init = 0,
+        None = 0,
+        Init,
         StartConnecting,
         CreatePlayer,
         FieldJoined,

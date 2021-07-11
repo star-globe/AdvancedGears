@@ -4,7 +4,7 @@ using Improbable.Gdk.Core;
 using Improbable.Gdk.Subscriptions;
 using Unity.Entities;
 using UnityEngine;
-using TMPro;
+using AdvancedGears.UI;
 using UnityEngine.Assertions;
 
 namespace AdvancedGears
@@ -73,26 +73,27 @@ namespace AdvancedGears
 
         void UpdatePower(Dictionary<UnitSide,float> powers)
         {
-            bool changed = true;
-            if (currentPowers != null) {
-                if (currentPowers.Count == powers.Count) {
-                    var keys = powers.Keys;
-                    foreach (var k in keys) {
-                        if (currentPowers.TryGetValue(k, out var p) == false)
-                            continue;
-
-                        var diff = p - powers[k];
-                        changed &= diff * diff > diffMin * diffMin;
-                    }
-
-                    changed = !changed;
-                }
-            }
-
-            if (changed) {
+            if (PowerChanged(powers)) {
                 SetPowers(powers);
                 SetLandLine(this.Origin, currentSide, powers);
             }
+        }
+
+        private bool PowerChanged(Dictionary<UnitSide, float> powers)
+        {
+            if (currentPowers.Count != powers.Count)
+                return true;
+
+            foreach (var k in powers.Keys) {
+                if (currentPowers.TryGetValue(k, out var p) == false)
+                    return true;
+
+                var diff = p - powers[k];
+                if (diff * diff > diffMin * diffMin)
+                    return true;
+            }
+
+            return false;
         }
 
         void SetLandLine(Vector3 origin, UnitSide side, Dictionary<UnitSide,float> powers)

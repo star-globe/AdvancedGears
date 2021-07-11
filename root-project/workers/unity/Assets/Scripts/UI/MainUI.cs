@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Assertions;
@@ -13,18 +14,26 @@ namespace AdvancedGears.UI
         [SerializeField]
         TextMeshProUGUI stateText;
 
-        GameState state = GameState.Init;
+        public event Action<GameState> StateChanged;
+
+        GameState state = GameState.None;
         public GameState State
         {
             get { return state; }
             set
             {
+                if (state == value)
+                    return;
+
                 state = value;
 
                 if (stateText != null)
                     stateText.SetText(value.ToString());
 
-                SwitchUI(state);
+                SwitchUI(value);
+
+                if (StateChanged != null)
+                    StateChanged.Invoke(value);
             }
         }
 
@@ -43,7 +52,9 @@ namespace AdvancedGears.UI
         {
             switch (this.State)
             {
+                case GameState.Init:
                 case GameState.StartConnecting:
+                case GameState.CreatePlayer:
                     CheckConnection();
                     return;
             }
@@ -67,9 +78,25 @@ namespace AdvancedGears.UI
 
         private void CheckConnection()
         {
-            if (UnityClientConnector.Instance != null &&
-                UnityClientConnector.Instance.IsConnectionEstablished)
-                this.State = GameState.CreatePlayer;
+            if (UnityClientConnector.Instance == null)
+                return;
+
+            var state = UnityClientConnector.Instance.ConnectionState;
+
+            switch (state)
+            {
+                case ConnectionState.Connecting:
+                    this.State = GameState.StartConnecting;
+                    break;
+
+                case ConnectionState.ConnectionEstablished:
+                    this.State = GameState.CreatePlayer;
+                    break;
+
+                case ConnectionState.PlayerCreated:
+                    this.State = GameState.FieldJoined;
+                    break;
+            }
         }
     }
 }

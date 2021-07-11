@@ -370,7 +370,7 @@ namespace AdvancedGears
                     continue;
 
                 var frontLine = kvp.Value.TargetInfoSet.FrontLine;
-                if (frontLine.IsValid() && lines.Exists(l => l.LeftCorner == frontLine.LeftCorner && l.RightCorner == frontLine.RightCorner))
+                if (frontLine.IsValid() && lines.Exists(l => l.CornerEquals(frontLine)))
                     continue;
 
                 var index = UnityEngine.Random.Range(0, lines.Count);

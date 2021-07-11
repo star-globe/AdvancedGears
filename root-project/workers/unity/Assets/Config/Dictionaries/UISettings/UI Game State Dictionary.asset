@@ -12,13 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fec9b923ee653b4c8c3c77ef1f3a007, type: 3}
   m_Name: UI Game State Dictionary
   m_EditorClassIdentifier: 
-  uiGameStateSettings:
-  - state: 0
-    uiObject: {fileID: 8271671808733885575, guid: 88595d9a987a49249936f6f3765b84a5,
-      type: 3}
-  - state: 1
-    uiObject: {fileID: 8271671808733885575, guid: 88595d9a987a49249936f6f3765b84a5,
-      type: 3}
-  - state: 2
-    uiObject: {fileID: 8271671808733885575, guid: 88595d9a987a49249936f6f3765b84a5,
-      type: 3}
+  uiGameStateObjects:
+  - {fileID: 8271671808733885575, guid: 88595d9a987a49249936f6f3765b84a5, type: 3}
+  - {fileID: 139325326583519249, guid: 0adfaf6f7e2705544a15cf9e489deb92, type: 3}

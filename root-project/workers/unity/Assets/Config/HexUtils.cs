@@ -257,12 +257,12 @@ namespace AdvancedGears
             }
         }
 
-        public static bool ExistOtherSidePowers(HexIndex hex, UnitSide self)
+        public static bool ExistOtherSidePowers(Dictionary<UnitSide, float> sidePowers, UnitSide self)
         {
-            if (hex.SidePowers == null)
+            if (sidePowers == null)
                 return false;
 
-            foreach (var kvp in hex.SidePowers)
+            foreach (var kvp in sidePowers)
             {
                 if (kvp.Key != self && kvp.Value > powerMinLimit)
                     return true;
@@ -271,18 +271,18 @@ namespace AdvancedGears
             return false;
         }
 
-        public static bool TryGetOneSidePower(HexIndex hex, out UnitSide side, out float val)
+        public static bool TryGetOneSidePower(Dictionary<UnitSide, float> sidePowers, out UnitSide side, out float val)
         {
             side = UnitSide.None;
             val = 0;
 
-            if (hex.SidePowers == null)
+            if (sidePowers == null)
                 return false;
 
-            var keys = hex.SidePowers.Where(kvp => kvp.Value > powerMinLimit).Select(kvp => kvp.Key).ToArray();
+            var keys = sidePowers.Where(kvp => kvp.Value > powerMinLimit).Select(kvp => kvp.Key).ToArray();
             if (keys.Length == 1) {
                 side = keys[0];
-                val = hex.SidePowers[side];
+                val = sidePowers[side];
                 return true;
             }
 

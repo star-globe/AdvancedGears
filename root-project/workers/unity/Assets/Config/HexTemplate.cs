@@ -18,6 +18,9 @@ namespace AdvancedGears
             template.AddComponent(new HexBase.Snapshot { Index = index, Attribute = attribute, HexId = hexId, Side = side }, WorkerUtils.UnityGameLogic);
             template.AddComponent(new HexPower.Snapshot() { IsActive = false, SidePowers = new Dictionary<UnitSide, float>() }, WorkerUtils.UnityGameLogic);
 
+            if (hexId % 3 == 0)
+                template.AddComponent(new StrategyHexAccessPortal.Snapshot { FrontHexes = new Dictionary<UnitSide, FrontHexInfo>(), HexIndexes = new Dictionary<uint, HexIndex>() }, WorkerUtils.UnityGameLogic);
+
             template.SetReadAccess(WorkerUtils.AllWorkerAttributes.ToArray());
             template.SetComponentWriteAccess(EntityAcl.ComponentId, WorkerUtils.UnityGameLogic);
 

@@ -125,12 +125,12 @@ namespace AdvancedGears
             public Dictionary<UnitSide, float> staminas;
         }
 
-        protected void CompairList(List<uint> indexes, Dictionary<uint, HexDetails> dic)
+        protected bool CompairList(List<uint> indexes, Dictionary<uint, HexDetails> dic)
         {
             if (dic == null)
             {
                 indexes.Clear();
-                return;
+                return true;
             }
 
             bool isDiff = indexes.Count != dic.Count;
@@ -152,6 +152,8 @@ namespace AdvancedGears
                     indexes.Add(id);
                 }
             }
+
+            return isDiff;
         }
 
         protected void StoreDetailsQueue(Dictionary<uint, HexDetails> indexes)

@@ -401,6 +401,11 @@ namespace AdvancedGears
             return hexInfo.HexIndex < uint.MaxValue;
         }
 
+        public static bool CornerEquals(this FrontLineInfo info, FrontLineInfo other)
+        {
+            return info.LeftCorner == other.LeftCorner && info.RightCorner == other.RightCorner;
+        }
+
         public static bool IsValid(this FrontLineInfo info)
         {
             return info.LeftCorner.Equals(info.RightCorner) == false;
