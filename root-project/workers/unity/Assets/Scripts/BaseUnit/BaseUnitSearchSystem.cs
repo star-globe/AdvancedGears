@@ -19,7 +19,7 @@ namespace AdvancedGears
         EntityQuery group;
         EntityQueryBuilder.F_EDDDDD<BaseUnitSight.Component, UnitActionData, BaseUnitStatus.Component, BaseUnitTarget.Component, SpatialEntityId> action;
         IntervalChecker inter;
-        const int frequency = 20;
+        const int frequency = 10;
 
         Dictionary<long, List<FixedPointVector3>> enemyPositionsContainer = new Dictionary<long, List<FixedPointVector3>>();
         public Dictionary<long, List<FixedPointVector3>> EnemyPositionsContainer => enemyPositionsContainer;
@@ -232,7 +232,55 @@ namespace AdvancedGears
         readonly List<UnitInfo> unitList = new List<UnitInfo>();
         readonly Queue<UnitInfo> unitQueue = new Queue<UnitInfo>();
 
+        readonly List<UnitInfo> playerUnitList = new List<UnitInfo>();
+
         readonly Dictionary<UnitType, UnitType[]> singleTypes = new Dictionary<UnitType, UnitType[]>();
+
+        EntityQuery playerGroup;
+        private EntityQueryBuilder.F_CDDD<Transform, BaseUnitStatus.Component, PlayerInfo.Component, SpatialEntityId> playerAction;
+
+        private void CreatePlayerQuery()
+        {
+            playerGroup = GetEntityQuery(ComponentType.ReadOnly<PlayerInfo.Component>(),
+                                         ComponentType.ReadOnly<BaseUnitStatus.Component>(),
+                                         ComponentType.ReadOnly<SpatialEntityId>(),
+                                         ComponentType.ReadOnly<Transform>());
+
+            playerAction = PlayerQuery;
+        }
+
+        protected void UpdatePlayerPosition()
+        {
+            if (playerAction == null)
+                CreatePlayerQuery();
+
+            for (var i = 0; i < playerUnitList.Count; i++)
+                unitQueue.Enqueue(playerUnitList[i]);
+
+            playerUnitList.Clear();
+            Entities.With(playerGroup).ForEach(playerAction);
+        }
+
+        private void PlayerQuery(Transform transform,
+                                 ref BaseUnitStatus.Component status,
+                                 ref PlayerInfo.Component player,
+                                 ref SpatialEntityId spatialId)
+        {
+            UnitInfo info = null;
+            playerUnitList.Add(unitQueue.Count > 0 ? unitQueue.Dequeue() : new UnitInfo());
+
+            var index = playerUnitList.Count - 1;
+
+            info = playerUnitList[index];
+            info.id = spatialId.EntityId;
+            info.pos = transform.position;
+            info.rot = transform.rotation;
+            info.type = status.Type;
+            info.side = status.Side;
+            info.order = status.Order;
+            info.state = status.State;
+            info.rank = status.Rank;
+        }
 
         protected UnitType[] GetSingleUnitTypes(UnitType unit)
         {
@@ -285,14 +333,51 @@ namespace AdvancedGears
             return getNearestUnit(self_side, pos, length, isEnemy, containsNone:false, selfId, allowDead, isPlayer:false, types);
         }
 
-        protected UnitInfo getNearestPlayer(UnitSide self_side, in Vector3 pos, float length, bool isEnemy, EntityId? selfId = null, bool allowDead = false, UnitType[] types = null)
+        //protected UnitInfo getNearestPlayer(UnitSide self_side, in Vector3 pos, float length, bool isEnemy, EntityId? selfId = null, bool allowDead = false, UnitType[] types = null)
+        //{
+        //    return 
+        //}
+
+        protected UnitInfo getNearestPlayer(UnitSide? self_side, in Vector3 pos, float length, bool isEnemy, EntityId? selfId = null, bool allowDead = false)
         {
-            return getNearestUnit(self_side, pos, length, isEnemy, containsNone:false, selfId, allowDead, isPlayer:true, types);
+            float len = length * length;
+            bool tof = false;
+            foreach (var p in playerUnitList)
+            {
+                if (selfId != null && selfId.Value.Equals(p.id))
+                    continue;
+
+                if (p.state == UnitState.Dead && allowDead == false)
+                    continue;
+
+                if (self_side != null)
+                {
+                    if ((p.side == self_side.Value) == isEnemy)
+                        continue;
+                }
+
+                var l = (p.pos - pos).sqrMagnitude;
+                if (l < len)
+                {
+                    len = l;
+                    baseInfo.id = p.id;
+                    baseInfo.pos = p.pos;
+                    baseInfo.rot = p.rot;
+                    baseInfo.size = p.size;
+                    baseInfo.type = p.type;
+                    baseInfo.side = p.side;
+                    baseInfo.state = p.state;
+
+                    tof = true;
+                }
+            }
+
+            return tof ? baseInfo : null;
         }
 
-        protected UnitInfo getNearestPlayer(in Vector3 pos, float length, EntityId? selfId = null, UnitType[] types = null)
+        protected UnitInfo getNearestPlayer(in Vector3 pos, float length, EntityId? selfId = null)
         {
-            return getNearestUnit(null, pos, length, isEnemy:false, containsNone:true, selfId, allowDead:true, isPlayer:true, types);
+            return getNearestPlayer(null, pos, length, isEnemy:false, selfId, allowDead:true);
         }
 
         protected UnitInfo getNearestUnit(UnitSide? self_side, in Vector3 pos, float length, bool isEnemy, bool containsNone, EntityId? selfId, bool allowDead, bool isPlayer, UnitType[] types = null)
@@ -306,7 +391,7 @@ namespace AdvancedGears
                 // todo check CounterCache
 
                 var col = colls[i];
-                if (col.TryGetComponent<LinkedEntityComponent>(out var comp) == false)
+                if (col.TryGetComponent<BaseUnitStatusInfoComponent>(out var comp) == false)
                     continue;
 
                 if (selfId != null && selfId.Value.Equals(comp.EntityId))
@@ -315,42 +400,39 @@ namespace AdvancedGears
                 if (isPlayer && !TryGetComponent<PlayerInfo.Component>(comp.EntityId, out var player))
                     continue;
 
-                BaseUnitStatus.Component? unit;
-                if (TryGetComponent(comp.EntityId, out unit))
-                {
-                    if (unit.Value.State == UnitState.Dead && allowDead == false)
+                if (comp.State == UnitState.Dead && allowDead == false)
+                    continue;
+
+                if (self_side != null) {
+                    if (!containsNone && (comp.Side == UnitSide.None))
                         continue;
 
-                    if (self_side != null) {
-                        if (!containsNone && (unit.Value.Side == UnitSide.None))
-                            continue;
+                    if ((comp.Side == self_side.Value) == isEnemy)
+                        continue;
+                }
 
-                        if ((unit.Value.Side == self_side.Value) == isEnemy)
-                            continue;
-                    }
+                if (types != null && types.Length != 0) {
+                    bool contains = false;
+                    foreach (var t in types)
+                        contains |= t == comp.Type;
 
-                    if (types != null && types.Length != 0) {
-                        bool contains = false;
-                        foreach (var t in types)
-                            contains |= t == unit.Value.Type;
+                    if (!contains)
+                        continue;
+                }
 
-                        if (!contains)
-                            continue;
-                    }
+                var l = (col.transform.position - pos).sqrMagnitude;
+                if (l < len)
+                {
+                    len = l;
+                    baseInfo.id = comp.EntityId;
+                    baseInfo.pos = col.transform.position;
+                    baseInfo.rot = col.transform.rotation;
+                    baseInfo.type = comp.Type;
+                    baseInfo.side = comp.Side;
+                    baseInfo.state = comp.State;
+                    baseInfo.size = comp.Size;
 
-                    var l = (col.transform.position - pos).sqrMagnitude;
-                    if (l < len)
-                    {
-                        len = l;
-                        baseInfo.id = comp.EntityId;
-                        baseInfo.pos = col.transform.position;
-                        baseInfo.rot = col.transform.rotation;
-                        baseInfo.type = unit.Value.Type;
-                        baseInfo.side = unit.Value.Side;
-                        baseInfo.state = unit.Value.State;
-
-                        tof = true;
-                    }
+                    tof = true;
                 }
             }
 
@@ -419,30 +501,27 @@ namespace AdvancedGears
 
         private List<UnitInfo> getUnitsFromColls(int count, Collider[] colls, UnitSide self_side, bool? isEnemy, bool allowDead, EntityId? selfId, UnitType[] types)
         {
+            UnityEngine.Profiling.Profiler.BeginSample("GetUnitsFromColls");
             int index = 0;
             for (var i = 0; i < count; i++)
             {
                 var col = colls[i];
-                if (col.TryGetComponent<LinkedEntityComponent>(out var comp) == false)
+                if (col.TryGetComponent<BaseUnitStatusInfoComponent>(out var comp) == false)
                     continue;
 
                 if (selfId != null && selfId.Value == comp.EntityId)
                     continue;
 
-                BaseUnitStatus.Component? unit;
-                if (TryGetComponent(comp.EntityId, out unit) == false)
+                if (comp.State == UnitState.Dead && allowDead == false)
                     continue;
 
-                if (unit.Value.State == UnitState.Dead && allowDead == false)
-                    continue;
-
-                if (isEnemy != null && (unit.Value.Side == self_side) == isEnemy.Value)
+                if (isEnemy != null && (comp.Side == self_side) == isEnemy.Value)
                     continue;
 
                 if (types != null && types.Length != 0) {
                     bool contains = false;
                     foreach (var t in types) {
-                        contains |= t == unit.Value.Type;
+                        contains |= t == comp.Type;
                     }
 
                     if (!contains)
@@ -457,11 +536,12 @@ namespace AdvancedGears
                 info.id = comp.EntityId;
                 info.pos = col.transform.position;
                 info.rot = col.transform.rotation;
-                info.type = unit.Value.Type;
-                info.side = unit.Value.Side;
-                info.order = unit.Value.Order;
-                info.state = unit.Value.State;
-                info.rank = unit.Value.Rank;
+                info.type = comp.Type;
+                info.side = comp.Side;
+                info.order = comp.Order;
+                info.state = comp.State;
+                info.rank = comp.Rank;
+                info.size = comp.Size;
 
                 index++;
             }
@@ -471,6 +551,8 @@ namespace AdvancedGears
                     unitQueue.Enqueue(unitList[i]);
                 unitList.RemoveRange(index, unitList.Count - index);
             }
+
+            UnityEngine.Profiling.Profiler.EndSample();
 
             return unitList;
         }

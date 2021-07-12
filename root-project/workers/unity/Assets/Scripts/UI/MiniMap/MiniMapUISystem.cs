@@ -17,7 +17,7 @@ namespace AdvancedGears.UI
     internal class MiniMapUISystem : BaseUISystem<MiniMapUIObject>
     {
         private EntityQuery playerGroup;
-        private EntityQueryBuilder.F_ECDDD<Transform, PlayerInfo.Component, BaseUnitStatus.Component, SpatialEntityId> playerAction;
+        private EntityQueryBuilder.F_ECDD<Transform, PlayerInfo.Component, SpatialEntityId> playerAction;
         private EntityQuery unitGroup;
         private EntityQueryBuilder.F_EDDD<BaseUnitStatus.Component, Position.Component, SpatialEntityId> unitAction;
 
@@ -84,7 +84,6 @@ namespace AdvancedGears.UI
         void PlayerQuery(Entity entity,
                           Transform transform,
                           ref PlayerInfo.Component player,
-                          ref BaseUnitStatus.Component status,
                           ref SpatialEntityId entityId)
         {
             if (player.ClientWorkerId.Equals(this.WorkerSystem.WorkerId))

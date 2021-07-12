@@ -39,7 +39,6 @@ namespace AdvancedGears.UI
             if (text == null)
                 return;
 
-#if true
             builder.Clear();
             builder.Append(GetHeader(index, hexId));
             foreach (var kvp in powers) {
@@ -48,15 +47,6 @@ namespace AdvancedGears.UI
                        .AppendFormat(powerFmt, kvp.Value);
             }
             text.SetText(builder);
-#else
-            string str = string.Format(basicFmt, index, hexId);
-            foreach (var kvp in powers)
-            {
-                str += Environment.NewLine;
-                str += string.Format(powerFmt, kvp.Key.GetName(), kvp.Value);
-            }
-            text.SetText(str);
-#endif
             text.color = ColorDictionary.GetSideColor(side);
         }
     }

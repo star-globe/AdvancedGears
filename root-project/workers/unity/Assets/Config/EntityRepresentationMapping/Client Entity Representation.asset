@@ -20,6 +20,7 @@ MonoBehaviour:
   - id: 4
   - id: 5
   - id: 6
+  - id: 7
   references:
     version: 1
     00000000:
@@ -78,5 +79,13 @@ MonoBehaviour:
       data:
         entityType: TurretUnit
         prefab: {fileID: 2510352248528691622, guid: 5006c97a086f4254eadfbac85e5826c7,
+          type: 3}
+        requiredComponents: 
+    00000007:
+      type: {class: SimpleEntityResolver, ns: Improbable.Gdk.Core.Representation.Types,
+        asm: Improbable.Gdk.Core}
+      data:
+        entityType: Tower
+        prefab: {fileID: 7813373895779452489, guid: a35578bab9a7c4244a4582904c3579ee,
           type: 3}
         requiredComponents: 

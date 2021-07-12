@@ -101,9 +101,16 @@ namespace AdvancedGears
                 container?.SetTrans(boneMap);
             }
 
-            if (this.IsClient == false && TryGetComponent<BaseUnitMovement.Component>(ref entityManager, entityInfo.Entity, out var movement)) {
-                entityManager.AddComponentData<NavPathData>(entityInfo.Entity, NavPathData.CreateData());
-                entityManager.AddComponentData<MovementData>(entityInfo.Entity, MovementData.CreateData(movement.Value.MoveSpeed, movement.Value.RotSpeed));
+            if (this.IsClient == false) {
+                if (TryGetComponent<BaseUnitMovement.Component>(ref entityManager, entityInfo.Entity, out var movement)) {
+                    entityManager.AddComponentData<NavPathData>(entityInfo.Entity, NavPathData.CreateData());
+                    entityManager.AddComponentData<MovementData>(entityInfo.Entity, MovementData.CreateData(movement.Value.MoveSpeed, movement.Value.RotSpeed));
+                }
+
+                if (TryGetComponent<BaseUnitStatus.Component>(ref entityManager, entityInfo.Entity, out var status)) {
+                    if (UnitUtils.IsBuilding(status.Value.Type))
+                        entityManager.AddComponentData<BuildingData>(entityInfo.Entity, BuildingData.CreateData());
+                }
             }
 
             gameObjectsCreated.Add(entityInfo.SpatialOSEntityId, gameObject);

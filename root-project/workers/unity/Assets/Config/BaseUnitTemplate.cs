@@ -278,7 +278,8 @@ namespace AdvancedGears
                    Constraint.Component(SymbolicTower.ComponentId),
                    Constraint.RelativeSphere(FixedParams.WorldInterestLimit)))
                .FilterResults(Position.ComponentId,
-                              SymbolicTower.ComponentId)
+                              SymbolicTower.ComponentId,
+                              Metadata.ComponentId)
                .WithMaxFrequencyHz(FixedParams.WorldInterestFrequency);
 
             interest.AddQueries<T>(towerQuery);

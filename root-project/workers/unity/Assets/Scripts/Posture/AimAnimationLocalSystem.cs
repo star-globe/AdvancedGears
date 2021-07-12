@@ -13,7 +13,7 @@ namespace AdvancedGears
     internal class AimAnimationLocalSystem : SpatialComponentSystem
     {
         private EntityQuery group;
-        EntityQueryBuilder.F_EDD<PostureAnimation.Component, BaseUnitStatus.Component> action;
+        EntityQueryBuilder.F_CDD<CombinedAimTracer, PostureAnimation.Component, BaseUnitStatus.Component> action;
 
         float deltaTime = 0;
 
@@ -34,14 +34,11 @@ namespace AdvancedGears
             Entities.With(group).ForEach(action);
         }    
 
-        private void Query(Entity entity, ref PostureAnimation.Component anim,
-                                          ref BaseUnitStatus.Component status)
+        private void Query(CombinedAimTracer tracer,
+                           ref PostureAnimation.Component anim,
+                           ref BaseUnitStatus.Component status)
         {
             if (status.State != UnitState.Alive)
-                return;
-
-            var tracer = EntityManager.GetComponentObject<CombinedAimTracer>(entity);
-            if (tracer == null)
                 return;
 
             Vector3? pos = null;

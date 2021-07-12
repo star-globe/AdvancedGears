@@ -40,8 +40,13 @@ namespace AdvancedGears
 
         protected override void OnUpdate()
         {
+            UnityEngine.Profiling.Profiler.BeginSample("UpdateCommanderTeam");
             UpdateCommanderTeam();
+            UnityEngine.Profiling.Profiler.EndSample();
+
+            UnityEngine.Profiling.Profiler.BeginSample("UpdateTurrets");
             UpdateTurrets();
+            UnityEngine.Profiling.Profiler.EndSample();
         }
 
         #region CommanderTeam
@@ -50,6 +55,7 @@ namespace AdvancedGears
             if (CheckTime(ref commanderQuerySet.inter) == false)
                 return;
 
+            UpdatePlayerPosition();
             Entities.With(commanderQuerySet.group).ForEach(commanderAction);
         }
 
@@ -64,7 +70,7 @@ namespace AdvancedGears
             var trans = EntityManager.GetComponentObject<Transform>(entity);
             var pos = trans.position;
 
-            var unit = getNearestPlayer(pos, HexDictionary.HexEdgeLength, selfId:null, GetSingleUnitTypes(UnitType.Advanced));
+            var unit = getNearestPlayer(pos, HexDictionary.HexEdgeLength, selfId:null);
             if (unit == null) {
                 var followers = team.FollowerInfo.Followers;
                 if (army.IsActive && army.SimpleUnits.Count == followers.Count)
@@ -82,6 +88,7 @@ namespace AdvancedGears
 
         private void SyncTroop(Dictionary<EntityId,SimpleUnit> simpleUnits, Transform trans)
         {
+            UnityEngine.Profiling.Profiler.BeginSample("SyncTroop");
             var pos = trans.position;
             var rot = trans.rotation;
 
@@ -107,10 +114,13 @@ namespace AdvancedGears
                 if (r_diff > rotDiff)
                     t.rotation = r;
             }
+
+            UnityEngine.Profiling.Profiler.EndSample();
         }
 
         private void VirtualizeUnits(ref VirtualArmy.Component army, Transform trans, List<EntityId> followers)
         {
+            UnityEngine.Profiling.Profiler.BeginSample("VirtualizeUnits");
             army.IsActive = true;
             var units = army.SimpleUnits;
             units.Clear();
@@ -140,10 +150,12 @@ namespace AdvancedGears
             var inter = IntervalCheckerInitializer.InitializedChecker(MovementDictionary.AlarmInter);
             UpdateLastChecked(ref inter);
             army.AlarmInter = inter;
+            UnityEngine.Profiling.Profiler.EndSample();
         }
 
         private void RealizeUnits(ref VirtualArmy.Component army, Transform trans)
         {
+            UnityEngine.Profiling.Profiler.BeginSample("RealizeUnits");
             army.IsActive = false;
             SyncTroop(army.SimpleUnits, trans);
 
@@ -156,6 +168,7 @@ namespace AdvancedGears
             }
 
             army.SimpleUnits.Clear();
+            UnityEngine.Profiling.Profiler.EndSample();
         }
 
         private void AlarmUnits(ref VirtualArmy.Component army, List<EntityId> followers)
@@ -164,9 +177,11 @@ namespace AdvancedGears
             if (CheckTime(ref inter) == false)
                 return;
 
+            UnityEngine.Profiling.Profiler.BeginSample("AlarmUnits");
             army.AlarmInter = inter;
             foreach (var id in followers)
                 SendSleepOrder(id, SleepOrderType.WakeUp);
+            UnityEngine.Profiling.Profiler.EndSample();
         }
         #endregion
 
@@ -181,6 +196,7 @@ namespace AdvancedGears
             if (CheckTime(ref turretQuerySet.inter) == false)
                 return;
 
+            UpdatePlayerPosition();
             Entities.With(turretQuerySet.group).ForEach(turretAction);
         }
 
@@ -195,7 +211,7 @@ namespace AdvancedGears
             var trans = EntityManager.GetComponentObject<Transform>(entity);
             var pos = trans.position;
 
-            var unit = getNearestPlayer(pos, HexDictionary.HexEdgeLength, selfId:null, GetSingleUnitTypes(UnitType.Advanced));
+            var unit = getNearestPlayer(pos, HexDictionary.HexEdgeLength, selfId:null);
             if (unit == null) {
                 if (army.IsActive == false)
                     VirtualizeTurrests(ref army, turret.TurretsDatas);

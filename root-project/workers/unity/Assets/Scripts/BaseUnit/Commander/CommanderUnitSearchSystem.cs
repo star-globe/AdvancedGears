@@ -20,7 +20,7 @@ namespace AdvancedGears
         private EntityQuerySet teamingQuerySet;
         private EntityQueryBuilder.F_EDDDD<CommanderSight.Component, CommanderTeam.Component, BaseUnitStatus.Component, SpatialEntityId> teamAction;
         const float teaminTime = 1.0f;
-        const int period = 15;
+        const int period = 10;
 
         #region ComponentSystem
         protected override void OnCreate()

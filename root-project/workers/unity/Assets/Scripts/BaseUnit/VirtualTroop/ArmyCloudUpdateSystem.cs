@@ -50,7 +50,7 @@ namespace AdvancedGears
                 var containers = army.TroopContainers;
 
                 float range = RangeDictionary.ArmyCloudRange;
-                var unit = getNearestPlayer(pos, range, selfId:null, GetSingleUnitTypes(UnitType.Advanced));
+                var unit = getNearestPlayer(pos, range, selfId:null);
                 if (unit == null)
                     Virtualize(status.Side, pos, range, containers);
                 else

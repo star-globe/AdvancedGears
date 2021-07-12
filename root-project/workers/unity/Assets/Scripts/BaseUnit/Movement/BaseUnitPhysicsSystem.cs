@@ -48,7 +48,8 @@ namespace AdvancedGears
             group = GetEntityQuery(
                     ComponentType.ReadWrite<Rigidbody>(),
                     ComponentType.ReadOnly<UnitTransform>(),
-                    ComponentType.ReadOnly<BaseUnitStatus.Component>()
+                    ComponentType.ReadOnly<BaseUnitStatus.Component>(),
+                    ComponentType.ReadOnly<BuildingData>()
             );
 
             inter = IntervalCheckerInitializer.InitializedChecker(period);
@@ -65,6 +66,7 @@ namespace AdvancedGears
 
         private void Query(ref BaseUnitStatus.Component status, Rigidbody rigidbody, UnitTransform unit)
         {
+#if true
             if (UnitUtils.IsBuilding(status.Type) == false)
                 return;
 
@@ -74,6 +76,15 @@ namespace AdvancedGears
 
             if (unit != null && unit.GetGrounded())
                 rigidbody.isKinematic = true;
+#endif
+        }
+    }
+
+    public struct BuildingData : IComponentData
+    {
+        public static BuildingData CreateData()
+        {
+            return new BuildingData();
         }
     }
 }

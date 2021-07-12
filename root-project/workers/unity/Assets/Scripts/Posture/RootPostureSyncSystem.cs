@@ -13,7 +13,7 @@ namespace AdvancedGears
     internal class RootPostureSyncSystem : SpatialComponentSystem
     {
         private EntityQuerySet querySet;
-        EntityQueryBuilder.F_EDD<BaseUnitStatus.Component, PostureRoot.Component> action;
+        EntityQueryBuilder.F_CDD<Rigidbody, BaseUnitStatus.Component, PostureRoot.Component> action;
         protected override void OnCreate()
         {
             base.OnCreate();
@@ -22,7 +22,8 @@ namespace AdvancedGears
                                           ComponentType.ReadWrite<PostureRoot.Component>(),
                                           ComponentType.ReadOnly<PostureRoot.HasAuthority>(),
                                           ComponentType.ReadOnly<BaseUnitStatus.Component>(),
-                                          ComponentType.ReadOnly<Rigidbody>()), 5);
+                                          ComponentType.ReadOnly<Rigidbody>(),
+                                          ComponentType.ReadOnly<MovementData>()), 5);
             action = Query;
         }
 
@@ -36,14 +37,12 @@ namespace AdvancedGears
 
         const float rotDiff = 0.01f;
         const float scaleDiff = 0.01f;
-        private void Query(Entity entity,
+        private void Query(Rigidbody rigid,
                             ref BaseUnitStatus.Component status,
                             ref PostureRoot.Component posture)
         {
             if (UnitUtils.IsBuilding(status.Type))
                 return;
-
-            var rigid = EntityManager.GetComponentObject<Rigidbody>(entity);
 
             var trans = rigid.transform;
             var rootTrans = posture.RootTrans;

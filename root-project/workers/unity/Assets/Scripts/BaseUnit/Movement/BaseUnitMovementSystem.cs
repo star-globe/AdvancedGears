@@ -9,7 +9,7 @@ namespace AdvancedGears
     internal class BaseUnitMovementSystem : SpatialComponentSystem
     {
         EntityQuery group;
-        EntityQueryBuilder.F_EDD<MovementData, BaseUnitStatus.Component> movementAction;
+        EntityQueryBuilder.F_ECDD<UnitTransform, MovementData, BaseUnitStatus.Component> movementAction;
 
         EntityQuerySet syncQuerySet;
         EntityQueryBuilder.F_EDDD<MovementData, BaseUnitMovement.Component, BaseUnitStatus.Component> syncAction;
@@ -22,7 +22,8 @@ namespace AdvancedGears
             group = GetEntityQuery(
                     ComponentType.ReadOnly<UnitTransform>(),
                     ComponentType.ReadOnly<MovementData>(),
-                    ComponentType.ReadOnly<BaseUnitStatus.Component>()
+                    ComponentType.ReadOnly<BaseUnitStatus.Component>(),
+                    ComponentType.ReadOnly<Rigidbody>()
             );
 
             movementAction = MovementQuery;
@@ -56,6 +57,7 @@ namespace AdvancedGears
         }
 
         private void MovementQuery(Entity entity,
+                                          UnitTransform unit,
                                           ref MovementData movement,
                                           ref BaseUnitStatus.Component status)
         {
@@ -64,8 +66,6 @@ namespace AdvancedGears
             
             if (UnitUtils.IsAutomaticallyMoving(status.Type) == false)
                 return;
-
-            var unit = EntityManager.GetComponentObject<UnitTransform>(entity);
 
             // check ground
             if (unit == null || unit.GetGrounded(out var hitInfo) == false)

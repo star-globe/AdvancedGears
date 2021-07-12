@@ -63,7 +63,7 @@ namespace AdvancedGears
             world.GetOrCreateSystem<UnitUIInfoSystem>();
             world.GetOrCreateSystem<MiniMapUISystem>();
             world.GetOrCreateSystem<LocalTimerUpdateSystem>();
-            world.GetOrCreateSystem<SymbolicTowerSystem>();
+            //world.GetOrCreateSystem<SymbolicTowerSystem>();
         }
 
         public static void AddGameLogicSystems(World world)
@@ -76,7 +76,7 @@ namespace AdvancedGears
             world.GetOrCreateSystem<ProcessScoresSystem>();
             world.GetOrCreateSystem<CollisionProcessSystem>();
             world.GetOrCreateSystem<RootPostureSyncSystem>();
-            world.GetOrCreateSystem<PostureAnimationSyncSystem>();
+            //world.GetOrCreateSystem<PostureAnimationSyncSystem>();
             world.GetOrCreateSystem<AimAnimationLocalSystem>();
             world.GetOrCreateSystem<BaseUnitMovementSystem>();
             world.GetOrCreateSystem<BaseUnitSightSystem>();

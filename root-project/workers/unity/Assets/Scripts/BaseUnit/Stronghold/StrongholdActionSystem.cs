@@ -30,7 +30,7 @@ namespace AdvancedGears
                                                ComponentType.ReadOnly<StrongholdSight.Component>(),
                                                ComponentType.ReadOnly<HexFacility.Component>(),
                                                ComponentType.ReadOnly<Transform>()
-                                               ), 0.5f);
+                                               ), 1);
 
             factoryQuerySet = new EntityQuerySet(GetEntityQuery(
                                                 ComponentType.ReadWrite<UnitFactory.Component>(),
@@ -39,7 +39,7 @@ namespace AdvancedGears
                                                 ComponentType.ReadOnly<StrongholdSight.Component>(),
                                                 ComponentType.ReadOnly<HexFacility.Component>(),
                                                 ComponentType.ReadOnly<Transform>()
-                                                ), 2);
+                                                ), 1);
             
             orderAction = OrderQuery;
             factoryAction = FactoryQuery;
@@ -47,9 +47,17 @@ namespace AdvancedGears
 
         protected override void OnUpdate()
         {
+            UnityEngine.Profiling.Profiler.BeginSample("HandleOrders");
             HandleOrders();
+            UnityEngine.Profiling.Profiler.EndSample();
+
+            UnityEngine.Profiling.Profiler.BeginSample("HandleFactoryRequests");
             HandleFactoryRequests();
+            UnityEngine.Profiling.Profiler.EndSample();
+
+            UnityEngine.Profiling.Profiler.BeginSample("HandleResponses");
             HandleResponses();
+            UnityEngine.Profiling.Profiler.EndSample();
         }
 
         void HandleOrders()
@@ -81,13 +89,19 @@ namespace AdvancedGears
 
             // order check
             // Not Set Strongholds
+            UnityEngine.Profiling.Profiler.BeginSample("CheckOrder:Strongholds");
             CheckOrder(hex.HexIndex, status.Order, sight.TargetStrongholds, sight.StrategyVector.Vector.ToUnityVector(), teamsDic, sendIds);
+            UnityEngine.Profiling.Profiler.EndSample();
 
             // FrontLineCorners
+            UnityEngine.Profiling.Profiler.BeginSample("CheckOrder:FrontLineCorners");
             CheckOrder(hex.HexIndex, status.Order, status.Side, sight.FrontLineCorners, sight.StrategyVector.Vector.ToUnityVector(), teamsDic, sendIds);
+            UnityEngine.Profiling.Profiler.EndSample();
 
             // Hex
+            UnityEngine.Profiling.Profiler.BeginSample("CheckOrder:TargetHexes");
             CheckOrder(hex.HexIndex, status.Order, sight.TargetHexes, sight.StrategyVector.Vector.ToUnityVector(), teamsDic, sendIds);
+            UnityEngine.Profiling.Profiler.EndSample();
         }
 
         void HandleFactoryRequests()
@@ -113,9 +127,12 @@ namespace AdvancedGears
             if (status.Side == UnitSide.None)
                 return;
 
+            UnityEngine.Profiling.Profiler.BeginSample("HandleFactoryRequests:CheckAlive");
             var trans = EntityManager.GetComponentObject<Transform>(entity);
             CheckAlive(trans.position, status.Side, uint.MaxValue, HexDictionary.HexEdgeLength * 2, teamsDic);
+            UnityEngine.Profiling.Profiler.EndSample();
 
+            UnityEngine.Profiling.Profiler.BeginSample("HandleFactoryRequests:MakeOrders");
             // number check
             if (factory.TeamOrders.Count == 0 && sight.StrategyVector.Side != UnitSide.None) {
                 var teamOrders = factory.TeamOrders;
@@ -124,6 +141,7 @@ namespace AdvancedGears
 
                 factory.TeamOrders = teamOrders;
             }
+            UnityEngine.Profiling.Profiler.EndSample();
 
 #if false
             if (factory.TurretOrders.Count == 0) {
@@ -163,7 +181,9 @@ namespace AdvancedGears
 
             datas.Clear();
 
+            UnityEngine.Profiling.Profiler.BeginSample("CheckAlive:GetAllyUnits");
             var units = getAllyUnits(side, pos, range, allowDead: false, GetSingleUnitTypes(UnitType.Commander));
+            UnityEngine.Profiling.Profiler.EndSample();
 
             foreach (var u in units) {
                 if (hexIndex != uint.MaxValue && HexUtils.IsInsideHex(this.Origin, hexIndex, u.pos, HexDictionary.HexEdgeLength) == false)
@@ -370,7 +390,7 @@ namespace AdvancedGears
                     continue;
 
                 var frontLine = kvp.Value.TargetInfoSet.FrontLine;
-                if (frontLine.IsValid() && lines.Exists(l => l.CornerEquals(frontLine)))
+                if (frontLine.IsValid() && CheckEqualsLine(lines, frontLine))
                     continue;
 
                 var index = UnityEngine.Random.Range(0, lines.Count);
@@ -384,6 +404,16 @@ namespace AdvancedGears
 
                 sendIds.Add(uid);
             }
+        }
+
+        private bool CheckEqualsLine(List<FrontLineInfo> lines, FrontLineInfo frontLine)
+        {
+            foreach (var l in lines) {
+                if (l.CornerEquals(frontLine))
+                    return true;
+            }
+
+            return false;
         }
 
         private void CheckOrder(uint hexIndex, OrderType order, Dictionary<uint,TargetHexInfo> targets, Vector3 strategyVector, Dictionary<EntityId,TeamInfo> datas, HashSet<long> sendIds)

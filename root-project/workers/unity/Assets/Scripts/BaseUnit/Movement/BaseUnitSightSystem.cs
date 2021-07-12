@@ -20,18 +20,14 @@ namespace AdvancedGears
         }
 
         EntityQuery movementGroup;
-        EntityQuery boidGroup;
 
         IntervalChecker intervalMovement;
-        IntervalChecker intervalBoid;
 
-        EntityQueryBuilder.F_EDD<BaseUnitStatus.Component, SpatialEntityId> boidQuery;
         EntityQueryBuilder.F_EDDDDD<MovementData, NavPathData, BaseUnitSight.Component, BaseUnitStatus.Component, SpatialEntityId> movementQuery;
 
         double deltaTime = -1.0;
 
         const int periodMovement = 20;
-        const int periodBoid = 2;
 
         readonly Dictionary<EntityId, VectorContainer> vectorDic = new Dictionary<EntityId, VectorContainer>();
 
@@ -48,85 +44,15 @@ namespace AdvancedGears
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
 
-            boidGroup = GetEntityQuery(
-                ComponentType.ReadOnly<UnitTransform>(),
-                ComponentType.ReadOnly<BaseUnitStatus.Component>(),
-                ComponentType.ReadOnly<SpatialEntityId>()
-            );
-
             intervalMovement = IntervalCheckerInitializer.InitializedChecker(periodMovement);
-            intervalBoid = IntervalCheckerInitializer.InitializedChecker(periodBoid);
-
+ 
             deltaTime = Time.ElapsedTime;
-
-            boidQuery = BoidQuery;
             movementQuery = MovementQuery;
         }
 
         protected override void OnUpdate()
         {
-            UpdateBoid();
             UpdateMovement();
-        }
-
-        private void UpdateBoid()
-        {
-            if (CheckTime(ref intervalBoid) == false)
-                return;
-
-            var keys = vectorDic.Keys;
-            foreach(var k in keys) {
-                var container = vectorDic[k];
-                container.boidTarget = null;
-                container.spread = Vector3.zero;
-            }
-
-            Entities.With(boidGroup).ForEach(boidQuery);
-        }
-
-        private void BoidQuery(Entity entity,
-                              ref BaseUnitStatus.Component status,
-                              ref SpatialEntityId entityId)
-        {
-            if (status.State != UnitState.Alive)
-                return;
-            
-            if (UnitUtils.IsAutomaticallyMoving(status.Type) == false)
-                return;
-
-            var unit = EntityManager.GetComponentObject<UnitTransform>(entity);
-
-            // check ground
-            if (unit == null || unit.GetGrounded(out var hitInfo) == false)
-                return;
-
-            var pos = unit.transform.position;
-
-            Vector3? tgt = null;//calc_update_boid(ref sight, sight.State, pos);
-            Vector3 spread = Vector3.zero;
-
-            var range = RangeDictionary.SpreadSize;
-            var bodySize = RangeDictionary.BodySize;
-            var units = getAllUnits(pos, range, allowDead: true);
-            foreach(var u in units) {
-                var diff = pos - u.pos;
-                var mag = Mathf.Max(bodySize, diff.magnitude);
-
-                spread += diff.normalized* ((range / mag) - 1.0f) * bodySize;
-            }
-
-            if (units.Count > 0)
-                spread /= units.Count;
-
-            var id = entityId.EntityId;
-            if (vectorDic.ContainsKey(id)) {
-                var container = vectorDic[id];
-                container.boidTarget = tgt;
-                container.spread = spread;
-            }
-            else {
-                vectorDic[entityId.EntityId] = new VectorContainer() { boidTarget = tgt, spread = spread };
-            }
         }
 
         int navCount = 0;
@@ -180,7 +106,7 @@ namespace AdvancedGears
             }
 
             if (tgt == null)
-                tgt = sight.GetTargetPosition(this.Origin, pos);//sight.TargetPosition.ToWorkerPosition(this.Origin);
+                tgt = sight.GetTargetPosition(this.Origin, pos);
 
             tgt = CheckNavPathAndTarget(tgt.Value, pos, unit.SizeRadius, sight.State, entityId.EntityId.Id, ref path);
 
@@ -315,7 +241,7 @@ namespace AdvancedGears
             return tgt;
         }
 
-        const float checkRange = 0.1f;
+        const float checkRange = 1.0f;
         readonly Dictionary<long, Vector3[]> pointsDic = new Dictionary<long, Vector3[]>();
 
         Vector3 CheckNavPathAndTarget(Vector3 target, Vector3 current, float size, TargetState state, long uid, ref NavPathData path)
