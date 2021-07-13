@@ -79,7 +79,7 @@ namespace AdvancedGears.Editor
                 list.Add((FieldTemplate.CreateTerrainPointInfo(f.Range, f.Highest, f.MaterialType, f.Seeds), f.transform.position));
             }
 
-            realizer.Reset();
+            realizer.ResetField();
             foreach (var tuple in list)
             {
                 realizer.Realize(Vector3.zero, tuple.Item1, tuple.Item2);

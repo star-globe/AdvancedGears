@@ -103,18 +103,21 @@ namespace AdvancedGears
         {
             foreach (var yDic in realizedDic) {
                 foreach (var xKvp in yDic.Value) {
-                    xKvp.Value.Reset();
+                    xKvp.Value.ResetField();
                 }
             }
 
             IsSetDatas = false;
         }
 
+        readonly List<int> yList = new List<int>();
+        readonly List<int> xList = new List<int>();
+
         public void RemoveFields()
         {
-            List<int> yList = new List<int>();
+            yList.Clear();
             foreach (var yDic in realizedDic) {
-                List<int> xList = new List<int>();
+                xList.Clear();
 
                 foreach (var xKvp in yDic.Value) {
                     if (xKvp.Value.IsSet == false)

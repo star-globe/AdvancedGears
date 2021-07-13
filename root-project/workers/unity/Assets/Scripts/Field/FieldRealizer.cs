@@ -55,7 +55,7 @@ namespace AdvancedGears
             terrainData.heightmapResolution = dic.GetResolution(fieldSize);
             terrainData.size = new Vector3(fieldSize, height, fieldSize);
 
-            Debug.LogFormat("size:{0} resolution:{1}", terrainData.size, terrainData.heightmapResolution);
+            //Debug.LogFormat("size:{0} resolution:{1}", terrainData.size, terrainData.heightmapResolution);
 
             terrain.terrainData = terrainData;
             collider.terrainData = terrainData;
@@ -65,11 +65,11 @@ namespace AdvancedGears
             {
                 builder.SetData(terrainData.bounds.center, terrainData.bounds.size);
                 builder.StartBake();
-                Debug.Log("BuildNavMesh");
+                //Debug.Log("BuildNavMesh");
             }
         }
 
-        public void Reset()
+        public void ResetField()
         {
             this.IsSet = false;
             heights = null;
@@ -85,7 +85,7 @@ namespace AdvancedGears
 
             this.transform.position = start;
 
-            Debug.LogFormat("Start:{0}",start);
+            //Debug.LogFormat("Start:{0}",start);
 
             float[,] heights = Heights;
             Vector3 pos = terrainPos != null ? terrainPos.Value: Vector3.zero;

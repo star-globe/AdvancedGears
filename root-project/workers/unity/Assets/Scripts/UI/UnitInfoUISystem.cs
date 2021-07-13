@@ -112,8 +112,13 @@ namespace AdvancedGears.UI
 
         protected virtual Transform parent => null;
 
+        protected virtual bool IsUpdate => true;
+
         protected override void OnUpdate()
         {
+            if (this.IsUpdate == false)
+                return;
+
             if (this.UnitUICreator == null)
                 return;
 
