@@ -38,6 +38,7 @@ namespace AdvancedGears
 
 
         public bool IsSet { get; private set;}
+        public Vector3 Center { get; private set; }
 
         private void Start()
         {
@@ -75,13 +76,22 @@ namespace AdvancedGears
             heights = null;
         }
 
-        public void Realize(Vector3 center, List<TerrainPointInfo> terrainPoints = null, Vector3? terrainPos = null)
+        public void SetCenter(Vector3 center)
+        {
+            this.Center = center;
+        }
+
+        public void Realize(Vector3? center = null, List<TerrainPointInfo> terrainPoints = null, Vector3? terrainPos = null)
         {
             this.IsSet = true;
+
+            if (center != null)
+                this.Center = center.Value;
+
             var width = terrain.terrainData.heightmapResolution;
             var height = terrain.terrainData.heightmapResolution;
             var size = terrain.terrainData.size;
-            var start = center - new Vector3(size.x/2, 0.0f, size.z/2);
+            var start = this.Center - new Vector3(size.x/2, 0.0f, size.z/2);
 
             this.transform.position = start;
 

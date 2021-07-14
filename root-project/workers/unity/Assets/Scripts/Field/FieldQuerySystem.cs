@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Improbable;
 using Improbable.Gdk.Core;
 using Improbable.Gdk.Core.Commands;
@@ -142,7 +141,7 @@ namespace AdvancedGears
         {
             base.SendEntityQuery();
 
-            DebugUtils.LogFormatColor(UnityEngine.Color.magenta, "SendFieldQuery. WorkerId:{0}", this.WorkerSystem.WorkerId);
+            //DebugUtils.LogFormatColor(UnityEngine.Color.magenta, "SendFieldQuery. WorkerId:{0}", this.WorkerSystem.WorkerId);
         }
 
         protected override ImprobableEntityQuery EntityQuery
@@ -168,7 +167,7 @@ namespace AdvancedGears
         {
             if (shots.Count > 0)
             {
-                SetField(shots.SelectMany(kvp => kvp.Value).ToList());
+                SetField(shots);
             }
             else
             {
@@ -176,25 +175,30 @@ namespace AdvancedGears
             }
         }
 
-        private void SetField(List<EntitySnapshot> snapShots)
+        private void SetField(Dictionary<EntityId, List<EntitySnapshot>> shots)
         {
             FieldCreator.Reset();
 
-            foreach (var snap in snapShots)
+            int snapShotCount = 0;
+            foreach (var kvp in shots)
             {
-                Position.Snapshot position;
-                if (snap.TryGetComponentSnapshot(out position) == false)
-                    continue;
+                foreach (var snap in kvp.Value)
+                {
+                    Position.Snapshot position;
+                    if (snap.TryGetComponentSnapshot(out position) == false)
+                        continue;
 
-                FieldComponent.Snapshot field;
-                if (snap.TryGetComponentSnapshot(out field) == false)
-                    continue;
+                    FieldComponent.Snapshot field;
+                    if (snap.TryGetComponentSnapshot(out field) == false)
+                        continue;
 
-                FieldCreator.RealizeField(field.TerrainPoints, position.Coords, this.BasePosition);
+                    FieldCreator.RealizeField(field.TerrainPoints, position.Coords, this.BasePosition);
+                    snapShotCount++;
+                }
             }
 
-            DebugUtils.LogFormatColor(UnityEngine.Color.red,"FieldWorkerType:{0} snapShots.Count:{1}",
-                                      this.FieldWorkerType, snapShots.Count);
+            DebugUtils.LogFormatColor(UnityEngine.Color.red,"FieldWorkerType:{0} RealizeSnapShot.Count:{1}",
+                                      this.FieldWorkerType, snapShotCount);
 
             FieldCreator.RemoveFields();
         }

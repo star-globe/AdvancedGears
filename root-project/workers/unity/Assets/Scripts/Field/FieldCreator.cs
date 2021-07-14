@@ -1,9 +1,10 @@
-using System;
+#define MULTI_FIELDS_TEST
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Unity.Entities;
+using Unity.Assertions;
 using Improbable;
 using Improbable.Gdk.Core;
 
@@ -44,7 +45,7 @@ namespace AdvancedGears
 
         IndexXY? indexXY = null;
 
-        readonly Dictionary<int,Dictionary<int,FieldRealizer>> realizedDic = new Dictionary<int, Dictionary<int, FieldRealizer>>();
+        readonly Dictionary<int, Dictionary<int, FieldRealizer>> realizedDic = new Dictionary<int, Dictionary<int, FieldRealizer>>();
         readonly Queue<GameObject> objectQueue = new Queue<GameObject>();
 
         public bool IsSetDatas { get; private set; }
@@ -56,14 +57,13 @@ namespace AdvancedGears
         GameObject GetNewFieldObject()
         {
             GameObject fieldObject = null;
-            if (objectQueue.Count == 0) {
-                var settings = this.Settings;
-                if (settings != null) {
-                    fieldObject = Instantiate(settings.FieldObject);
-                    fieldObject.name += this.WorkerId;
-                }
+            if (objectQueue.Count == 0)
+            {
+                fieldObject = Instantiate(this.Settings.FieldObject);
+                fieldObject.name += this.WorkerId;
             }
-            else {
+            else
+            {
                 fieldObject = objectQueue.Dequeue();
             }
 
@@ -97,12 +97,16 @@ namespace AdvancedGears
             this.Origin = origin;
             this.WorkerId = workerId;
             this.workerType = type;
+
+            Assert.IsNotNull(this.Settings);
         }
 
         public void Reset()
         {
-            foreach (var yDic in realizedDic) {
-                foreach (var xKvp in yDic.Value) {
+            foreach (var yDic in realizedDic)
+            {
+                foreach (var xKvp in yDic.Value)
+                {
                     xKvp.Value.ResetField();
                 }
             }
@@ -116,15 +120,18 @@ namespace AdvancedGears
         public void RemoveFields()
         {
             yList.Clear();
-            foreach (var yDic in realizedDic) {
+            foreach (var yDic in realizedDic)
+            {
                 xList.Clear();
 
-                foreach (var xKvp in yDic.Value) {
+                foreach (var xKvp in yDic.Value)
+                {
                     if (xKvp.Value.IsSet == false)
                         xList.Add(xKvp.Key);
                 }
 
-                foreach (var key in xList) {
+                foreach (var key in xList)
+                {
                     objectQueue.Enqueue(yDic.Value[key].gameObject);
                     yDic.Value.Remove(key);
                 }
@@ -150,16 +157,28 @@ namespace AdvancedGears
             Debug.LogFormat("Coords:{0}", coords);
 
             Vector3 pos = getPos(center);
+#if MULTI_FIELDS_TEST
+            var realizers = GetRealizers(pos);
+            foreach (var r in realizers)
+                r.Realize(center:null, terrainPoints, coords.ToUnityVector() + this.Origin);
+#else
             var realizer = GetRealizer(pos, out var c);
             realizer.Realize(c, terrainPoints, coords.ToUnityVector() + this.Origin);
+#endif
             IsSetDatas = true;
         }
 
         public void RealizeEmptyField(Vector3? center = null)
         {
             Vector3 pos = getPos(center);
+#if MULTI_FIELDS_TEST
+            var realizers = GetRealizers(pos);
+            foreach (var r in realizers)
+                r.Realize();
+#else
             var realizer = GetRealizer(pos, out var c);
             realizer.Realize(c);
+#endif
             IsSetDatas = true;
         }
 
@@ -169,21 +188,24 @@ namespace AdvancedGears
                 return true;
 
             Vector3 pos = getPos(center);
-            return IndexXY.CheckAndRenew(pos, ChunkRange, ref indexXY);
+            return IndexXY.CheckAndRenew(pos, this.Settings.FieldSize, ref indexXY);
         }
 
-        private float ChunkRange => this.Settings.FieldSize * FieldDictionary.ChunkRangeRate;
+        //private float ChunkRange => this.Settings.FieldSize * FieldDictionary.ChunkRangeRate;
 
         FieldRealizer GetRealizer(Vector3 pos, out Vector3 center)
         {
-            IndexXY.CheckAndRenew(pos, ChunkRange, ref indexXY);
+            IndexXY.CheckAndRenew(pos, this.Settings.FieldSize, ref indexXY);
 
             var x = indexXY.Value.x;
             var y = indexXY.Value.y;
 
             DebugUtils.LogFormatColor(UnityEngine.Color.blue, "realize Indexies :[{0}][{1}] postion:{2}", x, y, pos);
 
-            Dictionary<int,FieldRealizer> dic;
+#if MULTI_FIELDS_TEST
+            return GetRealizer(x, y, out center);
+#else
+            Dictionary<int, FieldRealizer> dic;
             if (realizedDic.ContainsKey(y))
                 dic = realizedDic[y];
             else
@@ -198,8 +220,67 @@ namespace AdvancedGears
             dic[x] = realizer;
             realizedDic[y] = dic;
 
-            var size = ChunkRange;
-            center = new Vector3(x * size, 0 , y * size) + this.Origin;
+            var size = this.Settings.FieldSize;
+            center = new Vector3(x * size, 0, y * size) + this.Origin;
+
+            return realizer;
+#endif
+        }
+
+        FieldRealizer[] GetRealizers(Vector3 pos)
+        {
+            IndexXY.CheckAndRenew(pos, this.Settings.FieldSize, ref indexXY);
+
+            var x = indexXY.Value.x;
+            var y = indexXY.Value.y;
+
+            List<FieldRealizer> list = new List<FieldRealizer>();
+
+            var count = this.Settings.ChunlRangeCount;
+            if (count > 0)
+            {
+                for (var i = x - count; i < x + count; i++)
+                {
+                    for (var k = y - count; k < y + count; k++)
+                    {
+                        var realizer = GetRealizer(x, y, out var center);
+                        realizer.SetCenter(center);
+                        list.Add(realizer);
+                    }
+                }
+            }
+            else
+            {
+                var realizer = GetRealizer(x, y, out var center);
+                realizer.SetCenter(center);
+                list.Add(realizer);
+            }
+
+
+            //DebugUtils.LogFormatColor(UnityEngine.Color.blue, "realize Indexies :[{0}][{1}] postion:{2}", x, y, pos);
+            return list.ToArray();
+        }
+
+
+        FieldRealizer GetRealizer(int x, int y, out Vector3 center)
+        {
+            Dictionary<int, FieldRealizer> dic;
+            if (realizedDic.ContainsKey(y))
+                dic = realizedDic[y];
+            else
+                dic = new Dictionary<int, FieldRealizer>();
+
+            FieldRealizer realizer;
+            if (dic.ContainsKey(x))
+                realizer = dic[x];
+            else
+                realizer = GetNewFieldRealizer();
+
+            dic[x] = realizer;
+            realizedDic[y] = dic;
+
+            var size = this.Settings.FieldSize;
+            center = new Vector3(x * size, 0, y * size) + this.Origin;
 
             return realizer;
         }
