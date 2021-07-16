@@ -67,6 +67,8 @@ namespace AdvancedGears
                 fieldObject = objectQueue.Dequeue();
             }
 
+            fieldObject.SetActive(true);
+
             return fieldObject;
         }
 
@@ -132,7 +134,9 @@ namespace AdvancedGears
 
                 foreach (var key in xList)
                 {
-                    objectQueue.Enqueue(yDic.Value[key].gameObject);
+                    var go = yDic.Value[key].gameObject;
+                    go.SetActive(false);
+                    objectQueue.Enqueue(go);
                     yDic.Value.Remove(key);
                 }
 
@@ -239,11 +243,11 @@ namespace AdvancedGears
             var count = this.Settings.ChunlRangeCount;
             if (count > 0)
             {
-                for (var i = x - count; i < x + count; i++)
+                for (var i = x - count; i <= x + count; i++)
                 {
-                    for (var k = y - count; k < y + count; k++)
+                    for (var j = y - count; j <= y + count; j++)
                     {
-                        var realizer = GetRealizer(x, y, out var center);
+                        var realizer = GetRealizer(i, j, out var center);
                         realizer.SetCenter(center);
                         list.Add(realizer);
                     }

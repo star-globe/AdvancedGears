@@ -50,7 +50,7 @@ namespace AdvancedGears
         {
             var dic = dictionary ?? FieldDictionary.Instance;
 
-            var terrainData = Instantiate(dic.BaseTerrainData);
+            var terrainData = terrain.terrainData ?? Instantiate(dic.BaseTerrainData);
             var height = dic.GetHeight(fieldSize);
 
             terrainData.heightmapResolution = dic.GetResolution(fieldSize);
