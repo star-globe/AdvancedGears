@@ -37,6 +37,14 @@ namespace AdvancedGears
             Instance = this;
         }
 
+        public UnitCommonSettings GetUnitSettings(UnitType unitType)
+        {
+            if (SettingsDic.TryGetValue(unitType, out var set))
+                return set;
+
+            return null;
+        }
+
         public static UnitCommonSettings GetSettings(UnitType unitType)
         {
             if (Instance.SettingsDic.TryGetValue(unitType, out var set))

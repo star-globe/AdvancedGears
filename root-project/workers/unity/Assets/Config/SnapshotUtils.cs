@@ -50,9 +50,9 @@ namespace AdvancedGears
         }
 
         const float heightBuffer = 1.0f;
-        public static Coordinates GroundCoordinates(double x, double y, double z)
+        public static Coordinates GroundCoordinates(double x, double y, double z, bool NeedBuffer)
         {
-            y += heightBuffer;
+            y += NeedBuffer ? heightBuffer: 0;
             return new Coordinates(x, y, z);
         }
 

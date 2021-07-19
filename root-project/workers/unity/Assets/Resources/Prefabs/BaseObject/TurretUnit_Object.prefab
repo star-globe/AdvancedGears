@@ -26,8 +26,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1152464282}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.25, z: 0}
-  m_LocalScale: {x: 0.7688001, y: 0.09290963, z: 0.7688001}
+  m_LocalPosition: {x: 0, y: 5.39, z: 0}
+  m_LocalScale: {x: 1.4214344, y: 0.1717806, z: 1.4214344}
   m_Children:
   - {fileID: 3637943505742419874}
   m_Father: {fileID: 7426891852382221780}
@@ -342,8 +342,6 @@ GameObject:
   - component: {fileID: 4137161997623122930}
   - component: {fileID: 2375257532614233164}
   - component: {fileID: 4737754789510540527}
-  - component: {fileID: 661401061935452423}
-  - component: {fileID: 5236786807844837685}
   m_Layer: 13
   m_Name: Barell
   m_TagString: Untagged
@@ -414,31 +412,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &661401061935452423
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2893796204770990423}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &5236786807844837685
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2893796204770990423}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b0da2d9182fc6244eb594f713d4ce4af, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &2955648083435013541
 GameObject:
   m_ObjectHideFlags: 0
@@ -1062,8 +1035,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8896567554115493925}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.16, z: 0}
-  m_LocalScale: {x: 1.5, y: 2, z: 1.5}
+  m_LocalPosition: {x: 0, y: 0.7099998, z: 0}
+  m_LocalScale: {x: 4, y: 9, z: 4}
   m_Children:
   - {fileID: 3093044365384731297}
   - {fileID: 4537885451787264840}

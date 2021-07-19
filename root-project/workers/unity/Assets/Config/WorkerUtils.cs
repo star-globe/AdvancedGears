@@ -80,7 +80,7 @@ namespace AdvancedGears
             world.GetOrCreateSystem<AimAnimationLocalSystem>();
             world.GetOrCreateSystem<BaseUnitMovementSystem>();
             world.GetOrCreateSystem<BaseUnitSightSystem>();
-            world.GetOrCreateSystem<BaseUnitPhysicsSystem>();
+            //world.GetOrCreateSystem<BaseUnitPhysicsSystem>();
             world.GetOrCreateSystem<BaseUnitSearchSystem>();
             world.GetOrCreateSystem<BaseUnitActionSystem>();
             world.GetOrCreateSystem<CommanderUnitSearchSystem>();

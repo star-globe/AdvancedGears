@@ -96,7 +96,9 @@ MonoBehaviour:
   realizer: {fileID: 2011829079}
   units: []
   fields: []
+  towers: []
   dictionary: {fileID: 11400000, guid: 3c63fb39c87234b4087ddd150277aa39, type: 2}
+  unitDictionary: {fileID: 11400000, guid: c4de85419e74dc64f946b7204dd25dd5, type: 2}
   baseHexObject: {fileID: 7259995228780764972, guid: 5f27fcfdbeb7b9c4a9d2dc6518a7f75f,
     type: 3}
   hexes: []

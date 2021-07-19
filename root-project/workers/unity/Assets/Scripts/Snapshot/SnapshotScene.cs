@@ -39,6 +39,9 @@ namespace AdvancedGears.Editor
         FieldDictionary dictionary;
         float WorldHeight => dictionary.MaxHeight;
 
+        [SerializeField]
+        UnitCommonSettingsDictionary unitDictionary;
+
         Vector3 size => terrain.terrainData.size;
 
         public float rate => this.WorldSize / localSize;
@@ -48,6 +51,15 @@ namespace AdvancedGears.Editor
         private void Start()
         {
             Initialize();
+        }
+
+        private bool IsBuilding(UnitType type)
+        {
+            var set = unitDictionary?.GetUnitSettings(type);
+            if (set == null)
+                return false;
+
+            return set.isBuilding;
         }
 
         public void Initialize()
@@ -106,7 +118,7 @@ namespace AdvancedGears.Editor
                 snapshot.AddEntity(FieldTemplate.CreateFieldEntityTemplate(f.pos.ToCoordinates(), f.range, f.highest, f.materialType, f.seeds));
 
             foreach(var u in Units) {
-                var template = BaseUnitTemplate.CreateBaseUnitEntityTemplate(u.side, u.type, SnapshotUtils.GroundCoordinates(u.pos.x, u.pos.y, u.pos.z), u.rotate.ToCompressedQuaternion());
+                var template = BaseUnitTemplate.CreateBaseUnitEntityTemplate(u.side, u.type, SnapshotUtils.GroundCoordinates(u.pos.x, u.pos.y, u.pos.z, this.IsBuilding(u.type) == false), u.rotate.ToCompressedQuaternion());
                 if (u.attachments != null) {
                     foreach (var attach in u.attachments) {
                         attach.AddComponent(template);
