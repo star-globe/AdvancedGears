@@ -16,6 +16,8 @@ namespace AdvancedGears
         [SerializeField]
         TerrainCollider collider;
 
+        int width = 0;
+
         float[,] heights = null;
         float[,] Heights
         {
@@ -23,19 +25,16 @@ namespace AdvancedGears
             {
                 if (heights == null)
                 {
-                    var width = terrain.terrainData.heightmapResolution;
-                    var height = terrain.terrainData.heightmapResolution;
+                    this.width = terrain.terrainData.heightmapResolution;
                     heights = new float[width, width];
                 }
 
                 return heights;
             }
-            set
-            {
-                heights = value;
-            }
         }
 
+        public int X { get; private set; } = int.MaxValue;
+        public int Y { get; private set; } = int.MaxValue;
 
         public bool IsSet { get; private set;}
         public Vector3 Center { get; private set; }
@@ -70,6 +69,18 @@ namespace AdvancedGears
             }
         }
 
+        public bool SetAndCheckXY(int x, int y)
+        {
+            this.IsSet = true;
+
+            if (this.X == x && this.Y == y)
+                return false;
+
+            this.X = x;
+            this.Y = y;
+            return true;
+        }
+
         public void ResetField()
         {
             this.IsSet = false;
@@ -83,7 +94,7 @@ namespace AdvancedGears
 
         public void Realize(Vector3? center = null, List<TerrainPointInfo> terrainPoints = null, Vector3? terrainPos = null)
         {
-            this.IsSet = true;
+            UnityEngine.Profiling.Profiler.BeginSample("Realize!");
 
             if (center != null)
                 this.Center = center.Value;
@@ -97,6 +108,9 @@ namespace AdvancedGears
 
             //Debug.LogFormat("Start:{0}",start);
 
+            ClearHeights();
+
+            UnityEngine.Profiling.Profiler.BeginSample("SetHeights!");
             float[,] heights = Heights;
             Vector3 pos = terrainPos != null ? terrainPos.Value: Vector3.zero;
             if (terrainPoints != null)
@@ -104,12 +118,25 @@ namespace AdvancedGears
                 foreach (var point in terrainPoints)
                 {
                     //Debug.LogFormat("Height:{0} TileSize:{1}", point.HighestHillHeight, point.TileSize);
-                    heights = point.SetHeights(pos, start.x, start.z, width, height, size, heights);
+                    //point.SetHeights(pos, start.x, start.z, width, height, size, heights);
                 }
             }
 
-            Heights = heights;
             terrain.terrainData.SetHeights(0,0, heights);
+            UnityEngine.Profiling.Profiler.EndSample();
+
+            UnityEngine.Profiling.Profiler.EndSample();
+        }
+
+        private void ClearHeights()
+        {
+            for (int i = 0; i < width; i++)
+            {
+                for (int j = 0; j < width; j++)
+                {
+                    this.Heights[i, j] = 0.0f;
+                }
+            }
         }
     }
 }

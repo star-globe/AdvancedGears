@@ -43,7 +43,7 @@ namespace AdvancedGears
             {
                 var p = point;
                 p.Seeds = seeds;
-                heights = p.SetHeights(center, pos.x, pos.z, width, height, size, heights);
+                p.SetHeights(center, pos.x, pos.z, width, height, size, heights);
             }
 
             terrain.terrainData.SetHeights(0,0, heights);

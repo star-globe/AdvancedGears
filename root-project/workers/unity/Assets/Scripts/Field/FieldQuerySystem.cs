@@ -165,6 +165,8 @@ namespace AdvancedGears
 
         protected override void ReceiveSnapshots(Dictionary<EntityId, List<EntitySnapshot>> shots)
         {
+            UnityEngine.Profiling.Profiler.BeginSample("ReceiveSnapshots");
+
             if (shots.Count > 0)
             {
                 SetField(shots);
@@ -173,6 +175,8 @@ namespace AdvancedGears
             {
                 SetFieldClear();
             }
+
+            UnityEngine.Profiling.Profiler.EndSample();
         }
 
         private void SetField(Dictionary<EntityId, List<EntitySnapshot>> shots)

@@ -211,10 +211,9 @@ namespace AdvancedGears
             return UnitBaseType.None;
         }
 
-        public static float[,] SetHeights(this TerrainPointInfo settings, Vector3 center, float x, float z, int width, float height, Vector3 size, float[,] b_heights)
+        public static void SetHeights(this TerrainPointInfo settings, Vector3 center, float x, float z, int width, float height, Vector3 size, float[,] b_heights)
         {
             float hillHeight = settings.HighestHillHeight - settings.LowestHillHeight;
-            float[,] heights = new float[width, width];
             float sqr = (settings.Range * settings.Range);
             int seeds = settings.Seeds;
             float tileSize = settings.TileSize * 0.001f;
@@ -233,11 +232,9 @@ namespace AdvancedGears
 
                     var diff = settings.LowestHillHeight + Mathf.PerlinNoise(noise_x * tileSize, noise_z * tileSize) * hillHeight;
                     var length = (pos_x - center.x) * (pos_x - center.x) + (pos_z - center.z) * (pos_z - center.z);
-                    heights[i, k] = b_heights[i, k] + (diff / height) * Mathf.Exp(-length/sqr);
+                    b_heights[i, k] = b_heights[i, k] + (diff / height) * Mathf.Exp(-length/sqr);
                 }
             }
-
-            return heights;
         }
 
         public static List<EntityId> GetAllFollowers(this FollowerInfo info, List<EntityId> list)
