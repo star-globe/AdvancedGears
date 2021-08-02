@@ -21,6 +21,10 @@ namespace AdvancedGears
         float dispLength = 700.0f;
         public static float DispLength { get { return Instance.dispLength; } }
 
+        [SerializeField]
+        float scaleRate = 0.5f;
+        public static float ScaleRate { get { return Instance.scaleRate; } }
+
         public override void Initialize()
         {
             Instance = this;

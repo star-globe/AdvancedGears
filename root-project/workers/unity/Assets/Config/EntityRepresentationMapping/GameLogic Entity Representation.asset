@@ -84,6 +84,6 @@ MonoBehaviour:
         asm: Improbable.Gdk.Core}
       data:
         entityType: Tower
-        prefab: {fileID: 7813373895779452489, guid: a35578bab9a7c4244a4582904c3579ee,
+        prefab: {fileID: 7813373895779452489, guid: 8afe7b420f0a5d74f82eaf2db360930e,
           type: 3}
         requiredComponents: 
