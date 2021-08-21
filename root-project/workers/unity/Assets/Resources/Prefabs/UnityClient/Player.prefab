@@ -191,7 +191,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   range: 100
   rad: 60
-  battleCamera: {fileID: 4143379275840001774}
   playerController: {fileID: 8221167194471028622}
 --- !u!1 &2392347093803152175
 GameObject:
@@ -203,7 +202,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7523223199914323902}
   - component: {fileID: 5138044774354016754}
-  - component: {fileID: 4143379275840001774}
   m_Layer: 11
   m_Name: BattleCamera
   m_TagString: Untagged
@@ -237,22 +235,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bf10cdea1344482e91a4f2b58506b77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &4143379275840001774
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2392347093803152175}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb3f5ef21a9142447ac3b4667e2e8736, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SerializedData:
-    range: 0
-    rad: 0
-    entityId: 0
 --- !u!1 &4294379671843646320
 GameObject:
   m_ObjectHideFlags: 0

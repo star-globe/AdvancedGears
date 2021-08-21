@@ -9,7 +9,7 @@ namespace AdvancedGears
 {
 	public class BattleCameraController : MonoBehaviour
 	{
-        //[Require] SpatialEntityId entityId;
+        [Require] Entity entity;
         [Require] World world;
 
         [SerializeField]
@@ -18,8 +18,8 @@ namespace AdvancedGears
         [SerializeField]
         float rad = 60.0f;
 
-        [SerializeField]
-        BattleCameraComponent battleCamera;
+        //[SerializeField]
+        //BattleCameraComponent battleCamera;
 
         [SerializeField]
         LocalPlayerController playerController;
@@ -32,7 +32,7 @@ namespace AdvancedGears
         void Start()
         {
             system = world.GetExistingSystem<LocalLockOnSystem>();
-            battleCamera.Value = new BattleCameraInfo(range, rad, cameraId);
+            world.EntityManager.AddComponentData(entity, new BattleCameraInfo(range, rad, cameraId));
         }
 
         void Update()
