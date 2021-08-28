@@ -50,7 +50,7 @@ namespace AdvancedGears
             {
                 var pos = position.Coords.ToUnityVector() + this.Origin;
                 foreach (var kvp in this.HexDic) {
-                    if (HexUtils.IsInsideHex(this.Origin, kvp.Key, pos))
+                    if (HexUtils.IsInsideHex(this.Origin, kvp.Key, pos, HexDictionary.HexEdgeLength))
                         activeIndexes.Add(kvp.Key);
                 }
             });

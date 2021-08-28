@@ -129,7 +129,7 @@ namespace AdvancedGears
 
             UnityEngine.Profiling.Profiler.BeginSample("HandleFactoryRequests:CheckAlive");
             var trans = EntityManager.GetComponentObject<Transform>(entity);
-            CheckAlive(trans.position, status.Side, uint.MaxValue, HexDictionary.HexEdgeLength * 2, teamsDic);
+            CheckAlive(trans.position, status.Side, uint.MaxValue, HexDictionary.HexEdgeLength * 0.9f, teamsDic);
             UnityEngine.Profiling.Profiler.EndSample();
 
             UnityEngine.Profiling.Profiler.BeginSample("HandleFactoryRequests:MakeOrders");

@@ -83,7 +83,7 @@ namespace AdvancedGears.Editor
             var snapshot = base.GenerateSnapshot();
         
             foreach (var h in Hexes) {
-                var template = HexTemplate.CreateHexEntityTemplate(h.pos.ToCoordinates(), h.index, h.attribute, h.hexId, h.side);
+                var template = HexTemplate.CreateHexEntityTemplate(h.pos.ToCoordinates(), h.index, h.attribute, h.hexId, h.side, hexDictionary.PowerLimit);
                 snapshot.AddEntity(template);
             }
         

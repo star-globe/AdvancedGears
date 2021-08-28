@@ -29,11 +29,19 @@ namespace AdvancedGears
             });
         }
 
+        private UnitSide Side => hexBase.Data.Side;
+
         const float attackRate = 0.2f;
+        const float reduceRate = 3.0f;
+
+        private readonly Dictionary<UnitSide, float> reducePowers = new Dictionary<UnitSide, float>();
+        private readonly List<UnitSide> keyList = new List<UnitSide>();
 
         void HexPowerFlowEvent(HexPowerFlow powerFlow)
         {
             var powers = power.Data.SidePowers;
+#if false
+
             var keys = powers.OrderByDescending(kvp => kvp.Value).Select(kvp => kvp.Key).ToArray();
             var flow = powerFlow.Flow * attackRate;
             if (keys.Length > 0)
@@ -71,11 +79,53 @@ namespace AdvancedGears
                 if (powers[k] < 0)
                     powers[k] = 0;
             }
+#else
+            var side = powerFlow.Side;
+            if (powers.ContainsKey(side))
+                powers[side] += powerFlow.Flow;
+            else
+                powers.Add(side, powerFlow.Flow);
 
+            reducePowers.Clear();
+            keyList.Clear();
+            keyList.AddRange(powers.Keys);
+
+            foreach (var k in keyList) {
+                reducePowers[k] = GetReducePowers(k, powers);
+            }
+
+            foreach (var kvp in reducePowers) {
+                if (powers.ContainsKey(kvp.Key) == false)
+                    continue;
+
+                powers[kvp.Key] -= kvp.Value;
+            }
+
+            foreach (var k in keyList)
+            {
+                if (powers[k] < 0)
+                    powers[k] = 0;
+            }
+#endif
             power.SendUpdate(new HexPower.Update()
             {
                 SidePowers = powers,
             });
+        }
+
+        private float GetReducePowers(UnitSide side, Dictionary<UnitSide, float> powers)
+        {
+            float pow = 0;
+
+            foreach (var kvp in powers) {
+                if (kvp.Key != side)
+                    pow += kvp.Value;
+            }
+
+            if (this.Side != side)
+                pow *= reduceRate;
+
+            return pow;
         }
 
         void HexActiveChangeEvent(HexActiveChange change)

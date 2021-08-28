@@ -127,7 +127,7 @@ namespace AdvancedGears
 
             // set behind
             if (status.Type == UnitType.Commander) {
-                var addRange = RangeDictionary.AllyRange / 2;
+                var addRange = RangeDictionary.AllyRange;
                 range += AttackLogicDictionary.RankScaled(addRange, status.Rank);
             }
 

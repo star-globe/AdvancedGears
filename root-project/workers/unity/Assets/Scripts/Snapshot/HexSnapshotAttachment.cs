@@ -51,7 +51,7 @@ namespace AdvancedGears
                 template.AddComponent(new SpawnPoint.Snapshot { Type = spawnType }, writeAccess);
 
             if (isResource)
-                template.AddComponent(new HexPowerResource.Snapshot { Level = 1}, writeAccess);
+                template.AddComponent(new HexPowerResource.Snapshot { Level = 3 }, writeAccess);
         }
     }
 }

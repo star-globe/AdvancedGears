@@ -19,7 +19,7 @@ namespace AdvancedGears
         EntityQuery portalGroup;
         EntityQueryBuilder.F_ED<StrategyHexAccessPortal.Component> portalQuery;
         EntityQuery facilityGroup;
-        EntityQueryBuilder.F_EDDD<HexFacility.Component, BaseUnitStatus.Component, SpatialEntityId> facilityQuery;
+        //EntityQueryBuilder.F_EDDD<HexFacility.Component, BaseUnitStatus.Component, SpatialEntityId> facilityQuery;
         IntervalChecker interAccess;
         const int frequencyManager = 1;
 
@@ -44,45 +44,52 @@ namespace AdvancedGears
             interAccess = IntervalCheckerInitializer.InitializedChecker(frequencyManager);
 
             portalQuery = PortalQuery;
-            facilityQuery = FacilityQuery;
+            //facilityQuery = FacilityQuery;
         }
 
         protected override void OnUpdate()
         {
-            UpdateHexFacility();
+            //UpdateHexFacility();
+            CheckHexSideCheange();
 
             UpdateHexAccess();
         }
 
-        private void UpdateHexFacility()
+        //private void UpdateHexFacility()
+        //{
+        //    if (base.HexDic == null)
+        //        return;
+        //
+        //    changedCount = 0;
+        //    Entities.With(facilityGroup).ForEach(facilityQuery);
+        //}
+
+        //private void FacilityQuery(Entity entity,
+        //                            ref HexFacility.Component facility,
+        //                            ref BaseUnitStatus.Component status,
+        //                            ref SpatialEntityId entityId)
+        //{
+        //    var hexIndex = facility.HexIndex;
+        //    var side = status.Side;
+        //
+        //    if (HexDic.ContainsKey(hexIndex) == false)
+        //        return;
+        //
+        //    var hex = HexDic[hexIndex];
+        //    if (hex.Side == status.Side)
+        //        return;
+        //
+        //    changedCount++;
+        //    //hex.Side = status.Side;
+        //    //this.UpdateSystem.SendEvent(new HexBase.SideChanged.Event(new SideChangedEvent(side)), hex.EntityId.EntityId);
+        //
+        //    //Debug.LogFormat("Updated Index:{0} Side:{1}", hexIndex, side);
+        //}
+
+        private void CheckHexSideCheange()
         {
-            if (base.HexDic == null)
-                return;
-
-            changedCount = 0;
-            Entities.With(facilityGroup).ForEach(facilityQuery);
-        }
-
-        private void FacilityQuery(Entity entity,
-                                    ref HexFacility.Component facility,
-                                    ref BaseUnitStatus.Component status,
-                                    ref SpatialEntityId entityId)
-        {
-            var hexIndex = facility.HexIndex;
-            var side = status.Side;
-
-            if (HexDic.ContainsKey(hexIndex) == false)
-                return;
-
-            var hex = HexDic[hexIndex];
-            if (hex.Side == status.Side)
-                return;
-
-            changedCount++;
-            hex.Side = status.Side;
-            this.UpdateSystem.SendEvent(new HexBase.SideChanged.Event(new SideChangedEvent(side)), hex.EntityId.EntityId);
-
-            //Debug.LogFormat("Updated Index:{0} Side:{1}", hexIndex, side);
+            var changedEvents = this.UpdateSystem.GetEventsReceived<HexBase.SideChanged.Event>();
+            changedCount = changedEvents.Count;
         }
 
         readonly Dictionary<UnitSide,Dictionary<uint, HexDetails>> borderHexListDic = new Dictionary<UnitSide,Dictionary<uint, HexDetails>>();

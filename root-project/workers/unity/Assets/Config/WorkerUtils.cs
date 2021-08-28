@@ -92,7 +92,8 @@ namespace AdvancedGears
             //world.GetOrCreateSystem<UnitArmyObserveSystem>();
             //world.GetOrCreateSystem<CommandersManagerSystem>();
             world.GetOrCreateSystem<StrategyHexAccessPortalUpdateSystem>();
-            world.GetOrCreateSystem<DominationSystem>();
+            //world.GetOrCreateSystem<DominationSystem>();
+            world.GetOrCreateSystem<HexPowerDominationSystem>();
             world.GetOrCreateSystem<StrongholdSearchSystem>();
             world.GetOrCreateSystem<StrongholdActionSystem>();
             world.GetOrCreateSystem<BulletMovementSystem>();
@@ -101,6 +102,7 @@ namespace AdvancedGears
             world.GetOrCreateSystem<HexBaseSystem>();
             world.GetOrCreateSystem<HexUpdateSystem>();
             world.GetOrCreateSystem<HexPowerUpdateSystem>();
+            world.GetOrCreateSystem<HexPowerResourceConvertSystem>();
             world.GetOrCreateSystem<TurretUpdateSystem>();
             world.GetOrCreateSystem<SleepUpdateSystem>();
             world.GetOrCreateSystem<VirtualArmyUpdateSystem>();

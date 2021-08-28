@@ -413,6 +413,14 @@ namespace AdvancedGears
             return info.UnitId.IsValid();
         }
 
+        public static Vector3 GetCenterPosition(this FrontLineInfo info, Vector3 origin)
+        {
+            var left = info.LeftCorner.ToUnityVector() + origin;
+            var right = info.RightCorner.ToUnityVector() + origin;
+
+            return (left + right) / 2;
+        }
+
         public static Vector3 GetOnLinePosition(this FrontLineInfo info, Vector3 origin, Vector3 current, float fowardBuffer = 0.0f)
         {
             var left = info.LeftCorner.ToUnityVector() + origin;

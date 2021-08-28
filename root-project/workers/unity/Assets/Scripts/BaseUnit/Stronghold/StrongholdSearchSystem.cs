@@ -19,7 +19,7 @@ namespace AdvancedGears
         private EntityQueryBuilder.F_EDDDD<StrongholdSight.Component, BaseUnitStatus.Component, HexFacility.Component, SpatialEntityId> action;
         IntervalChecker inter;
 
-        const int period = 2;
+        const int period = 1;
 
         StrategyHexAccessPortalUpdateSystem portalUpdateSytem = null;
         private Dictionary<UnitSide, FrontHexInfo> FrontHexes => portalUpdateSytem?.FrontHexes;
@@ -80,7 +80,8 @@ namespace AdvancedGears
             var corners = sight.FrontLineCorners;
             var hexes = sight.TargetHexes;
 
-            var order = GetTarget(trans.position, hex.HexIndex, this.FrontHexes, this.HexIndexes, status.Side, enemySide, hexes, corners);
+            //var order = GetTarget(trans.position, hex.HexIndex, this.FrontHexes, this.HexIndexes, status.Side, enemySide, hexes, corners);
+            var order = GetNeaestTarget(trans.position, vector, hex.HexIndex, this.FrontHexes, this.HexIndexes, status.Side, enemySide, hexes, corners);
 
             sight.TargetStrongholds = targets;
             sight.FrontLineCorners = corners;
@@ -89,6 +90,114 @@ namespace AdvancedGears
         }
 
         readonly List<HexIndex> hexList = new List<HexIndex>();
+
+        const float emptyRate = 0.2f;
+
+        private OrderType GetNeaestTarget(Vector3 pos, Vector3 vector, uint index, Dictionary<UnitSide, FrontHexInfo> frontHexes, Dictionary<uint, HexIndexPower> hexIndexes, UnitSide selfSide, UnitSide enemySide, Dictionary<uint, TargetHexInfo> hexes, List<FrontLineInfo> corners)
+        {
+            hexes.Clear();
+            corners.Clear();
+
+            float hexLength = float.MaxValue;
+            uint targetHexId = uint.MaxValue;
+            TargetHexInfo? hexInfo = null;
+
+            foreach (var kvp in frontHexes) {
+                if (kvp.Key == selfSide)
+                    continue;
+
+                var fronts = kvp.Value;
+                foreach (var id in fronts.Indexes) {
+
+                    if (hexIndexes.TryGetValue(id, out var hex) == false)
+                        continue;
+
+                    if (hex.attribute == HexAttribute.NotBelong)
+                        continue;
+
+                    if (SuperiorSidePowers(hex.SidePowers, selfSide))
+                        continue;
+
+                    //if (HexUtils.ExistOtherSidePowers(hex.SidePowers, selfSide) == false)
+                    //    continue;
+
+                    //if (HexUtils.ExistSelfSidePowers(hex.SidePowers, selfSide))
+                    //    continue;
+
+                    if (HexUtils.IsNeighborHex(index, id) == false)
+                        continue;
+
+                    var center = HexUtils.GetHexCenter(this.Origin, id, HexDictionary.HexEdgeLength);
+                    var length = CalcValue(vector, center - pos);
+
+                    if (kvp.Key == UnitSide.None)
+                        length *= emptyRate;
+
+                    if (length >= hexLength)
+                        continue;
+
+                    hexLength = length;
+                    targetHexId = id;
+                    hexInfo = new TargetHexInfo(new HexBaseInfo(id, kvp.Key), 1.0f);
+                }
+            }
+
+            float lineLength = float.MaxValue;
+            FrontLineInfo? targetLine = null;
+
+            if (hexIndexes.TryGetValue(index, out var power)) {
+                foreach (var line in power.FrontLines) {
+                    if (line.IsValid() == false)
+                        continue;
+
+                    var center = line.GetCenterPosition(this.Origin);
+                    var length = CalcValue(vector, center - pos);
+
+                    if (length >= lineLength)
+                        continue;
+
+                    lineLength = length;
+                    targetLine = line;
+                }
+            }
+
+            if (hexLength == float.MaxValue && lineLength == float.MaxValue)
+                return OrderType.Idle;
+
+            if (hexLength < lineLength) {
+                hexes.Add(targetHexId, hexInfo.Value);
+                return OrderType.Attack;
+            }
+            else {
+                corners.Add(targetLine.Value);
+                return OrderType.Keep;
+            }
+        }
+
+        private bool SuperiorSidePowers(Dictionary<UnitSide,float> powers, UnitSide selfSide)
+        {
+            powers.TryGetValue(selfSide, out var selfPower);
+
+            foreach (var kvp in powers) {
+                if (kvp.Key == selfSide)
+                    continue;
+
+                if (selfPower < HexDictionary.HexPowerDomination)
+                    return false;
+            }
+
+            return true;
+        }
+
+        private float CalcValue(Vector3 vector, Vector3 diff)
+        {
+            if (Vector3.Dot(vector, diff) < 0)
+                return float.MaxValue;
+
+            var mag = diff.magnitude;
+            var cross = Vector3.Cross(vector.normalized, diff);
+            return mag + cross.sqrMagnitude;
+        }
 
         private OrderType GetTarget(Vector3 pos, uint index, Dictionary<UnitSide,FrontHexInfo> frontHexes, Dictionary<uint,HexIndexPower> hexIndexes, UnitSide selfSide, UnitSide enemySide, Dictionary<uint,TargetHexInfo> hexes, List<FrontLineInfo> corners)
         {
@@ -102,9 +211,10 @@ namespace AdvancedGears
                     hexList.Add(hexIndexes[i].hexIndex);
             }
 
-            FrontHexInfo targetHexInfo;
-            if (frontHexes.TryGetValue(UnitSide.None, out targetHexInfo))
-                order = GetTargetHex(pos, index, selfSide, hexIndexes, targetHexInfo, hexes);
+            //FrontHexInfo targetHexInfo;
+            //if (frontHexes.TryGetValue(UnitSide.None, out targetHexInfo))
+            //    order = GetTargetHex(pos, index, selfSide, hexIndexes, targetHexInfo, hexes);
+            order = GetTargetHex(index, selfSide, frontHexes, hexIndexes, hexes);
 
             if (order != OrderType.Idle) {
                 corners.Clear();
@@ -114,6 +224,51 @@ namespace AdvancedGears
             hexes.Clear();
             order = GetTargetFrontLine(pos, index, selfSide, hexIndexes, corners);
             return order;
+        }
+
+        private OrderType GetTargetHex(uint index, UnitSide side, Dictionary<UnitSide, FrontHexInfo> frontHexes, Dictionary<uint, HexIndexPower> hexIndexes, Dictionary<uint, TargetHexInfo> hexes)
+        {
+            hexes.Clear();
+
+            int targetCount = 0;
+
+            foreach (var kvp in frontHexes) {
+                if (kvp.Key == side)
+                    continue;
+
+                var indexes = kvp.Value.Indexes;
+                var ids = HexUtils.GetNeighborHexIndexes(index);
+                foreach (var id in ids)
+                {
+                    var idx = TargetUtils.FindIndex(indexes, id);
+                    if (idx < 0)
+                        continue;
+
+                    if (hexIndexes.ContainsKey(indexes[idx]) == false)
+                        continue;
+
+                    var hex = hexIndexes[indexes[idx]];
+                    if (hex.attribute == HexAttribute.NotBelong)
+                        continue;
+
+                    if (HexUtils.ExistSelfSidePowers(hex.SidePowers, side))
+                        continue;
+
+                    hexes[hex.Index] = new TargetHexInfo(new HexBaseInfo(hex.Index, kvp.Key), 1.0f);
+                    targetCount++;
+                }
+            }
+
+
+            switch (targetCount)
+            {
+                case 0:
+                    return OrderType.Idle;
+                case 1:
+                    return OrderType.Keep;
+                default:
+                    return OrderType.Attack;
+            }
         }
 
         private OrderType GetTargetFrontLine(in Vector3 pos, uint index, UnitSide selfSide, Dictionary<uint, HexIndexPower> hexIndexes, List<FrontLineInfo> corners)
@@ -161,7 +316,10 @@ namespace AdvancedGears
                     continue;
 
                 var hex = hexIndexes[indexes[idx]];
-                if (HexUtils.ExistOtherSidePowers(hex.SidePowers, selfSide) == false)
+                if (hex.attribute == HexAttribute.NotBelong)
+                    continue;
+
+                if (HexUtils.ExistSelfSidePowers(hex.SidePowers, selfSide))
                     continue;
 
                 hexes[hex.Index] = new TargetHexInfo(new HexBaseInfo(hex.Index, UnitSide.None) , 1.0f);

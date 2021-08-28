@@ -22,6 +22,19 @@ namespace AdvancedGears
         [SerializeField] private float hexResourceRate = 10.0f;
         public static float HexResourceRate => Instance.hexResourceRate;
 
+        [SerializeField] private float hexPowerLimit = 100.0f;
+        public float PowerLimit => hexPowerLimit;
+        public static float HexPowerLimit => Instance.hexPowerLimit;
+
+        [SerializeField] private float hexPowerMin = 0.1f;
+        public static float HexPowerMin => Instance.hexPowerMin;
+
+        [SerializeField] private float hexPowerDomination = 50.0f;
+        public static float HexPowerDomination => Instance.hexPowerDomination;
+
+        [SerializeField] private int resourceFlowMax = 3;
+        public static int ResourceFlowMax => Instance.resourceFlowMax;
+
         public override void Initialize()
         {
             Instance = this;

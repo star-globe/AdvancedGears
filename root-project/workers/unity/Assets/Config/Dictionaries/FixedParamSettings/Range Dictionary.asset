@@ -25,7 +25,7 @@ MonoBehaviour:
     range: 30
   - type: 6
     range: 60
-  unitInter: 30
+  unitInter: 15
   teamInter: 150
   moveBufferRate: 0.2
   sightRangeRate: 1.5

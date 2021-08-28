@@ -77,7 +77,7 @@ namespace AdvancedGears
             bool isActive = false;
             var pos = position.Coords.ToUnityVector() + this.Origin;
             foreach (var kvp in hexIndexes) {
-                if (HexUtils.IsInsideHex(this.Origin, kvp.Key, pos) == false)
+                if (HexUtils.IsInsideHex(this.Origin, kvp.Key, pos, HexDictionary.HexEdgeLength) == false)
                     continue;
 
                 isActive = kvp.Value.IsActive;

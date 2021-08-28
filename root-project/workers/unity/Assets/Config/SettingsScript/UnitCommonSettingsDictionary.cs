@@ -52,5 +52,10 @@ namespace AdvancedGears
 
             return null;
         }
+
+        public static Dictionary<UnitType, UnitCommonSettings> Dic
+        {
+            get { return Instance.SettingsDic; }
+        }
     }
 }

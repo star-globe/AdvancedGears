@@ -9,6 +9,9 @@ namespace AdvancedGears
     [RequireComponent(typeof(LineRenderer))]
     public class LandLineRenderer : MonoBehaviour
     {
+        [SerializeField]
+        float width = 3.0f;
+
         private LineRenderer lineRenderer;
         private readonly Vector3[] linePoints = new Vector3[256];
         private readonly List<Vector3> pointList = new List<Vector3>();
@@ -74,6 +77,8 @@ namespace AdvancedGears
 
             this.Renderer.positionCount = count;
             this.Renderer.SetPositions(linePoints);
+            this.Renderer.startWidth = width;
+            this.Renderer.endWidth = width;
         }
 
         private void SetPoints(Vector3[] points, Vector3[] basePoints, out int count)

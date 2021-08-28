@@ -8,6 +8,7 @@ using UnityEngine;
 
 namespace AdvancedGears
 {
+    [System.Obsolete]
     [DisableAutoCreation]
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     internal class BaseUnitPhysicsSystem : SpatialComponentSystem

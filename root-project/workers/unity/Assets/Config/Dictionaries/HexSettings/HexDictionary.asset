@@ -15,4 +15,9 @@ MonoBehaviour:
   hexesList:
   - {fileID: 11400000, guid: c52cdb9164044034aa2cafcf10d34ec0, type: 2}
   edgeLength: 200
-  hexTargetRadiusRate: 0.05
+  hexTargetRadiusRate: 0.1
+  hexResourceRate: 3
+  hexPowerLimit: 100
+  hexPowerMin: 0.1
+  hexPowerDomination: 50
+  resourceFlowMax: 1

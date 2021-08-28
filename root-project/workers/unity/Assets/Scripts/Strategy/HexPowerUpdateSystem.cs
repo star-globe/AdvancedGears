@@ -17,11 +17,10 @@ namespace AdvancedGears
     {
         EntityQuerySet hexpowerQuerySet;
         EntityQuerySet resourceQuerySet;
-        const int frequencyPower = 5;
+        const int frequencyPower = 2;
         const int frequencyResource = 1;
         EntityQueryBuilder.F_EDDD<HexPower.Component, HexBase.Component, SpatialEntityId> powerAction;
-        EntityQueryBuilder.F_EDD<HexPowerResource.Component, Position.Component> resourceAction;
-        readonly Dictionary<UnitSide, Dictionary<uint, List<FrontLineInfo>>> frontLineDic = new Dictionary<UnitSide, Dictionary<uint, List<FrontLineInfo>>>();
+        EntityQueryBuilder.F_EDDD<BaseUnitStatus.Component, HexPowerResource.Component, Position.Component> resourceAction;
 
         protected override void OnCreate()
         {
@@ -35,6 +34,7 @@ namespace AdvancedGears
                                                   ), frequencyPower, Time.ElapsedTime);
 
             resourceQuerySet = new EntityQuerySet(GetEntityQuery(
+                                                  ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                                                   ComponentType.ReadOnly<HexPowerResource.Component>(),
                                                   ComponentType.ReadOnly<Position.Component>()
                                                   ), frequencyResource, Time.ElapsedTime);
@@ -42,7 +42,7 @@ namespace AdvancedGears
             resourceAction = ResourceQuery;
         }
 
-        readonly Dictionary<uint, float> resourceDictionary = new Dictionary<uint, float>();
+        readonly Dictionary<uint, Dictionary<UnitSide,float>> resourceDictionary = new Dictionary<uint, Dictionary<UnitSide, float>>();
         readonly Dictionary<EntityId, Dictionary<UnitSide,float>> flowDictionary = new Dictionary<EntityId, Dictionary<UnitSide,float>>();
         readonly List<uint> targetIds = new List<uint>();
 
@@ -80,24 +80,35 @@ namespace AdvancedGears
             }
         }
 
+        readonly List<UnitSide> keys = new List<UnitSide>();
+
         private void PowerQuery(Entity entity,
                                 ref HexPower.Component power,
                                 ref HexBase.Component hex,
                                 ref SpatialEntityId entityId)
         {
+            keys.Clear();
+            keys.AddRange(power.SidePowers.Keys);
+
+            foreach (var key in keys) {
+                var current = power.SidePowers[key];
+                if (current <= 0)
+                    power.SidePowers[key] = 0;
+            }
+
+            if (resourceDictionary.TryGetValue(hex.Index, out var sideResource)) {
+                foreach (var kvp in sideResource) {
+                    power.SidePowers.TryGetValue(kvp.Key, out var current);
+                    power.SidePowers[kvp.Key] = Mathf.Min(current + (float) (kvp.Value * deltaTime), HexDictionary.HexPowerLimit);
+                }
+            }
+
             var hexSide = hex.Side;
             if (hexSide == UnitSide.None)
                 return;
 
-            power.SidePowers.TryGetValue(hexSide, out var current);
-
-            if (current <= 0) {
-                power.SidePowers[hexSide] = 0;
-                current = 0;
-            }
-
-            if (resourceDictionary.TryGetValue(hex.Index, out var resourceValue))
-                power.SidePowers[hexSide] = current + (float)(resourceValue * deltaTime);
+            if (power.SidePowers.TryGetValue(hexSide, out var selfPower) == false)
+                return;
 
             var ids = HexUtils.GetNeighborHexIndexes(hex.Index);
             targetIds.Clear();
@@ -107,15 +118,18 @@ namespace AdvancedGears
                     continue;
 
                 var h = base.HexDic[id];
+                if (h.Attribute == HexAttribute.NotBelong)
+                    continue;
+
                 bool isFlow = false;
                 if (h.Side == hexSide)
                 {
-                    if (current > h.CurrentPower + current * flowValueRate)
+                    if (selfPower > h.CurrentPower + selfPower * flowValueRate)
                     {
                         isFlow = true;
                     }
                 }
-                else if (h.Side == UnitSide.None)
+                else //if (h.Side == UnitSide.None)
                 {
                     isFlow = true;
                 }
@@ -124,7 +138,7 @@ namespace AdvancedGears
                     targetIds.Add(id);
             }
 
-            var totalFlow = (float) (flowValueRate * deltaTime * current);
+            var totalFlow = (float) (flowValueRate * deltaTime * selfPower);
             var count = targetIds.Count;
             var flow = totalFlow / count;
 
@@ -164,24 +178,35 @@ namespace AdvancedGears
             if (CheckTime(ref resourceQuerySet.inter) == false)
                 return;
 
-            resourceDictionary.Clear();
+            foreach (var kvp in resourceDictionary)
+                kvp.Value.Clear();
 
             Entities.With(resourceQuerySet.group).ForEach(resourceAction);
         }
 
         private void ResourceQuery(Entity entity,
+                                    ref BaseUnitStatus.Component status,
                                     ref HexPowerResource.Component resource,
                                     ref Position.Component position)
         {
+            if (status.Side == UnitSide.None)
+                return;
+
             var pos = position.Coords.ToUnityVector() + this.Origin;
             foreach (var kvp in this.HexDic)
             {
                 var index = kvp.Key;
-                if (HexUtils.IsInsideHex(this.Origin, index, pos, HexDictionary.HexEdgeLength) == false)
+                var center = HexUtils.GetHexCenter(this.Origin, index, HexDictionary.HexEdgeLength);
+
+                if ((center - pos).magnitude > HexDictionary.HexEdgeLength / 2)
                     continue;
 
-                resourceDictionary.TryGetValue(index, out var current);
-                resourceDictionary[index] = current + resource.Level * HexDictionary.HexResourceRate;
+                if (resourceDictionary.ContainsKey(index) == false)
+                    resourceDictionary[index] = new Dictionary<UnitSide, float>();
+
+                var dic = resourceDictionary[index];
+                dic.TryGetValue(status.Side, out var current);
+                dic[status.Side] = current + resource.Level * HexDictionary.HexResourceRate;
             }
         }
     }

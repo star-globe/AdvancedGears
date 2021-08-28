@@ -183,6 +183,7 @@ namespace AdvancedGears
         public SpatialEntityId EntityId;
         public Dictionary<UnitSide, float> Powers;
         public bool isActive;
+        public HexAttribute Attribute;
 
         public float CurrentPower
         {
@@ -252,6 +253,7 @@ namespace AdvancedGears
             hexDic[hex.Index].EntityId = entityId;
             hexDic[hex.Index].Powers = power.SidePowers;
             hexDic[hex.Index].isActive = power.IsActive;
+            hexDic[hex.Index].Attribute = hex.Attribute;
         }
     }
 }

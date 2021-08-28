@@ -91,6 +91,7 @@ namespace AdvancedGears
     public struct HexIndexPower
     {
         public HexIndex hexIndex { get; private set; }
+        public HexAttribute attribute { get; private set; }
         public Dictionary<UnitSide, float> SidePowers { get; private set; }
         public uint Index => hexIndex.Index;
         public UnitSide Side => hexIndex.Side;
@@ -99,6 +100,7 @@ namespace AdvancedGears
         public HexIndexPower(HexIndex index, HexLocalInfo local)
         {
             this.hexIndex = index;
+            this.attribute = local.Attribute;
             SidePowers = local == null ? new Dictionary<UnitSide, float>(): local.Powers;
         }
     }

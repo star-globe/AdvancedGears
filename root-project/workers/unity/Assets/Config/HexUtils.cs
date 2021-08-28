@@ -6,11 +6,10 @@ namespace AdvancedGears
 {
     public static class HexUtils
     {
-        const float edgeLength = 500.0f;
         readonly static float route3 = Mathf.Sqrt(3.0f);
         const float powerMinLimit = 1.0f / 1000;
 
-        public static void SetHexCorners(in Vector3 center, Vector3[] corners, float edge = edgeLength)
+        public static void SetHexCorners(in Vector3 center, Vector3[] corners, float edge)
         {
             if (corners == null || corners.Length != 7)
                 return;
@@ -24,14 +23,14 @@ namespace AdvancedGears
             corners[6] = corners[0];
         }
 
-        public static void SetHexCorners(in Vector3 origin, uint index, Vector3[] corners, float edge = edgeLength)
+        public static void SetHexCorners(in Vector3 origin, uint index, Vector3[] corners, float edge)
         {
             SetHexCorners(GetHexCenter(origin, index, edge), corners, edge);
         }
 
         static readonly Vector3[] corners = new Vector3[7];
 
-        public static bool IsInsideHex(in Vector3 origin, uint index, in Vector3 pos, float edge = edgeLength)
+        public static bool IsInsideHex(in Vector3 origin, uint index, in Vector3 pos, float edge)
         {
             SetHexCorners(origin, index, corners, edge);
 
@@ -83,7 +82,7 @@ namespace AdvancedGears
             return false;
         }
 
-        public static Vector3 GetHexCenter(in Vector3 origin, uint index, float edge = edgeLength)
+        public static Vector3 GetHexCenter(in Vector3 origin, uint index, float edge)
         {
             if (index == 0)
                 return origin;
@@ -221,6 +220,17 @@ namespace AdvancedGears
             return ids;
         }
 
+        public static bool IsNeighborHex(uint index, uint target)
+        {
+            var ids = GetNeighborHexIndexes(index);
+            foreach (var id in ids) {
+                if (id == target)
+                    return true;
+            }
+
+            return false;
+        }
+
         public static bool HexAllowsUnitType(HexAttribute attribute, UnitType type)
         {
             switch (attribute)
@@ -259,12 +269,25 @@ namespace AdvancedGears
 
         public static bool ExistOtherSidePowers(Dictionary<UnitSide, float> sidePowers, UnitSide self)
         {
+            return ExistSidePowers(sidePowers, self, isSelf: false);
+        }
+
+        public static bool ExistSelfSidePowers(Dictionary<UnitSide, float> sidePowers, UnitSide self)
+        {
+            return ExistSidePowers(sidePowers, self, isSelf:true);
+        }
+
+        private static bool ExistSidePowers(Dictionary<UnitSide, float> sidePowers, UnitSide self, bool isSelf)
+        {
             if (sidePowers == null)
                 return false;
 
             foreach (var kvp in sidePowers)
             {
-                if (kvp.Key != self && kvp.Value > powerMinLimit)
+                if ((kvp.Key == self) != isSelf)
+                    continue;
+
+                if (kvp.Value > powerMinLimit)
                     return true;
             }
 

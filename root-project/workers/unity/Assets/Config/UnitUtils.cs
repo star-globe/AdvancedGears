@@ -16,6 +16,18 @@ namespace AdvancedGears
             return set != null && set.isBuilding;
         }
 
+        public static UnitType[] GetBuildingUnitTypes()
+        {
+            List<UnitType> typeList = new List<UnitType>();
+            var dic = UnitCommonSettingsDictionary.Dic;
+            foreach (var kvp in dic) {
+                if (kvp.Value.isBuilding)
+                    typeList.Add(kvp.Key);
+            }
+
+            return typeList.ToArray();
+        }
+
         public static bool IsAutomaticallyMoving(UnitType type)
         {
             var set = UnitCommonSettingsDictionary.GetSettings(type);

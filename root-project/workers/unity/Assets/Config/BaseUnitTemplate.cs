@@ -99,20 +99,22 @@ namespace AdvancedGears
                 case UnitType.Soldier:
                     template.AddComponent(new BulletComponent.Snapshot(), writeAccess);
                     template.AddComponent(new PostureAnimation.Snapshot(), writeAccess);
-                    template.AddComponent(new DominationDevice.Snapshot { Type = DominationDeviceType.Capturing }, writeAccess);
+                    //template.AddComponent(new DominationDevice.Snapshot { Type = DominationDeviceType.Capturing }, writeAccess);
+                    //template.AddComponent(new HexPowerResource.Snapshot { Level = 1 }, writeAccess);
                     template.AddComponent(new SleepComponent.Snapshot(), writeAccess);
                     break;
 
                 case UnitType.Commander:
                     template.AddComponent(new BulletComponent.Snapshot(), writeAccess);
+                    template.AddComponent(new PostureAnimation.Snapshot(), writeAccess);
+                    template.AddComponent(new HexPowerResource.Snapshot { Level = 1 }, writeAccess);
                     template.AddComponent(new CommanderStatus.Snapshot { Order = new OrderPair { Self = OrderType.Idle, Upper = OrderType.Idle },}, writeAccess);
                     template.AddComponent(new CommanderTeam.Snapshot { FollowerInfo = new FollowerInfo { Followers = new List<EntityId>(), UnderCommanders = new List<EntityId>() },
                                                                        SuperiorInfo = new SuperiorInfo(),
                                                                        TargetInfoSet = TargetUtils.DefaultTargteInfoSet() }, writeAccess);
                     template.AddComponent(new CommanderSight.Snapshot { WarPowers = new List<WarPower>() }, writeAccess);
                     template.AddComponent(new CommanderAction.Snapshot { ActionType = CommandActionType.None }, writeAccess);
-                    template.AddComponent(new PostureAnimation.Snapshot(), writeAccess);
-                    template.AddComponent(new DominationDevice.Snapshot { Type = DominationDeviceType.Capturing }, writeAccess);
+                    //template.AddComponent(new DominationDevice.Snapshot { Type = DominationDeviceType.Capturing }, writeAccess);
                     template.AddComponent(new BoidComponent.Snapshot(), writeAccess);
                     template.AddComponent(new VirtualArmy.Snapshot { SimpleUnits = new Dictionary<EntityId, SimpleUnit>() }, writeAccess);
                     break;

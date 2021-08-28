@@ -115,6 +115,7 @@ namespace AdvancedGears
             var trans = EntityManager.GetComponentObject<Transform>(entity);
             var pos = trans.position;
 
+#if false
             team.FollowerInfo.UnderCommanders.Clear();
 
             var rank = status.Rank - 1;
@@ -133,6 +134,30 @@ namespace AdvancedGears
 
                 team.FollowerInfo.UnderCommanders.Add(unit.id);
             }
+#else
+            var info = team.FollowerInfo;
+            var solNum = AttackLogicDictionary.UnderSoldiers;
+
+            bool changed = false;
+            if (info.Followers.Count < solNum) {
+                var allies = getAllyUnits(status.Side, pos, (float) RangeDictionary.TeamInter, allowDead: false, GetSingleUnitTypes(UnitType.Soldier));
+                foreach (var unit in allies){
+                    int index = -1;
+                    foreach (var id in info.Followers) {
+                        if (id == unit.id)
+                            break;
+                    }
+
+                    if (index < 0) {
+                        info.Followers.Add(unit.id);
+                        changed = true;
+                    }
+                }
+            }
+
+            if (changed)
+                team.FollowerInfo = info;
+#endif
         }
         #endregion
 
