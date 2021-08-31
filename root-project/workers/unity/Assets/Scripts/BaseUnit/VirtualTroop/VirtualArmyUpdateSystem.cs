@@ -104,7 +104,7 @@ namespace AdvancedGears
                 var t = unit.transform.parent;
                 var buffer = unit.BufferVector.magnitude;
 
-                var p = GetGrounded(pos + rot * kvp.Value.RelativePos.ToUnityVector(), buffer);
+                var p = GetGrounded(pos + kvp.Value.RelativePos.ToUnityVector(), buffer);
                 var p_diff = p - t.position;
                 if (p_diff.sqrMagnitude >= posDiff * posDiff)
                     t.position = NavMeshUtils.GetNavPoint(t.position, p, unit.Bounds.size.magnitude, WalkableNavArea);
