@@ -272,12 +272,12 @@ namespace AdvancedGears
         float get_forward(Vector3 diff, float range)
         {
             float forward = 0.0f;
-            var buffer = range * RangeDictionary.MoveBufferRate;
+            var buffer = range * RangeDictionary.MoveBufferRate / 2;
             var mag = diff.magnitude;
 
-            if (mag > range)
+            if (mag > range + buffer)
             {
-                forward = Mathf.Min((mag - range) / buffer, 1.0f);
+                forward = Mathf.Min((mag - range - buffer) / buffer, 1.0f);
             }
             else if (mag < range - buffer)
             {

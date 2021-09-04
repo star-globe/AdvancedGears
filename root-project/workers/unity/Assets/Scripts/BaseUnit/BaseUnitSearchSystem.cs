@@ -307,7 +307,7 @@ namespace AdvancedGears
 
             var info = new UnitInfo();
             info.id = entityId;
-            info.pos = trans.position;
+            info.pos = unitTransform == null ? trans.position: unitTransform.Bounds.center;
             info.size = unitTransform == null ? 0.0f: unitTransform.SizeRadius;
             info.rot = trans.rotation;
             info.type = unit.Value.Type;
@@ -420,12 +420,15 @@ namespace AdvancedGears
                         continue;
                 }
 
-                var l = (col.transform.position - pos).sqrMagnitude;
+                TryGetComponentObject<UnitTransform>(comp.EntityId, out var unit);
+
+                var colPos = unit == null ? col.transform.position: unit.Bounds.center;
+                var l = (colPos - pos).sqrMagnitude;
                 if (l < len)
                 {
                     len = l;
                     baseInfo.id = comp.EntityId;
-                    baseInfo.pos = col.transform.position;
+                    baseInfo.pos = colPos;
                     baseInfo.rot = col.transform.rotation;
                     baseInfo.type = comp.Type;
                     baseInfo.side = comp.Side;
@@ -532,9 +535,11 @@ namespace AdvancedGears
                 if (index >= unitList.Count)
                     unitList.Add(unitQueue.Count > 0 ? unitQueue.Dequeue(): new UnitInfo());
 
+                TryGetComponentObject<UnitTransform>(comp.EntityId, out var unit);
+
                 info = unitList[index];
                 info.id = comp.EntityId;
-                info.pos = col.transform.position;
+                info.pos = unit == null ? col.transform.position : unit.Bounds.center;
                 info.rot = col.transform.rotation;
                 info.type = comp.Type;
                 info.side = comp.Side;

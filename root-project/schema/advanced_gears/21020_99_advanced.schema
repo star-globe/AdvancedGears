@@ -1,4 +1,5 @@
 package advanced_gears;
+import "improbable/standard_library.schema";
 import "improbable/gdk/core/common.schema";
 import "advanced_gears/common.schema";
 
@@ -88,4 +89,12 @@ component MinimapComponent {
 
 component SymbolicTowerSight {
     id = 21051;
+}
+
+component PlayerRespawn {
+    id = 21060;
+
+    bool is_start = 1;
+    double rest_time = 2;
+    improbable.Coordinates position = 3;
 }

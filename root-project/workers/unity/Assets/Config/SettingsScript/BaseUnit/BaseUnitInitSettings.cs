@@ -10,8 +10,6 @@ namespace AdvancedGears
         [SerializeField] float speed = 1.0f;
         [SerializeField] float rotSpeed = 3.0f;
         [SerializeField] float sightRange = 30.0f;
-        [SerializeField] float atkRange = 15.0f;
-        [SerializeField] float atkAngle = 1.0f;
         [SerializeField] int maxHp = 10;
         [SerializeField] int defense = 10;
         [SerializeField] int maxFuel = 50;
@@ -20,8 +18,6 @@ namespace AdvancedGears
         public float Speed => speed;
         public float RotSpeed => rotSpeed;
         public float SightRange => sightRange;
-        public float AtkRange => atkRange;
-        public float AtkAngle => atkAngle;
         public int MaxHp => maxHp;
         public int Defense => defense;
         public int MaxFuel => maxFuel;

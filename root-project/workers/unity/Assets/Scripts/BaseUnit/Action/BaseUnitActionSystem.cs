@@ -92,7 +92,8 @@ namespace AdvancedGears
                 epos = enemyPositions[0].ToWorkerPosition(this.Origin);
 
                 var container = EntityManager.GetComponentObject<PostureBoneContainer>(entity);
-                Attack(container, current, epos.Value, entityId, ref gun);
+                Attack(container, current, epos.Value, entityId, ref gun, out var aimPos);
+                epos = aimPos;
             }
 
             var type = AnimTargetType.None;
@@ -115,8 +116,9 @@ namespace AdvancedGears
             }
         }
 
-        void Attack(PostureBoneContainer container, double current, in Vector3 epos, in SpatialEntityId entityId, ref GunComponent.Component gun)
+        void Attack(PostureBoneContainer container, double current, in Vector3 epos, in SpatialEntityId entityId, ref GunComponent.Component gun, out Vector3 aimPos)
         {
+            aimPos = epos;
             var gunsDic = gun.GunsDic;
             var updGuns = false;
 
@@ -129,7 +131,7 @@ namespace AdvancedGears
                 if (gunsDic.TryGetValue(bone.hash, out gunInfo) == false)
                     continue;
 
-                var result = CheckRange(container.GetCannon(bone.hash), epos, gunInfo.AttackRange(), gunInfo.AttackAngle());
+                var result = CheckRange(container.GetCannon(bone.hash), epos, gunInfo.AttackRange(), gunInfo.AttackAngle(), gunInfo.BulletSpeed(), out aimPos);
                 switch (result)
                 {
                     case Result.InRange:
@@ -153,7 +155,6 @@ namespace AdvancedGears
                 }
             }
 
-
             if (updGuns)
                 gun.GunsDic = gunsDic;
         }
@@ -165,18 +166,20 @@ namespace AdvancedGears
             Rotate,
         }
 
-        Result CheckRange(CannonTransform cannon, in Vector3 epos, float range, float angle)
+        Result CheckRange(CannonTransform cannon, in Vector3 epos, float range, float angle, float velocity, out Vector3 aimPos)
         {
+            aimPos = epos;
             var trans = cannon.Muzzle;
             var diff = epos - trans.position;
             if (diff.sqrMagnitude > range * range)
                 return Result.OutOfRange;
 
             var foward = diff.normalized;
-            if (Vector3.Angle(cannon.Forward, foward) < angle)
-                return Result.InRange;
+            if (Vector3.Angle(cannon.Forward, foward) > angle)
+                return Result.Rotate;
 
-            return Result.Rotate;
+            aimPos += Vector3.up * PhysicsUtils.CalcAimHeight(velocity, diff.magnitude);
+            return Result.InRange;
         }
     }
 

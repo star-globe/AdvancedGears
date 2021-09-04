@@ -323,6 +323,15 @@ namespace AdvancedGears
             return gun.AtkRange;
         }
 
+        public static float BulletSpeed(this GunInfo info)
+        {
+            var gun = GunDictionary.GetGunSettings(info.GunTypeId);
+            if (gun == null)
+                return 0;
+
+            return gun.BulletSpeed;
+        }
+
         public static float LifeTime (this BulletFireInfo bullet)
         {
             var gun = GunDictionary.GetGunSettings(bullet.GunId);

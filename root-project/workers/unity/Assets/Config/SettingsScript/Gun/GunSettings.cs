@@ -23,13 +23,23 @@ namespace AdvancedGears
         public float BulletSpeed => bulletSpeed;
         [SerializeField] PosturePoint attached = PosturePoint.Root;
         public PosturePoint Attached => attached;
+        [SerializeField] float lifeTimeRate = 1.2f;
+        public float LifeTimeRate => lifeTimeRate;
 
         public float BulletLifeTime
         {
             get
             {
-                return bulletSpeed > 0 ? atkRange / bulletSpeed: 0.0f;
+                if (bulletSpeed <= 0)
+                    return 0;
+
+                return lifeTimeRate * atkRange / bulletSpeed;
             }
+        }
+
+        public float VanishRange
+        {
+            get { return LifeTimeRate * AtkRange; }
         }
 
         public GunInfo GetGunInfo(ulong uid, int bone)

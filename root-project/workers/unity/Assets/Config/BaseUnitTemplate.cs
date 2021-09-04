@@ -197,6 +197,7 @@ namespace AdvancedGears
             var template = new EntityTemplate();
             template.AddComponent(new Position.Snapshot { Coords = coords }, controllAttribute);
             template.AddComponent(new Metadata.Snapshot(isPlayer ? "Player" : "AdvancedUnit"), WorkerUtils.UnityGameLogic);
+            template.AddComponent(new PostureRoot.Snapshot() { RootTrans = PostureUtils.ConvertTransform(coords, TransformUtils.GetRandomRotateQuaternion(), UnityEngine.Vector3.one.ToFixedPointVector3()) }, WorkerUtils.UnityGameLogic);
             template.AddComponent(new BulletComponent.Snapshot(), controllAttribute);
             template.AddComponent(new AdvancedUnitController.Snapshot { IsPlayer = isPlayer }, controllAttribute);
             template.AddComponent(new BaseUnitHealth.Snapshot(), WorkerUtils.UnityGameLogic);

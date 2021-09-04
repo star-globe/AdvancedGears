@@ -11,12 +11,12 @@ namespace AdvancedGears
     public class SymbolicObject : MonoBehaviour
     {
         [SerializeField]
-        Renderer objectRenderer;
+        GameObject symbol;
 
         public void SetRendererPosScale(Vector3 pos, Vector3 scale)
         {
-            objectRenderer.transform.position = pos;
-            objectRenderer.transform.localScale = scale;
+            symbol.transform.position = pos;
+            symbol.transform.localScale = scale;
         }
     }
 }

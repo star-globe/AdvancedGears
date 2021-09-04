@@ -27,7 +27,7 @@ MonoBehaviour:
     range: 60
   unitInter: 15
   teamInter: 150
-  moveBufferRate: 0.2
+  moveBufferRate: 0.4
   sightRangeRate: 1.5
   strategyRangeRate: 100
   uiRange: 100

@@ -24,5 +24,11 @@ namespace AdvancedGears
         {
             return Quaternion.AngleAxis(angle, axis).ToCompressedQuaternion();
         }
+
+        public static CompressedQuaternion GetRandomRotateQuaternion()
+        {
+            var rot = UnityEngine.Random.Range(0, Mathf.Rad2Deg* Mathf.PI * 2);
+            return ToAngleAxis(rot, Vector3.up);
+        }
     }
 }
