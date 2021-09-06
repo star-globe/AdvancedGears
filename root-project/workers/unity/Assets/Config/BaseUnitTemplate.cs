@@ -209,6 +209,7 @@ namespace AdvancedGears
             if (isPlayer) {
                 template.AddComponent(new AdvancedPlayerInput.Snapshot(), controllAttribute);
                 template.AddComponent(new PlayerInfo.Snapshot { ClientWorkerId = workerId }, controllAttribute);
+                template.AddComponent(new PlayerRespawn.Snapshot { IsStart = false, RestTime = 0, Position = coords }, WorkerUtils.UnityGameLogic);
                 PlayerLifecycleHelper.AddPlayerLifecycleComponents(template, workerId, WorkerUtils.UnityGameLogic);
 
                 // for minimap QBI

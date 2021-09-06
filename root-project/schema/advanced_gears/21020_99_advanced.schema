@@ -97,4 +97,6 @@ component PlayerRespawn {
     bool is_start = 1;
     double rest_time = 2;
     improbable.Coordinates position = 3;
+
+    event improbable.gdk.core.Empty respawn;
 }

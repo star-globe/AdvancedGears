@@ -130,7 +130,7 @@ namespace AdvancedGears
 
             var positionDiff = tgt.Value - pos;
 
-            var forward = get_forward(positionDiff, sight.TargetRange);
+            var forward = get_forward(positionDiff, sight.TargetRange, trans.forward);
 
             MovementDictionary.TryGet(status.Type, out var speed, out var rot);
 
@@ -269,19 +269,19 @@ namespace AdvancedGears
         /// <param name="diff"></param>
         /// <param name="range"></param>
         /// <returns></returns>
-        float get_forward(Vector3 diff, float range)
+        float get_forward(Vector3 diff, float range, Vector3 forwardVec)
         {
             float forward = 0.0f;
             var buffer = range * RangeDictionary.MoveBufferRate / 2;
-            var mag = diff.magnitude;
+            var dot = Vector3.Dot(diff, forwardVec);
 
-            if (mag > range + buffer)
+            if (dot > range + buffer)
             {
-                forward = Mathf.Min((mag - range - buffer) / buffer, 1.0f);
+                forward = Mathf.Min((dot - range - buffer) / buffer, 1.0f);
             }
-            else if (mag < range - buffer)
+            else if (dot < range - buffer)
             {
-                forward = Mathf.Max((mag - range + buffer) / buffer, -1.0f);
+                forward = Mathf.Max((dot - range + buffer) / buffer, -1.0f);
             }
 
             return forward;

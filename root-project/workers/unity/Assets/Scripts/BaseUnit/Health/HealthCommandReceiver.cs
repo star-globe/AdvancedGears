@@ -13,6 +13,7 @@ namespace AdvancedGears
         [Require] BaseUnitHealthCommandReceiver healthCommandReceiver;
         [Require] BaseUnitHealthWriter healthWriter;
         [Require] BaseUnitStatusWriter statusWriter;
+        [Require] Entity entity;
 
         LinkedEntityComponent spatialComp = null;
         LinkedEntityComponent SpatialComp
@@ -26,12 +27,30 @@ namespace AdvancedGears
             }
         }
 
-        BaseUnitReviveTimerSystem timerSystem;
+        BaseUnitReviveTimerSystem unitReviveSystem = null;
+        BaseUnitReviveTimerSystem UnitReviveSystem
+        {
+            get
+            {
+                unitReviveSystem = unitReviveSystem ?? world.GetExistingSystem<BaseUnitReviveTimerSystem>();
+                return unitReviveSystem;
+            }
+        }
+
+        PlayerReviveTimerSystem playerReviveSystem = null;
+        PlayerReviveTimerSystem PlayerReviveSystem
+        {
+            get
+            {
+                playerReviveSystem = playerReviveSystem ?? world.GetExistingSystem<PlayerReviveTimerSystem>();
+                return playerReviveSystem;
+            }
+        }
+
 
         public void OnEnable()
         {
             healthCommandReceiver.OnModifyHealthRequestReceived += OnModifiedHealthRequest;
-            timerSystem = world.GetExistingSystem<BaseUnitReviveTimerSystem>();
         }
 
         private void OnModifiedHealthRequest(BaseUnitHealth.ModifyHealth.ReceivedRequest request)
@@ -65,8 +84,12 @@ namespace AdvancedGears
                 Side = side,
             });
 
-            if (state == UnitState.Dead)
-                timerSystem?.AddDeadUnit(SpatialComp.EntityId);
+            if (state == UnitState.Dead) {
+                if (world.EntityManager.HasComponent<BaseUnitReviveTimer.Component>(entity))
+                    this.UnitReviveSystem?.AddDeadUnit(SpatialComp.EntityId);
+                else if (world.EntityManager.HasComponent<PlayerRespawn.Component>(entity))
+                    this.PlayerReviveSystem?.AddDeadUnit(SpatialComp.EntityId);
+            }
         }
 
         private bool CheckAndUpdateHealth(int health)
