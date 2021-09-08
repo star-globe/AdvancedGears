@@ -10,6 +10,7 @@ namespace AdvancedGears
 {
     public class PlayerReviveClientCommandReceiver : MonoBehaviour
     {
+        [Require] World world;
         [Require] PlayerRespawnReader reader;
         [Require] PositionWriter positionWriter;
 
@@ -20,10 +21,19 @@ namespace AdvancedGears
 
         private void OnRespawn(Empty empty)
         {
+            var coords = reader.Data.Position;
             positionWriter.SendUpdate(new Position.Update
             {
-                Coords = reader.Data.Position,
+                Coords = coords,
             });
+
+            var worker = world.GetExistingSystem<WorkerSystem>();
+
+            Vector3 origin = Vector3.zero;
+            if (worker != null)
+                origin = worker.Origin;
+
+            this.transform.position = coords.ToWorkerPosition(origin);
         }
     }
 }

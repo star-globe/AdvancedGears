@@ -138,6 +138,9 @@ namespace AdvancedGears
                     targetIds.Add(id);
             }
 
+            if (targetIds.Count == 0)
+                return;
+
             var totalFlow = (float) (flowValueRate * deltaTime * selfPower);
             var count = targetIds.Count;
             var flow = totalFlow / count;
@@ -192,13 +195,19 @@ namespace AdvancedGears
             if (status.Side == UnitSide.None)
                 return;
 
+            bool isBuilding = UnitUtils.IsBuilding(status.Type);
+
             var pos = position.Coords.ToUnityVector() + this.Origin;
             foreach (var kvp in this.HexDic)
             {
                 var index = kvp.Key;
-                var center = HexUtils.GetHexCenter(this.Origin, index, HexDictionary.HexEdgeLength);
+                //var center = HexUtils.GetHexCenter(this.Origin, index, HexDictionary.HexEdgeLength);
+                //if ((center - pos).magnitude > HexDictionary.HexEdgeLength / 2)
+                //    continue;
+                if (HexUtils.IsInsideHex(this.Origin, index, pos, HexDictionary.HexEdgeLength) == false)
+                    continue;
 
-                if ((center - pos).magnitude > HexDictionary.HexEdgeLength / 2)
+                if (isBuilding == false && status.Side == kvp.Value.Side)
                     continue;
 
                 if (resourceDictionary.ContainsKey(index) == false)
