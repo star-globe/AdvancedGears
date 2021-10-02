@@ -21,8 +21,6 @@ namespace AdvancedGears
         public uint BulletTypeId => bulletTypeId;
         [SerializeField] float bulletSpeed = 15.0f;
         public float BulletSpeed => bulletSpeed;
-        [SerializeField] PosturePoint attached = PosturePoint.Root;
-        public PosturePoint Attached => attached;
         [SerializeField] float lifeTimeRate = 1.2f;
         public float LifeTimeRate => lifeTimeRate;
 

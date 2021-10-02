@@ -50,8 +50,7 @@ type StickControllerInfo {
 type ActionControllerInfo {
     bool running = 1;
     bool jump = 2;
-    bool left_click = 3;
-    bool right_click = 4;
+    int64 click_bits = 3;
 }
 
 type ControllerInfo {
@@ -61,8 +60,7 @@ type ControllerInfo {
     float yaw = 4;
     float pitch = 5;
     bool jump = 6;
-    bool left_click = 7;
-    bool right_click = 8;
+    int64 click_bits = 7;
 }
 
 component AdvancedUnitController {

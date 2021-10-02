@@ -48,9 +48,9 @@ namespace AdvancedGears
             if (gunInitializer != null && container != null)
             {
                 GunIdPair[] gunIds = null;
-                if (container.CannonDic.Count > 0)
+                if (container.HolderDic.Count > 0)
                 {
-                    gunIds = container.CannonDic.Select(kvp => new GunIdPair() { Id = kvp.Value.GunId, bone = kvp.Key}).ToArray();
+                    gunIds = container.HolderDic.Select(kvp => new GunIdPair() { Id = kvp.Value.Cannon.GunId, bone = kvp.Key}).ToArray();
                 }
 
                 gunInitializer.SetGunIds(gunIds);

@@ -23,6 +23,8 @@ namespace AdvancedGears
 
         protected override void OnHit(BulletInfo info)
         {
+            base.OnHit(info);
+
             if (healthReader == null)
                 return;
 
@@ -76,8 +78,24 @@ namespace AdvancedGears
             if (CheckSelf(fire.Value.ShooterEntityId))
                 return;
 
-            OnHit(fire.Value);
+            OnHit(fire.Value, other.transform.position);
             base.Creator?.InvokeVanishAction(fire.Value.ShooterEntityId, fire.Value.Type, fire.Value.BulletId);
+        }
+
+        private void OnHit(BulletInfo info, Vector3 pos)
+        {
+            var settings = BulletDictionary.Get(info.Type);
+            if (settings == null)
+                return;
+
+            switch (settings.BulletBaseType)
+            {
+                case BulletBaseType.Flare:
+                    this.CreateFlare(pos, (FlareColorType)settings.Option, info.Side, Time.time);
+                    break;
+            }
+
+            OnHit(info);
         }
 
         protected virtual void OnHit(BulletInfo info)

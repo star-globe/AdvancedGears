@@ -4,11 +4,19 @@ import "improbable/gdk/transform_synchronization/transform_internal.schema";
 import "advanced_gears/common.schema";
 
 // bullet/gun:20200~20299
+enum BulletBaseType
+{
+    None = 0;
+    Normal = 1;
+    Bomb = 2;
+    Smoke = 3;
+    Flare = 4;
+}
 
 type BulletFireInfo {
     int32 power = 1;
     uint32 type = 2;
-    uint32 alignment = 3;
+    UnitSide side = 3;
     improbable.gdk.transform_synchronization.FixedPointVector3 launch_position = 4;
     improbable.gdk.transform_synchronization.FixedPointVector3 initial_velocity = 5;
     float launch_time = 6;
@@ -114,4 +122,19 @@ component LongRangeLaserComponent {
     LaserFireInfo fire = 2;
 
     event LaserFireInfo laser_fired;
+}
+
+enum FlareColorType
+{
+    None = 0;
+    Red = 1;
+    Blue = 2;
+}
+
+component StrategySmoke {
+    id = 20230;
+
+    UnitSide side = 1;
+    FlareColorType color = 2;
+    float launch_time = 3;
 }

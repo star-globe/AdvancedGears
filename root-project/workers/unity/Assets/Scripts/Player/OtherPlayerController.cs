@@ -8,17 +8,28 @@ namespace AdvancedGears
 {
     public class OtherPlayerController : BasePlayerController
     {
-        [Require]
-        AdvancedUnitControllerReader reader;
+        [Require] BaseUnitStatusReader statusReader;
+        [Require] AdvancedUnitControllerReader reader;
 
-        protected override bool IsTrigger
+        protected override long TriggerBits
         {
             get
             {
                 if (reader == null)
-                    return false;
+                    return 0;
 
-                return reader.Data.Action.LeftClick;
+                return reader.Data.Action.ClickBits;
+            }
+        }
+
+        protected override UnitSide SelfSide
+        {
+            get
+            {
+                if (statusReader == null)
+                    return UnitSide.None;
+
+                return statusReader.Data.Side;
             }
         }
     }

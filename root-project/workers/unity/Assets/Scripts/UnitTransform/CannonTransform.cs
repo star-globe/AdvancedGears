@@ -7,7 +7,7 @@ using Improbable.Gdk.Subscriptions;
 
 namespace AdvancedGears
 {
-    public class CannonTransform : MonoBehaviour//AttachedTransform
+    public class CannonTransform : MonoBehaviour
     {
         [SerializeField]
         uint gunId;

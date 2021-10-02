@@ -18,7 +18,7 @@ namespace AdvancedGears
         }
 
         const float buffer = 100.0f;
-        public static Vector3 GetGroundPosition(float x, float y, float z)
+        public static Vector3 GetGroundPositionWithBuffer(float x, float y, float z)
         {
             return GetGroundPosition(new Vector3( x, y + buffer, z));
         }

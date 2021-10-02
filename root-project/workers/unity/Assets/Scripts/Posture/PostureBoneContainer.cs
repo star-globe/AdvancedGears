@@ -21,8 +21,7 @@ namespace AdvancedGears
         {
             get
             {
-                if (bonesList == null)
-                {
+                if (bonesList == null) {
                     if (bones == null)
                         return null;
 
@@ -43,26 +42,47 @@ namespace AdvancedGears
             }
         }
 
-        Dictionary<int, CannonTransform> cannonDic = null;
-        public Dictionary<int, CannonTransform> CannonDic
+        //Dictionary<int, CannonTransform> cannonDic = null;
+        //public Dictionary<int, CannonTransform> CannonDic
+        //{
+        //    get
+        //    {
+        //        if (cannonDic == null) {
+        //            cannonDic = new Dictionary<int, CannonTransform>();
+        //            if (this.Bones != null)
+        //            {
+        //                foreach (var b in this.Bones)
+        //                {
+        //                    var cannon = b.transform.GetComponent<CannonTransform>();
+        //                    if (cannon != null)
+        //                        cannonDic[b.hash] = cannon;
+        //                }
+        //            }
+        //        }
+        //
+        //        return cannonDic;
+        //    }
+        //}
+
+        Dictionary<int, CannonHolder> holderDic = null;
+        public Dictionary<int, CannonHolder> HolderDic
         {
             get
             {
-                if (cannonDic == null)
-                {
-                    cannonDic = new Dictionary<int, CannonTransform>();
+                if (holderDic == null) {
+                    holderDic = new Dictionary<int, CannonHolder>();
                     if (this.Bones != null)
                     {
                         foreach (var b in this.Bones)
                         {
-                            var cannon = b.transform.GetComponent<CannonTransform>();
-                            if (cannon != null)
-                                cannonDic[b.hash] = cannon;
+                            var holder = b.transform.GetComponent<CannonHolder>();
+                            if (holder != null)
+                                holderDic[b.hash] = holder;
                         }
                     }
                 }
 
-                return cannonDic;
+                return holderDic;
             }
         }
 
@@ -79,8 +99,8 @@ namespace AdvancedGears
 
         public CannonTransform GetCannon(int bone)
         {
-            if (this.CannonDic.ContainsKey(bone))
-                return CannonDic[bone];
+            if (this.HolderDic.ContainsKey(bone))
+                return HolderDic[bone].Cannon;
             else
                 return null;
         }

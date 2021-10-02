@@ -5,7 +5,14 @@ namespace AdvancedGears
     [CreateAssetMenu(menuName = "AdvancedGears/Bullet Config/Bullet Settings", order = 1)]
     public class BulletSettings : ScriptableObject
     {
+        [SerializeField] uint typeId = 1;
+        public uint TypeId => typeId;
         [SerializeField] private GameObject bulletModel;
+        public GameObject BulletModel => bulletModel;
+        [SerializeField] private BulletBaseType baseType;
+        public BulletBaseType BulletBaseType => baseType;
+        [SerializeField] private int option;
+        public int Option => option;
         [SerializeField] private GameObject impactEffect;
         [SerializeField] private GameObject muzzleFlashEffect;
         [SerializeField] private GameObject bulletLineRenderer;
@@ -15,34 +22,6 @@ namespace AdvancedGears
         [SerializeField] private float bulletRenderLength;
         [SerializeField] private float shotRenderTime;
         [SerializeField] private byte alignment;
-
-        //[SerializeField] private bool isAutomatic;
-
-        //[Tooltip("In 'Shots per second'. If <= 0, there will be no cooldown between shots.")] [SerializeField]
-        //private float rateOfFire;
-
-        //[SerializeField] [HideInInspector] private float shotCooldown;
-
-        //[SerializeField] private RecoilSettings hipRecoil;
-        //[SerializeField] private RecoilSettings aimRecoil;
-
-        //[SerializeField] private float aimFov = 60;
-        //[SerializeField] private float fovChangeTime = 0.1f;
-
-        //[Tooltip("Bullets fired when not aiming will have this spread in meters at 50m range.")] [SerializeField]
-        //private float inaccuracyFromHip;
-
-        //[Tooltip("Bullets fired when aiming will have this spread in meters at 50m range.")] [SerializeField]
-        //private float inaccuracyWhileAiming;
-
-        //[Tooltip("Whilst aiming, override the camera's Pitch Speed with this value.")] [SerializeField]
-        //private float aimPitchSpeed = 1;
-
-        //[Tooltip("Whilst aiming, override the camera's Yaw Speed with this value.")] [SerializeField]
-        //private float aimYawSpeed = 1;
-
-
-        public GameObject BulletModel => bulletModel;
 
         public GameObject ImpactEffect => impactEffect;
 

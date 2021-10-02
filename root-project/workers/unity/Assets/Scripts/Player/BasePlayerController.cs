@@ -60,12 +60,13 @@ namespace AdvancedGears
             if (container == null)
                 return;
 
-            if (IsTrigger)//Input.GetKey(KeyCode.Mouse0))
+            foreach (var kvp in container.HolderDic)
             {
-                foreach (var kvp in container.CannonDic)
-                {
-                    trigger.OnFire(kvp.Key, kvp.Value.GunId);
-                }
+                var holder = kvp.Value;
+                var cannon = holder.Cannon;
+                if (cannon != null &&
+                    (this.TriggerBits & ControllerUtils.GetBits(holder.KeyCode)) != 0)
+                    trigger.OnFire(kvp.Key, cannon.GunId, SelfSide);
             }
         }
 
@@ -85,6 +86,8 @@ namespace AdvancedGears
             this.enemyPosList = posList;
         }
 
-        protected abstract bool IsTrigger { get; }
+        protected abstract long TriggerBits { get; }
+
+        protected abstract UnitSide SelfSide { get; }
     }
 }

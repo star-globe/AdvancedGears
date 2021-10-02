@@ -10,12 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8bb2613a2830c33448ed2d7a55486a02, type: 3}
-  m_Name: BaseBulletSettings
+  m_Name: BlueFlareBulletSettings
   m_EditorClassIdentifier: 
-  typeId: 0
+  typeId: 1
   bulletModel: {fileID: 1294890876457356, guid: c6384870916d96b4cbe128dc68c2177b,
     type: 3}
-  baseType: 1
+  baseType: 4
+  option: 2
   impactEffect: {fileID: 0}
   muzzleFlashEffect: {fileID: 0}
   bulletLineRenderer: {fileID: 0}

@@ -11,12 +11,31 @@ namespace AdvancedGears
 
         [SerializeField] private BulletSettings[] bulletsList;
 
+        Dictionary<uint, BulletSettings> dic = null;
+        Dictionary<uint, BulletSettings> Dic
+        {
+            get
+            {
+                if (dic == null)
+                {
+                    dic = new Dictionary<uint, BulletSettings>();
+                    foreach (var bullet in bulletsList)
+                    {
+                        if (dic.ContainsKey(bullet.TypeId) == false)
+                            dic.Add(bullet.TypeId, bullet);
+                    }
+                }
+
+                return dic;
+            }
+        }
+
         public override void Initialize()
         {
             Instance = this;
         }
 
-        public static BulletSettings Get(uint gunId)
+        public static BulletSettings Get(uint bulletId)
         {
             if (Instance == null)
             {
@@ -24,13 +43,13 @@ namespace AdvancedGears
                 return null;
             }
 
-            if (gunId >= Count)
+            if (Instance.Dic.ContainsKey(bulletId) == false)
             {
-                Debug.LogErrorFormat("The index {0} is outside of the dictionary's range (size {1}).", gunId, Count);
+                Debug.LogErrorFormat("The id {0} doesn't exist in the dictionary", bulletId);
                 return null;
             }
 
-            return Instance.bulletsList[gunId];
+            return Instance.bulletsList[bulletId];
         }
 
         public static int Count => Instance.bulletsList.Length;

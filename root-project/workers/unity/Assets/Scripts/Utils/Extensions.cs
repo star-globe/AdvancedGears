@@ -366,7 +366,7 @@ namespace AdvancedGears
 
         public static Coordinates GetGrounded(this Coordinates coords, Vector3 origin, float height_buffer)
         {
-            var pos = PhysicsUtils.GetGroundPosition((float)coords.X, origin.y, (float)coords.Z);
+            var pos = PhysicsUtils.GetGroundPositionWithBuffer((float)coords.X, origin.y, (float)coords.Z);
             pos += Vector3.up * height_buffer;
             return pos.ToWorldPosition(origin).ToCoordinates();
         }

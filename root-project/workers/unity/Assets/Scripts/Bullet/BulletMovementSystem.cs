@@ -63,7 +63,7 @@ namespace AdvancedGears
     {
         public int Power;
         public uint Type;
-        public uint Alignment;
+        public UnitSide Side;
         public FixedPointVector3 LaunchPosition;
         public FixedPointVector3 InitialVelocity;
         public FixedPointVector3 CurrentVelocity;
@@ -90,7 +90,7 @@ namespace AdvancedGears
         {
             Power = fire.Power;
             Type = fire.Type;
-            Alignment = fire.Alignment;
+            Side = fire.Side;
             LaunchPosition = fire.LaunchPosition;
             InitialVelocity = fire.InitialVelocity;
             CurrentVelocity = InitialVelocity;
@@ -106,7 +106,7 @@ namespace AdvancedGears
         {
             Power = info.Power;
             Type = info.Type;
-            Alignment = info.Alignment;
+            Side = info.Side;
             LaunchPosition = info.LaunchPosition;
             InitialVelocity = info.InitialVelocity;
             CurrentVelocity = info.CurrentVelocity;

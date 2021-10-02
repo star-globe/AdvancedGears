@@ -4,7 +4,7 @@ using UnityEngine;
 using Unity.Entities;
 using UnityEngine.Assertions;
 using Improbable.Gdk.Subscriptions;
-using Improbable.Gdk;
+using Improbable.Gdk.Core;
 
 namespace AdvancedGears
 {
@@ -55,6 +55,24 @@ namespace AdvancedGears
 
                 return this.BulletSystem.BulletCreator;
             }
+        }
+
+        CommandSystem commandSystem = null;
+        CommandSystem CommandSystem
+        {
+            get
+            {
+                if (World == null)
+                    return null;
+
+                commandSystem = commandSystem ?? World.GetExistingSystem<CommandSystem>();
+                return commandSystem;
+            }
+        }
+
+        protected void CreateFlare(Vector3 pos, FlareColorType col, UnitSide side, float startTime)
+        {
+            BulletTemplate.CreateFlareEntityTemplate(pos.ToWorldCoordinates(this.Origin), col, side, startTime);
         }
     }
 }

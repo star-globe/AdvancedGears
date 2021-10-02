@@ -43,7 +43,7 @@ namespace AdvancedGears
             var isJump = Input.GetKey(KeyCode.Space);
             var action = local.Action;
             var stick = local.Stick;
-            if (CommonUpdate(input, inputCam, isShiftDown, isJump, false, false, ref stick, ref action))
+            if (CommonUpdate(input, inputCam, isShiftDown, isJump, 0, ref stick, ref action))
                 unitController.Action = action;
 
             local.Stick = stick;
@@ -108,7 +108,7 @@ namespace AdvancedGears
             var isJump = false;//Input.GetKey(KeyCode.Space);
             var action = local.Action;
             var stick = local.Stick;
-            if (CommonUpdate(new Vector2(x, y), new Vector2(x, y), isShiftDown, isJump, false, false, ref stick, ref action))
+            if (CommonUpdate(new Vector2(x, y), new Vector2(x, y), isShiftDown, isJump, 0, ref stick, ref action))
                 controller.Action = action;
             
             local.Action = action;
@@ -149,7 +149,7 @@ namespace AdvancedGears
             HandleNews();
         }
 
-        protected bool CommonUpdate(in Vector2 inputPos, in Vector3 inputCam, bool isShiftDown, bool isJump, bool isRightClick, bool isLeftClick,
+        protected bool CommonUpdate(in Vector2 inputPos, in Vector3 inputCam, bool isShiftDown, bool isJump, long clickBits,
                                     ref StickControllerInfo oldStick, ref ActionControllerInfo oldAction)
         {
             if (CheckChange(oldStick.Horizontal, inputPos.x) ||
@@ -169,15 +169,13 @@ namespace AdvancedGears
 
             if (oldAction.Running != isShiftDown ||
                 oldAction.Jump != isJump ||
-                oldAction.LeftClick != isLeftClick ||
-                oldAction.RightClick != isRightClick)
+                oldAction.ClickBits != clickBits)
             {
                 var newAction= new ActionControllerInfo
                 {
                     Running = isShiftDown,
                     Jump = isJump,
-                    LeftClick = isLeftClick,
-                    RightClick = isRightClick, 
+                    ClickBits = clickBits,
                 };
                 oldAction = newAction;
                 return true;

@@ -10,6 +10,7 @@ namespace AdvancedGears
 {
     public class BaseUnitBulletFireTrigger : BulletFireTriggerBase
     {
+        [Require] BaseUnitStatusReader statusReader;
         [Require] GunComponentReader gunReader;
         [Require] BulletComponentWriter bulletWriter;
         [Require] World world;
@@ -27,7 +28,7 @@ namespace AdvancedGears
 
         private void OnTarget(AttackTargetInfo info)
         {
-            OnFire(info.AttachedBone, info.GunTypeId);
+            OnFire(info.AttachedBone, info.GunTypeId, statusReader.Data.Side);
         }
     }
 }

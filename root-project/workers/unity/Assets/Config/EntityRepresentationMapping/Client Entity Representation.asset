@@ -21,6 +21,7 @@ MonoBehaviour:
   - id: 5
   - id: 6
   - id: 7
+  - id: 8
   references:
     version: 1
     00000000:
@@ -87,5 +88,13 @@ MonoBehaviour:
       data:
         entityType: Tower
         prefab: {fileID: 7813373895779452489, guid: 33de156dd8c1c8a41a595f577be61be8,
+          type: 3}
+        requiredComponents: 
+    00000008:
+      type: {class: SimpleEntityResolver, ns: Improbable.Gdk.Core.Representation.Types,
+        asm: Improbable.Gdk.Core}
+      data:
+        entityType: FlareObject
+        prefab: {fileID: 1294890876457356, guid: 3fa553f4930b8e744863a0693b369d72,
           type: 3}
         requiredComponents: 

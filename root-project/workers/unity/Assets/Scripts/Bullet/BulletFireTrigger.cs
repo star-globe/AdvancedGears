@@ -64,7 +64,7 @@ namespace AdvancedGears
             base.Creator?.RemoveTriggerEntity(this.SpatialComp.EntityId);
         }
 
-        public void OnFire(int bone, uint gunId)
+        public void OnFire(int bone, uint gunId, UnitSide side)
         {
             if (this.SpatialComp == null || this.BulletWriter == null)
                 return;
@@ -97,7 +97,7 @@ namespace AdvancedGears
             {
                 Power = 1,
                 Type = gun.BulletTypeId,
-                Alignment = 3,
+                Side = side,
                 LaunchPosition = pos.ToFixedPointVector3(),
                 InitialVelocity = vec.ToFixedPointVector3(),
                 LaunchTime = Time.time,
