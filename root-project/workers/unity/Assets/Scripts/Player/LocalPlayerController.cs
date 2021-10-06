@@ -14,8 +14,9 @@ namespace AdvancedGears
             get
             {
                 long bits = 0;
-                if (Input.GetKey(KeyCode.Mouse0))
-                    bits = ControllerUtils.GetBits(KeyCode.Mouse0);
+                ControllerUtils.GetSetKeyBits(KeyCode.Mouse0, ref bits);
+                ControllerUtils.GetSetKeyBits(KeyCode.Mouse1, ref bits);
+                ControllerUtils.GetSetKeyBits(KeyCode.F, ref bits);
 
                 return bits;
             }

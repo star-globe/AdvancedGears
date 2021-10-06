@@ -77,7 +77,8 @@ namespace AdvancedGears
             foreach (var i in indexes) {
                 HexLocalInfo local = null;
                 this.HexDic?.TryGetValue(i.Key, out local);
-                this.hexIndexes.Add(i.Key, new HexIndexPower(i.Value, local));
+                if (local != null)
+                    this.hexIndexes.Add(i.Key, new HexIndexPower(i.Value, local));
             }
 
             this.frontHexes.Clear();
@@ -101,7 +102,7 @@ namespace AdvancedGears
         {
             this.hexIndex = index;
             this.attribute = local.Attribute;
-            SidePowers = local == null ? new Dictionary<UnitSide, float>(): local.Powers;
+            SidePowers = local.Powers;
         }
     }
 }

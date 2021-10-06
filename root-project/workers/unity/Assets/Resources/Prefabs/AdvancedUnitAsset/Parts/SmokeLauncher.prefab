@@ -265,6 +265,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8801174157090476898}
+  - component: {fileID: 2427802642412351039}
   m_Layer: 0
   m_Name: SmokeLauncher
   m_TagString: Untagged
@@ -287,6 +288,21 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2427802642412351039
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5761724947390564240}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: deefb691b821d2f4abdcad7beff86cb2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bones:
+  - hash: 1967535489
+    transform: {fileID: 3901404309138291263}
 --- !u!1 &7676299735855379892
 GameObject:
   m_ObjectHideFlags: 0

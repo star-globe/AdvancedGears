@@ -19,7 +19,7 @@ GameObject:
   - component: {fileID: 4188325467391467859}
   - component: {fileID: 5177124913010169657}
   m_Layer: 11
-  m_Name: Player
+  m_Name: PlayerOther
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -87,7 +87,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7412ba60fbe96c41acbcddd89f68378, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  unitTransform: {fileID: 8408975194405095079}
+  container: {fileID: 0}
 --- !u!114 &826868040743729356
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -107,12 +107,15 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1292271339760838}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 496584d5569c7f14e9cc091a290f113f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   trigger: {fileID: 7801269306611005324}
+  container: {fileID: 0}
+  aimtracers: []
+  baseTarget: {fileID: 0}
 --- !u!114 &-6066956962702012113
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -141,7 +144,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stateRenderer: {fileID: 3853410382525697408}
   sideRenderer: {fileID: 3459261135123493895}
-  colorSettings: {fileID: 11400000, guid: e9653011b1bcf4847b2c0b2d702b450d, type: 2}
 --- !u!114 &4188325467391467859
 MonoBehaviour:
   m_ObjectHideFlags: 0
