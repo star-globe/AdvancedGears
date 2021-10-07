@@ -34,6 +34,9 @@ namespace AdvancedGears
                 case KeyCode.Mouse5: bits |= 1 << 5; break;
                 case KeyCode.Mouse6: bits |= 1 << 6; break;
 
+                case KeyCode.LeftShift:
+                case KeyCode.RightShift: bits |= 7; break;
+
                 case KeyCode.A: bits |= 1 << 16; break;
                 case KeyCode.B: bits |= 1 << 17; break;
                 case KeyCode.C: bits |= 1 << 18; break;
@@ -60,6 +63,17 @@ namespace AdvancedGears
                 case KeyCode.X: bits |= 1 << 39; break;
                 case KeyCode.Y: bits |= 1 << 40; break;
                 case KeyCode.Z: bits |= 1 << 41; break;
+
+                case KeyCode.Alpha0: bits |= 1 << 50; break;
+                case KeyCode.Alpha1: bits |= 1 << 51; break;
+                case KeyCode.Alpha2: bits |= 1 << 52; break;
+                case KeyCode.Alpha3: bits |= 1 << 53; break;
+                case KeyCode.Alpha4: bits |= 1 << 54; break;
+                case KeyCode.Alpha5: bits |= 1 << 55; break;
+                case KeyCode.Alpha6: bits |= 1 << 56; break;
+                case KeyCode.Alpha7: bits |= 1 << 57; break;
+                case KeyCode.Alpha8: bits |= 1 << 58; break;
+                case KeyCode.Alpha9: bits |= 1 << 59; break;
             }
 
             return bits;

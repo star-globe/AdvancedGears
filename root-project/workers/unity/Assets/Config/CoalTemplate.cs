@@ -17,7 +17,7 @@ namespace AdvancedGears
             template.AddComponent(new Persistence.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new CoalSolids.Snapshot { Coals = new List<CoalObjectInfo>() }, WorkerUtils.UnityGameLogic);
 
-            template.SetReadAccess(WorkerUtils.AllWorkerAttributes.ToArray());
+            template.SetReadAccess(WorkerUtils.AllWorkerAttributes);
             template.SetComponentWriteAccess(EntityAcl.ComponentId, WorkerUtils.UnityGameLogic);
 
             return template;

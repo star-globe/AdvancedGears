@@ -89,7 +89,7 @@ namespace AdvancedGears
                     return WorkerUtils.AllWorkerAttributes.ToArray();
 
                 default:
-                    return WorkerUtils.AllPhysicalAttributes.ToArray();
+                    return WorkerUtils.AllPhysicalAttributes;
             }
         }
 

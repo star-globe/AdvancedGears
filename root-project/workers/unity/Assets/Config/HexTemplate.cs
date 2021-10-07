@@ -26,7 +26,7 @@ namespace AdvancedGears
             if (hexId % 3 == 0)
                 template.AddComponent(new StrategyHexAccessPortal.Snapshot { FrontHexes = new Dictionary<UnitSide, FrontHexInfo>(), HexIndexes = new Dictionary<uint, HexIndex>() }, WorkerUtils.UnityGameLogic);
 
-            template.SetReadAccess(WorkerUtils.AllWorkerAttributes.ToArray());
+            template.SetReadAccess(WorkerUtils.AllWorkerAttributes);
             template.SetComponentWriteAccess(EntityAcl.ComponentId, WorkerUtils.UnityGameLogic);
 
             return template;

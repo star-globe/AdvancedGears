@@ -5,6 +5,7 @@ using Unity.Entities;
 using UnityEngine.Assertions;
 using Improbable.Gdk.Subscriptions;
 using Improbable.Gdk.Core;
+using Improbable.Gdk.Core.Commands;
 
 namespace AdvancedGears
 {
@@ -72,7 +73,9 @@ namespace AdvancedGears
 
         protected void CreateFlare(Vector3 pos, FlareColorType col, UnitSide side, float startTime)
         {
-            BulletTemplate.CreateFlareEntityTemplate(pos.ToWorldCoordinates(this.Origin), col, side, startTime);
+            var template = BulletTemplate.CreateFlareEntityTemplate(pos.ToWorldCoordinates(this.Origin), col, side, startTime);
+            var request = new WorldCommands.CreateEntity.Request(template);
+            this.CommandSystem.SendCommand(request);
         }
     }
 }

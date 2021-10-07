@@ -15,15 +15,7 @@ namespace AdvancedGears
         public const string UnityGameLogic = "UnityGameLogic";
         public const string UnityStrategyLogic = "UnityStrategyLogic";
         public const string MobileClient = "MobileClient";
-        public static IEnumerable <string> AllPhysicalAttributes
-        {
-            get
-            {
-                yield return UnityGameLogic;
-                yield return UnityClient;
-                yield return MobileClient;
-            }
-        }
+        public static readonly string[] AllPhysicalAttributes = new string[] { UnityGameLogic, UnityClient, MobileClient };
 
         public static IEnumerable<string> AllClientAttributes
         {
@@ -34,16 +26,7 @@ namespace AdvancedGears
             }
         }
 
-        public static IEnumerable <string> AllWorkerAttributes
-        {
-            get
-            {
-                foreach(var p in AllPhysicalAttributes)
-                    yield return p;
-
-                yield return UnityStrategyLogic;
-            }
-        }
+        public static readonly string[] AllWorkerAttributes = new string[] { UnityGameLogic, UnityClient, MobileClient, UnityStrategyLogic };
 
         public static void AddClientSystems(World world, bool autoRequestPlayerCreation = true)
         {

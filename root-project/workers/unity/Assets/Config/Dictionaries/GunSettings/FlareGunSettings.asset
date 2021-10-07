@@ -16,7 +16,7 @@ MonoBehaviour:
   stock: 30
   atkRange: 40
   atkAngle: 3
-  inter: 60
+  inter: 3
   bulletTypeId: 1
-  bulletSpeed: 30
-  lifeTimeRate: 1.2
+  bulletSpeed: 10
+  lifeTimeRate: 3

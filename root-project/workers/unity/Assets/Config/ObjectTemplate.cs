@@ -44,10 +44,10 @@ namespace AdvancedGears
                 case ObjectType.Bridge:
                 case ObjectType.Wall:
                 case ObjectType.Tower:
-                    return WorkerUtils.AllWorkerAttributes.ToArray();
+                    return WorkerUtils.AllWorkerAttributes;
 
                 default:
-                    return WorkerUtils.AllPhysicalAttributes.ToArray();
+                    return WorkerUtils.AllPhysicalAttributes;
             }
         }
 

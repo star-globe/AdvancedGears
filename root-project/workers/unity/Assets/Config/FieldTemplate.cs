@@ -17,7 +17,7 @@ namespace AdvancedGears
             template.AddComponent(new Persistence.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new FieldComponent.Snapshot { TerrainPoints = CreateTerrainPointInfo(range, highest, materialType, seeds) }, WorkerUtils.UnityGameLogic);
 
-            template.SetReadAccess(WorkerUtils.AllWorkerAttributes.ToArray());
+            template.SetReadAccess(WorkerUtils.AllWorkerAttributes);
             template.SetComponentWriteAccess(EntityAcl.ComponentId, WorkerUtils.UnityGameLogic);
 
             return template;
