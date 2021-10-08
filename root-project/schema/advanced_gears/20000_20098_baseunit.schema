@@ -131,6 +131,11 @@ type HexBaseInfo
     UnitSide side = 2;
 }
 
+type TargetPointInfo {
+    improbable.Coordinates position = 1;
+    FlareColorType flare_color = 2;
+}
+
 type TargetInfo {
     UnitBaseInfo tgt_info = 1;
     float power_rate = 2;
@@ -155,6 +160,7 @@ enum TargetType {
     Unit = 1;
     FrontLine = 2;
     Hex = 3;
+    Flare = 4;
 }
 
 type TargetInfoSet {
@@ -171,10 +177,12 @@ component BaseUnitTarget {
     TargetType type = 2;
     float power_rate = 3;
 
+    TargetPointInfo target_point = 9;
     UnitBaseInfo target_unit = 10;
     FrontLineInfo front_line = 11;
     HexBaseInfo hex_info = 12;
 
+    event TargetPointInfo set_target_point;
     event TargetInfo set_target;
     event TargetFrontLineInfo set_front_line;
     event TargetHexInfo set_hex;

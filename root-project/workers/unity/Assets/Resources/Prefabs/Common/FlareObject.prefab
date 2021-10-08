@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2258856513147602580}
   - component: {fileID: 114633544983602632}
   - component: {fileID: 4422007631090680344}
-  m_Layer: 12
+  m_Layer: 15
   m_Name: FlareObject
   m_TagString: Bullet
   m_Icon: {fileID: 0}
@@ -102,7 +102,7 @@ GameObject:
   - component: {fileID: 8103436462812655251}
   - component: {fileID: 4848949822645822071}
   - component: {fileID: 1826090866270070712}
-  m_Layer: 12
+  m_Layer: 15
   m_Name: Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -183,7 +183,7 @@ GameObject:
   - component: {fileID: 1107455284182876551}
   - component: {fileID: 5688690955875170841}
   - component: {fileID: 3534746105394105029}
-  m_Layer: 12
+  m_Layer: 15
   m_Name: Particle System
   m_TagString: Untagged
   m_Icon: {fileID: 0}

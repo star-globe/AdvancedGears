@@ -11,6 +11,8 @@ namespace AdvancedGears
 
         [SerializeField] private BulletSettings[] bulletsList;
 
+        [SerializeField] private float flareLifeTime = 60.0f;
+
         Dictionary<uint, BulletSettings> dic = null;
         Dictionary<uint, BulletSettings> Dic
         {
@@ -53,5 +55,7 @@ namespace AdvancedGears
         }
 
         public static int Count => Instance.bulletsList.Length;
+
+        public static float FlareLifeTime => Instance.flareLifeTime;
     }
 }

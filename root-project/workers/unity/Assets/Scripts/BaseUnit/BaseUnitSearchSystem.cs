@@ -195,6 +195,17 @@ namespace AdvancedGears
                     else
                         Debug.LogError("HexInfo is InValid");
                     break;
+
+                case TargetType.Flare:
+                    sight.TargetPosition = target.TargetPoint.Position.ToFixedPointVector3();
+                    sight.TargetSize = 0.0f;
+                    isTarget = true;
+
+                    if (target.TargetPoint.FlareColor == FlareColorType.Red)
+                        target.State = TargetState.ActionTarget;
+                    else
+                        target.State = TargetState.MovementTarget;
+                    break;
             }
 
             return isTarget;
@@ -203,16 +214,24 @@ namespace AdvancedGears
 
     public abstract class BaseSearchSystem : BaseEntitySearchSystem
     {
-        int layer = int.MinValue;
+        int unitlayer = int.MinValue;
         protected int UnitLayer
         {
-            get
-            {
-                if (layer == int.MinValue)
-                    layer = LayerMask.GetMask("Unit");
+            get { return GetLayerMask(ref unitlayer, "Unit"); }
+        }
 
-                return layer;
-            }
+        int strategylayer = int.MinValue;
+        protected int StrategyLayer
+        {
+            get { return GetLayerMask(ref strategylayer, "Strategy"); }
+        }
+
+        private int GetLayerMask(ref int layer, string mask)
+        {
+            if (layer == int.MinValue)
+                layer = LayerMask.GetMask(mask);
+
+            return layer;
         }
 
         int unitNavArea = 0;

@@ -82,10 +82,12 @@ namespace AdvancedGears
             var trans = EntityManager.GetComponentObject<Transform>(entity);
             var pos = trans.position;
 
-            applyOrder(status, entityId, pos, action.SightRange, ref commander, ref team);
+            if (CheckFlare(pos, action.SightRange, status.Rank, status.Side, out var col, out var tgt))
+                applyFlareOrder(entityId, col, pos, ref team);
+            else
+                applyOrder(status, entityId, pos, action.SightRange, ref commander, ref team);
         }
 
-        
         private void HandleTeaming()
         {
             if (CheckTime(ref teamingQuerySet.inter) == false)
@@ -289,6 +291,47 @@ namespace AdvancedGears
 
             return null;
         }
+
+        private bool CheckFlare(in Vector3 pos, float sightRange, uint rank, UnitSide selfSide, out FlareColorType flareColor, out Vector3 target)
+        {
+            var scaledRange = AttackLogicDictionary.RankScaled(sightRange, rank);
+
+            flareColor = FlareColorType.None;
+            target = Vector3.zero;
+            float length = float.MaxValue;
+            var count = Physics.OverlapSphereNonAlloc(pos, scaledRange, colls, this.StrategyLayer);
+            for (var i = 0; i < count; i++)
+            {
+                var col = colls[i];
+                if (col.TryGetComponent<LinkedEntityComponent>(out var comp) == false)
+                    continue;
+
+                StrategyFlare.Component? flare;
+                if (TryGetComponent(comp.EntityId, out flare) == false)
+                    continue;
+
+                if (flare.Value.Side != selfSide)
+                    continue;
+
+                var l = (col.transform.position - pos).sqrMagnitude;
+                if (l < length) {
+                    flareColor = flare.Value.Color;
+                    target = col.transform.position;
+                    length = l;
+                }
+            }
+
+            return length != float.MaxValue;
+        }
+
+        private void applyFlareOrder(in SpatialEntityId entityId, in FlareColorType col, in Vector3 pos, ref CommanderTeam.Component team)
+        {
+            var followers = team.FollowerInfo.GetAllFollowers(allFollowers);
+
+            var point = new TargetPointInfo(pos.ToWorldCoordinates(this.Origin), col);
+            var order = col == FlareColorType.Red ? OrderType.Attack: OrderType.Keep;
+            SetOrderFollowers(followers, entityId.EntityId, point, order);
+        }
         #endregion
 
         #region SetMethod
@@ -300,7 +343,15 @@ namespace AdvancedGears
             }
             base.SetOrder(entityId, order);
         }
+        private void SetOrderFollowers(List<EntityId> followers, in EntityId entityId, in TargetPointInfo point, OrderType order)
+        {
+            foreach (var id in followers)
+            {
+                SetCommand(id, point, order);
+            }
 
+            SetCommand(entityId, point, order);
+        }
         private void SetOrderFollowers(List<EntityId> followers, in EntityId entityId, in UnitBaseInfo targetInfo, OrderType order, float rate)
         {
             foreach (var id in followers)
@@ -336,6 +387,11 @@ namespace AdvancedGears
             }
 
             SetCommand(entityId, rate);
+        }
+        private void SetCommand(EntityId id, in TargetPointInfo point, OrderType order)
+        {
+            base.SetOrder(id, order);
+            this.UpdateSystem.SendEvent(new BaseUnitTarget.SetTargetPoint.Event(point), id);
         }
         private void SetCommand(EntityId id, in UnitBaseInfo unitBaseInfo, OrderType order, float rate)
         {

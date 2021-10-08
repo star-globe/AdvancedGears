@@ -92,6 +92,7 @@ namespace AdvancedGears
             world.GetOrCreateSystem<LocalTimerUpdateSystem>();
             world.GetOrCreateSystem<TimerSynchronizeSystem>();
             world.GetOrCreateSystem<PlayerReviveTimerSystem>();
+            world.GetOrCreateSystem<FlareUpdateSystem>();
         }
 
         public static void AddStrategyLogicSystems(World world, EntityRepresentationMapping entityRepresentationMapping)

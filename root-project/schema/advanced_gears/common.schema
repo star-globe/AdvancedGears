@@ -106,3 +106,10 @@ type EquipData {
     EquipCategory category = 3;
     int32 tune = 4;
 }
+
+enum FlareColorType
+{
+    None = 0;
+    Red = 1;
+    Blue = 2;
+}

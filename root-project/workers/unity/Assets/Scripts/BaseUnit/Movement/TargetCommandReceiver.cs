@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Improbable.Gdk.Subscriptions;
-using Improbable.Gdk.Core;
+using Improbable;
 
 namespace AdvancedGears
 {
@@ -14,6 +14,7 @@ namespace AdvancedGears
 
         public void OnEnable()
         {
+            targetWriter.OnSetTargetPointEvent += OnSetTargetPoint;
             targetWriter.OnSetTargetEvent += OnSetTarget;
             targetWriter.OnSetFrontLineEvent += OnSetFrontLine;
             targetWriter.OnSetHexEvent += OnSetHex;
@@ -55,6 +56,16 @@ namespace AdvancedGears
             });
 
             //Debug.Log("OnSetHex");
+        }
+
+        private void OnSetTargetPoint(TargetPointInfo point)
+        {
+            targetWriter.SendUpdate(new BaseUnitTarget.Update()
+            {
+                TargetPoint = point,
+                PowerRate = AttackLogicDictionary.PowerRateMin,
+                Type = TargetType.Flare,
+            });
         }
 
         private void OnSetPowerRate(TargetPowerRate powerInfo)

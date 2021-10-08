@@ -124,13 +124,6 @@ component LongRangeLaserComponent {
     event LaserFireInfo laser_fired;
 }
 
-enum FlareColorType
-{
-    None = 0;
-    Red = 1;
-    Blue = 2;
-}
-
 component StrategyFlare {
     id = 20230;
 
