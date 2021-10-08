@@ -131,7 +131,7 @@ enum FlareColorType
     Blue = 2;
 }
 
-component StrategySmoke {
+component StrategyFlare {
     id = 20230;
 
     UnitSide side = 1;

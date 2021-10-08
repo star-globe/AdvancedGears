@@ -15,7 +15,7 @@ namespace AdvancedGears
             var template = new EntityTemplate();
             template.AddComponent(new Position.Snapshot(coords), WorkerUtils.UnityGameLogic);
             template.AddComponent(new Metadata.Snapshot("FlareObject"), WorkerUtils.UnityGameLogic);
-            template.AddComponent(new StrategySmoke.Snapshot { Color = color, LaunchTime = startTime, Side = side }, WorkerUtils.UnityGameLogic);
+            template.AddComponent(new StrategyFlare.Snapshot { Color = color, LaunchTime = startTime, Side = side }, WorkerUtils.UnityGameLogic);
 
             template.SetReadAccess(WorkerUtils.AllWorkerAttributes);
             template.SetComponentWriteAccess(EntityAcl.ComponentId, WorkerUtils.UnityGameLogic);
