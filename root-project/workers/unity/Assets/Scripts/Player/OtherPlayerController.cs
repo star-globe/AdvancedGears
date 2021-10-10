@@ -6,9 +6,8 @@ using Improbable.Gdk.Subscriptions;
 
 namespace AdvancedGears
 {
-    public class OtherPlayerController : BasePlayerController
+    public class OtherPlayerController : NetworkPlayerController
     {
-        [Require] BaseUnitStatusReader statusReader;
         [Require] AdvancedUnitControllerReader reader;
 
         protected override long TriggerBits
@@ -19,17 +18,6 @@ namespace AdvancedGears
                     return 0;
 
                 return reader.Data.Action.ClickBits;
-            }
-        }
-
-        protected override UnitSide SelfSide
-        {
-            get
-            {
-                if (statusReader == null)
-                    return UnitSide.None;
-
-                return statusReader.Data.Side;
             }
         }
     }

@@ -16,7 +16,7 @@ namespace AdvancedGears
     public class CommanderUnitSearchSystem : BaseCommanderSearch
     {
         private EntityQuerySet targettingQuerySet;
-        private EntityQueryBuilder.F_EDDDDD<CommanderStatus.Component, CommanderTeam.Component, BaseUnitStatus.Component, UnitActionData, SpatialEntityId> targetAction;
+        private EntityQueryBuilder.F_EDDDDDD<CommanderStatus.Component, CommanderTeam.Component, BaseUnitStatus.Component, UnitActionData, TargetFlareData, SpatialEntityId> targetAction;
         private EntityQuerySet teamingQuerySet;
         private EntityQueryBuilder.F_EDDDD<CommanderSight.Component, CommanderTeam.Component, BaseUnitStatus.Component, SpatialEntityId> teamAction;
         const float teaminTime = 1.0f;
@@ -28,12 +28,12 @@ namespace AdvancedGears
             base.OnCreate();
 
             targettingQuerySet = new EntityQuerySet(GetEntityQuery(
-                                                    ComponentType.ReadWrite<CommanderStatus.Component>(),
-                                                    ComponentType.ReadOnly<CommanderStatus.HasAuthority>(),
+                                                    ComponentType.ReadOnly<CommanderStatus.Component>(),
                                                     ComponentType.ReadWrite<CommanderTeam.Component>(),
                                                     ComponentType.ReadOnly<CommanderTeam.HasAuthority>(),
                                                     ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                                                     ComponentType.ReadOnly<UnitActionData>(),
+                                                    ComponentType.ReadWrite<TargetFlareData>(),
                                                     ComponentType.ReadOnly<Transform>(),
                                                     ComponentType.ReadOnly<SpatialEntityId>()
                                                     ), period);
@@ -68,6 +68,7 @@ namespace AdvancedGears
                               ref CommanderTeam.Component team,
                               ref BaseUnitStatus.Component status,
                               ref UnitActionData action,
+                              ref TargetFlareData flare,
                               ref SpatialEntityId entityId)
         {
             if (status.State != UnitState.Alive)
@@ -83,7 +84,7 @@ namespace AdvancedGears
             var pos = trans.position;
 
             if (CheckFlare(pos, action.SightRange, status.Rank, status.Side, out var col, out var tgt))
-                applyFlareOrder(entityId, col, pos, ref team);
+                applyFlareOrder(entityId, col, tgt, ref flare, ref team);
             else
                 applyOrder(status, entityId, pos, action.SightRange, ref commander, ref team);
         }
@@ -294,7 +295,7 @@ namespace AdvancedGears
 
         private bool CheckFlare(in Vector3 pos, float sightRange, uint rank, UnitSide selfSide, out FlareColorType flareColor, out Vector3 target)
         {
-            var scaledRange = AttackLogicDictionary.RankScaled(sightRange, rank);
+            var scaledRange = AttackLogicDictionary.RankScaled(sightRange, rank+1);
 
             flareColor = FlareColorType.None;
             target = Vector3.zero;
@@ -324,11 +325,17 @@ namespace AdvancedGears
             return length != float.MaxValue;
         }
 
-        private void applyFlareOrder(in SpatialEntityId entityId, in FlareColorType col, in Vector3 pos, ref CommanderTeam.Component team)
+        private void applyFlareOrder(in SpatialEntityId entityId, in FlareColorType col, in Vector3 target, ref TargetFlareData flare, ref CommanderTeam.Component team)
         {
+            if (flare.Color == col && flare.Position == target)
+                return;
+
+            flare.Color = col;
+            flare.Position = target;
+
             var followers = team.FollowerInfo.GetAllFollowers(allFollowers);
 
-            var point = new TargetPointInfo(pos.ToWorldCoordinates(this.Origin), col);
+            var point = new TargetPointInfo(target.ToWorldCoordinates(this.Origin), col);
             var order = col == FlareColorType.Red ? OrderType.Attack: OrderType.Keep;
             SetOrderFollowers(followers, entityId.EntityId, point, order);
         }
@@ -451,5 +458,19 @@ namespace AdvancedGears
             return followers.Count(f => CheckAlive(f.Id));
         }
         #endregion
+    }
+
+    public struct TargetFlareData : IComponentData
+    {
+        public Vector3 Position;
+        public FlareColorType Color;
+
+        public static TargetFlareData CreateData()
+        {
+            var data = new TargetFlareData();
+            data.Color = FlareColorType.None;
+            data.Position = Vector3.zero;
+            return data;
+        }
     }
 }

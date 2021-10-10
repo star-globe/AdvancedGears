@@ -816,6 +816,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3268532178235258176}
   - component: {fileID: 7756995341925617809}
+  - component: {fileID: 4390657397945517744}
   m_Layer: 13
   m_Name: Cannon
   m_TagString: Untagged
@@ -854,6 +855,19 @@ MonoBehaviour:
   gunId: 0
   barell: {fileID: 4137161997623122930}
   muzzle: {fileID: 5556187125544116455}
+--- !u!114 &4390657397945517744
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5703663550625354384}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbc293d895d824246aa074dbd3c7b41d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  keyCode: 0
 --- !u!1 &6030546142996595144
 GameObject:
   m_ObjectHideFlags: 0

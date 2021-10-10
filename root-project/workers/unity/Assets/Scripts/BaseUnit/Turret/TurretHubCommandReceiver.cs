@@ -53,8 +53,11 @@ namespace AdvancedGears
         {
             var datas = turretHub.Data.TurretsDatas;
 
+            Debug.LogFormat("Turret Hub OrderUpdate {0} Name:{1}", order, this.gameObject.name);
+
             foreach (var kvp in datas) {
                 UpdateSystem.SendEvent(new BaseUnitStatus.SetOrder.Event(new OrderInfo() { Order = order }), kvp.Value.EntityId);
+                Debug.LogFormat("Turret Hub SendEvent {0} Id:{1}", order, kvp.Value.EntityId);
             }
         }
     }

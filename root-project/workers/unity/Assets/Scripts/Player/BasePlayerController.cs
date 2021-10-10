@@ -5,10 +5,10 @@ using UnityEngine.Assertions;
 
 namespace AdvancedGears
 {
-	public abstract class BasePlayerController : MonoBehaviour
-	{
-		[SerializeField]
-		BulletFireTrigger trigger;
+    public abstract class BasePlayerController : MonoBehaviour
+    {
+        [SerializeField]
+        BulletFireTrigger trigger;
 
         [SerializeField]
         PostureBoneContainer container;
@@ -29,6 +29,9 @@ namespace AdvancedGears
 
         void Update ()
         {
+            if (IsDead)
+                return;
+
             targetPosition = null;
             if (enemyPosList != null && enemyPosList.Count > 0) {
                 float length = float.MaxValue;
@@ -89,5 +92,7 @@ namespace AdvancedGears
         protected abstract long TriggerBits { get; }
 
         protected abstract UnitSide SelfSide { get; }
+
+        protected abstract bool IsDead { get; }
     }
 }

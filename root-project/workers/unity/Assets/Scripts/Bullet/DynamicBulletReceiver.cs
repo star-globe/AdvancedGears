@@ -33,7 +33,7 @@ namespace AdvancedGears
             if (current < 0)
                 current = 0;
 
-            Debug.LogFormat("OnHit! Modify Health:{0}", current);
+            //Debug.LogFormat("OnHit! Modify Health:{0}", current);
 
             healthCommandSender.SendModifyHealthCommand(entityId, new HealthModifier(0, current));
         }

@@ -16,7 +16,7 @@ MonoBehaviour:
   bulletModel: {fileID: 1294890876457356, guid: 673a24edada4ed04f8a3914b06219416,
     type: 3}
   baseType: 4
-  option: 2
+  option: 1
   impactEffect: {fileID: 0}
   muzzleFlashEffect: {fileID: 0}
   bulletLineRenderer: {fileID: 0}

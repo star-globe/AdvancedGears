@@ -63,7 +63,7 @@ namespace AdvancedGears
             targetWriter.SendUpdate(new BaseUnitTarget.Update()
             {
                 TargetPoint = point,
-                PowerRate = AttackLogicDictionary.PowerRateMin,
+                PowerRate = 1.0f,
                 Type = TargetType.Flare,
             });
         }

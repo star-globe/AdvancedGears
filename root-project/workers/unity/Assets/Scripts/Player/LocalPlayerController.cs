@@ -5,10 +5,8 @@ using Improbable.Gdk.Subscriptions;
 
 namespace AdvancedGears
 {
-    public class LocalPlayerController : BasePlayerController
+    public class LocalPlayerController : NetworkPlayerController
     {
-        [Require] BaseUnitStatusReader reader;
-
         protected override long TriggerBits
         {
             get
@@ -19,17 +17,6 @@ namespace AdvancedGears
                 ControllerUtils.GetSetKeyBits(KeyCode.F, ref bits);
 
                 return bits;
-            }
-        }
-
-        protected override UnitSide SelfSide
-        {
-            get
-            {
-                if (reader == null)
-                    return UnitSide.None;
-
-                return reader.Data.Side;
             }
         }
     }

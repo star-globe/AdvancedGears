@@ -74,6 +74,9 @@ namespace AdvancedGears
             if (status.State != UnitState.Alive)
                 return;
 
+            if (status.Side == UnitSide.None)
+                return;
+
             if (UnitUtils.IsOffensive(status.Type) == false)
                 return;
 
@@ -187,13 +190,17 @@ namespace AdvancedGears
     {
         public float SightRange;
         public float AttackRange;
+        public Vector3 TargetPosition;
 
         public static UnitActionData CreateData(float sightRange, float attackRange)
         {
             var data = new UnitActionData();
             data.SightRange = sightRange;
             data.AttackRange = attackRange;
+            data.TargetPosition = Vector3.zero;
             return data;
         }
     }
+
+
 }

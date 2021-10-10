@@ -22,14 +22,14 @@ namespace AdvancedGears
         private EntityQuery advancedInputGroup;
         private EntityQueryBuilder.F_ECDDD<Rigidbody, LocalController, BaseUnitStatus.Component, Speed> action;
 
-        private const float WalkSpeed = 10.0f;
+        private const float WalkSpeed = 25.0f;
         private const float RunSpeed = 3.0f * WalkSpeed;
         private const float MaxSpeed = 1.2f * RunSpeed;
 
         private const float TurnSpeed = 7.0f;
         private const float MaxTurnSpeed = 1.2f * TurnSpeed;
 
-        private const float InverseSpeedRate = 15.0f;
+        private const float InverseSpeedRate = 25.0f;
 
         private const float TurnSmoothTime = 0.05f;
         private float turnSmoothVelocity;

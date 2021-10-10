@@ -9,36 +9,36 @@ using Improbable.Gdk.Core;
 
 namespace AdvancedGears
 {
-    public class CommanderUnitInitializer : MonoBehaviour
+    public class CommanderUnitInitializer : SpatialMonoBehaviour
     {
-        [Require] CommanderSightWriter sight;
+        //[Require] CommanderSightWriter sight;
         [Require] CommanderStatusWriter commander;
-        [Require] CommanderActionWriter action;
+        //[Require] CommanderActionWriter action;
         [Require] BoidComponentWriter boid;
         [Require] BaseUnitStatusReader status;
-        [Require] DominationDeviceWriter domination;
-        [Require] World world;
+        //[Require] DominationDeviceWriter domination;
+        //[Require] World world;
 
         [SerializeField]
         CommanderUnitInitSettings settings;
 
         void Start()
         {
-            sight.SendUpdate(new CommanderSight.Update
-            {
-                //Interval = IntervalCheckerInitializer.InitializedChecker(settings.Inter),
-                //Range = settings.SightRange,
-            });
+            //sight.SendUpdate(new CommanderSight.Update
+            //{
+            //    //Interval = IntervalCheckerInitializer.InitializedChecker(settings.Inter),
+            //    //Range = settings.SightRange,
+            //});
 
             commander.SendUpdate(new CommanderStatus.Update
             {
                 AllyRange = settings.AllyRange,
             });
 
-            action.SendUpdate(new CommanderAction.Update
-            {
-                Interval = IntervalCheckerInitializer.InitializedChecker(settings.Inter),
-            });
+            //action.SendUpdate(new CommanderAction.Update
+            //{
+            //    Interval = IntervalCheckerInitializer.InitializedChecker(settings.Inter),
+            //});
 
             boid.SendUpdate(new BoidComponent.Update
             {
@@ -48,10 +48,16 @@ namespace AdvancedGears
                 CohesionWeight = settings.CohesionWeight,
             });
 
-            domination.SendUpdate(new DominationDevice.Update
+            //domination.SendUpdate(new DominationDevice.Update
+            //{
+            //    Speed = settings.CaptureSpeed,
+            //});
+
+            if (this.EntityManager != null &&
+                this.Worker != null && this.Worker.TryGetEntity(SpatialComp.EntityId, out Entity entity))
             {
-                Speed = settings.CaptureSpeed,
-            });
+                this.EntityManager.Value.AddComponentData<TargetFlareData>(entity, TargetFlareData.CreateData());
+            }
         }
     }
 }

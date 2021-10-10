@@ -62,7 +62,7 @@ namespace AdvancedGears
             if (status.State != UnitState.Alive)
                 return;
 
-            if (status.Order == OrderType.Idle)
+            if (status.Side == UnitSide.None)
                 return;
 
             if (UnitUtils.IsWatcher(status.Type) == false)
