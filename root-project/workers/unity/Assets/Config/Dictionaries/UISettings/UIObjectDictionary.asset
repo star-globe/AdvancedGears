@@ -22,6 +22,9 @@ MonoBehaviour:
   - type: 201
     uiObject: {fileID: 1145548588463608764, guid: eb7fc24a613cef9499e86e42f44cd70a,
       type: 3}
+  - type: 202
+    uiObject: {fileID: 1145548588463608764, guid: 3e87391bd30403e47b0374005b9c71cd,
+      type: 3}
   spriteSettings:
   - type: 1
     sprite: {fileID: 21300000, guid: fa779413490163b429c3dd0ae1da037a, type: 3}

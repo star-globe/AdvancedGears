@@ -10,13 +10,13 @@ namespace AdvancedGears.UI
         [SerializeField]
         Image raderImage;
 
-		float raderRadius = -1.0f;
+        float raderRadius = -1.0f;
         float RaderRadius
         {
-			get
+            get
             {
-				if (raderRadius < 0) {
-					var rect = raderImage.GetComponent<RectTransform>();
+                if (raderRadius < 0) {
+                    var rect = raderImage.GetComponent<RectTransform>();
                     if (rect == null)
                         raderRadius = 10.0f;
                     else
@@ -32,11 +32,16 @@ namespace AdvancedGears.UI
             get { return RangeDictionary.MiniMapRange; }
         }
 
+        public float MiniMapRate
+        {
+            get { return RaderRadius / MiniMapRange; }
+        }
+
         public Transform MiniMapParent => raderImage.transform;
 
         public Vector2 GetMiniMapPos(Vector2 pos)
         {
-            return (pos / MiniMapRange) * RaderRadius;
+            return pos * MiniMapRate;
         }
 
         private void Awake()

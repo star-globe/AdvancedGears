@@ -273,7 +273,12 @@ namespace AdvancedGears
                               TransformInternal.ComponentId)
                .WithMaxFrequencyHz(FixedParams.WorldInterestFrequency);
 
-            interest.AddQueries<T>(minimapQuery);
+            var strategyQuery = InterestQuery.Query(
+                Constraint.Component(HexBase.ComponentId))
+                .FilterResults(Position.ComponentId, HexBase.ComponentId, HexPower.ComponentId)
+                .WithMaxFrequencyHz(FixedParams.WorldInterestFrequency);
+
+            interest.AddQueries<T>(minimapQuery, strategyQuery);
         }
 
         static void AddSymbolicTowerQuery<T>(InterestTemplate interest) where T : ISpatialComponentData

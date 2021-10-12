@@ -14,31 +14,33 @@ namespace AdvancedGears.UI
 {
     [DisableAutoCreation]
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
-    internal class MiniMapUISystem : BaseUISystem<MiniMapUIObject>
+    internal class MiniMapUISystem : BaseMiniMapUISystem<MiniMapUIObject>
     {
-        private EntityQuery playerGroup;
-        private EntityQueryBuilder.F_ECDD<Transform, PlayerInfo.Component, SpatialEntityId> playerAction;
+        //private EntityQuery playerGroup;
+        //private EntityQueryBuilder.F_ECDD<Transform, PlayerInfo.Component, SpatialEntityId> playerAction;
         private EntityQuery unitGroup;
         private EntityQueryBuilder.F_EDDD<BaseUnitStatus.Component, Position.Component, SpatialEntityId> unitAction;
 
-        MiniMapUIDisplay MiniMapUIDisplay => MiniMapUIDisplay.Instance;
+        //private EntityQuery hexGroup;
+
+        //MiniMapUIDisplay MiniMapUIDisplay => MiniMapUIDisplay.Instance;
 
         protected override UIType uiType => UIType.MiniMapObject;
-        protected override Transform parent
-        {
-            get { return this.MiniMapUIDisplay?.MiniMapParent; }
-        }
+        //protected override Transform parent
+        //{
+        //    get { return this.MiniMapUIDisplay?.MiniMapParent; }
+        //}
 
         protected override void OnCreate()
         {
             base.OnCreate();
 
-            playerGroup = GetEntityQuery(
-                ComponentType.ReadOnly<PlayerInfo.Component>(),
-                ComponentType.ReadOnly<BaseUnitStatus.Component>(),
-                ComponentType.ReadOnly<Transform>(),
-                ComponentType.ReadOnly<SpatialEntityId>()
-            );
+            //playerGroup = GetEntityQuery(
+            //    ComponentType.ReadOnly<PlayerInfo.Component>(),
+            //    ComponentType.ReadOnly<BaseUnitStatus.Component>(),
+            //    ComponentType.ReadOnly<Transform>(),
+            //    ComponentType.ReadOnly<SpatialEntityId>()
+            //);
 
             unitGroup = GetEntityQuery(
                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
@@ -46,67 +48,61 @@ namespace AdvancedGears.UI
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
 
-            playerAction = PlayerQuery;
+            //hexGroup = GetEntityQuery(
+            //    ComponentType.ReadOnly<HexBase.Component>(),
+            //    ComponentType.ReadOnly<HexPower.Component>(),
+            //    ComponentType.ReadOnly<Position.Component>()
+            //);
+
+            //playerAction = PlayerQuery;
 
             unitAction = UnitQuery;
         }
 
-        const float size = 1.1f;
-        const float depth = 1000.0f;
-        Bounds viewBounds = new Bounds(new Vector3(0.5f,0.5f, depth/2), new Vector3(size,size, depth));
-
-        Vector3? playerPosition = null;
+        //const float size = 1.1f;
+        //const float depth = 1000.0f;
+        //Bounds viewBounds = new Bounds(new Vector3(0.5f,0.5f, depth/2), new Vector3(size,size, depth));
+        //
+        //Vector3? playerPosition = null;
 
         private void SetUIObject(in BaseUnitStatus.Component status, in EntityId entityId, in Position.Component position)
         {
-            if (playerPosition == null)
-                return;
-
-            var uiObject = this.GetOrCreateUI(entityId);
-            if (uiObject == null)
-                return;
-
-            if (this.Camera == null)
-                return;
-
-            var diff = position.Coords.ToUnityVector() - playerPosition.Value;
-            var inversed = this.Camera.transform.InverseTransformVector(diff);
-              var vec2 = this.MiniMapUIDisplay.GetMiniMapPos(new Vector2(inversed.x, inversed.z));
+            var uiObject = GetUIObject(entityId, position.Coords, out var vec2);
             uiObject.SetInfo(vec2, status.Side, status.Type);
             uiObject.SetName(string.Empty);
         }
 
-        void UpdatePlayerPositions()
-        {
-            Entities.With(playerGroup).ForEach(playerAction);
-        }
+        //void UpdatePlayerPositions()
+        //{
+        //    Entities.With(playerGroup).ForEach(playerAction);
+        //}
         
-        void PlayerQuery(Entity entity,
-                          Transform transform,
-                          ref PlayerInfo.Component player,
-                          ref SpatialEntityId entityId)
-        {
-            if (player.ClientWorkerId.Equals(this.WorkerSystem.WorkerId))
-            {
-                playerPosition = transform.position - this.Origin;
-            }
+        //void PlayerQuery(Entity entity,
+        //                  Transform transform,
+        //                  ref PlayerInfo.Component player,
+        //                  ref SpatialEntityId entityId)
+        //{
+        //    if (player.ClientWorkerId.Equals(this.WorkerSystem.WorkerId))
+        //    {
+        //        playerPosition = transform.position - this.Origin;
+        //    }
+        //
+        //    var minimapObject = this.GetOrCreateUI(entityId.EntityId);
+        //    if (minimapObject != null)
+        //        minimapObject.SetName(player.Name);
+        //}
 
-            var minimapObject = this.GetOrCreateUI(entityId.EntityId);
-            if (minimapObject != null)
-                minimapObject.SetName(player.Name);
-        }
+        //protected override void UpdateAction()
+        //{
+        //    if (this.MiniMapUIDisplay == null)
+        //        return;
+        //
+        //    UpdatePlayerPositions();
+        //
+        //    UpdateUIObject();
+        //}
 
-        protected override void UpdateAction()
-        {
-            if (this.MiniMapUIDisplay == null)
-                return;
-
-            UpdatePlayerPositions();
-
-            UpdateUIObject();
-        }
-
-        void UpdateUIObject()
+        protected override void UpdateUIObject()
         {
             Entities.With(unitGroup).ForEach(unitAction);
         }
@@ -118,5 +114,7 @@ namespace AdvancedGears.UI
         {
             SetUIObject(status, entityId.EntityId, position);
         }
+
+        
     }
 }

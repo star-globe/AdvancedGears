@@ -45,6 +45,7 @@ namespace AdvancedGears
             world.GetOrCreateSystem<SpawnPointQuerySystem>();
             world.GetOrCreateSystem<UnitUIInfoSystem>();
             world.GetOrCreateSystem<MiniMapUISystem>();
+            world.GetOrCreateSystem<MiniMapHexUISystem>();
             world.GetOrCreateSystem<LocalTimerUpdateSystem>();
             world.GetOrCreateSystem<SymbolicObjectSystem>();
         }

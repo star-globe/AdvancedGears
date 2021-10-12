@@ -33,5 +33,6 @@ namespace AdvancedGears.UI
         // MiniMap
         MiniMapDisplay = 200,
         MiniMapObject,
+        MiniMapHex,
     }
 }
