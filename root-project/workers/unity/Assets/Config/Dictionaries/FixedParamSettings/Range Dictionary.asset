@@ -33,7 +33,7 @@ MonoBehaviour:
   uiRange: 100
   baseBoidsRange: 100
   boidsRankRate: 3
-  minimapRange: 1000
+  minimapRange: 800
   armyCloudRange: 1200
   bodySize: 10
   allyRange: 20
