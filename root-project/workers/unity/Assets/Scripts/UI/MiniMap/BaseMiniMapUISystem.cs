@@ -71,10 +71,15 @@ namespace AdvancedGears.UI
                 return null;
 
             var diff = coords.ToUnityVector() - playerPosition.Value;
-            var inversed = this.Camera.transform.InverseTransformVector(diff);
-            vec2 = this.MiniMapUIDisplay.GetMiniMapPos(new Vector2(inversed.x, inversed.z));
-            var forward = this.Camera.transform.InverseTransformDirection(Vector3.forward);
-            rot = Mathf.Atan2(forward.z, forward.x);
+            diff = new Vector3(diff.x, 0, diff.z);
+
+            rot = this.Camera.transform.eulerAngles.y;
+
+            var quo = Quaternion.AngleAxis(-rot, Vector3.up);
+            diff = quo * diff;
+
+            vec2 = this.MiniMapUIDisplay.GetMiniMapPos(new Vector2(diff.x, diff.z));
+
             return uiObject;
         }
 

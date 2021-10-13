@@ -15,13 +15,14 @@ namespace AdvancedGears.UI
             Assert.IsNotNull(image);
         }
 
+        const float rotOffset = 0.0f;
         const float hexRate = 2.0f;
 
         public void SetInfo(Vector2 pos, UnitSide side, float rot, float hexSize)
         {
             if (this.Rect != null) {
                 this.Rect.localPosition = pos;
-                this.Rect.localEulerAngles = Vector3.forward * rot;
+                this.Rect.localEulerAngles = Vector3.forward * (rot+ rotOffset);
                 this.Rect.sizeDelta = Vector2.one * hexSize * hexRate;
             }
                 
