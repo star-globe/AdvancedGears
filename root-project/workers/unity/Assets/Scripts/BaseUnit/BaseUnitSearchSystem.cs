@@ -126,10 +126,10 @@ namespace AdvancedGears
             }
 
             // set behind
-            if (status.Type == UnitType.Commander) {
-                var addRange = RangeDictionary.AllyRange;
-                range += AttackLogicDictionary.RankScaled(addRange, status.Rank);
-            }
+            //if (status.Type == UnitType.Commander) {
+            //    var addRange = RangeDictionary.AllyRange;
+            //    range += AttackLogicDictionary.RankScaled(addRange, status.Rank);
+            //}
 
             sight.TargetRange = range;
             sight.State = target.State;

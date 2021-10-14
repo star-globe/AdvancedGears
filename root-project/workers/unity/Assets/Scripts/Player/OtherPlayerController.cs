@@ -10,6 +10,10 @@ namespace AdvancedGears
     {
         [Require] AdvancedUnitControllerReader reader;
 
+        [Require] BaseUnitStatusReader statusReader;
+
+        protected override BaseUnitStatusReader Reader { get { return statusReader; } }
+
         protected override long TriggerBits
         {
             get

@@ -7,6 +7,10 @@ namespace AdvancedGears
 {
     public class LocalPlayerController : NetworkPlayerController
     {
+        [Require] BaseUnitStatusReader reader;
+
+        protected override BaseUnitStatusReader Reader { get { return reader; } }
+
         protected override long TriggerBits
         {
             get

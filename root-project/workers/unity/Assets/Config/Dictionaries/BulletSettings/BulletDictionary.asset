@@ -15,3 +15,4 @@ MonoBehaviour:
   bulletsList:
   - {fileID: 11400000, guid: 1d4d19d6362251c479fe2d3a6aae06e0, type: 2}
   - {fileID: 11400000, guid: 0efe41f1f1c4bf942862fa1aa75cc41b, type: 2}
+  flareLifeTime: 30

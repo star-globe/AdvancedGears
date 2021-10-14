@@ -10,14 +10,16 @@ namespace AdvancedGears
     {
         [Require] BaseUnitStatusReader reader;
 
+        protected abstract BaseUnitStatusReader Reader { get; }
+
         protected override UnitSide SelfSide
         {
             get
             {
-                if (reader == null)
+                if (this.Reader == null)
                     return UnitSide.None;
 
-                return reader.Data.Side;
+                return this.Reader.Data.Side;
             }
         }
 
@@ -25,10 +27,10 @@ namespace AdvancedGears
         {
             get
             {
-                if (reader == null)
+                if (this.Reader == null)
                     return true;
 
-                return reader.Data.State == UnitState.Dead;
+                return this.Reader.Data.State == UnitState.Dead;
             }
         }
     }
