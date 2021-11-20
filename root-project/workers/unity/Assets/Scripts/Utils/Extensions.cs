@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Unity.Entities;
 using Improbable;
 using Improbable.Gdk.Core;
 using Improbable.Gdk.TransformSynchronization;
@@ -487,6 +488,15 @@ namespace AdvancedGears
                 default:
                     return true;
             }
+        }
+
+        public static bool IsFieldCreated(this World world)
+        {
+            var field = world.GetExistingSystem<FieldQueryBaseSystem>();
+            if (field == null || field.FieldCreator == null)
+                return false;
+
+            return field.FieldCreator.IsSetDatas;
         }
     }
 

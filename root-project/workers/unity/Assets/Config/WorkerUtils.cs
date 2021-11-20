@@ -59,6 +59,7 @@ namespace AdvancedGears
             world.GetOrCreateSystem<MetricSendSystem>();
             world.GetOrCreateSystem<ProcessScoresSystem>();
             world.GetOrCreateSystem<CollisionProcessSystem>();
+            world.GetOrCreateSystem<FieldQueryServerSystem>();
             world.GetOrCreateSystem<RootPostureSyncSystem>();
             //world.GetOrCreateSystem<PostureAnimationSyncSystem>();
             world.GetOrCreateSystem<AimAnimationLocalSystem>();
@@ -82,7 +83,6 @@ namespace AdvancedGears
             world.GetOrCreateSystem<StrongholdActionSystem>();
             world.GetOrCreateSystem<BulletMovementSystem>();
             world.GetOrCreateSystem<BaseUnitReviveTimerSystem>();
-            world.GetOrCreateSystem<FieldQueryServerSystem>();
             world.GetOrCreateSystem<HexBaseSystem>();
             world.GetOrCreateSystem<HexUpdateSystem>();
             world.GetOrCreateSystem<HexPowerUpdateSystem>();

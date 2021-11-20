@@ -76,6 +76,9 @@ namespace AdvancedGears
 
         protected override void OnUpdate()
         {
+            if (this.World.IsFieldCreated() == false)
+                return;
+
             HandleUnitCheck();
             HandleProductUnit();
             HandleProductResponse();
@@ -246,7 +249,9 @@ namespace AdvancedGears
                 this.CommandSystem.SendCommand(request);
             }
             else if (team_order != null) {
-                CreateTeam(factory.TeamOrders, status.Side, entityId.EntityId, coords, out finished);
+                var teamOrders = factory.TeamOrders;
+                CreateTeam(teamOrders, status.Side, entityId.EntityId, coords, out finished);
+                factory.TeamOrders = teamOrders;
             }
             else if  (turret_order != null) {
                 // todo turret
@@ -466,6 +471,8 @@ namespace AdvancedGears
             }
 
             var hashes = new HashSet<CommandRequestId>();
+
+            Debug.LogFormat("Send CreateEntityCommand. Id:{0}", id);
 
             foreach(var pair in templates) {
                 var comId = this.CommandSystem.SendCommand(new WorldCommands.CreateEntity.Request(

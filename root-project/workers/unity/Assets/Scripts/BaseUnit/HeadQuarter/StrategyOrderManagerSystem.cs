@@ -56,7 +56,7 @@ namespace AdvancedGears
                 ComponentType.ReadOnly<SpatialEntityId>()
             );
 
-            inter = IntervalCheckerInitializer.InitializedChecker(1.0f);
+            inter = IntervalCheckerInitializer.InitializedChecker(5.0f);
 
             action = Query;
         }
@@ -115,16 +115,15 @@ namespace AdvancedGears
                 if (unit.type != UnitType.Stronghold)
                     continue;
 
-                SendCommand(unit.id, enemy.side, diff * st_range);
+                SendCommand(unit.id, status.Side, enemy.side, diff * st_range);
             }
         }
 
-        void SendCommand(EntityId id, UnitSide side, Vector3 vec)
+        void SendCommand(EntityId id, UnitSide selfSide, UnitSide side, Vector3 vec)
         {
-            this.CommandSystem.SendCommand(new StrongholdSight.SetStrategyVector.Request(
-                id,
-                new StrategyVector( side, FixedPointVector3.FromUnityVector(vec)))
-            );
+            this.UpdateSystem.SendEvent(
+            new StrongholdSight.SetStrategyVector.Event(new StrategyVectorEvent(selfSide, new StrategyVector(side, vec.ToFixedPointVector3()))),
+            id);
         }
 
         UnitInfo getNearestEnemy(UnitSide side, Vector3 pos)

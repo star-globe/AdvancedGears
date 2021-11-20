@@ -31,7 +31,7 @@ MonoBehaviour:
   boidReduceRate: 0.5
   boidPotentialMinimum: 0.01
   boidRadiusMinimum: 0.1
-  teamPerHex: 2
+  teamPerHex: 1
   underSoldiers: 8
   underCommanders: 3
   underTurrets: 3

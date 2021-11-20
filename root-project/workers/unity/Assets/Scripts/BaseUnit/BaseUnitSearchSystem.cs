@@ -251,10 +251,10 @@ namespace AdvancedGears
         readonly List<UnitInfo> unitList = new List<UnitInfo>();
         readonly Queue<UnitInfo> unitQueue = new Queue<UnitInfo>();
 
-        readonly List<UnitInfo> playerUnitList = new List<UnitInfo>();
-
         readonly Dictionary<UnitType, UnitType[]> singleTypes = new Dictionary<UnitType, UnitType[]>();
 
+        #region Player
+        readonly List<UnitInfo> playerUnitList = new List<UnitInfo>();
         EntityQuery playerGroup;
         private EntityQueryBuilder.F_CDDD<Transform, BaseUnitStatus.Component, PlayerInfo.Component, SpatialEntityId> playerAction;
 
@@ -300,7 +300,149 @@ namespace AdvancedGears
             info.state = status.State;
             info.rank = status.Rank;
         }
+        #endregion
 
+        #region Unit
+        readonly Dictionary<UnitSide, Dictionary<UnitType, List<UnitInfo>>> unitDictionary = new Dictionary<UnitSide, Dictionary<UnitType, List<UnitInfo>>>();
+        EntityQuery unitGroup;
+        private EntityQueryBuilder.F_DDDD<Position.Component, PostureRoot.Component, BaseUnitStatus.Component, SpatialEntityId> unitAction;
+
+        private void CreateUnitQuery()
+        {
+            unitGroup = GetEntityQuery(  ComponentType.ReadOnly<BaseUnitStatus.Component>(),
+                                         ComponentType.ReadOnly<SpatialEntityId>(),
+                                         ComponentType.ReadOnly<Position.Component>(),
+                                         ComponentType.ReadOnly<PostureRoot.Component>());
+
+            unitAction = UnitQuery;
+        }
+
+        protected void UpdateUnitInfoQuery()
+        {
+            if (unitAction == null)
+                CreateUnitQuery();
+
+            foreach (var dic in unitDictionary) {
+                foreach (var kvp in dic.Value) {
+                    for (var i = 0; i < kvp.Value.Count; i++)
+                        unitQueue.Enqueue(kvp.Value[i]);
+
+                    kvp.Value.Clear();
+                }
+            }
+
+            Entities.With(unitGroup).ForEach(unitAction);
+        }
+
+        private void UnitQuery(ref Position.Component position,
+                               ref PostureRoot.Component rotation,
+                                 ref BaseUnitStatus.Component status,
+                                 ref SpatialEntityId spatialId)
+        {
+            var side = status.Side;
+            if (unitDictionary.ContainsKey(side) == false)
+                unitDictionary.Add(side, new Dictionary<UnitType,List<UnitInfo>>());
+
+            var dic = unitDictionary[side];
+            var type = status.Type;
+            if (dic.ContainsKey(type) == false)
+                dic.Add(type, new List<UnitInfo>());
+
+            var list = dic[type];
+
+            UnitInfo info = null;
+            list.Add(unitQueue.Count > 0 ? unitQueue.Dequeue() : new UnitInfo());
+
+            var index = list.Count - 1;
+
+            info = list[index];
+            info.id = spatialId.EntityId;
+            info.pos = position.Coords.ToWorkerPosition(this.Origin);
+            info.rot = rotation.RootTrans.Rotation.ToUnityQuaternion();
+            info.type = status.Type;
+            info.side = status.Side;
+            info.order = status.Order;
+            info.state = status.State;
+            info.rank = status.Rank;
+        }
+        protected List<UnitInfo> getUnitsFromQuery(UnitSide self_side, in Vector3 pos, float length, bool? isEnemy, bool allowDead, EntityId? selfId, UnitType[] types)
+        {
+            UnityEngine.Profiling.Profiler.BeginSample("GetUnitsFromQuery");
+            int index = 0;
+            foreach(var kvp in unitDictionary)
+            {
+                var side = kvp.Key;
+                if (isEnemy != null && (side == self_side) == isEnemy.Value)
+                    continue;
+
+                var dic = kvp.Value;
+                foreach (var pair in dic)
+                {
+                    var type = pair.Key;
+                    if (types != null && types.Length != 0)
+                    {
+                        bool contains = false;
+                        foreach (var t in types)
+                        {
+                            contains |= t == type;
+                        }
+
+                        if (!contains)
+                            continue;
+                    }
+
+                    foreach (var u in pair.Value)
+                    {
+                        if (selfId != null && selfId.Value == u.id)
+                            continue;
+
+                        if (u.state == UnitState.Dead && allowDead == false)
+                            continue;
+
+                        var diff = u.pos - pos;
+                        if (diff.sqrMagnitude > length * length)
+                            continue;
+
+                        UnitInfo info = null;
+                        if (index >= unitList.Count)
+                            unitList.Add(unitQueue.Count > 0 ? unitQueue.Dequeue() : new UnitInfo());
+
+                        info = unitList[index];
+                        info.id = u.id;
+                        info.pos = u.pos;
+                        info.rot = u.rot;
+                        info.type = u.type;
+                        info.side = u.side;
+                        info.order = u.order;
+                        info.state = u.state;
+                        info.rank = u.rank;
+                        info.size = u.size;
+
+                        index++;
+                    }
+                }
+            }
+
+            if (unitList.Count > index)
+            {
+                for (var i = index; i < unitList.Count; i++)
+                    unitQueue.Enqueue(unitList[i]);
+                unitList.RemoveRange(index, unitList.Count - index);
+            }
+
+            UnityEngine.Profiling.Profiler.EndSample();
+
+            return unitList;
+        }
+        protected List<UnitInfo> getAllyUnitsFromQuery(UnitSide self_side, in Vector3 pos, float length, bool allowDead = false, UnitType[] types = null)
+        {
+            return getUnitsFromQuery(self_side, pos, length, isEnemy: false, allowDead, null, types);
+        }
+        protected List<UnitInfo> getAllyUnitsFromQuery(UnitSide self_side, in Vector3 pos, float length, bool allowDead = false, EntityId? selfId = null, UnitType[] types = null)
+        {
+            return getUnitsFromQuery(self_side, pos, length, isEnemy: false, allowDead, selfId, types);
+        }
+        #endregion
         protected UnitType[] GetSingleUnitTypes(UnitType unit)
         {
             if (singleTypes.TryGetValue(unit, out var types))

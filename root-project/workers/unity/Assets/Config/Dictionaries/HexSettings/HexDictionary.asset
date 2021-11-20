@@ -16,6 +16,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c52cdb9164044034aa2cafcf10d34ec0, type: 2}
   edgeLength: 200
   hexTargetRadiusRate: 0.1
+  checkAliveRate: 1.1
   hexResourceRate: 3
   hexPowerLimit: 100
   hexPowerMin: 0.1

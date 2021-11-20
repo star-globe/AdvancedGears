@@ -20,21 +20,21 @@ namespace AdvancedGears
 
         private EntityQuery newAdvancedGroup;
         private EntityQuery advancedInputGroup;
-        private EntityQueryBuilder.F_ECDDD<Rigidbody, LocalController, BaseUnitStatus.Component, Speed> action;
+        private EntityQueryBuilder.F_ECDD<Rigidbody, LocalController, BaseUnitStatus.Component> action;//, Speed> action;
 
         private const float WalkSpeed = 25.0f;
         private const float RunSpeed = 2.0f * WalkSpeed;
         private const float MaxSpeed = 1.2f * RunSpeed;
 
-        private const float TurnSpeed = 7.0f;
+        private const float TurnSpeed = 3.0f;
         private const float MaxTurnSpeed = 1.2f * TurnSpeed;
 
-        private const float InverseSpeedRate = 20.0f;
+        private const float InverseSpeedRate = 2.0f;
 
-        private const float TurnSmoothTime = 0.05f;
+        private const float TurnSmoothTime = 0.25f;
         private float turnSmoothVelocity;
 
-        private const float SpeedSmoothTime = 0.05f;
+        private const float SpeedSmoothTime = 0.25f;
 
         protected override void OnCreate()
         {
@@ -90,8 +90,8 @@ namespace AdvancedGears
         private void Query(Entity entity,
                             Rigidbody rigidbody,
                             ref LocalController localController,
-                            ref BaseUnitStatus.Component status,
-                            ref Speed speed)
+                            ref BaseUnitStatus.Component status)//,
+                            //ref Speed speed)
         {
             if (status.State != UnitState.Alive)
                 return;
@@ -105,10 +105,10 @@ namespace AdvancedGears
             var inputDir = new Vector2(stick.Horizontal, stick.Vertical).normalized;
             var inputCam = new Vector2(stick.Yaw, stick.Pitch);
 
-            var currentSpeed = speed.CurrentSpeed;
-            var speedSmoothVelocity = speed.SpeedSmoothVelocity;
-            var currentRotSpeed = speed.CurrentRotSpeed;
-            var speedSmoothRotVelocity = speed.SpeedSmoothRotVelocity;
+            var currentSpeed = 0f;//speed.CurrentSpeed;
+            var speedSmoothVelocity = 0f;//speed.SpeedSmoothVelocity;
+            var currentRotSpeed = 0f;// speed.CurrentRotSpeed;
+            var speedSmoothRotVelocity = 0f;// speed.SpeedSmoothRotVelocity;
 
             bool updateSpeed = false;
             var x = rigidbody.velocity.x;
@@ -116,7 +116,7 @@ namespace AdvancedGears
             if (x * x + z * z <= MaxSpeed * MaxSpeed)
             {
                 var targetSpeed = (localController.Action.Running ? RunSpeed : WalkSpeed) * inputDir.magnitude;
-                currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref speedSmoothVelocity, SpeedSmoothTime, MaxSpeed, Time.DeltaTime);
+                currentSpeed = targetSpeed / SpeedSmoothTime;//Mathf.SmoothDamp(currentSpeed, targetSpeed, ref speedSmoothVelocity, SpeedSmoothTime, MaxSpeed, Time.DeltaTime);
 
                 updateSpeed = true;
             }
@@ -128,18 +128,18 @@ namespace AdvancedGears
                 float rate = inputCam.x * anglerVelocity.y < 0 ? InverseSpeedRate : 1.0f;
 
                 var targetSpeed = rate * inputCam.x * TurnSpeed;
-                currentRotSpeed = Mathf.SmoothDamp(currentRotSpeed, targetSpeed, ref speedSmoothRotVelocity, SpeedSmoothTime, MaxTurnSpeed, Time.DeltaTime);
+                currentRotSpeed = targetSpeed;//Mathf.SmoothDamp(currentRotSpeed, targetSpeed, ref speedSmoothRotVelocity, SpeedSmoothTime, MaxTurnSpeed, Time.DeltaTime);
 
-                rotVector = Vector2.up * currentRotSpeed;
+                rotVector = Vector2.up * currentRotSpeed / TurnSmoothTime;
             }
 
-            speed = new Speed
-            {
-                CurrentSpeed = currentSpeed,
-                SpeedSmoothVelocity = speedSmoothVelocity,
-                CurrentRotSpeed = currentRotSpeed,
-                SpeedSmoothRotVelocity = speedSmoothRotVelocity,
-            };
+            //speed = new Speed
+            //{
+            //    CurrentSpeed = currentSpeed,
+            //    SpeedSmoothVelocity = speedSmoothVelocity,
+            //    CurrentRotSpeed = currentRotSpeed,
+            //    SpeedSmoothRotVelocity = speedSmoothRotVelocity,
+            //};
             // This needs to be used instead of add force because this is running in update.
             // It would be better to store this in another component and have something else use it on fixed update.
 

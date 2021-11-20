@@ -362,6 +362,11 @@ type StrategyVector {
     improbable.gdk.transform_synchronization.FixedPointVector3 vector = 2;
 }
 
+type StrategyVectorEvent {
+    UnitSide from_side = 1;
+    StrategyVector strategy_vector = 2;
+}
+
 component StrongholdSight {
     id = 20031;
 
@@ -371,7 +376,7 @@ component StrongholdSight {
     list<FrontLineInfo> front_line_corners = 5;
     map<uint32,TargetHexInfo> target_hexes = 6;
 
-    command improbable.gdk.core.Empty set_strategy_vector(StrategyVector);
+    event StrategyVectorEvent set_strategy_vector;
 }
 
 type TeamOrder {

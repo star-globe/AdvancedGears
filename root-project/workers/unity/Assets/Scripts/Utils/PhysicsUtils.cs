@@ -12,9 +12,10 @@ namespace AdvancedGears
         public static Vector3 GetGroundPosition(Vector3 origin)
         {
             var ray = new Ray(origin, Vector3.down);
-            Physics.Raycast(origin, Vector3.down, out var hit, Mathf.Infinity, GroundMask, QueryTriggerInteraction.Ignore);
+            if (Physics.Raycast(origin, Vector3.down, out var hit, Mathf.Infinity, GroundMask, QueryTriggerInteraction.Ignore))
+                return hit.point;
 
-            return hit.point;
+            return origin;
         }
 
         const float buffer = 100.0f;

@@ -8,25 +8,30 @@ namespace AdvancedGears
 {
     public class StrongholdCommandReceiver : MonoBehaviour
     {
-        [Require] StrongholdSightCommandReceiver commandReceiver;
-        [Require] StrongholdSightWriter writer;
+        [Require] BaseUnitStatusReader statusReader;
+        [Require] StrongholdSightWriter sightWriter;
 
         public void OnEnable()
         {
-            commandReceiver.OnSetStrategyVectorRequestReceived += OnSetStrategyVectorCommanderRequest;
+            sightWriter.OnSetStrategyVectorEvent += OnSetStrategyVectorCommanderRequest;
         }
 
-        private void OnSetStrategyVectorCommanderRequest(StrongholdSight.SetStrategyVector.ReceivedRequest request)
+        private void OnSetStrategyVectorCommanderRequest(StrategyVectorEvent vectorEvent)
         {
-            commandReceiver.SendSetStrategyVectorResponse(new StrongholdSight.SetStrategyVector.Response(request.RequestId, new Empty()));
-
-            writer.SendUpdate(new StrongholdSight.Update()
+            var side = statusReader.Data.Side;
+            if (side != vectorEvent.FromSide)
             {
-                StrategyVector = request.Payload,
+                Debug.LogWarningFormat("StrongholdCommandReceiver:SideError Side:{0}", vectorEvent.FromSide);
+                return;
+            }
+
+            sightWriter.SendUpdate(new StrongholdSight.Update()
+            {
+                StrategyVector = vectorEvent.StrategyVector,
             });
 
 
-            //Debug.LogFormat("StrongholdCommandReceiver:SetVector:{0} EntityId:{1}", request.Payload.Vector.ToUnityVector(), request.EntityId);
+            //Debug.LogFormat("StrongholdCommandReceiver:SetVector:{0} Side:{1} EntityId:{2}", request.Payload.Vector.ToUnityVector(), request.Payload.Side, request.EntityId);
         }
     }
 }

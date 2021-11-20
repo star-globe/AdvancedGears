@@ -66,11 +66,11 @@ namespace AdvancedGears
             if (status.Side == UnitSide.None)
                 return;
 
-            var inter = sight.Interval;
-            if (CheckTime(ref inter) == false)
-                return;
-
-            sight.Interval = inter;
+            //var inter = sight.Interval;
+            //if (CheckTime(ref inter) == false)
+            //    return;
+            //
+            //sight.Interval = inter;
 
             var trans = EntityManager.GetComponentObject<Transform>(entity);
 

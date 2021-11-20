@@ -12,14 +12,16 @@ namespace AdvancedGears
     internal class StrongholdActionSystem : BaseSearchSystem
     {
         private EntityQuerySet orderQuerySet;
-        private EntityQueryBuilder.F_EDDD<BaseUnitStatus.Component, StrongholdSight.Component, HexFacility.Component> orderAction;
+        private EntityQueryBuilder.F_EDDDD<BaseUnitStatus.Component, StrongholdSight.Component, HexFacility.Component, Position.Component> orderAction;
         private EntityQuerySet factoryQuerySet;
-        private EntityQueryBuilder.F_EDDDD<UnitFactory.Component, BaseUnitStatus.Component, StrongholdSight.Component, HexFacility.Component> factoryAction;
+        private EntityQueryBuilder.F_EDDDDD<UnitFactory.Component, BaseUnitStatus.Component, StrongholdSight.Component, HexFacility.Component, Position.Component> factoryAction;
 
         readonly HashSet<EntityId> requestLists = new HashSet<EntityId>();
         readonly Dictionary<EntityId, TeamInfo> teamsDic = new Dictionary<EntityId, TeamInfo>();
         readonly HashSet<EntityId> teamKeys = new HashSet<EntityId>();
         readonly HashSet<long> sendIds = new HashSet<long>();
+
+        bool updateUnitInfo = false;
 
         protected override void OnCreate()
         {
@@ -29,7 +31,7 @@ namespace AdvancedGears
                                                ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                                                ComponentType.ReadOnly<StrongholdSight.Component>(),
                                                ComponentType.ReadOnly<HexFacility.Component>(),
-                                               ComponentType.ReadOnly<Transform>()
+                                               ComponentType.ReadOnly<Position.Component>()
                                                ), 1);
 
             factoryQuerySet = new EntityQuerySet(GetEntityQuery(
@@ -38,7 +40,7 @@ namespace AdvancedGears
                                                 ComponentType.ReadOnly<BaseUnitStatus.Component>(),
                                                 ComponentType.ReadOnly<StrongholdSight.Component>(),
                                                 ComponentType.ReadOnly<HexFacility.Component>(),
-                                                ComponentType.ReadOnly<Transform>()
+                                                ComponentType.ReadOnly<Position.Component>()
                                                 ), 1);
             
             orderAction = OrderQuery;
@@ -47,6 +49,11 @@ namespace AdvancedGears
 
         protected override void OnUpdate()
         {
+            if (this.World.IsFieldCreated() == false)
+                return;
+
+            updateUnitInfo = false;
+
             UnityEngine.Profiling.Profiler.BeginSample("HandleOrders");
             HandleOrders();
             UnityEngine.Profiling.Profiler.EndSample();
@@ -65,13 +72,19 @@ namespace AdvancedGears
             if (CheckTime(ref orderQuerySet.inter) == false)
                 return;
 
+            if (!updateUnitInfo) {
+                UpdateUnitInfoQuery();
+                updateUnitInfo = true;
+            }
+
             Entities.With(orderQuerySet.group).ForEach(orderAction);
         }
 
         void OrderQuery(Unity.Entities.Entity entity,
                         ref BaseUnitStatus.Component status,
                         ref StrongholdSight.Component sight,
-                        ref HexFacility.Component hex)
+                        ref HexFacility.Component hex,
+                        ref Position.Component position)
         {
             if (status.State != UnitState.Alive)
                 return;
@@ -82,8 +95,12 @@ namespace AdvancedGears
             if (status.Side == UnitSide.None)
                 return;
 
-            var trans = EntityManager.GetComponentObject<Transform>(entity);
-            CheckAlive(trans.position, status.Side, hex.HexIndex, HexDictionary.HexEdgeLength, teamsDic);
+            if (sight.StrategyVector.Side == UnitSide.None)
+                return;
+
+            var pos = position.Coords.ToWorkerPosition(this.Origin);
+            pos += sight.StrategyVector.Vector.ToUnityVector().normalized * CenterBuffer;
+            CheckAlive(pos, status.Side, hex.HexIndex, HexDictionary.HexCheckAliveLength, teamsDic);
 
             sendIds.Clear();
 
@@ -109,14 +126,23 @@ namespace AdvancedGears
             if (CheckTime(ref factoryQuerySet.inter) == false)
                 return;
 
+            if (!updateUnitInfo)
+            {
+                UpdateUnitInfoQuery();
+                updateUnitInfo = true;
+            }
+
             Entities.With(factoryQuerySet.group).ForEach(factoryAction);
         }
+
+        float CenterBuffer => HexDictionary.HexCheckAliveLength * Mathf.Sqrt(3.0f) / 2;
 
         void FactoryQuery(Unity.Entities.Entity entity,
                         ref UnitFactory.Component factory,
                         ref BaseUnitStatus.Component status,
                         ref StrongholdSight.Component sight,
-                        ref HexFacility.Component hex)
+                        ref HexFacility.Component hex,
+                        ref Position.Component position)
         {
             if (status.State != UnitState.Alive)
                 return;
@@ -127,20 +153,33 @@ namespace AdvancedGears
             if (status.Side == UnitSide.None)
                 return;
 
+            if (sight.StrategyVector.Side == UnitSide.None)
+                return;
+
             UnityEngine.Profiling.Profiler.BeginSample("HandleFactoryRequests:CheckAlive");
-            var trans = EntityManager.GetComponentObject<Transform>(entity);
-            CheckAlive(trans.position, status.Side, uint.MaxValue, HexDictionary.HexEdgeLength * 0.9f, teamsDic);
+            var pos = position.Coords.ToWorkerPosition(this.Origin);
+            pos += sight.StrategyVector.Vector.ToUnityVector().normalized * CenterBuffer;
+
+            CheckAlive(pos, status.Side, uint.MaxValue, HexDictionary.HexCheckAliveLength, teamsDic);
             UnityEngine.Profiling.Profiler.EndSample();
 
             UnityEngine.Profiling.Profiler.BeginSample("HandleFactoryRequests:MakeOrders");
             // number check
-            if (factory.TeamOrders.Count == 0 && sight.StrategyVector.Side != UnitSide.None) {
+            if (factory.TeamOrders.Count == 0)
+            {
                 var teamOrders = factory.TeamOrders;
-                makeOrders(status.Side, status.Rank, PostureUtils.RotFoward(sight.StrategyVector.Vector.ToUnityVector()), status.Order, hex.HexIndex,
+                var target = makeOrders(status.Side, status.Rank, PostureUtils.RotFoward(sight.StrategyVector.Vector.ToUnityVector()), status.Order, hex.HexIndex,
                             sight.FrontLineCorners, sight.TargetHexes, teamsDic, teamOrders);
+
+                if (teamOrders.Count > 0)
+                    Debug.LogFormat("MakeOrders! Count:{0} CurrentTeamsDic:{1} Target:{2} HexIndex:{3} Vector:{4} Side:{5}",
+                                    teamOrders.Count, teamsDic.Count, target, hex.HexIndex, sight.StrategyVector.Vector.ToUnityVector(), sight.StrategyVector.Side);
+                //else
+                //    Debug.LogFormat("NotMakeOrders! CurrentTeamsDic:{0} HexIndex:{1}", teamsDic.Count, hex.HexIndex);
 
                 factory.TeamOrders = teamOrders;
             }
+
             UnityEngine.Profiling.Profiler.EndSample();
 
 #if false
@@ -182,7 +221,7 @@ namespace AdvancedGears
             datas.Clear();
 
             UnityEngine.Profiling.Profiler.BeginSample("CheckAlive:GetAllyUnits");
-            var units = getAllyUnits(side, pos, range, allowDead: false, GetSingleUnitTypes(UnitType.Commander));
+            var units = getAllyUnitsFromQuery(side, pos, range, allowDead: false, GetSingleUnitTypes(UnitType.Commander));
             UnityEngine.Profiling.Profiler.EndSample();
 
             foreach (var u in units) {
@@ -232,21 +271,32 @@ namespace AdvancedGears
             requestLists.Add(id);
         }
 
+        enum TargetType
+        {
+            None,
+            Hex,
+            Line
+        }
+
         const int strategyUnitRank = 0;
-        void makeOrders(UnitSide side, uint rank, float rot, OrderType order, uint hexIndex,
+        TargetType makeOrders(UnitSide side, uint rank, float rot, OrderType order, uint hexIndex,
                                     List<FrontLineInfo> frontLines, Dictionary<uint, TargetHexInfo> hexes, Dictionary<EntityId,TeamInfo> datas, List<TeamOrder> teamOrders)
         {
             if (datas == null || teamOrders == null)
-                return;
+                return TargetType.None;
 
             if (hexes.Count > 0)
             {
                 makeTeamOrders(hexes.Count * AttackLogicDictionary.TeamPerHex, strategyUnitRank, rot, order, teamOrders, datas);
+                return TargetType.Hex;
             }
             else if (frontLines.Count > 0)
             {
                 makeTeamOrders(frontLines.Count, strategyUnitRank, rot, order, teamOrders, datas);
+                return TargetType.Line;
             }
+
+            return TargetType.None;
         }
 
         void makeTeamOrders(int coms, uint maxrank, float rot, OrderType order, List<TeamOrder> teamOrders, Dictionary<EntityId, TeamInfo> datas)
