@@ -23,6 +23,8 @@ namespace AdvancedGears
         public float BulletSpeed => bulletSpeed;
         [SerializeField] float lifeTimeRate = 1.2f;
         public float LifeTimeRate => lifeTimeRate;
+        [SerializeField] bool isLongRange = false;
+        public bool IsLongRange => isLongRange;
 
         public float BulletLifeTime
         {

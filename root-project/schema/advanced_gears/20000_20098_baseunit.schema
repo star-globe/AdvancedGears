@@ -554,3 +554,10 @@ component CarrierComponent {
 
     map<PosturePoint,EquipData> equip_map = 2;
 }
+
+// artillery:20070~
+component ArtilleryComponent {
+    id = 20070;
+
+    int32 master_id = 1;
+}

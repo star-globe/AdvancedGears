@@ -22,6 +22,8 @@ MonoBehaviour:
   - id: 6
   - id: 7
   - id: 8
+  - id: 9
+  - id: 10
   references:
     version: 1
     00000000:
@@ -94,5 +96,21 @@ MonoBehaviour:
       data:
         entityType: FlareObject
         prefab: {fileID: 1294890876457356, guid: 3fa553f4930b8e744863a0693b369d72,
+          type: 3}
+        requiredComponents: 
+    00000009:
+      type: {class: SimpleEntityResolver, ns: Improbable.Gdk.Core.Representation.Types,
+        asm: Improbable.Gdk.Core}
+      data:
+        entityType: LongRangeBulletReciever
+        prefab: {fileID: 390776610743786082, guid: b6c15c12fcb269e4ba7a3defffa210df,
+          type: 3}
+        requiredComponents: 
+    0000000A:
+      type: {class: SimpleEntityResolver, ns: Improbable.Gdk.Core.Representation.Types,
+        asm: Improbable.Gdk.Core}
+      data:
+        entityType: ArtilleryUnit
+        prefab: {fileID: 9077667431196485703, guid: 207cbb87cf35be84ca5f79e207d1768d,
           type: 3}
         requiredComponents: 

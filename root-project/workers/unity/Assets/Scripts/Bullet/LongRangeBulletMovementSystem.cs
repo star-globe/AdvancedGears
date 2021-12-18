@@ -10,6 +10,7 @@ using Unity.Collections;
 
 namespace AdvancedGears
 {
+#if false
     [DisableAutoCreation]
     [UpdateInGroup(typeof(FixedUpdateSystemGroup))]
     internal class LongRangeBulletMovementSystem : ComponentSystem
@@ -95,4 +96,5 @@ namespace AdvancedGears
             bullet.Speed = vec.ToFixedPointVector3();
         }
     }
+#endif
 }

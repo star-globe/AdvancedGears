@@ -62,5 +62,35 @@ namespace AdvancedGears
             y += heightBuffer;
             return new Coordinates(x, y, z);
         }
+
+        const float receiverSize = 800;
+        public static void AddLongRangeBulletReciever(float fieldSize, Snapshot snapshot)
+        {
+#if false
+            int count = (int) Mathf.Round(fieldSize / standardSize) * 2;
+            for (int i = 0; i <= count; i++)
+            {
+                for (int j = 0; j <= count; j++)
+                {
+                    var length_x = standardSize * (i - (count - 1) / 2.0f);
+                    var length_z = standardSize * (j - (count - 1) / 2.0f);
+
+                    snapshot.AddEntity(CreateLongRangeBulletRecieverTemplate(new Coordinates(length_x, 0, length_z)));
+                }
+            }
+#else
+            snapshot.AddEntity(CreateLongRangeBulletRecieverTemplate(Coordinates.Zero));
+#endif
+        }
+
+        private static EntityTemplate CreateLongRangeBulletRecieverTemplate(Coordinates coords)
+        {
+            var template = new EntityTemplate();
+            template.AddComponent(new Position.Snapshot(coords), WorkerUtils.UnityGameLogic);
+            template.AddComponent(new Metadata.Snapshot { EntityType = "LongRangeBulletReciever" }, WorkerUtils.UnityGameLogic);
+            template.AddComponent(new Persistence.Snapshot(), WorkerUtils.UnityGameLogic);
+            template.AddComponent(new StrategyLongBulletReceiver.Snapshot(), WorkerUtils.UnityGameLogic);
+            return template;
+        }
     }
 }

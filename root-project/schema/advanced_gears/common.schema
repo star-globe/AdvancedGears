@@ -33,6 +33,7 @@ enum UnitType {
     Turret = 102;
     HeadQuarter = 103;
     Factory = 104;
+    Artillery = 105;
 
     // virtual
     ArmyCloud = 201;

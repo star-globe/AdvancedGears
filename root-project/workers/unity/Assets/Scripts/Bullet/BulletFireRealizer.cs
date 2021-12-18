@@ -71,11 +71,29 @@ namespace AdvancedGears
             }
         }
 
+        ComponentUpdateSystem updateSystem = null;
+        ComponentUpdateSystem UpdateSystem
+        {
+            get
+            {
+                if (World == null)
+                    return null;
+
+                updateSystem = updateSystem ?? World.GetExistingSystem<ComponentUpdateSystem>();
+                return updateSystem;
+            }
+        }
+
         protected void CreateFlare(Vector3 pos, FlareColorType col, UnitSide side, float startTime)
         {
             var template = BulletTemplate.CreateFlareEntityTemplate(pos.ToWorldCoordinates(this.Origin), col, side, startTime);
             var request = new WorldCommands.CreateEntity.Request(template);
-            this.CommandSystem.SendCommand(request);
+            this.CommandSystem?.SendCommand(request);
+        }
+
+        protected void SendLongRangeBullet(EntityId id, BulletFireInfo info)
+        {
+            this.UpdateSystem?.SendEvent(new StrategyLongBulletReceiver.AddBullet.Event(info), id);
         }
     }
 }

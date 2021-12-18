@@ -18,16 +18,18 @@ namespace AdvancedGears
         EntityQueryBuilder.F_CD<Rigidbody, BulletInfo> action;
 
         private WorkerSystem worker;
+        private ComponentUpdateSystem componentUpdateSystem;
 
         public BulletCreator BulletCreator { get; private set; }
 
         protected override void OnCreate()
         {
             worker = World.GetExistingSystem<WorkerSystem>();
+            componentUpdateSystem = World.GetExistingSystem<ComponentUpdateSystem>();
 
             var go = new GameObject("BulletCreator");
             BulletCreator = go.AddComponent<BulletCreator>();
-            BulletCreator.Setup(this.EntityManager, worker.Origin);
+            BulletCreator.Setup(this.EntityManager, worker.Origin, VanishBulletSender);
 
             group = GetEntityQuery(
                 ComponentType.ReadWrite<Rigidbody>(),
@@ -55,6 +57,17 @@ namespace AdvancedGears
                 rigid.gameObject.SetActive(false);
                 return;
             }
+        }
+
+        private void VanishBulletSender(long entityId, uint type, ulong id)
+        {
+            var EntityId = new EntityId(entityId);
+            this.componentUpdateSystem?.SendEvent(new BulletComponent.Vanishes.Event(new BulletVanishInfo()
+            {
+                ShooterEntityId = EntityId.Id,
+                Type = type,
+                BulletId = id,
+            }), EntityId);
         }
     }
 

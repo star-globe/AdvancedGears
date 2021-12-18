@@ -19,6 +19,7 @@ namespace AdvancedGears
             { UnitType.Turret, "TurretUnit"},
             { UnitType.HeadQuarter, "HeadQuarterUnit"},
             { UnitType.ArmyCloud, "ArmyCloudUnit"},
+            { UnitType.Artillery, "ArtilleryUnit"}
         };
 
         static readonly Dictionary<UnitType, OrderType> orderDic = new Dictionary<UnitType, OrderType>()
@@ -29,6 +30,7 @@ namespace AdvancedGears
             { UnitType.Turret, OrderType.Idle },
             { UnitType.HeadQuarter, OrderType.Attack },
             { UnitType.ArmyCloud, OrderType.Idle},
+            { UnitType.Artillery, OrderType.Idle}
         };
 
         public static EntityTemplate CreateBaseUnitEntityTemplate(UnitSide side, UnitType type, Coordinates coords, CompressedQuaternion? rotation = null, FixedPointVector3? scale = null, OrderType? order = null, uint? rank = null)
@@ -39,7 +41,9 @@ namespace AdvancedGears
             template.AddComponent(new Persistence.Snapshot(), WorkerUtils.UnityGameLogic);
             template.AddComponent(new PostureRoot.Snapshot() { RootTrans = PostureUtils.ConvertTransform(coords, rotation, scale) }, WorkerUtils.UnityGameLogic);
 
-            template.AddComponent(new BaseUnitSight.Snapshot(), WorkerUtils.UnityGameLogic);
+            if (type.HasSight())
+                template.AddComponent(new BaseUnitSight.Snapshot(), WorkerUtils.UnityGameLogic);
+
             //template.AddComponent(new BaseUnitAction.Snapshot { EnemyPositions = new List<FixedPointVector3>() }, WorkerUtils.UnityGameLogic);
             template.AddComponent(new BaseUnitStatus.Snapshot(side, type, UnitState.Alive, order == null ? orderDic[type] : order.Value, GetRank(rank, type)), WorkerUtils.UnityGameLogic);
             template.AddComponent(new BaseUnitTarget.Snapshot().DefaultSnapshot(), WorkerUtils.UnityGameLogic);
@@ -151,6 +155,13 @@ namespace AdvancedGears
                     template.AddComponent(new PostureAnimation.Snapshot(), writeAccess);
                     template.AddComponent(new TurretComponent.Snapshot(), writeAccess);
                     template.AddComponent(new SleepComponent.Snapshot(), writeAccess);
+                    break;
+
+                case UnitType.Artillery:
+                    template.AddComponent(new BulletComponent.Snapshot(), writeAccess);
+                    template.AddComponent(new LongRangeBulletComponent.Snapshot(), writeAccess);
+                    template.AddComponent(new PostureAnimation.Snapshot(), writeAccess);
+                    template.AddComponent(new ArtilleryComponent.Snapshot(), writeAccess);
                     break;
 
                 case UnitType.ArmyCloud:

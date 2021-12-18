@@ -128,6 +128,8 @@ namespace AdvancedGears.Editor
                 snapshot.AddEntity(template);
             }
 
+            SnapshotUtils.AddLongRangeBulletReciever(this.WorldSize, snapshot);
+
             return snapshot;
         }
     }

@@ -11,6 +11,7 @@ using Improbable.Gdk.Core;
 namespace AdvancedGears
 {
     public delegate void BulletVanishEvent(uint type, ulong bullet_id);
+    public delegate void WorldBulletVanishEvent(long entityId, uint type, ulong bullet_id);
 
     public class BulletCreator : MonoBehaviour
     {
@@ -89,6 +90,15 @@ namespace AdvancedGears
             public void OnFire(BulletFireInfo info, bool detectCollisions)
             {
                 // check
+                Dictionary<ulong, Rigidpair> dic = null;
+                var key = info.ShooterEntityId;
+                var id = info.BulletId;
+                if (bulletsDic.TryGetValue(key, out dic)) {
+                    if (dic.ContainsKey(id))
+                        return;
+                }
+
+                // check
                 Rigidpair bullet;
                 if (deactiveQueue.Count > 1) {
                     bullet = deactiveQueue.Dequeue();
@@ -115,17 +125,12 @@ namespace AdvancedGears
                 bullet.Fire.Value = new BulletInfo(info);
 
                 // add
-                var key = info.ShooterEntityId;
-                var id = info.BulletId;
                 if (bulletsDic.ContainsKey(key)) {
-                    var dic = bulletsDic[key];
-                    if (dic.ContainsKey(id))
-                        dic[id] = bullet;
-                    else
-                        dic.Add(id, bullet);
+                    dic = bulletsDic[key];
+                    dic.Add(id, bullet);
                 }
                 else {
-                    var dic = new Dictionary<ulong, Rigidpair>();
+                    dic = new Dictionary<ulong, Rigidpair>();
                     dic.Add(id, bullet);
                     bulletsDic.Add(key, dic);
                 }
@@ -152,6 +157,8 @@ namespace AdvancedGears
         readonly Dictionary<uint,BulletsContainer> containerDic = new Dictionary<uint,BulletsContainer>();
         readonly Dictionary<long, (GameObject,BulletVanishEvent)> entityDic = new Dictionary<long,(GameObject,BulletVanishEvent)>();
 
+        WorldBulletVanishEvent worldVanishEvent = null;
+
         float checkTime = 0.0f;
         const float interval = 3.0f;
 
@@ -167,10 +174,11 @@ namespace AdvancedGears
                 kvp.Value.Update();
         }
 
-        public void Setup(EntityManager entity, Vector3 origin)
+        public void Setup(EntityManager entity, Vector3 origin, WorldBulletVanishEvent vanishEvent)
         {
             entityManager = entity;
             this.Origin = origin;
+            this.worldVanishEvent = vanishEvent;
         }
 
         public void RegisterTriggerEntityId(EntityId entityId, (GameObject,BulletVanishEvent) pair)
@@ -193,8 +201,10 @@ namespace AdvancedGears
                 return;
 
             var pair = entityDic[entity_id];
-            if (pair.Item1 == null || pair.Item1.Equals(null))
+            if (pair.Item1 == null || pair.Item1.Equals(null)) {
+                this.worldVanishEvent?.Invoke(entity_id, type, bullet_id);
                 return;
+            }
 
             pair.Item2(type, bullet_id);
         }
@@ -208,7 +218,10 @@ namespace AdvancedGears
                 containerDic.Add(type, container);
             }
 
-            container.OnFire(info, entityDic.ContainsKey(info.ShooterEntityId));
+            var settings = GunDictionary.GetGunSettings(info.GunId);
+            bool isLongRange = settings != null && settings.IsLongRange;
+
+            container.OnFire(info, isLongRange || entityDic.ContainsKey(info.ShooterEntityId));
         }
 
         public void OnVanish(BulletVanishInfo info)

@@ -192,6 +192,22 @@ namespace AdvancedGears
                    self.Point.StrongholdId == other.Point.StrongholdId;
         }
 
+        public static bool HasSight(this UnitType self)
+        {
+            switch (self)
+            {
+                case UnitType.Soldier:
+                case UnitType.Commander:
+                case UnitType.Advanced:
+                case UnitType.Stronghold:
+                case UnitType.Turret:
+                    return true;
+
+                default:
+                    return false;
+            }
+        }
+
         public static UnitBaseType BaseType(this UnitType self)
         {
             switch(self)

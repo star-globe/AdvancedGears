@@ -93,10 +93,8 @@ component GunComponent {
 
 component LongRangeBulletComponent {
     id = 20210;
-
-    uint32 long_range_bullet_id = 1;
-    improbable.gdk.transform_synchronization.FixedPointVector3 speed = 2;
-    bool is_free = 3;
+    
+    EntityId receiver_id = 1;
 }
 
 component GuidComponent {
@@ -130,4 +128,13 @@ component StrategyFlare {
     UnitSide side = 1;
     FlareColorType color = 2;
     float launch_time = 3;
+}
+
+component StrategyLongBulletReceiver {
+    id = 20240;
+
+    list<BulletFireInfo> current_bullets = 1;
+
+    event BulletFireInfo add_bullet;
+    event BulletVanishInfo vanish_bullet;
 }
