@@ -37,13 +37,9 @@ enum UnitType {
 
     // virtual
     ArmyCloud = 201;
-}
 
-enum UnitBaseType
-{
-    None = 0;
-    Moving = 1;
-    Fixed = 2; 
+    // core
+    Gigant = 301;
 }
 
 enum UnitSide {

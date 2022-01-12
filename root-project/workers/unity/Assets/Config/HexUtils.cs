@@ -238,11 +238,13 @@ namespace AdvancedGears
                 case HexAttribute.Field:
                 case HexAttribute.ForwardBase:
                     return type == UnitType.Stronghold ||
-                            type == UnitType.Turret;
+                            type == UnitType.Turret ||
+                            type == UnitType.Artillery;
 
                 case HexAttribute.CentralBase:
                     return type == UnitType.HeadQuarter ||
-                            type == UnitType.Turret;
+                            type == UnitType.Turret ||
+                            type == UnitType.Artillery;
             }
 
             return false;

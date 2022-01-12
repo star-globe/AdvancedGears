@@ -208,26 +208,6 @@ namespace AdvancedGears
             }
         }
 
-        public static UnitBaseType BaseType(this UnitType self)
-        {
-            switch(self)
-            {
-                case UnitType.Soldier:
-                case UnitType.Commander:
-                case UnitType.Advanced:
-                case UnitType.Supply:
-                case UnitType.Recon: 
-                    return UnitBaseType.Moving;
-
-                case UnitType.Stronghold:
-                case UnitType.Turret:
-                case UnitType.HeadQuarter:
-                    return UnitBaseType.Fixed;
-            }
-
-            return UnitBaseType.None;
-        }
-
         public static void SetHeights(this TerrainPointInfo settings, Vector3 center, float x, float z, int width, float height, Vector3 size, float[,] b_heights)
         {
             float hillHeight = settings.HighestHillHeight - settings.LowestHillHeight;

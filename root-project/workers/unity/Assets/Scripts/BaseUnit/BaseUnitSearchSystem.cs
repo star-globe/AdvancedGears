@@ -21,9 +21,6 @@ namespace AdvancedGears
         IntervalChecker inter;
         const int frequency = 10;
 
-        Dictionary<long, List<FixedPointVector3>> enemyPositionsContainer = new Dictionary<long, List<FixedPointVector3>>();
-        public Dictionary<long, List<FixedPointVector3>> EnemyPositionsContainer => enemyPositionsContainer;
-
         protected override void OnCreate()
         {
             base.OnCreate();
@@ -72,11 +69,6 @@ namespace AdvancedGears
             target.State = TargetState.None;
 
             var id = entityId.EntityId.Id;
-            if (enemyPositionsContainer.ContainsKey(id) == false)
-                enemyPositionsContainer[id] = new List<FixedPointVector3>();
-
-            var enemyPositions = enemyPositionsContainer[id];
-            enemyPositions.Clear();
 
             var trans = EntityManager.GetComponentObject<Transform>(entity);
             var pos = trans.position;
@@ -109,8 +101,10 @@ namespace AdvancedGears
                     sight.TargetSize = enemy.size;
                 }
 
-                enemyPositions.Add(epos);
+                action.TargetPosition = enemy.pos;
             }
+            else
+                action.TargetPosition = null;
 
             float range;
             switch (target.State)

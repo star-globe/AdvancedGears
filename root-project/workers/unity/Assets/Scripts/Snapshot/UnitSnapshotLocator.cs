@@ -8,14 +8,14 @@ using AdvancedGears;
 
 namespace AdvancedGears
 {
-    public class TurretSnapshotLocator : MonoBehaviour
+    public class UnitSnapshotLocator : MonoBehaviour
     {
-        public UnitSnapshotComponent baseTurret;
+        public UnitSnapshotComponent baseUnit;
 
         public float radius;
         public int number;
 
-        public void LocateTurrets()
+        public void LocateUnits()
         {
             var units = this.GetComponentsInChildren<UnitSnapshotComponent>();
             UnitSnapshotComponent target;
@@ -23,7 +23,7 @@ namespace AdvancedGears
                 if (i < units.Length)
                     target = units[i];
                 else
-                    target = Instantiate(baseTurret, this.transform);
+                    target = Instantiate(baseUnit, this.transform);
 
                 float rad = Mathf.PI * 2 * i / number;
                 target.gameObject.transform.localPosition = new Vector3(radius * Mathf.Cos(rad), 0, radius * Mathf.Sin(rad));
@@ -34,37 +34,37 @@ namespace AdvancedGears
                 DestroyImmediate(units[i].gameObject);
         }
 
-        public void RenewTurrets()
+        public void RenewUnits()
         {
             var units = this.GetComponentsInChildren<UnitSnapshotComponent>();
             for(var i = 0; i < units.Length; i++)
                 DestroyImmediate(units[i].gameObject);
 
-            LocateTurrets();
+            LocateUnits();
         }
     }
 
 
 #if UNITY_EDITOR
-    [UnityEditor.CustomEditor(typeof(TurretSnapshotLocator))]
-    public class TurretSnapshotLocatorEditor : UnityEditor.Editor
+    [UnityEditor.CustomEditor(typeof(UnitSnapshotLocator))]
+    public class UnitSnapshotLocatorEditor : UnityEditor.Editor
     {
-        TurretSnapshotLocator component = null;
+        UnitSnapshotLocator component = null;
 
         void OnEnable()
         {
-            component = target as TurretSnapshotLocator;
+            component = target as UnitSnapshotLocator;
         }
 
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
 
-            if (GUILayout.Button("Locate Turrets"))
-                component.LocateTurrets();
+            if (GUILayout.Button("Locate Units"))
+                component.LocateUnits();
 
-            if (GUILayout.Button("Renew Turrets"))
-                component.RenewTurrets();
+            if (GUILayout.Button("Renew Units"))
+                component.RenewUnits();
         }
     }
 #endif

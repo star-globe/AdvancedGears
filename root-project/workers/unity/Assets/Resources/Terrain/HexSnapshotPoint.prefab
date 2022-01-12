@@ -81,6 +81,53 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &1165063342168764839
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 374961041687713955}
+  - component: {fileID: 7466242349323349958}
+  m_Layer: 0
+  m_Name: Artilleries
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &374961041687713955
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1165063342168764839}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1795066286059172220}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7466242349323349958
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1165063342168764839}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b96b0bd1903719e438325ad046745eb9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  baseUnit: {fileID: 5176628486272645430, guid: 7943591c5bca46c429634ac47cba32f1,
+    type: 3}
+  radius: 20
+  number: 0
 --- !u!1 &2432433020752749543
 GameObject:
   m_ObjectHideFlags: 0
@@ -201,7 +248,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b96b0bd1903719e438325ad046745eb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseTurret: {fileID: 5176628486272645430, guid: 39e7e0199e3340d46b32eb543f6a6d3d,
+  baseUnit: {fileID: 5176628486272645430, guid: 39e7e0199e3340d46b32eb543f6a6d3d,
     type: 3}
   radius: 15
   number: 0
@@ -238,6 +285,7 @@ Transform:
   - {fileID: 6280808568434711494}
   - {fileID: 4114345523251012671}
   - {fileID: 5109057951254135793}
+  - {fileID: 374961041687713955}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -263,7 +311,9 @@ MonoBehaviour:
   hex: {fileID: 6879032629696693199}
   hexColorSettings: {fileID: 11400000, guid: 76e02b65efce0fc42b4bf11506cce376, type: 2}
   index: 0
-  turretLocator: {fileID: 7592511185498701046}
+  unitLocators:
+  - {fileID: 7592511185498701046}
+  - {fileID: 7466242349323349958}
 --- !u!120 &1492545807780556731
 LineRenderer:
   m_ObjectHideFlags: 0

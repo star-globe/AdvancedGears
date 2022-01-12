@@ -1,0 +1,14 @@
+package advanced_gears;
+import "improbable/standard_library.schema";
+import "improbable/gdk/core/common.schema";
+import "advanced_gears/common.schema";
+import "improbable/gdk/transform_synchronization/transform_internal.schema";
+
+component GigantComponent {
+    id = 22100;
+
+    int32 type_id = 1;
+    int32 root_index = 2;
+    list<improbable.Coordinates> roots = 3;
+}
+

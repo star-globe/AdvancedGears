@@ -19,7 +19,8 @@ namespace AdvancedGears
             { UnitType.Turret, "TurretUnit"},
             { UnitType.HeadQuarter, "HeadQuarterUnit"},
             { UnitType.ArmyCloud, "ArmyCloudUnit"},
-            { UnitType.Artillery, "ArtilleryUnit"}
+            { UnitType.Artillery, "ArtilleryUnit"},
+            { UnitType.Gigant, "MobileFortress"}
         };
 
         static readonly Dictionary<UnitType, OrderType> orderDic = new Dictionary<UnitType, OrderType>()
@@ -30,10 +31,11 @@ namespace AdvancedGears
             { UnitType.Turret, OrderType.Idle },
             { UnitType.HeadQuarter, OrderType.Attack },
             { UnitType.ArmyCloud, OrderType.Idle},
-            { UnitType.Artillery, OrderType.Idle}
+            { UnitType.Artillery, OrderType.Idle},
+            { UnitType.Gigant, OrderType.Attack }
         };
 
-        public static EntityTemplate CreateBaseUnitEntityTemplate(UnitSide side, UnitType type, Coordinates coords, CompressedQuaternion? rotation = null, FixedPointVector3? scale = null, OrderType? order = null, uint? rank = null)
+        public static EntityTemplate CreateBaseUnitEntityTemplate(UnitSide side, UnitType type, Coordinates coords, CompressedQuaternion? rotation = null, FixedPointVector3? scale = null, OrderType? order = null, uint? rank = null, UnitCommonSettingsDictionary dic = null)
         {
             var template = new EntityTemplate();
             template.AddComponent(new Position.Snapshot(coords), WorkerUtils.UnityGameLogic);
@@ -52,7 +54,13 @@ namespace AdvancedGears
             template.AddComponent(new GunComponent.Snapshot { GunsDic = new Dictionary<int, GunInfo>() }, WorkerUtils.UnityGameLogic);
             template.AddComponent(new FuelComponent.Snapshot(), WorkerUtils.UnityGameLogic);
 
-            if (type.BaseType() == UnitBaseType.Moving) {
+            UnitCommonSettings settings = null;
+            if (dic != null)
+                settings = dic.GetUnitSettings(type);
+            else
+                settings = UnitCommonSettingsDictionary.GetSettings(type);
+
+            if (settings != null && settings.isAutomaticallyMoving) {
                 template.AddComponent(new BaseUnitMovement.Snapshot(), WorkerUtils.UnityGameLogic);
                 template.AddComponent(new BaseUnitReviveTimer.Snapshot { IsStart = false, RestTime = 0.0f }, WorkerUtils.UnityGameLogic);
             }
@@ -90,6 +98,7 @@ namespace AdvancedGears
                 case UnitType.Commander:
                 case UnitType.Stronghold:
                 case UnitType.HeadQuarter:
+                case UnitType.Gigant:
                     return WorkerUtils.AllWorkerAttributes.ToArray();
 
                 default:
@@ -167,6 +176,10 @@ namespace AdvancedGears
                 case UnitType.ArmyCloud:
                     template.AddComponent(new ArmyCloud.Snapshot { }, writeAccess);
                     break;
+
+                case UnitType.Gigant:
+                    template.AddComponent(new GigantComponent.Snapshot { Roots = new List<Coordinates>(), RootIndex = -1 });
+                    break;
             }
         }
 
@@ -180,9 +193,9 @@ namespace AdvancedGears
             template.AddComponent(new TurretHub.Snapshot { TurretsDatas = new Dictionary<EntityId,TurretInfo>() }, writeAccess);
         }
 
-        public static EntityTemplate CreateCommanderUnitEntityTemplate(UnitSide side, uint rank, EntityId? superiorId, Coordinates coords, CompressedQuaternion? rotation = null, FixedPointVector3? scale = null)
+        public static EntityTemplate CreateCommanderUnitEntityTemplate(UnitSide side, uint rank, EntityId? superiorId, Coordinates coords, CompressedQuaternion? rotation = null, FixedPointVector3? scale = null, UnitCommonSettingsDictionary dic = null)
         {
-            var template = CreateBaseUnitEntityTemplate(side, UnitType.Commander, coords, rotation, scale, rank:rank);
+            var template = CreateBaseUnitEntityTemplate(side, UnitType.Commander, coords, rotation, scale, rank:rank, dic:dic);
             var team = template.GetComponent<CommanderTeam.Snapshot>();
             if (team != null) {
                 var t = team.Value;
@@ -250,9 +263,9 @@ namespace AdvancedGears
             return template;
         }
 
-        public static EntityTemplate CreateTurretUnitTemplate(UnitSide side, int masterId, Coordinates coords, CompressedQuaternion rotation, FixedPointVector3? scale = null)
+        public static EntityTemplate CreateTurretUnitTemplate(UnitSide side, int masterId, Coordinates coords, UnitCommonSettingsDictionary dic, CompressedQuaternion rotation, FixedPointVector3? scale = null)
         {
-            var template = CreateBaseUnitEntityTemplate(side, UnitType.Turret, coords, rotation, scale);
+            var template = CreateBaseUnitEntityTemplate(side, UnitType.Turret, coords, rotation, scale, dic:dic);
             var turret = template.GetComponent<TurretComponent.Snapshot>();
             if (turret != null) {
                 var t = turret.Value;

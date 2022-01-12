@@ -38,6 +38,8 @@ namespace AdvancedGears
             }
         }
 
+        protected override bool IsCheckTime => false;
+
         EntityQuerySet querySet;
         const float inter = 1.0f;
 

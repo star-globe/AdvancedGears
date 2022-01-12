@@ -54,8 +54,8 @@ namespace AdvancedGears
         public uint Index => index;
 
         [SerializeField]
-        TurretSnapshotLocator turretLocator;
-        public TurretSnapshotLocator TurretLocator => turretLocator;
+        UnitSnapshotLocator[] unitLocators;
+        public UnitSnapshotLocator[] UnitLocators => unitLocators;
 
         public void SetPosition(Vector3 pos, uint index, float edge)
         {
@@ -141,13 +141,18 @@ namespace AdvancedGears
             if (GUILayout.Button("Sync UnitSetings"))
                 component.SyncUnitSettings();
 
-            var locator = component.TurretLocator;
-            if (locator != null) {
-                if (GUILayout.Button("Locate Turrets"))
-                    locator.LocateTurrets();
+            var locators = component.UnitLocators;
+            if (locators == null || locators.Length == 0)
+                return;
 
-                if (GUILayout.Button("Renew Turrets"))
-                    locator.RenewTurrets();
+            if (GUILayout.Button("Locate Units")) {
+                foreach (var loc in locators)
+                    loc.LocateUnits();
+            }
+
+            if (GUILayout.Button("Renew Units")) {
+                foreach (var loc in locators)
+                    loc.RenewUnits();
             }
         }
     }

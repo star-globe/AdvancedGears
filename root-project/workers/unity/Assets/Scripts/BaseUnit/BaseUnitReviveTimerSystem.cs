@@ -86,7 +86,8 @@ namespace AdvancedGears
             if (revive.IsStart == false)
                 return;
 
-            if (status.Type.BaseType() == UnitBaseType.Fixed)
+            var settings = UnitCommonSettingsDictionary.GetSettings(status.Type);
+            if (settings.isBuilding)
                 return;
 
             switch (status.State)

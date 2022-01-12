@@ -30,11 +30,6 @@ namespace AdvancedGears
             }
         }
 
-        Dictionary<long, List<FixedPointVector3>> EnemyPositionsContainer
-        {
-            get { return this.SearchSystem?.EnemyPositionsContainer; }
-        }
-
         protected override void OnCreate()
         {
             base.OnCreate();
@@ -86,13 +81,10 @@ namespace AdvancedGears
             var current = Time.ElapsedTime;
 
             var id = entityId.EntityId.Id;
-            if (this.EnemyPositionsContainer == null ||
-                this.EnemyPositionsContainer.TryGetValue(id, out var enemyPositions) == false)
-                return;
 
             Vector3? epos = null;
-            if (enemyPositions.Count > 0) {
-                epos = enemyPositions[0].ToWorkerPosition(this.Origin);
+            if (action.TargetPosition != null) {
+                epos = action.TargetPosition;
 
                 var container = EntityManager.GetComponentObject<PostureBoneContainer>(entity);
                 Attack(container, current, epos.Value, entityId, ref gun, out var aimPos);
@@ -190,14 +182,14 @@ namespace AdvancedGears
     {
         public float SightRange;
         public float AttackRange;
-        public Vector3 TargetPosition;
+        public Vector3? TargetPosition;
 
         public static UnitActionData CreateData(float sightRange, float attackRange)
         {
             var data = new UnitActionData();
             data.SightRange = sightRange;
             data.AttackRange = attackRange;
-            data.TargetPosition = Vector3.zero;
+            data.TargetPosition = null;
             return data;
         }
     }

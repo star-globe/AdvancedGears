@@ -527,7 +527,7 @@ namespace AdvancedGears
 
             var posList = GetCoordinates(coords, current.TurretsNumber);
             foreach(var pos in posList) {
-                var temp = BaseUnitTemplate.CreateTurretUnitTemplate(side, current.TurretId, pos, TransformUtils.ToAngleAxis(current.Rot, Vector3.up));
+                var temp = BaseUnitTemplate.CreateTurretUnitTemplate(side, current.TurretId, pos, null, TransformUtils.ToAngleAxis(current.Rot, Vector3.up));
                 templates.Add((temp, UnitType.Turret));
             }
 

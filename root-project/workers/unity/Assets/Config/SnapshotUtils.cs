@@ -4,6 +4,7 @@ using Improbable.Gdk.GameObjectCreation;
 using Improbable.Gdk.PlayerLifecycle;
 using Improbable.Gdk.QueryBasedInterest;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace AdvancedGears
 {
@@ -89,7 +90,7 @@ namespace AdvancedGears
             template.AddComponent(new Position.Snapshot(coords), WorkerUtils.UnityGameLogic);
             template.AddComponent(new Metadata.Snapshot { EntityType = "LongRangeBulletReciever" }, WorkerUtils.UnityGameLogic);
             template.AddComponent(new Persistence.Snapshot(), WorkerUtils.UnityGameLogic);
-            template.AddComponent(new StrategyLongBulletReceiver.Snapshot(), WorkerUtils.UnityGameLogic);
+            template.AddComponent(new StrategyLongBulletReceiver.Snapshot{ CurrentBullets = new List<BulletFireInfo>() }, WorkerUtils.UnityGameLogic);
             return template;
         }
     }
